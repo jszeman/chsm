@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+	.state_body {
+		stroke: black;
+		stroke-width: 0.2;
+		fill: none;
+		rx: 0.5;
+	}
+
+	.state_separator {
+		stroke: grey;
+		stroke-width: 0.1;
+		shape-rendering: crispEdges;
+	}
+
+	.state_resize_mark {
+		stroke: grey;
+		stroke-width: 0.1;
+	}
+
+	.state_title {
+		font: bold 0.08em arial,helvetica,sans-serif;
+	}
+
+	.state_text {
+		font: normal 0.08em arial,helvetica,sans-serif;
+	}
+
+	.state_drag_handle {
+		fill: #e99;
+		opacity: 0.2;
+		stroke: none;
+		rx: 0.5;
+		cursor: move;
+	}
+
+	.state_resize_handle {
+		fill: #e99;
+		opacity: 0.2;
+		stroke: none;
+		r: 0.5;
+		cursor: nwse-resize;
+	}
+
+	.transition_line {
+		fill: none;
+		stroke: steelblue;
+		stroke-width: 0.2;
+		cursor: grab;
+	}
+
+	.transition_arrow {
+		fill: steelblue;
+		stroke: none;
+		stroke-width: 0.0;
+	}
+
+</style>
+<script type='module' src="./main.js"></script>
+</head>
+<body>
+<svg width="800" height="800">
+	<g display='none'>
+		<path id='arrow' d='M 0 0 L 0.7 -0.3 L 0.7 0.3 Z' class='arrow_template'/>
+	</g>
+	<g id='drawing' transform='translate(10, 10) scale(10, 10)'>
+	</g>
+</svg>
+
+</body>
+</html>
