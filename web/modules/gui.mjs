@@ -100,7 +100,7 @@ export class Gui {
 		return `translate(${ex} ${ey}) ${arrow_rot}`;
 	}
 
-	render_transition(id, vertices, on_mousedown)
+	render_transition(id, vertices, label, label_pos, on_mousedown)
 	{
 		const path = this.get_path_from_vertices(vertices);
 		const arrow_transform = this.get_arrow_transform_from_vertices(vertices);
@@ -111,9 +111,12 @@ export class Gui {
 			transform: arrow_transform,
 			class: 'transition_arrow',
 			display: 'block'});
+		const l = this.make_svg_elem('text', {x: label_pos[0], y: label_pos[1], class: 'transition_label'});
+		l.textContent = label;
 
 		g.appendChild(p);
 		g.appendChild(a);
+		g.appendChild(l);
 
 		this.paths[id] = {
 			obj: 	g,

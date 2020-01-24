@@ -52,12 +52,20 @@ export const state_machine = {
 		trans_0: {
 			start: 'conn_0',
 			end: 'conn_1',
-			vertices: [[17, 7], [22, 7], [22, 35], [17, 35]]
+			vertices: [[17, 7], [22, 7], [22, 35], [17, 35]],
+			label: 'trans_0',
+			label_offset: [0.5, -0.4],
+			label_anchor: 0,
+			label_pos: [17.5, 6.6],
 		},
 		trans_1: {
 			start: 'conn_2',
 			end: 'conn_3',
-			vertices: [[7, 17], [7, 20], [7, 20], [7, 25]]
+			vertices: [[7, 17], [7, 20], [7, 20], [7, 25]],
+			label: 'trans_1',
+			label_offset: [0.5, -0.4],
+			label_anchor: 1,
+			label_pos: [7.5, 19.6],
 		}
 	},
 
