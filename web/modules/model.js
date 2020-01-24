@@ -152,6 +152,14 @@ export class Model {
 		}
 	}
 
+	update_transition_label_pos(tr_id)
+	{
+		const tr = this.get_transition(tr_id);
+		const [ax, ay] = tr.vertices[tr.label_anchor];
+		const [ox, oy] = tr.label_offset;
+		tr.label_pos = [ax + ox, ay + oy];
+	}
+
 	transition_drag(tr_id, line_idx, p)
 	{
 		const [x, y] = p;
@@ -205,6 +213,8 @@ export class Model {
 				l2[1] = y;
 			}
 		}
+
+		this.update_transition_label_pos(tr_id);
 	}
 
 	connectors()
@@ -290,5 +300,7 @@ export class Model {
 				v_1[0] = ex;
 			}
 		}
+		
+		this.update_transition_label_pos(tr_id);
 	}
 }

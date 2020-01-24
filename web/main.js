@@ -129,13 +129,18 @@ class App {
 	render_transiton(trans_id)
 	{
 		const tr = this.model.get_transition(trans_id);
-		this.gui.render_transition(trans_id, tr.vertices, tr.label, tr.label_pos, (evt) => {this.trans_drag_start(evt, trans_id);});
+		this.gui.render_transition(
+			trans_id,
+			tr.vertices,
+			tr.label,
+			tr.label_pos,
+			(evt) => {this.trans_drag_start(evt, trans_id);});
 	}
 
 	redraw_transition(trans_id)
 	{
 		const tr = this.model.get_transition(trans_id);
-		this.gui.redraw_path_with_arrow(trans_id, tr.vertices);
+		this.gui.redraw_path_with_arrow(trans_id, tr.vertices, tr.label, tr.label_pos);
 	}
 }
 

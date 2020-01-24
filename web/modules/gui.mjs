@@ -123,13 +123,15 @@ export class Gui {
 			mod_svg: this.modify_svg_elem,
 			gpfv: this.get_path_from_vertices,
 			gatfv: this.get_arrow_transform_from_vertices,
-			redraw: function(vertices)
+			redraw: function(vertices, label, label_pos)
 			{
 				const npath = this.gpfv(vertices);
 				const narrow_transform = this.gatfv(vertices);
 
 				this.mod_svg(p, {d: npath});
 				this.mod_svg(a, {transform: narrow_transform});
+				this.mod_svg(l, {x: label_pos[0], y: label_pos[1]});
+				l.textContent = label;
 			}
 		}
 
@@ -138,9 +140,9 @@ export class Gui {
 		this.drawing.appendChild(g);
 	}
 
-	redraw_path_with_arrow(id, vertices)
+	redraw_path_with_arrow(id, vertices, label, label_pos)
 	{
-		this.paths[id].redraw(vertices);
+		this.paths[id].redraw(vertices, label, label_pos);
 	}
 
 	render_state(id, title, pos, size, strings, text_height, on_drag_start, on_resize_start)
