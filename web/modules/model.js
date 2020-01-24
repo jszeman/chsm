@@ -12,7 +12,21 @@ export class Model {
 
 	move_state(state_id, pos)
 	{
+		const s = this.data.states[state_id];
+		const [dx, dy] = [pos[0] - s.pos[0], pos[1] - s.pos[1]];
 		this.data.states[state_id].pos = pos;
+
+		const affected_states = [...s.children];
+
+		for (const id of s.children)
+		{
+			const old_pos = this.data.states[id].pos;
+			const new_pos = [old_pos[0] + dx, old_pos[1] + dy];
+			const as = this.move_state(id, new_pos);
+			affected_states.push(...as);
+		}
+
+		return affected_states;
 	}
 
 	resize_state(state_id, size)
@@ -180,7 +194,7 @@ export class Model {
 			}
 		}
 
-		const middle = Math.round((anchors.len - 1) / 2);
+		const middle = Math.round((anchors.length - 1) / 2);
 
 		tr.label_anchor = anchors[middle][0];
 	}
