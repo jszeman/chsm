@@ -132,12 +132,22 @@ export class Gui {
 				this.mod_svg(a, {transform: narrow_transform});
 				this.mod_svg(l, {x: label_pos[0], y: label_pos[1]});
 				l.textContent = label;
+			},
+			get_label_bbox: function()
+			{
+				const bbox = l.getBBox();
+				return [bbox.width, bbox.height];
 			}
 		}
 
 		p.addEventListener('mousedown', on_mousedown);
 
 		this.drawing.appendChild(g);
+	}
+
+	get_path_label_size(id)
+	{
+		return this.paths[id].get_label_bbox();
 	}
 
 	redraw_path_with_arrow(id, vertices, label, label_pos)

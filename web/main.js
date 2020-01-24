@@ -106,6 +106,7 @@ class App {
 
 		this.drag_data.on_mousemove = (evt) => {this.trans_drag(evt, trans_id, line)};
 		this.drag_data.on_mouseup = (evt) => {this.trans_drag_end(evt, trans_id, line)};
+		this.drag_data.label_width = this.gui.get_path_label_size(trans_id)[0];
 		this.gui.add_event_handler('mousemove', this.drag_data.on_mousemove);
 		this.gui.add_event_handler( 'mouseup', this.drag_data.on_mouseup);
 	}
@@ -115,7 +116,7 @@ class App {
 		evt.preventDefault();
 
 		const p = this.gui.get_absolute_pos(evt);
-		this.model.transition_drag(trans_id, line, p);
+		this.model.transition_drag(trans_id, line, p, this.drag_data.label_width);
 		this.redraw_transition(trans_id);
 	}
 
