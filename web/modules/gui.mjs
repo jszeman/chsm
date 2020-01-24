@@ -100,7 +100,7 @@ export class Gui {
 		return `translate(${ex} ${ey}) ${arrow_rot}`;
 	}
 
-	render_transition(id, vertices, on_mousedown)
+	render_transition(id, vertices, label, label_pos, on_mousedown)
 	{
 		const path = this.get_path_from_vertices(vertices);
 		const arrow_transform = this.get_arrow_transform_from_vertices(vertices);
@@ -111,22 +111,32 @@ export class Gui {
 			transform: arrow_transform,
 			class: 'transition_arrow',
 			display: 'block'});
+		const l = this.make_svg_elem('text', {x: label_pos[0], y: label_pos[1], class: 'transition_label'});
+		l.textContent = label;
 
 		g.appendChild(p);
 		g.appendChild(a);
+		g.appendChild(l);
 
 		this.paths[id] = {
 			obj: 	g,
 			mod_svg: this.modify_svg_elem,
 			gpfv: this.get_path_from_vertices,
 			gatfv: this.get_arrow_transform_from_vertices,
-			redraw: function(vertices)
+			redraw: function(vertices, label, label_pos)
 			{
 				const npath = this.gpfv(vertices);
 				const narrow_transform = this.gatfv(vertices);
 
 				this.mod_svg(p, {d: npath});
 				this.mod_svg(a, {transform: narrow_transform});
+				this.mod_svg(l, {x: label_pos[0], y: label_pos[1]});
+				l.textContent = label;
+			},
+			get_label_bbox: function()
+			{
+				const bbox = l.getBBox();
+				return [bbox.width, bbox.height];
 			}
 		}
 
@@ -135,9 +145,14 @@ export class Gui {
 		this.drawing.appendChild(g);
 	}
 
-	redraw_path_with_arrow(id, vertices)
+	get_path_label_size(id)
 	{
-		this.paths[id].redraw(vertices);
+		return this.paths[id].get_label_bbox();
+	}
+
+	redraw_path_with_arrow(id, vertices, label, label_pos)
+	{
+		this.paths[id].redraw(vertices, label, label_pos);
 	}
 
 	render_state(id, title, pos, size, strings, text_height, on_drag_start, on_resize_start)

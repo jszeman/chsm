@@ -152,7 +152,49 @@ export class Model {
 		}
 	}
 
-	transition_drag(tr_id, line_idx, p)
+	/* This function should select a suitable anchor point for the label.
+	 * A good point is the leftmost vertex of the longest horizontal line.
+	 */
+	update_transition_label_anchor(tr_id, label_width)
+	{
+		const tr = this.get_transition(tr_id);
+		const v = tr.vertices;
+
+		let anchor = null;
+		let len = -1;
+		const anchors = [];
+
+		for (let i = 0; i < v.length - 1; i++)
+		{
+			if (v[i][1] == v[i + 1][1]) // horizontal line
+			{
+				const l = Math.abs(v[i][0] - v[i + 1][0]);
+				if (v[i][0] < v[i + 1][0])
+				{
+					anchors.push([i, l])
+				}
+				else
+				{
+					anchors.push([i + 1, l])
+				}
+			}
+		}
+
+		const middle = Math.round((anchors.len - 1) / 2);
+
+		tr.label_anchor = anchors[middle][0];
+	}
+
+	update_transition_label_pos(tr_id)
+	{
+		const tr = this.get_transition(tr_id);
+		this.update_transition_label_anchor(tr_id);
+		const [ax, ay] = tr.vertices[tr.label_anchor];
+		const [ox, oy] = tr.label_offset;
+		tr.label_pos = [ax + ox, ay + oy];
+	}
+
+	transition_drag(tr_id, line_idx, p, label_width)
 	{
 		const [x, y] = p;
 		const tr = this.get_transition(tr_id);
@@ -205,6 +247,8 @@ export class Model {
 				l2[1] = y;
 			}
 		}
+
+		this.update_transition_label_pos(tr_id, label_width);
 	}
 
 	connectors()
@@ -290,5 +334,7 @@ export class Model {
 				v_1[0] = ex;
 			}
 		}
+		
+		this.update_transition_label_pos(tr_id);
 	}
 }
