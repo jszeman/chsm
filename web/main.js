@@ -147,48 +147,4 @@ class App {
 	}
 }
 
-function state_is_size_valid(state, size, sm)
-{
-	const [w, h] = size;
-
-	for (const cn of state.connectors)
-	{
-		const conn = sm.connectors[cn];
-
-		if (['left', 'right'].includes(conn.side))
-		{
-			if (conn.offset >= h) return false;
-		}
-		else
-		{
-			if (conn.offset >= w) return false;
-		}
-	}
-
-	return true
-}
-function state_resize(state, size, sm)
-{
-	if (state_is_size_valid(state, size, sm))
-	{
-		state.size = size;
-		state.resize_svg();
-	}
-}
-
-function state_resize_drag(evt, state, sm)
-{
-	const CTM = state.svg.getScreenCTM();
-	const x = (evt.clientX - CTM.e) / CTM.a;
-	const y = (evt.clientY - CTM.f) / CTM.d;
-
-	const [minw, minh] = sm.options.state_min_size;
-
-	const w = Math.max(minw, Math.round(x));
-	const h = Math.max(state.min_height, Math.round(y));
-
-	state_resize(state, [w, h], sm); 
-	reroute_connected_transitions(state, sm);
-}
-
 window.addEventListener('DOMContentLoaded', (event) => {window.app = new App(state_machine)});
