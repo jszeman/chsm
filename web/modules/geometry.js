@@ -24,3 +24,18 @@ export class Rect {
 		return ((x1 > ox1) && (x2 < ox2) && (y1 > oy1) && (y2 < oy2));
 	}
 }
+
+export class Point {
+	constructor(x, y)
+	{
+		this.data = [x, y];
+	}
+
+	is_inside_rect(rect)
+	{
+		const [x, y] = this.data;
+		const [rx1, ry1, rx2, ry2] = rect.data;
+
+		return ((x > rx1) && (x < rx2) && (y > ry1) && (y < ry2));
+	}
+}
