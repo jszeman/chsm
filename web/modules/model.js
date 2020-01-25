@@ -1,3 +1,4 @@
+import {Rect, Point} from './geometry.js';
 
 export class Model {
 	constructor(data)
@@ -8,6 +9,48 @@ export class Model {
 			state_min_height: 3,
 			text_height: 2,
 		}
+		this.diff = [];
+	}
+
+	make_point(x, y)
+	{
+		return new Point(x, y);
+	}
+
+	get_state_body_rect(state_id)
+	{
+		const s = this.data.states[state_id];
+		const [x1, y1] = s.pos;
+		const [w, h] = s.size;
+
+		return new Rect(x1, y1, x1 + w, y1 + h);
+	}
+	
+	is_in_state_body(state_id, point)
+	{
+		const r = this.get_state_body_rect(state_id);
+		return point.is_inside_rect(r);
+	}
+
+	find_state_at(point, state_id='__top__')
+	{
+		if (!this.is_in_state_body(state_id, point))
+		{
+			return null;
+		}
+
+		const children = this.data.states[state_id].children;
+
+		for (const c of children)
+		{
+			const s = this.find_state_at(point, c);
+			if (s !== null)
+			{
+				return s;
+			}
+		}
+
+		return state_id;
 	}
 
 	move_state(state_id, pos)
@@ -27,6 +70,43 @@ export class Model {
 		}
 
 		return affected_states;
+	}
+
+	remove_child(parent_id, child_id)
+	{
+		const p = this.data.states[parent_id];
+		p.children = p.children.filter(c => c !== child_id);
+	}
+
+	add_child(parent_id, child_id)
+	{
+		const p = this.data.states[parent_id];
+		p.children.push(child_id);
+	}
+
+	set_parent(state_id, parent_id)
+	{
+		const s = this.data.states[state_id];
+
+		if (parent_id != s.parent)
+		{
+			this.remove_child(s.parent, state_id);
+			this.add_child(parent_id, state_id);
+			s.parent = parent_id;
+		}
+	}
+
+	update_parent(state_id)
+	{
+		const s = this.data.states[state_id];
+		const parent = this.find_state_at(new Point(...s.pos));
+
+		console.log(`${s.parent} => ${parent}`);
+
+		if (parent != s.parent)
+		{
+			this.set_parent(state_id, parent);
+		}
 	}
 
 	resize_state(state_id, size)
@@ -80,7 +160,7 @@ export class Model {
 
 	states()
 	{
-		return Object.keys(this.data.states);
+		return this.data.states['__top__'].children;
 	}
 
 	transitions()

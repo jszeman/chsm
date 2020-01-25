@@ -83,6 +83,7 @@ class App {
 		evt.preventDefault();
 		this.gui.remove_event_handler('mousemove', this.drag_data.on_mousemove);
 		this.gui.remove_event_handler( 'mouseup', this.drag_data.on_mouseup);
+		this.model.update_parent(state_id);
 	}
 
 	render_state(state_id)

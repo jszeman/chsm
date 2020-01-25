@@ -1,6 +1,15 @@
 
 export const state_machine = {
 	states: {
+		__top__: {
+			pos: [-100000, -100000],
+			size: [200000, 200000],
+			title: '__top__',
+			text: [],
+			connectors: [],
+			parent: null,
+			children: ['state_0', 'state_1', 'state_2'],
+			},
 		state_0: {
 			pos: [2, 2],
 			size: [15, 20],
