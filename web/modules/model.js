@@ -3,13 +3,22 @@ import {Rect, Point} from './geometry.js';
 export class Model {
 	constructor(data)
 	{
-		this.data = data;
+		this.data = 			data;
 		this.options = {
-			state_min_width: 5,
-			state_min_height: 3,
-			text_height: 2,
-		}
-		this.diff = [];
+			state_min_width: 	5,
+			state_min_height: 	3,
+			text_height: 		2,
+		},
+		this.changes = {
+			states:				[],
+			transitions:		[],
+		};
+	}
+
+	ack_changes()
+	{
+		this.changes.states = [];
+		this.changes.transitions = [];
 	}
 
 	make_point(x, y)
@@ -59,17 +68,15 @@ export class Model {
 		const [dx, dy] = [pos[0] - s.pos[0], pos[1] - s.pos[1]];
 		this.data.states[state_id].pos = pos;
 
-		const affected_states = [...s.children];
+		this.changes.states.push(state_id);
+		this.changes.states.push(...s.children);
 
 		for (const id of s.children)
 		{
 			const old_pos = this.data.states[id].pos;
 			const new_pos = [old_pos[0] + dx, old_pos[1] + dy];
-			const as = this.move_state(id, new_pos);
-			affected_states.push(...as);
+			this.move_state(id, new_pos);
 		}
-
-		return affected_states;
 	}
 
 	remove_child(parent_id, child_id)
@@ -100,8 +107,6 @@ export class Model {
 	{
 		const s = this.data.states[state_id];
 		const parent = this.find_state_at(new Point(...s.pos));
-
-		console.log(`${s.parent} => ${parent}`);
 
 		if (parent != s.parent)
 		{

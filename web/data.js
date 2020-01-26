@@ -33,7 +33,7 @@ export const state_machine = {
 			size: [12, 8],
 			title: 'State 2',
 			text: ['entry/ entry_func()', 'exit/ exit_func()'],
-			connectors: [],
+			connectors: ['conn_4', 'conn_5'],
 			parent: 'state_0',
 			children: [],
 			}
@@ -67,6 +67,20 @@ export const state_machine = {
 			side: 'top',
 			dir: 'in',
 			transition: 'trans_1',
+		},
+		conn_4: {
+			parent: 'state_2',
+			offset: 2,
+			side: 'right',
+			dir: 'out',
+			transition: 'trans_2',
+		},
+		conn_5: {
+			parent: 'state_2',
+			offset: 5,
+			side: 'right',
+			dir: 'in',
+			transition: 'trans_2',
 		}
 	},
 
@@ -88,7 +102,16 @@ export const state_machine = {
 			label_offset: [0.5, -0.4],
 			label_anchor: 1,
 			label_pos: [7.5, 29.6],
-		}
+		},
+		trans_2: {
+			start: 'conn_4',
+			end: 'conn_5',
+			vertices: [[15, 11], [16, 11], [16, 14], [15, 14]],
+			label: 'trans_2',
+			label_offset: [0.5, -0.4],
+			label_anchor: 0,
+			label_pos: [15.5, 10.6],
+		},
 	},
 
 };
