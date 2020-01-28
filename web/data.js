@@ -1,19 +1,41 @@
 
 export const state_machine = {
 	states: {
+		__top__: {
+			pos: [-100000, -100000],
+			size: [200000, 200000],
+			title: '__top__',
+			text: [],
+			connectors: [],
+			parent: null,
+			children: ['state_0', 'state_1', 'state_2'],
+			},
 		state_0: {
 			pos: [2, 2],
+			size: [15, 20],
+			title: 'State 0',
+			text: ['entry/ entry_func()', 'exit/ exit_func()'],
+			connectors: ['conn_0', 'conn_2'],
+			parent: '__top__',
+			children: ['state_2'],
+			},
+		state_1: {
+			pos: [2, 35],
 			size: [15, 15],
 			title: 'State 1',
 			text: ['entry/ entry_func()', 'exit/ exit_func()'],
-			connectors: ['conn_0', 'conn_2']
+			connectors: ['conn_1', 'conn_3'],
+			parent: '__top__',
+			children: [],
 			},
-		state_1: {
-			pos: [2, 25],
-			size: [15, 15],
+		state_2: {
+			pos: [3, 9],
+			size: [12, 8],
 			title: 'State 2',
 			text: ['entry/ entry_func()', 'exit/ exit_func()'],
-			connectors: ['conn_1', 'conn_3']
+			connectors: ['conn_4', 'conn_5'],
+			parent: 'state_0',
+			children: [],
 			}
 	},
 
@@ -45,6 +67,20 @@ export const state_machine = {
 			side: 'top',
 			dir: 'in',
 			transition: 'trans_1',
+		},
+		conn_4: {
+			parent: 'state_2',
+			offset: 2,
+			side: 'right',
+			dir: 'out',
+			transition: 'trans_2',
+		},
+		conn_5: {
+			parent: 'state_2',
+			offset: 5,
+			side: 'right',
+			dir: 'in',
+			transition: 'trans_2',
 		}
 	},
 
@@ -52,7 +88,7 @@ export const state_machine = {
 		trans_0: {
 			start: 'conn_0',
 			end: 'conn_1',
-			vertices: [[17, 7], [22, 7], [22, 35], [17, 35]],
+			vertices: [[17, 7], [22, 7], [22, 45], [17, 45]],
 			label: 'trans_0',
 			label_offset: [0.5, -0.4],
 			label_anchor: 0,
@@ -61,12 +97,21 @@ export const state_machine = {
 		trans_1: {
 			start: 'conn_2',
 			end: 'conn_3',
-			vertices: [[7, 17], [7, 20], [7, 20], [7, 25]],
+			vertices: [[7, 22], [7, 30], [7, 30], [7, 35]],
 			label: 'trans_1',
 			label_offset: [0.5, -0.4],
 			label_anchor: 1,
-			label_pos: [7.5, 19.6],
-		}
+			label_pos: [7.5, 29.6],
+		},
+		trans_2: {
+			start: 'conn_4',
+			end: 'conn_5',
+			vertices: [[15, 11], [16, 11], [16, 14], [15, 14]],
+			label: 'trans_2',
+			label_offset: [0.5, -0.4],
+			label_anchor: 0,
+			label_pos: [15.5, 10.6],
+		},
 	},
 
 };

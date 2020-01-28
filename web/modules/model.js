@@ -1,18 +1,179 @@
+import {Rect, Point} from './geometry.js';
 
 export class Model {
 	constructor(data)
 	{
-		this.data = data;
+		this.data = 			data;
 		this.options = {
-			state_min_width: 5,
-			state_min_height: 3,
-			text_height: 2,
-		}
+			state_min_width: 	5,
+			state_min_height: 	3,
+			text_height: 		2,
+		},
+		this.changes = {
+			states:				[],
+			transitions:		[],
+		};
 	}
+
+	ack_changes()
+	{
+		this.changes.states = [];
+		this.changes.transitions = [];
+	}
+
+	make_point(x, y)
+	{
+		return new Point(x, y);
+	}
+
+	get_state_body_rect(state_id)
+	{
+		const s = this.data.states[state_id];
+		const [x1, y1] = s.pos;
+		const [w, h] = s.size;
+
+		return new Rect(x1, y1, x1 + w, y1 + h);
+	}
+	
+	is_in_state_body(state_id, point)
+	{
+		const r = this.get_state_body_rect(state_id);
+		return point.is_inside_rect(r);
+	}
+
+	find_state_at(point, state_id='__top__')
+	{
+		if (!this.is_in_state_body(state_id, point))
+		{
+			return null;
+		}
+
+		const children = this.data.states[state_id].children;
+
+		for (const c of children)
+		{
+			const s = this.find_state_at(point, c);
+			if (s !== null)
+			{
+				return s;
+			}
+		}
+
+		return state_id;
+	}
+
+	get_substates(state_id)
+	{
+		const s = this.data.states[state_id];
+
+		const substates = [...s.children];
+
+		for (const id of s.children)
+		{
+			substates.push(...this.get_substates(id));
+		}
+
+		return substates;
+	}
+
+	/* Return all connectors in the state and in its substates */
+	get_state_connectors(state_id)
+	{
+		const s = this.data.states[state_id];
+		const conns = [...s.connectors];
+
+		for (const id of s.children)
+		{
+			conns.push(...this.get_state_connectors(id));
+		}
+
+		return conns;
+	}
+
+	get_state_transitions(state_id)
+	{
+		const conns = this.get_state_connectors(state_id);
+		const trs = new Set(conns.map(c => this.data.connectors[c].transition));
+		const internal = [...trs].filter(
+			(t) => {
+					const tr = this.data.transitions[t];
+					return conns.includes(tr.start) && conns.includes(tr.end);
+				}) 
+		const external = [...trs].filter(t => !internal.includes(t))
+
+		return [internal, external];
+	}
+
+	move_transition(tr_id, delta)
+	{
+		const tr = this.data.transitions[tr_id];
+		const [dx, dy] = delta;
+
+		tr.vertices.map(v => {v[0] += dx; v[1] += dy});
+		tr.label_pos[0] += dx;
+		tr.label_pos[1] += dy;
+	}
+
 
 	move_state(state_id, pos)
 	{
+		const s = this.data.states[state_id];
+		const [dx, dy] = [pos[0] - s.pos[0], pos[1] - s.pos[1]];
 		this.data.states[state_id].pos = pos;
+
+		this.changes.states.push(state_id);
+		this.changes.states.push(...s.children);
+
+		const subs = this.get_substates(state_id);
+		const conns = this.get_state_connectors(state_id);
+		const [internal, external] = this.get_state_transitions(state_id);
+
+		for (const id of subs)
+		{
+			const sub = this.data.states[id]; 
+			const old_pos = sub.pos;
+			sub.pos = [old_pos[0] + dx, old_pos[1] + dy];
+		}
+
+		internal.map(t => this.move_transition(t, [dx, dy]));
+		external.map(this.update_transition_path, this);
+		this.changes.transitions.push(...internal);
+		this.changes.transitions.push(...external);
+	}
+
+	remove_child(parent_id, child_id)
+	{
+		const p = this.data.states[parent_id];
+		p.children = p.children.filter(c => c !== child_id);
+	}
+
+	add_child(parent_id, child_id)
+	{
+		const p = this.data.states[parent_id];
+		p.children.push(child_id);
+	}
+
+	set_parent(state_id, parent_id)
+	{
+		const s = this.data.states[state_id];
+
+		if (parent_id != s.parent)
+		{
+			this.remove_child(s.parent, state_id);
+			this.add_child(parent_id, state_id);
+			s.parent = parent_id;
+		}
+	}
+
+	update_parent(state_id)
+	{
+		const s = this.data.states[state_id];
+		const parent = this.find_state_at(new Point(...s.pos));
+
+		if (parent != s.parent)
+		{
+			this.set_parent(state_id, parent);
+		}
 	}
 
 	resize_state(state_id, size)
@@ -66,7 +227,7 @@ export class Model {
 
 	states()
 	{
-		return Object.keys(this.data.states);
+		return this.data.states['__top__'].children;
 	}
 
 	transitions()
@@ -180,7 +341,7 @@ export class Model {
 			}
 		}
 
-		const middle = Math.round((anchors.len - 1) / 2);
+		const middle = Math.round((anchors.length - 1) / 2);
 
 		tr.label_anchor = anchors[middle][0];
 	}
@@ -196,6 +357,11 @@ export class Model {
 
 	transition_drag(tr_id, line_idx, p, label_width)
 	{
+		if (line_idx == null)
+		{
+			return;
+		}
+
 		const [x, y] = p;
 		const tr = this.get_transition(tr_id);
 
