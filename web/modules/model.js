@@ -357,6 +357,11 @@ export class Model {
 
 	transition_drag(tr_id, line_idx, p, label_width)
 	{
+		if (line_idx == null)
+		{
+			return;
+		}
+
 		const [x, y] = p;
 		const tr = this.get_transition(tr_id);
 
