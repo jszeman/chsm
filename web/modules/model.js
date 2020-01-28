@@ -62,6 +62,59 @@ export class Model {
 		return state_id;
 	}
 
+	get_substates(state_id)
+	{
+		const s = this.data.states[state_id];
+
+		const substates = [...s.children];
+
+		for (const id of s.children)
+		{
+			substates.push(...this.get_substates(id));
+		}
+
+		return substates;
+	}
+
+	/* Return all connectors in the state and in its substates */
+	get_state_connectors(state_id)
+	{
+		const s = this.data.states[state_id];
+		const conns = [...s.connectors];
+
+		for (const id of s.children)
+		{
+			conns.push(...this.get_state_connectors(id));
+		}
+
+		return conns;
+	}
+
+	get_state_transitions(state_id)
+	{
+		const conns = this.get_state_connectors(state_id);
+		const trs = new Set(conns.map(c => this.data.connectors[c].transition));
+		const internal = [...trs].filter(
+			(t) => {
+					const tr = this.data.transitions[t];
+					return conns.includes(tr.start) && conns.includes(tr.end);
+				}) 
+		const external = [...trs].filter(t => !internal.includes(t))
+
+		return [internal, external];
+	}
+
+	move_transition(tr_id, delta)
+	{
+		const tr = this.data.transitions[tr_id];
+		const [dx, dy] = delta;
+
+		tr.vertices.map(v => {v[0] += dx; v[1] += dy});
+		tr.label_pos[0] += dx;
+		tr.label_pos[1] += dy;
+	}
+
+
 	move_state(state_id, pos)
 	{
 		const s = this.data.states[state_id];
@@ -71,12 +124,21 @@ export class Model {
 		this.changes.states.push(state_id);
 		this.changes.states.push(...s.children);
 
-		for (const id of s.children)
+		const subs = this.get_substates(state_id);
+		const conns = this.get_state_connectors(state_id);
+		const [internal, external] = this.get_state_transitions(state_id);
+
+		for (const id of subs)
 		{
-			const old_pos = this.data.states[id].pos;
-			const new_pos = [old_pos[0] + dx, old_pos[1] + dy];
-			this.move_state(id, new_pos);
+			const sub = this.data.states[id]; 
+			const old_pos = sub.pos;
+			sub.pos = [old_pos[0] + dx, old_pos[1] + dy];
 		}
+
+		internal.map(t => this.move_transition(t, [dx, dy]));
+		external.map(this.update_transition_path, this);
+		this.changes.transitions.push(...internal);
+		this.changes.transitions.push(...external);
 	}
 
 	remove_child(parent_id, child_id)

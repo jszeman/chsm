@@ -27,7 +27,6 @@ class App {
 		const [ex, ey] = this.gui.get_absolute_pos(evt, state_id);
 		const [sx, sy] = this.model.get_state(state_id).pos;
 		this.drag_data.offset = [ex-sx, ey-sy];
-		this.drag_data.transitions = this.model.state_transitions(state_id);
 	}
 	
 	state_resize_start(evt, state_id)
@@ -73,13 +72,10 @@ class App {
 			this.gui.states[id].move(this.model.get_state(id).pos);
 			}, this);
 
-		this.model.ack_changes();
 
-		this.drag_data.transitions.map(
-			(t) => {
-				this.model.update_transition_path(t);
-				this.redraw_transition(t);
-			});
+		this.model.changes.transitions.map(this.redraw_transition, this);
+
+		this.model.ack_changes();
 	}
 
 	state_drag_end(evt, state_id)
