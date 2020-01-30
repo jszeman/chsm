@@ -14,6 +14,41 @@ class App {
 		
 		this.model.states().map(this.render_state, this);
 		this.model.transitions().map(this.render_transiton, this);
+		
+		document.querySelector('body').addEventListener("keydown", event => {
+			if (event.isComposing || event.keyCode === 229) {
+				return;
+			}
+			this.on_key_down(event);
+		});
+
+
+		this.state = this.idle;
+	}
+
+	dispatch(event, data)
+	{
+		this.state(event, data);
+	}
+
+	idle(event, data)
+	{
+	}
+
+	on_key_down(event)
+	{
+		switch(event.code)
+		{
+			case 'keyS':
+				this.create_state();
+				break;
+		}
+	}
+
+	create_state()
+	{
+		state_id = this.model.make_new_state();
+		this.render_states(state_id);
 	}
 
 	state_drag_start(evt, state_id)

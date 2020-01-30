@@ -10,6 +10,7 @@ export class Gui {
 			text_height: 2,
 			state_min_size: [5,5]
 		};
+
 	}
 
 	get_absolute_pos(evt)

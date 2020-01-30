@@ -1,8 +1,7 @@
 import {Rect, Point} from './geometry.js';
-
 export class Model {
 	constructor(data)
-	{
+	
 		this.data = 			data;
 		this.options = {
 			state_min_width: 	5,
@@ -12,7 +11,24 @@ export class Model {
 		this.changes = {
 			states:				[],
 			transitions:		[],
-		};
+		
+}
+
+	make_new_state_id()
+	{
+		for (let i=0; i<65536; i++)
+		{
+			const id = `state_${i}`;
+			if (!(id in this.data.states))
+			{
+				return id;
+			}
+		}
+	}
+
+	make_new_state()
+	{
+		state_id = this.make_new_state_id();
 	}
 
 	ack_changes()
