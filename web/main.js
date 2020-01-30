@@ -28,8 +28,11 @@ class App {
 			this.dispatch('MOUSEMOVE', event);
 		});
 
+		this.gui.add_event_handler('mouseup', event => {
+			this.dispatch('MOUSEUP', event);
+		});
 
-		this.state = this.idle;
+		this.state = this.idle_state;
 	}
 
 	dispatch(event, data)
@@ -37,7 +40,7 @@ class App {
 		this.state(event, data);
 	}
 
-	idle(event, data)
+	idle_state(event, data)
 	{
 		switch(event)
 		{
@@ -47,12 +50,51 @@ class App {
 					this.create_state(this.mouse_pos);
 				}
 				break;
+
+			case 'STATE_DRAG':
+				this.state_drag_start(data.event, data.id);
+				this.state = this.state_dragging_state;
+				break;
+
+			case 'STATE_RESIZE':
+				this.state_resize_start(data.event, data.id);
+				this.state = this.state_resizing_state;
+				break;
+		}
+	}
+
+	state_resizing_state(event, data)
+	{
+		switch(event)
+		{
+			case 'MOUSEMOVE':
+				this.state_resize(data, this.resize_data.state_id);
+				break
+
+			case 'MOUSEUP':
+				this.state_resize_end(data, this.resize_data.state_id);
+				this.state = this.idle_state;
+				break;
+		}
+	}
+
+	state_dragging_state(event, data)
+	{
+		switch(event)
+		{
+			case 'MOUSEMOVE':
+				this.state_drag(data, this.drag_data.state_id);
+				break
+
+			case 'MOUSEUP':
+				this.state_drag_end(data, this.drag_data.state_id);
+				this.state = this.idle_state;
+				break;
 		}
 	}
 
 	create_state(pos)
 	{
-		console.log('create_state');
 		const state_id = this.model.make_new_state(pos);
 		this.render_state(state_id);
 	}
@@ -60,25 +102,18 @@ class App {
 	state_drag_start(evt, state_id)
 	{
 		evt.preventDefault();
-		this.drag_data.on_mousemove = (evt) => {this.state_drag(evt, state_id)};
-		this.drag_data.on_mouseup = (evt) => {this.state_drag_end(evt, state_id)};
-		this.gui.add_event_handler('mousemove', this.drag_data.on_mousemove);
-		this.gui.add_event_handler( 'mouseup', this.drag_data.on_mouseup);
-
 		const [ex, ey] = this.gui.get_absolute_pos(evt, state_id);
 		const [sx, sy] = this.model.get_state(state_id).pos;
 		this.drag_data.offset = [ex-sx, ey-sy];
+		this.drag_data.state_id = state_id;
 	}
 	
 	state_resize_start(evt, state_id)
 	{
 		evt.preventDefault();
-		this.resize_data.on_mousemove = (evt) => {this.state_resize(evt, state_id)};
-		this.resize_data.on_mouseup = (evt) => {this.state_resize_end(evt, state_id)};
-		this.gui.add_event_handler('mousemove', this.resize_data.on_mousemove);
-		this.gui.add_event_handler( 'mouseup', this.resize_data.on_mouseup);
 
 		this.resize_data.transitions = this.model.state_transitions(state_id);
+		this.resize_data.state_id = state_id;
 	}
 	
 	state_resize(evt, state_id)
@@ -97,8 +132,6 @@ class App {
 	state_resize_end(evt, state_id)
 	{
 		evt.preventDefault();
-		this.gui.remove_event_handler('mousemove', this.resize_data.on_mousemove);
-		this.gui.remove_event_handler( 'mouseup', this.resize_data.on_mouseup);
 	}
 
 	state_drag(evt, state_id)
@@ -122,8 +155,6 @@ class App {
 	state_drag_end(evt, state_id)
 	{
 		evt.preventDefault();
-		this.gui.remove_event_handler('mousemove', this.drag_data.on_mousemove);
-		this.gui.remove_event_handler( 'mouseup', this.drag_data.on_mouseup);
 		this.model.update_parent(state_id);
 	}
 
@@ -137,8 +168,8 @@ class App {
 			state.size,
 			state.text,
 			this.model.options.text_height,
-			(evt) => {this.state_drag_start(evt, state_id)},
-			(evt) => {this.state_resize_start(evt, state_id)});
+			(evt) => {this.dispatch('STATE_DRAG', {event: evt, id: state_id});},
+			(evt) => {this.dispatch('STATE_RESIZE', {event: evt, id: state_id});});
 	}
 
 	trans_drag_start(evt, trans_id)
