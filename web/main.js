@@ -11,6 +11,7 @@ class App {
 		this.drawing = null;
 		this.drag_data = {};
 		this.resize_data = {};
+		this.mouse_pos = [0, 0];
 		
 		this.model.states().map(this.render_state, this);
 		this.model.transitions().map(this.render_transiton, this);
@@ -19,7 +20,12 @@ class App {
 			if (event.isComposing || event.keyCode === 229) {
 				return;
 			}
-			this.on_key_down(event);
+			this.dispatch('KEYDOWN', event);
+		});
+
+		this.gui.add_event_handler('mousemove', event => {
+			this.mouse_pos = this.gui.get_absolute_pos(event);
+			this.dispatch('MOUSEMOVE', event);
 		});
 
 
@@ -33,22 +39,22 @@ class App {
 
 	idle(event, data)
 	{
-	}
-
-	on_key_down(event)
-	{
-		switch(event.code)
+		switch(event)
 		{
-			case 'keyS':
-				this.create_state();
+			case 'KEYDOWN':
+				if (data.code == 'KeyS')
+				{
+					this.create_state(this.mouse_pos);
+				}
 				break;
 		}
 	}
 
-	create_state()
+	create_state(pos)
 	{
-		state_id = this.model.make_new_state();
-		this.render_states(state_id);
+		console.log('create_state');
+		const state_id = this.model.make_new_state(pos);
+		this.render_state(state_id);
 	}
 
 	state_drag_start(evt, state_id)
