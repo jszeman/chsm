@@ -11,6 +11,7 @@ class App {
 		this.drawing = null;
 		this.drag_data = {};
 		this.resize_data = {};
+		this.mouse_pos = [0, 0];
 		
 		this.model.states().map(this.render_state, this);
 		this.model.transitions().map(this.render_transiton, this);
@@ -19,11 +20,19 @@ class App {
 			if (event.isComposing || event.keyCode === 229) {
 				return;
 			}
-			this.on_key_down(event);
+			this.dispatch('KEYDOWN', event);
 		});
 
+		this.gui.add_event_handler('mousemove', event => {
+			this.mouse_pos = this.gui.get_absolute_pos(event);
+			this.dispatch('MOUSEMOVE', event);
+		});
 
-		this.state = this.idle;
+		this.gui.add_event_handler('mouseup', event => {
+			this.dispatch('MOUSEUP', event);
+		});
+
+		this.state = this.idle_state;
 	}
 
 	dispatch(event, data)
@@ -31,53 +40,105 @@ class App {
 		this.state(event, data);
 	}
 
-	idle(event, data)
+	idle_state(event, data)
 	{
+		switch(event)
+		{
+			case 'KEYDOWN':
+				if (data.code == 'KeyS')
+				{
+					this.create_state(this.mouse_pos);
+				}
+				break;
+
+			case 'STATE_DRAG':
+				this.state_drag_start(data.event, data.id);
+				this.state = this.state_dragging_state;
+				break;
+
+			case 'STATE_RESIZE':
+				this.state_resize_start(data.event, data.id);
+				this.state = this.state_resizing_state;
+				break;
+
+			case 'TR_DRAG':
+				this.trans_drag_start(data.event, data.id);
+				this.state = this.transition_dragging_state;
+		}
 	}
 
-	on_key_down(event)
+	transition_dragging_state(event, data)
 	{
-		switch(event.code)
+		switch(event)
 		{
-			case 'keyS':
-				this.create_state();
+			case 'MOUSEMOVE':
+				this.trans_drag(data);
+				break
+
+			case 'MOUSEUP':
+				this.trans_drag_end(data);
+				this.state = this.idle_state;
 				break;
 		}
 	}
 
-	create_state()
+	state_resizing_state(event, data)
 	{
-		state_id = this.model.make_new_state();
-		this.render_states(state_id);
+		switch(event)
+		{
+			case 'MOUSEMOVE':
+				this.state_resize(data);
+				break
+
+			case 'MOUSEUP':
+				this.state_resize_end(data);
+				this.state = this.idle_state;
+				break;
+		}
+	}
+
+	state_dragging_state(event, data)
+	{
+		switch(event)
+		{
+			case 'MOUSEMOVE':
+				this.state_drag(data);
+				break
+
+			case 'MOUSEUP':
+				this.state_drag_end(data);
+				this.state = this.idle_state;
+				break;
+		}
+	}
+
+	create_state(pos)
+	{
+		const state_id = this.model.make_new_state(pos);
+		this.render_state(state_id);
 	}
 
 	state_drag_start(evt, state_id)
 	{
 		evt.preventDefault();
-		this.drag_data.on_mousemove = (evt) => {this.state_drag(evt, state_id)};
-		this.drag_data.on_mouseup = (evt) => {this.state_drag_end(evt, state_id)};
-		this.gui.add_event_handler('mousemove', this.drag_data.on_mousemove);
-		this.gui.add_event_handler( 'mouseup', this.drag_data.on_mouseup);
-
 		const [ex, ey] = this.gui.get_absolute_pos(evt, state_id);
 		const [sx, sy] = this.model.get_state(state_id).pos;
 		this.drag_data.offset = [ex-sx, ey-sy];
+		this.drag_data.state_id = state_id;
 	}
 	
 	state_resize_start(evt, state_id)
 	{
 		evt.preventDefault();
-		this.resize_data.on_mousemove = (evt) => {this.state_resize(evt, state_id)};
-		this.resize_data.on_mouseup = (evt) => {this.state_resize_end(evt, state_id)};
-		this.gui.add_event_handler('mousemove', this.resize_data.on_mousemove);
-		this.gui.add_event_handler( 'mouseup', this.resize_data.on_mouseup);
 
 		this.resize_data.transitions = this.model.state_transitions(state_id);
+		this.resize_data.state_id = state_id;
 	}
 	
-	state_resize(evt, state_id)
+	state_resize(evt)
 	{
 		evt.preventDefault();
+		const state_id = this.drag_data.state_id;
 		const size = this.gui.get_state_rel_pos(evt, state_id);
 		this.model.resize_state(state_id, size);
 		this.gui.states[state_id].resize(this.model.get_state(state_id).size);
@@ -88,19 +149,18 @@ class App {
 			});
 	}
 
-	state_resize_end(evt, state_id)
+	state_resize_end(evt)
 	{
 		evt.preventDefault();
-		this.gui.remove_event_handler('mousemove', this.resize_data.on_mousemove);
-		this.gui.remove_event_handler( 'mouseup', this.resize_data.on_mouseup);
 	}
 
-	state_drag(evt, state_id)
+	state_drag(evt)
 	{
 		evt.preventDefault();
 		const [ex, ey] = this.gui.get_absolute_pos(evt);
 		const [ox, oy] = this.drag_data.offset;
 		const pos = [ex-ox, ey-oy];
+		const state_id = this.drag_data.state_id;
 		this.model.move_state(state_id, pos);
 	
 		this.model.changes.states.map((id) => {
@@ -113,12 +173,10 @@ class App {
 		this.model.ack_changes();
 	}
 
-	state_drag_end(evt, state_id)
+	state_drag_end(evt)
 	{
 		evt.preventDefault();
-		this.gui.remove_event_handler('mousemove', this.drag_data.on_mousemove);
-		this.gui.remove_event_handler( 'mouseup', this.drag_data.on_mouseup);
-		this.model.update_parent(state_id);
+		this.model.update_parent(this.drag_data.state_id);
 	}
 
 	render_state(state_id)
@@ -131,8 +189,8 @@ class App {
 			state.size,
 			state.text,
 			this.model.options.text_height,
-			(evt) => {this.state_drag_start(evt, state_id)},
-			(evt) => {this.state_resize_start(evt, state_id)});
+			(evt) => {this.dispatch('STATE_DRAG', {event: evt, id: state_id});},
+			(evt) => {this.dispatch('STATE_RESIZE', {event: evt, id: state_id});});
 	}
 
 	trans_drag_start(evt, trans_id)
@@ -142,27 +200,25 @@ class App {
 		const p = this.gui.get_absolute_pos(evt);
 		const line = this.model.transition_get_line_index(trans_id, p);
 
-		this.drag_data.on_mousemove = (evt) => {this.trans_drag(evt, trans_id, line)};
-		this.drag_data.on_mouseup = (evt) => {this.trans_drag_end(evt, trans_id, line)};
+		this.drag_data.trans_id = trans_id;
+		this.drag_data.line = line;
 		this.drag_data.label_width = this.gui.get_path_label_size(trans_id)[0];
-		this.gui.add_event_handler('mousemove', this.drag_data.on_mousemove);
-		this.gui.add_event_handler( 'mouseup', this.drag_data.on_mouseup);
 	}
 
-	trans_drag(evt, trans_id, line)
+	trans_drag(evt)
 	{
 		evt.preventDefault();
 
 		const p = this.gui.get_absolute_pos(evt);
+		const trans_id = this.drag_data.trans_id;
+		const line = this.drag_data.line;
 		this.model.transition_drag(trans_id, line, p, this.drag_data.label_width);
 		this.redraw_transition(trans_id);
 	}
 
-	trans_drag_end(evt, trans_id, line)
+	trans_drag_end(evt)
 	{
 		evt.preventDefault();
-		this.gui.remove_event_handler('mousemove', this.drag_data.on_mousemove);
-		this.gui.remove_event_handler( 'mouseup', this.drag_data.on_mouseup);
 	}
 
 	render_transiton(trans_id)
@@ -173,7 +229,7 @@ class App {
 			tr.vertices,
 			tr.label,
 			tr.label_pos,
-			(evt) => {this.trans_drag_start(evt, trans_id);});
+			(evt) => {this.dispatch('TR_DRAG', {event: evt, id: trans_id});});
 	}
 
 	redraw_transition(trans_id)

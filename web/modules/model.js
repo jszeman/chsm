@@ -1,18 +1,19 @@
 import {Rect, Point} from './geometry.js';
 export class Model {
 	constructor(data)
-	
+	{
 		this.data = 			data;
 		this.options = {
 			state_min_width: 	5,
 			state_min_height: 	3,
 			text_height: 		2,
 		},
-		this.changes = {
-			states:				[],
-			transitions:		[],
-		
-}
+			this.changes = {
+				states:				[],
+				transitions:		[],
+
+			}
+	}
 
 	make_new_state_id()
 	{
@@ -26,9 +27,21 @@ export class Model {
 		}
 	}
 
-	make_new_state()
+	make_new_state(init_pos)
 	{
-		state_id = this.make_new_state_id();
+		const state_id = this.make_new_state_id();
+		this.data.states[state_id] = {
+			pos: init_pos, 
+			size: [15, 15],
+			title: state_id,
+			text: ['entry/', 'exit/'],
+			connectors: [],
+			parent: '__top__',
+			children: [],
+			};
+		this.data.states['__top__'].children.push(state_id);
+
+		return state_id;
 	}
 
 	ack_changes()
@@ -50,7 +63,7 @@ export class Model {
 
 		return new Rect(x1, y1, x1 + w, y1 + h);
 	}
-	
+
 	is_in_state_body(state_id, point)
 	{
 		const r = this.get_state_body_rect(state_id);
@@ -59,11 +72,6 @@ export class Model {
 
 	find_state_at(point, state_id='__top__')
 	{
-		if (!this.is_in_state_body(state_id, point))
-		{
-			return null;
-		}
-
 		const children = this.data.states[state_id].children;
 
 		for (const c of children)
@@ -74,8 +82,13 @@ export class Model {
 				return s;
 			}
 		}
+		
+		if (this.is_in_state_body(state_id, point))
+		{
+			return state_id;
+		}
 
-		return state_id;
+		return null;
 	}
 
 	get_substates(state_id)
@@ -112,9 +125,9 @@ export class Model {
 		const trs = new Set(conns.map(c => this.data.connectors[c].transition));
 		const internal = [...trs].filter(
 			(t) => {
-					const tr = this.data.transitions[t];
-					return conns.includes(tr.start) && conns.includes(tr.end);
-				}) 
+				const tr = this.data.transitions[t];
+				return conns.includes(tr.start) && conns.includes(tr.end);
+			}) 
 		const external = [...trs].filter(t => !internal.includes(t))
 
 		return [internal, external];
@@ -137,9 +150,6 @@ export class Model {
 		const [dx, dy] = [pos[0] - s.pos[0], pos[1] - s.pos[1]];
 		this.data.states[state_id].pos = pos;
 
-		this.changes.states.push(state_id);
-		this.changes.states.push(...s.children);
-
 		const subs = this.get_substates(state_id);
 		const conns = this.get_state_connectors(state_id);
 		const [internal, external] = this.get_state_transitions(state_id);
@@ -153,6 +163,8 @@ export class Model {
 
 		internal.map(t => this.move_transition(t, [dx, dy]));
 		external.map(this.update_transition_path, this);
+		this.changes.states.push(state_id);
+		this.changes.states.push(...subs);
 		this.changes.transitions.push(...internal);
 		this.changes.transitions.push(...external);
 	}
@@ -198,29 +210,29 @@ export class Model {
 		const state =	this.data.states[state_id];
 
 		const vert_offsets = state.connectors.map((c) => {
-					const conn = this.data.connectors[c];
-					if (['left', 'right'].includes(conn.side))
-					{
-						return conn.offset;
-					}
-					else
-					{
-						return 0;
-					}
-				}, this);
-		
+			const conn = this.data.connectors[c];
+			if (['left', 'right'].includes(conn.side))
+			{
+				return conn.offset;
+			}
+			else
+			{
+				return 0;
+			}
+		}, this);
+
 		const horiz_offsets = state.connectors.map((c) => {
-					const conn = this.data.connectors[c];
-					if (['top', 'bottom'].includes(conn.side))
-					{
-						return conn.offset;
-					}
-					else
-					{
-						return 0;
-					}
-				}, this);
-		
+			const conn = this.data.connectors[c];
+			if (['top', 'bottom'].includes(conn.side))
+			{
+				return conn.offset;
+			}
+			else
+			{
+				return 0;
+			}
+		}, this);
+
 
 
 		state.size[0] = Math.max(w,
@@ -516,7 +528,7 @@ export class Model {
 				v_1[0] = ex;
 			}
 		}
-		
+
 		this.update_transition_label_pos(tr_id);
 	}
 }
