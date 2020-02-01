@@ -22,6 +22,11 @@ export class Gui {
 		return [x, y];
 	}
 
+	set_cursor(style)
+	{
+		this.svg.style.cursor = style;
+	}
+
 	get_state_rel_pos(evt, state_id)
 	{
 		const CTM = this.states[state_id].obj.getScreenCTM();
@@ -156,7 +161,7 @@ export class Gui {
 		this.paths[id].redraw(vertices, label, label_pos);
 	}
 
-	render_state(id, title, pos, size, strings, text_height, on_drag_start, on_resize_start)
+	render_state(id, title, pos, size, strings, text_height, on_drag_start, on_resize_start, on_border_click)
 	{
 		const [x, y] = pos;
 		const [w, h] = size;
@@ -165,6 +170,8 @@ export class Gui {
 		const g = this.make_svg_elem('g', {transform: `translate(${x}, ${y})`})
 		const r = this.make_svg_elem('rect',
 			{x: 0, y: 0, width: w, height: h, class: 'state_body'});
+		r.addEventListener('mousedown', on_border_click);
+
 		const s1 = this.make_svg_elem('line',
 			{x1: 0, y1: th, x2: w, y2: th, class: 'state_separator'});
 		const t = this.make_svg_elem('text', {x: th*0.3, y: th*0.8, class: 'state_title'});

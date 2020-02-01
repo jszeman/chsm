@@ -7,29 +7,157 @@ export class Model {
 			state_min_width: 	5,
 			state_min_height: 	3,
 			text_height: 		2,
-		},
-			this.changes = {
-				states:				[],
-				transitions:		[],
+		};
+		this.changes = {
+			states:				[],
+			transitions:		[],
 
-			}
+		};
 	}
 
-	make_new_state_id()
+	make_new_id(array, prefix)
 	{
 		for (let i=0; i<65536; i++)
 		{
-			const id = `state_${i}`;
-			if (!(id in this.data.states))
+			const id = `${prefix}${i}`;
+			if (!(id in array))
 			{
 				return id;
 			}
 		}
 	}
 
+	make_new_transition()
+	{
+		const trans_id = this.make_new_id(this.data.transitions, 'trans_');
+		const start_id = this.make_new_id(this.data.connectors, 'conn_');
+		this.data.connectors[start_id] = {};
+		const end_id = this.make_new_id(this.data.connectors, 'conn_');
+		this.data.connectors[end_id] = {};
+
+		const t = {
+			start: start_id,
+			end: end_id,
+			vertices: [],
+			label: trans_id,
+			label_offset: [0.5, -0.4],
+			label_anchor: 0,
+			label_pos: [],
+		};
+		const start = {
+			parent: null,
+			offset: 0,
+			side: null,
+			dir: 'out',
+			transition: trans_id,
+		};
+		const end = {
+			parent: null,
+			offset: 0,
+			side: null,
+			dir: 'in',
+			transition: trans_id,
+		};
+		this.data.transitions[trans_id] = t;
+		this.data.connectors[start_id] = start;
+		this.data.connectors[end_id] = end;
+
+		return trans_id;
+	}
+
+	delete_connector(conn_id)
+	{
+		if (!(conn_id in this.data.connectors))
+			return;
+
+		const conn = this.data.connectors[conn_id];
+		
+		// Remove reference from owner state
+		if (conn.parent in this.data.states)
+		{
+			const s = this.data.states[conn.parent];
+			s.connectors = s.connectors.filter(id => id != conn_id);
+		}
+	
+		// Remove reference from attached transition
+		if (conn.transition in this.data.transitions)
+		{
+			const tr = this.data.transitions[conn.transition];
+
+			if (tr.start == conn_id)
+			{
+				tr.start = null;
+			}
+			
+			if (tr.end == conn_id)
+			{
+				tr.end = null;
+			}
+		}
+
+		delete this.data.connectors[conn_id];
+	}
+
+	delete_transition(trans_id)
+	{
+
+		const t = this.data.transitions[trans_id];
+		
+		this.delete_connector(t.start);
+		this.delete_connector(t.end);
+
+		delete this.data.transitions[trans_id];
+	}
+
+	set_transition_start(trans_id, state_id, rel_pos)
+	{
+		const t = this.data.transitions[trans_id];
+		const conn = this.data.connectors[t.start];
+		const s = this.data.states[state_id];
+
+		const [rx, ry] = rel_pos;
+		const [x, y] = s.pos;
+		const [w, h] = s.size;
+
+
+		if ((rx === 0) && (ry > 0) && (ry < h)) //left
+		{
+			conn.side = 'left';
+			conn.offset = ry;
+			t.vertices.push([x, y + ry]);
+		}
+		else if ((rx === w) && (ry > 0) && (ry < h)) //right
+		{
+			conn.side = 'right';
+			conn.offset = ry;
+			t.vertices.push([x + w, y + ry]);
+		}
+		else if ((ry === 0) && (rx > 0) && (rx < w)) //top
+		{
+			conn.side = 'top';
+			conn.offset = rx;
+			t.vertices.push([x + rx, y]);
+		}
+		else if ((ry === h) && (rx > 0) && (rx < w)) //top
+		{
+			conn.side = 'bottom';
+			conn.offset = rx;
+			t.vertices.push([x + rx, y + h]);
+		}
+		else
+		{
+			return false;
+		}
+		
+		conn.parent = state_id;
+		s.connectors.push[conn];
+
+		return true;
+	}
+
 	make_new_state(init_pos)
 	{
-		const state_id = this.make_new_state_id();
+		const state_id = this.make_new_id(this.data.states, 'state_');
 		this.data.states[state_id] = {
 			pos: init_pos, 
 			size: [15, 15],
