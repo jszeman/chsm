@@ -106,6 +106,12 @@ export class Gui {
 		return `translate(${ex} ${ey}) ${arrow_rot}`;
 	}
 
+	delete_transition(id)
+	{
+		this.drawing.removeChild(this.paths[id].obj);
+		delete this.paths[id];
+	}
+
 	render_transition(id, vertices, label, label_pos, on_mousedown)
 	{
 		const path = this.get_path_from_vertices(vertices);

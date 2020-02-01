@@ -119,40 +119,57 @@ export class Model {
 		const [x, y] = s.pos;
 		const [w, h] = s.size;
 
+		let v = [0, 0];
+
 
 		if ((rx === 0) && (ry > 0) && (ry < h)) //left
 		{
 			conn.side = 'left';
 			conn.offset = ry;
-			t.vertices.push([x, y + ry]);
+			v = [x, y + ry];
 		}
 		else if ((rx === w) && (ry > 0) && (ry < h)) //right
 		{
 			conn.side = 'right';
 			conn.offset = ry;
-			t.vertices.push([x + w, y + ry]);
+			v = [x + w, y + ry];
 		}
 		else if ((ry === 0) && (rx > 0) && (rx < w)) //top
 		{
 			conn.side = 'top';
 			conn.offset = rx;
-			t.vertices.push([x + rx, y]);
+			v = [x + rx, y];
 		}
 		else if ((ry === h) && (rx > 0) && (rx < w)) //top
 		{
 			conn.side = 'bottom';
 			conn.offset = rx;
-			t.vertices.push([x + rx, y + h]);
+			v = [x + rx, y + h];
 		}
 		else
 		{
 			return false;
 		}
+
+		t.vertices = [v, v, v];
+		t.label_pos = v;
 		
 		conn.parent = state_id;
 		s.connectors.push[conn];
 
 		return true;
+	}
+
+	set_transition_endpoint(trans_id, pos)
+	{
+		const [x, y] = pos;
+		const t = this.data.transitions[trans_id];
+
+		t.vertices.splice(-2, 2); // remove the last two vertices
+		const [lx, ly] = t.vertices[t.vertices.length - 1];
+
+		t.vertices.push([x, ly]);
+		t.vertices.push([x, y]);
 	}
 
 	make_new_state(init_pos)

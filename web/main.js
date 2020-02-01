@@ -54,7 +54,7 @@ class App {
 
 					case 'KeyT':
 						this.start_transition();
-						this.state = this.transition_drawing_state;
+						this.state = this.select_tr_start_state;
 				}
 				break;
 
@@ -78,8 +78,32 @@ class App {
 	start_transition()
 	{
 		this.gui.set_cursor('crosshair');
-		const t = this.model.make_new_transition();
-		this.tr_draw_data.trans_id = t;
+	}
+
+	select_tr_start_state(event, data)
+	{
+		switch(event)
+		{
+			case 'KEYDOWN':
+				switch(data.code)
+				{
+					case 'Escape':
+						this.gui.set_cursor('auto');
+						this.state = this.idle_state;
+						break;
+				}
+				break;
+
+			case 'STATE_BORDER_CLICK':
+				const pos = this.gui.get_state_rel_pos(data.event, data.id);
+				const t = this.model.make_new_transition();
+				this.model.set_transition_start(t, data.id, pos);
+				this.tr_draw_data.trans_id = t;
+				this.render_transiton(t);
+
+				this.state = this.transition_drawing_state;
+				break;
+		}
 	}
 
 	transition_drawing_state(event, data)
@@ -91,6 +115,7 @@ class App {
 				{
 					case 'Escape':
 						this.model.delete_transition(this.tr_draw_data.trans_id);
+						this.gui.delete_transition(this.tr_draw_data.trans_id);
 						this.gui.set_cursor('auto');
 						this.state = this.idle_state;
 						break;
@@ -98,14 +123,14 @@ class App {
 				break;
 
 			case 'MOUSEMOVE':
+				this.model.set_transition_endpoint(this.tr_draw_data.trans_id, this.mouse_pos);
+				this.redraw_transition(this.tr_draw_data.trans_id);
 				break
 
 			case 'MOUSEUP':
 				break;
 			
 			case 'STATE_BORDER_CLICK':
-				const pos = this.gui.get_state_rel_pos(data.event, data.id);
-				this.model.set_transition_start(this.tr_draw_data.trans_id, data.id, pos);
 				break;
 		}
 	}
