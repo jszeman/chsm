@@ -11,8 +11,8 @@ export class Model {
 		this.changes = {
 			states:				[],
 			transitions:		[],
-
 		};
+		this.elbow = 			'v';
 	}
 
 	make_new_id(array, prefix)
@@ -168,8 +168,23 @@ export class Model {
 		t.vertices.splice(-2, 2); // remove the last two vertices
 		const [lx, ly] = t.vertices[t.vertices.length - 1];
 
-		t.vertices.push([x, ly]);
+		const v = (this.elbow == 'v') ? [x, ly] : [lx, y];
+		t.vertices.push(v);
 		t.vertices.push([x, y]);
+	}
+
+	switch_transition_elbow(trans_id, pos)
+	{
+		this.elbow = (this.elbow == 'v') ? 'h' : 'v';
+		this.set_transition_endpoint(trans_id, pos);
+	}
+
+	add_transition_vertex(trans_id)
+	{
+		const t = this.data.transitions[trans_id];
+		const last = t.vertices[t.vertices.length - 1];
+		t.vertices.push(last);
+		this.elbow = (this.elbow == 'v') ? 'h' : 'v';
 	}
 
 	make_new_state(init_pos)

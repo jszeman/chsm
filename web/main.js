@@ -119,6 +119,11 @@ class App {
 						this.gui.set_cursor('auto');
 						this.state = this.idle_state;
 						break;
+
+					case 'Space':
+						this.model.switch_transition_elbow(this.tr_draw_data.trans_id, this.mouse_pos);
+						this.redraw_transition(this.tr_draw_data.trans_id);
+						break;
 				}
 				break;
 
@@ -128,6 +133,7 @@ class App {
 				break
 
 			case 'MOUSEUP':
+				this.model.add_transition_vertex(this.tr_draw_data.trans_id);
 				break;
 			
 			case 'STATE_BORDER_CLICK':
