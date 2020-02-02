@@ -176,7 +176,7 @@ export class Gui {
 		const g = this.make_svg_elem('g', {transform: `translate(${x}, ${y})`})
 		const r = this.make_svg_elem('rect',
 			{x: 0, y: 0, width: w, height: h, class: 'state_body'});
-		r.addEventListener('mousedown', on_border_click);
+		r.addEventListener('click', on_border_click);
 
 		const s1 = this.make_svg_elem('line',
 			{x1: 0, y1: th, x2: w, y2: th, class: 'state_separator'});
