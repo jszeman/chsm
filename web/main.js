@@ -33,6 +33,10 @@ class App {
 			this.dispatch('MOUSEUP', event);
 		});
 
+		this.gui.add_event_handler('click', event => {
+			this.dispatch('CLICK', event);
+		});
+
 		this.state = this.idle_state;
 	}
 
@@ -95,13 +99,20 @@ class App {
 				break;
 
 			case 'STATE_BORDER_CLICK':
+				data.event.stopPropagation();
 				const pos = this.gui.get_state_rel_pos(data.event, data.id);
 				const t = this.model.make_new_transition();
-				this.model.set_transition_start(t, data.id, pos);
-				this.tr_draw_data.trans_id = t;
-				this.render_transiton(t);
-
-				this.state = this.transition_drawing_state;
+				if (this.model.set_transition_start(t, data.id, pos))
+				{
+					this.tr_draw_data.trans_id = t;
+					this.render_transiton(t);
+					this.state = this.transition_drawing_state;
+				}
+				else
+				{
+					this.model.delete_transition(t);
+				}
+				console.log('start_click');
 				break;
 		}
 	}
@@ -124,6 +135,12 @@ class App {
 						this.model.switch_transition_elbow(this.tr_draw_data.trans_id, this.mouse_pos);
 						this.redraw_transition(this.tr_draw_data.trans_id);
 						break;
+
+					case 'Backspace':
+						data.preventDefault();
+						this.model.remove_transition_vertex(this.tr_draw_data.trans_id, this.mouse_pos);
+						this.redraw_transition(this.tr_draw_data.trans_id);
+						break;
 				}
 				break;
 
@@ -132,11 +149,19 @@ class App {
 				this.redraw_transition(this.tr_draw_data.trans_id);
 				break
 
-			case 'MOUSEUP':
+			case 'CLICK':
+				console.log('draw_click');
 				this.model.add_transition_vertex(this.tr_draw_data.trans_id);
 				break;
 			
 			case 'STATE_BORDER_CLICK':
+				const pos = this.gui.get_state_rel_pos(data.event, data.id);
+				console.log(pos);
+				if (this.model.set_transition_end(this.tr_draw_data.trans_id, data.id, pos))
+				{
+					this.gui.set_cursor('auto');
+					this.state = this.idle_state;
+				}
 				break;
 		}
 	}

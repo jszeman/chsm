@@ -109,55 +109,81 @@ export class Model {
 		delete this.data.transitions[trans_id];
 	}
 
-	set_transition_start(trans_id, state_id, rel_pos)
+	attach_connector_to_state(conn_id, state_id, rel_pos)
 	{
-		const t = this.data.transitions[trans_id];
-		const conn = this.data.connectors[t.start];
+		const conn = this.data.connectors[conn_id];
 		const s = this.data.states[state_id];
-
+		
 		const [rx, ry] = rel_pos;
 		const [x, y] = s.pos;
 		const [w, h] = s.size;
-
+		
 		let v = [0, 0];
-
 
 		if ((rx === 0) && (ry > 0) && (ry < h)) //left
 		{
 			conn.side = 'left';
 			conn.offset = ry;
 			v = [x, y + ry];
+			this.elbow = 'h';
 		}
 		else if ((rx === w) && (ry > 0) && (ry < h)) //right
 		{
 			conn.side = 'right';
 			conn.offset = ry;
 			v = [x + w, y + ry];
+			this.elbow = 'h';
 		}
 		else if ((ry === 0) && (rx > 0) && (rx < w)) //top
 		{
 			conn.side = 'top';
 			conn.offset = rx;
 			v = [x + rx, y];
+			this.elbow = 'v';
 		}
 		else if ((ry === h) && (rx > 0) && (rx < w)) //top
 		{
 			conn.side = 'bottom';
 			conn.offset = rx;
 			v = [x + rx, y + h];
+			this.elbow = 'v';
 		}
 		else
 		{
-			return false;
+			return [];
 		}
-
-		t.vertices = [v, v, v];
-		t.label_pos = v;
 		
 		conn.parent = state_id;
 		s.connectors.push[conn];
 
-		return true;
+		return v;
+	}
+
+	set_transition_start(trans_id, state_id, rel_pos)
+	{
+		const t = this.data.transitions[trans_id];
+		const v = this.attach_connector_to_state(t.start, state_id, rel_pos);
+
+		if (v.length == 2)
+		{
+			t.vertices = [v, v, v];
+			t.label_pos = [v[0] + t.label_offset[0], v[1] + t.label_offset[1]];
+			console.log(`start: ${t.vertices.length}`);
+			return true;
+		}
+		return false;
+	}
+
+	set_transition_end(trans_id, state_id, rel_pos)
+	{
+		const t = this.data.transitions[trans_id];
+		const v = this.attach_connector_to_state(t.end, state_id, rel_pos);
+
+		if (v.length == 2)
+		{
+			return true;
+		}
+		return false;
 	}
 
 	set_transition_endpoint(trans_id, pos)
@@ -171,6 +197,8 @@ export class Model {
 		const v = (this.elbow == 'v') ? [x, ly] : [lx, y];
 		t.vertices.push(v);
 		t.vertices.push([x, y]);
+
+		console.log(`set_endpoint: ${t.vertices.length}`);
 	}
 
 	switch_transition_elbow(trans_id, pos)
@@ -185,6 +213,17 @@ export class Model {
 		const last = t.vertices[t.vertices.length - 1];
 		t.vertices.push(last);
 		this.elbow = (this.elbow == 'v') ? 'h' : 'v';
+	}
+
+	remove_transition_vertex(trans_id, pos)
+	{
+		const t = this.data.transitions[trans_id];
+		if (t.vertices.length > 3)
+		{
+			t.vertices.splice(-1, 1);
+			this.elbow = (this.elbow == 'v') ? 'h' : 'v';
+			this.set_transition_endpoint(trans_id, pos);
+		}
 	}
 
 	make_new_state(init_pos)
