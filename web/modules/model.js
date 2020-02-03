@@ -168,7 +168,6 @@ export class Model {
 		{
 			t.vertices = [v, v, v];
 			t.label_pos = [v[0] + t.label_offset[0], v[1] + t.label_offset[1]];
-			console.log(`start: ${t.vertices.length}`);
 			return true;
 		}
 		return false;
@@ -197,8 +196,6 @@ export class Model {
 		const v = (this.elbow == 'v') ? [x, ly] : [lx, y];
 		t.vertices.push(v);
 		t.vertices.push([x, y]);
-
-		console.log(`set_endpoint: ${t.vertices.length}`);
 	}
 
 	switch_transition_elbow(trans_id, pos)

@@ -119,6 +119,7 @@ export class Gui {
 
 		const g = this.make_svg_elem('g', {});
 		const p = this.make_svg_elem('path', {d: path, class: 'transition_line'});
+		const p2 = this.make_svg_elem('path', {d: path, class: 'transition_handle'});
 		const a = this.make_svg_elem('use', {href: '#arrow',
 			transform: arrow_transform,
 			class: 'transition_arrow',
@@ -129,6 +130,7 @@ export class Gui {
 		g.appendChild(p);
 		g.appendChild(a);
 		g.appendChild(l);
+		g.appendChild(p2);
 
 		this.paths[id] = {
 			obj: 	g,
@@ -141,6 +143,7 @@ export class Gui {
 				const narrow_transform = this.gatfv(vertices);
 
 				this.mod_svg(p, {d: npath});
+				this.mod_svg(p2, {d: npath});
 				this.mod_svg(a, {transform: narrow_transform});
 				this.mod_svg(l, {x: label_pos[0], y: label_pos[1]});
 				l.textContent = label;
@@ -152,7 +155,7 @@ export class Gui {
 			}
 		}
 
-		p.addEventListener('mousedown', on_mousedown);
+		p2.addEventListener('mousedown', on_mousedown);
 
 		this.drawing.appendChild(g);
 	}
@@ -176,7 +179,9 @@ export class Gui {
 		const g = this.make_svg_elem('g', {transform: `translate(${x}, ${y})`})
 		const r = this.make_svg_elem('rect',
 			{x: 0, y: 0, width: w, height: h, class: 'state_body'});
-		r.addEventListener('click', on_border_click);
+		const r2 = this.make_svg_elem('rect',
+			{x: 0, y: 0, width: w, height: h, class: 'state_border'});
+		r2.addEventListener('click', on_border_click);
 
 		const s1 = this.make_svg_elem('line',
 			{x1: 0, y1: th, x2: w, y2: th, class: 'state_separator'});
@@ -212,8 +217,9 @@ export class Gui {
 		g.appendChild(text);
 		g.appendChild(s2);
 		g.appendChild(m);
-		g.appendChild(resize_handle);
 		g.appendChild(drag_handle);
+		g.appendChild(r2);
+		g.appendChild(resize_handle);
 
 		this.states[id] = {
 			obj: g,
@@ -222,6 +228,7 @@ export class Gui {
 			{
 				const [w, h] = size;
 				this.mod_svg(r, {width: w, height: h});
+				this.mod_svg(r2, {width: w, height: h});
 				this.mod_svg(s1, {x2: w});
 				this.mod_svg(s2, {x2: w});
 				this.mod_svg(m, {x1: w-1, y1: h, x2: w, y2: h-1});

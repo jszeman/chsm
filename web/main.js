@@ -112,7 +112,6 @@ class App {
 				{
 					this.model.delete_transition(t);
 				}
-				console.log('start_click');
 				break;
 		}
 	}
@@ -156,7 +155,6 @@ class App {
 			
 			case 'STATE_BORDER_CLICK':
 				const pos = this.gui.get_state_rel_pos(data.event, data.id);
-				console.log(pos);
 				if (this.model.set_transition_end(this.tr_draw_data.trans_id, data.id, pos))
 				{
 					this.gui.set_cursor('auto');
@@ -237,7 +235,7 @@ class App {
 	state_resize(evt)
 	{
 		evt.preventDefault();
-		const state_id = this.drag_data.state_id;
+		const state_id = this.resize_data.state_id;
 		const size = this.gui.get_state_rel_pos(evt, state_id);
 		this.model.resize_state(state_id, size);
 		this.gui.states[state_id].resize(this.model.get_state(state_id).size);
