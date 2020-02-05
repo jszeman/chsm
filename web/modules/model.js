@@ -13,6 +13,7 @@ export class Model {
 			transitions:		[],
 		};
 		this.elbow = 			'v';
+		this.tmp_seg_cnt =		2;
 	}
 
 	make_new_id(array, prefix)
@@ -175,11 +176,13 @@ export class Model {
 
 	set_transition_end(trans_id, state_id, rel_pos)
 	{
+		console.log('-----------end');
 		const t = this.data.transitions[trans_id];
 		const v = this.attach_connector_to_state(t.end, state_id, rel_pos);
 
 		if (v.length == 2)
 		{
+
 			return true;
 		}
 		return false;
@@ -196,6 +199,8 @@ export class Model {
 		const v = (this.elbow == 'v') ? [x, ly] : [lx, y];
 		t.vertices.push(v);
 		t.vertices.push([x, y]);
+		console.log('-----------');
+		t.vertices.map(v => console.log(v));
 	}
 
 	switch_transition_elbow(trans_id, pos)
@@ -207,8 +212,33 @@ export class Model {
 	add_transition_vertex(trans_id)
 	{
 		const t = this.data.transitions[trans_id];
-		const last = t.vertices[t.vertices.length - 1];
-		t.vertices.push(last);
+
+		// remove the last two vertex from the array
+		const [[ax, ay], [bx, by]] = t.vertices.splice(-2);
+
+
+		if (t.vertices.length < 2)
+		{
+			t.vertices.push([ax, ay]);
+		}
+		else
+		{
+			const [[cx, cy], [dx, dy]] = t.vertices.slice(-2);
+			// if the last two of the remaining array are in line with a:
+			if (((ax === cx) && (cx === dx)) || ((ay === cy) && (cy === dy)))
+			{
+				t.vertices.splice(-1);
+			}
+			
+			t.vertices.push([ax, ay]);
+		}
+
+		t.vertices.push([ax, ay]);
+		t.vertices.push([bx, by]);
+
+		console.log('-----------add');
+		t.vertices.map(v => console.log(v));
+
 		this.elbow = (this.elbow == 'v') ? 'h' : 'v';
 	}
 
