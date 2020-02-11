@@ -779,7 +779,7 @@ export class Model {
 
 			const v_1 = tr.vertices[tr.vertices.length-2];
 
-			if (['left', 'right'].includes(this.data.connectors[tr.start].side))
+			if (['left', 'right'].includes(this.data.connectors[tr.end].side))
 			{
 				v_1[1] = ey;
 			}
