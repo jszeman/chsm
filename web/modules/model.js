@@ -1,4 +1,5 @@
 import {Rect, Point} from './geometry.js';
+
 export class Model {
 	constructor(data)
 	{
@@ -187,7 +188,7 @@ export class Model {
 
 		if (v.length == 2)
 		{
-			t.vertices = [v, v, v];
+			t.vertices = [[...v], [...v], [...v]];
 			t.label_pos = [v[0] + t.label_offset[0], v[1] + t.label_offset[1]];
 			return true;
 		}
@@ -200,14 +201,19 @@ export class Model {
 		console.log('-----------end');
 		t.vertices.map(v => console.log(v));
 
+		// Remove a vertex if the last three points are on the same line.
 		const [[ax, ay], [bx, by], [cx, cy]] = t.vertices.slice(-3);
-		if ((cx === bx) && (cy === by))
+		if (((cx === bx) && (cy === by)) || ((ax === bx) && (ay === by)))
 		{
 			t.vertices.splice(-1);
 		}
-		if ((ax === bx) && (ay === by))
+
+		// Handle the case where there are only 2 vertices left.
+		if (t.vertices.length == 2)
 		{
-			t.vertices.splice(-1);
+			const m = [Math.round((ax + bx) / 2), Math.round((ay + by) / 2)];
+			t.vertices.splice(1, 0, [...m]);
+			t.vertices.splice(1, 0, [...m]);
 		}
 
 		const v = this.attach_connector_to_state(t.end, state_id, rel_pos);
