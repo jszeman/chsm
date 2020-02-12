@@ -59,6 +59,7 @@ class App {
 					case 'KeyT':
 						this.start_transition();
 						this.state = this.select_tr_start_state;
+						break;
 				}
 				break;
 
