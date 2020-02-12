@@ -302,6 +302,8 @@ class App {
 		this.drag_data.trans_id = trans_id;
 		this.drag_data.line = line;
 		this.drag_data.label_width = this.gui.get_path_label_size(trans_id)[0];
+		this.gui.paths[trans_id].highlight(true);
+		this.gui.set_cursor('grab');
 	}
 
 	trans_drag(evt)
@@ -318,6 +320,8 @@ class App {
 	trans_drag_end(evt)
 	{
 		evt.preventDefault();
+		this.gui.paths[this.drag_data.trans_id].highlight(false);
+		this.gui.set_cursor('auto');
 	}
 
 	render_transiton(trans_id)

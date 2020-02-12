@@ -152,6 +152,17 @@ export class Gui {
 			{
 				const bbox = l.getBBox();
 				return [bbox.width, bbox.height];
+			},
+			highlight: function(on)
+			{
+				if (on)
+				{
+					p2.classList.add('transition_handle_highlight');
+				}
+				else
+				{
+					p2.classList.remove('transition_handle_highlight');
+				}
 			}
 		}
 
