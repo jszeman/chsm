@@ -1,4 +1,5 @@
 import {Rect, Point} from './geometry.js';
+
 export class Model {
 	constructor(data)
 	{
@@ -7,29 +8,294 @@ export class Model {
 			state_min_width: 	5,
 			state_min_height: 	3,
 			text_height: 		2,
-		},
-			this.changes = {
-				states:				[],
-				transitions:		[],
-
-			}
+		};
+		this.changes = {
+			states:				[],
+			transitions:		[],
+		};
+		this.elbow = 			'v';
+		this.tmp_seg_cnt =		2;
 	}
 
-	make_new_state_id()
+	make_new_id(array, prefix)
 	{
 		for (let i=0; i<65536; i++)
 		{
-			const id = `state_${i}`;
-			if (!(id in this.data.states))
+			const id = `${prefix}${i}`;
+			if (!(id in array))
 			{
 				return id;
 			}
 		}
 	}
 
+	make_new_transition()
+	{
+		const trans_id = this.make_new_id(this.data.transitions, 'trans_');
+		const start_id = this.make_new_id(this.data.connectors, 'conn_');
+		this.data.connectors[start_id] = {};
+		const end_id = this.make_new_id(this.data.connectors, 'conn_');
+		this.data.connectors[end_id] = {};
+
+		const t = {
+			start: start_id,
+			end: end_id,
+			vertices: [],
+			label: trans_id,
+			label_offset: [0.5, -0.4],
+			label_anchor: 0,
+			label_pos: [],
+		};
+		const start = {
+			parent: null,
+			offset: 0,
+			side: null,
+			dir: 'out',
+			transition: trans_id,
+		};
+		const end = {
+			parent: null,
+			offset: 0,
+			side: null,
+			dir: 'in',
+			transition: trans_id,
+		};
+		this.data.transitions[trans_id] = t;
+		this.data.connectors[start_id] = start;
+		this.data.connectors[end_id] = end;
+
+		return trans_id;
+	}
+
+	delete_connector(conn_id)
+	{
+		if (!(conn_id in this.data.connectors))
+			return;
+
+		const conn = this.data.connectors[conn_id];
+		
+		// Remove reference from owner state
+		if (conn.parent in this.data.states)
+		{
+			const s = this.data.states[conn.parent];
+			s.connectors = s.connectors.filter(id => id != conn_id);
+		}
+	
+		// Remove reference from attached transition
+		if (conn.transition in this.data.transitions)
+		{
+			const tr = this.data.transitions[conn.transition];
+
+			if (tr.start == conn_id)
+			{
+				tr.start = null;
+			}
+			
+			if (tr.end == conn_id)
+			{
+				tr.end = null;
+			}
+		}
+
+		delete this.data.connectors[conn_id];
+	}
+
+	delete_transition(trans_id)
+	{
+
+		const t = this.data.transitions[trans_id];
+		
+		this.delete_connector(t.start);
+		this.delete_connector(t.end);
+
+		delete this.data.transitions[trans_id];
+	}
+
+	attach_connector_to_state(conn_id, state_id, rel_pos)
+	{
+		const conn = this.data.connectors[conn_id];
+		const s = this.data.states[state_id];
+		const t = this.data.transitions[conn.transition];
+		
+		const [rx, ry] = rel_pos;
+		const [x, y] = s.pos;
+		const [w, h] = s.size;
+		
+		let v = [0, 0];
+
+		if ((rx === 0) && (ry > 0) && (ry < h)) //left
+		{
+			conn.side = 'left';
+			conn.offset = ry;
+			v = [x, y + ry];
+			this.elbow = 'v';
+		}
+		else if ((rx === w) && (ry > 0) && (ry < h)) //right
+		{
+			conn.side = 'right';
+			conn.offset = ry;
+			v = [x + w, y + ry];
+			this.elbow = 'v';
+		}
+		else if ((ry === 0) && (rx > 0) && (rx < w)) //top
+		{
+			conn.side = 'top';
+			conn.offset = rx;
+			v = [x + rx, y];
+			this.elbow = 'h';
+		}
+		else if ((ry === h) && (rx > 0) && (rx < w)) //top
+		{
+			conn.side = 'bottom';
+			conn.offset = rx;
+			v = [x + rx, y + h];
+			this.elbow = 'h';
+		}
+		else
+		{
+			return [];
+		}
+
+		if (t.vertices.length > 1)
+		{
+			const [[ax, ay], [bx, by]] = t.vertices.slice(-2);
+			if ((ax === bx) && (ay === by))
+			{
+				return [];
+			}
+			else if ((this.elbow === 'v') && (ay !== by))
+			{
+				return [];
+			}
+			else if ((this.elbow === 'h') && (ax !== bx))
+			{
+				return [];
+			}
+		}
+
+
+		
+		conn.parent = state_id;
+		s.connectors.push(conn_id);
+
+		return v;
+	}
+
+	set_transition_start(trans_id, state_id, rel_pos)
+	{
+		const t = this.data.transitions[trans_id];
+		const v = this.attach_connector_to_state(t.start, state_id, rel_pos);
+
+		if (v.length == 2)
+		{
+			t.vertices = [[...v], [...v], [...v]];
+			t.label_pos = [v[0] + t.label_offset[0], v[1] + t.label_offset[1]];
+			return true;
+		}
+		return false;
+	}
+
+	set_transition_end(trans_id, state_id, rel_pos)
+	{
+		const t = this.data.transitions[trans_id];
+		console.log('-----------end');
+		t.vertices.map(v => console.log(v));
+
+		// Remove a vertex if the last three points are on the same line.
+		const [[ax, ay], [bx, by], [cx, cy]] = t.vertices.slice(-3);
+		if (((cx === bx) && (cy === by)) || ((ax === bx) && (ay === by)))
+		{
+			t.vertices.splice(-1);
+		}
+
+		// Handle the case where there are only 2 vertices left.
+		if (t.vertices.length == 2)
+		{
+			const m = [Math.round((ax + bx) / 2), Math.round((ay + by) / 2)];
+			t.vertices.splice(1, 0, [...m]);
+			t.vertices.splice(1, 0, [...m]);
+		}
+
+		const v = this.attach_connector_to_state(t.end, state_id, rel_pos);
+		if (v.length == 2)
+		{
+			console.log('-----------');
+			t.vertices.map(v => console.log(v));
+			return true;
+		}
+		return false;
+	}
+
+	set_transition_endpoint(trans_id, pos)
+	{
+		const [x, y] = pos;
+		const t = this.data.transitions[trans_id];
+
+		t.vertices.splice(-2, 2); // remove the last two vertices
+		const [lx, ly] = t.vertices[t.vertices.length - 1];
+
+		const v = (this.elbow == 'v') ? [x, ly] : [lx, y];
+		t.vertices.push(v);
+		t.vertices.push([x, y]);
+	}
+
+	switch_transition_elbow(trans_id, pos)
+	{
+		const t = this.data.transitions[trans_id];
+		if (t.vertices.length > 3)
+		{
+			this.elbow = (this.elbow == 'v') ? 'h' : 'v';
+		}
+		this.set_transition_endpoint(trans_id, pos);
+	}
+
+	add_transition_vertex(trans_id)
+	{
+		const t = this.data.transitions[trans_id];
+
+		// remove the last two vertex from the array
+		const [[ax, ay], [bx, by]] = t.vertices.splice(-2);
+
+
+		if (t.vertices.length < 2)
+		{
+			t.vertices.push([ax, ay]);
+		}
+		else
+		{
+			const [[cx, cy], [dx, dy]] = t.vertices.slice(-2);
+			// if the last two of the remaining array are in line with a:
+			if (((ax === cx) && (cx === dx)) || ((ay === cy) && (cy === dy)))
+			{
+				t.vertices.splice(-1);
+			}
+			
+			t.vertices.push([ax, ay]);
+		}
+
+		t.vertices.push([ax, ay]);
+		t.vertices.push([bx, by]);
+
+		console.log('-----------add');
+		t.vertices.map(v => console.log(v));
+
+		this.elbow = (this.elbow == 'v') ? 'h' : 'v';
+	}
+
+	remove_transition_vertex(trans_id, pos)
+	{
+		const t = this.data.transitions[trans_id];
+		if (t.vertices.length > 3)
+		{
+			t.vertices.splice(-1, 1);
+			this.elbow = (this.elbow == 'v') ? 'h' : 'v';
+			this.set_transition_endpoint(trans_id, pos);
+		}
+	}
+
 	make_new_state(init_pos)
 	{
-		const state_id = this.make_new_state_id();
+		const state_id = this.make_new_id(this.data.states, 'state_');
 		this.data.states[state_id] = {
 			pos: init_pos, 
 			size: [15, 15],
@@ -519,7 +785,7 @@ export class Model {
 
 			const v_1 = tr.vertices[tr.vertices.length-2];
 
-			if (['left', 'right'].includes(this.data.connectors[tr.start].side))
+			if (['left', 'right'].includes(this.data.connectors[tr.end].side))
 			{
 				v_1[1] = ey;
 			}

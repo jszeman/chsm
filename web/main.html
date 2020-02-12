@@ -9,6 +9,31 @@
 		rx: 0.5;
 	}
 
+	.state_border {
+		stroke: seagreen; 
+		stroke-width: 0.8;
+		fill: none;
+		rx: 0.5;
+		opacity: 0;
+	}
+
+	.state_border:hover {
+		opacity: 0.4;
+	}
+	
+	.transition_handle {
+		stroke: deepskyblue; 
+		stroke-width: 0.8;
+		fill: none;
+		rx: 0.5;
+		opacity: 0;
+		cursor: grab;
+	}
+
+	.transition_handle:hover {
+		opacity: 0.4;
+	}
+
 	.state_separator {
 		stroke: grey;
 		stroke-width: 0.1;
@@ -52,7 +77,6 @@
 		fill: none;
 		stroke: steelblue;
 		stroke-width: 0.2;
-		cursor: grab;
 	}
 
 	.transition_arrow {
@@ -65,6 +89,14 @@
 <script type='module' src="./main.js"></script>
 </head>
 <body>
+<pre>
+Commands:
+	s: create a state under the pointer
+	t: start drawing a transition
+		space: switch elbow
+		backspace: backtrack
+		escape: cancel operation
+</pre>
 <svg width="800" height="800">
 	<g display='none'>
 		<path id='arrow' d='M 0 0 L 0.7 -0.3 L 0.7 0.3 Z' class='arrow_template'/>

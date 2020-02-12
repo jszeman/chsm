@@ -11,6 +11,7 @@ class App {
 		this.drawing = null;
 		this.drag_data = {};
 		this.resize_data = {};
+		this.tr_draw_data = {};
 		this.mouse_pos = [0, 0];
 		
 		this.model.states().map(this.render_state, this);
@@ -32,6 +33,10 @@ class App {
 			this.dispatch('MOUSEUP', event);
 		});
 
+		this.gui.add_event_handler('click', event => {
+			this.dispatch('CLICK', event);
+		});
+
 		this.state = this.idle_state;
 	}
 
@@ -45,9 +50,16 @@ class App {
 		switch(event)
 		{
 			case 'KEYDOWN':
-				if (data.code == 'KeyS')
+				switch(data.code)
 				{
-					this.create_state(this.mouse_pos);
+					case 'KeyS':
+						this.create_state(this.mouse_pos);
+						break;
+
+					case 'KeyT':
+						this.start_transition();
+						this.state = this.select_tr_start_state;
+						break;
 				}
 				break;
 
@@ -64,6 +76,92 @@ class App {
 			case 'TR_DRAG':
 				this.trans_drag_start(data.event, data.id);
 				this.state = this.transition_dragging_state;
+				break;
+		}
+	}
+
+	start_transition()
+	{
+		this.gui.set_cursor('crosshair');
+	}
+
+	select_tr_start_state(event, data)
+	{
+		switch(event)
+		{
+			case 'KEYDOWN':
+				switch(data.code)
+				{
+					case 'Escape':
+						this.gui.set_cursor('auto');
+						this.state = this.idle_state;
+						break;
+				}
+				break;
+
+			case 'STATE_BORDER_CLICK':
+				data.event.stopPropagation();
+				const pos = this.gui.get_state_rel_pos(data.event, data.id);
+				const t = this.model.make_new_transition();
+				if (this.model.set_transition_start(t, data.id, pos))
+				{
+					this.tr_draw_data.trans_id = t;
+					this.render_transiton(t);
+					this.state = this.transition_drawing_state;
+				}
+				else
+				{
+					this.model.delete_transition(t);
+				}
+				break;
+		}
+	}
+
+	transition_drawing_state(event, data)
+	{
+		switch(event)
+		{
+			case 'KEYDOWN':
+				switch(data.code)
+				{
+					case 'Escape':
+						this.model.delete_transition(this.tr_draw_data.trans_id);
+						this.gui.delete_transition(this.tr_draw_data.trans_id);
+						this.gui.set_cursor('auto');
+						this.state = this.idle_state;
+						break;
+
+					case 'Space':
+						this.model.switch_transition_elbow(this.tr_draw_data.trans_id, this.mouse_pos);
+						this.redraw_transition(this.tr_draw_data.trans_id);
+						break;
+
+					case 'Backspace':
+						data.preventDefault();
+						this.model.remove_transition_vertex(this.tr_draw_data.trans_id, this.mouse_pos);
+						this.redraw_transition(this.tr_draw_data.trans_id);
+						break;
+				}
+				break;
+
+			case 'MOUSEMOVE':
+				this.model.set_transition_endpoint(this.tr_draw_data.trans_id, this.mouse_pos);
+				this.redraw_transition(this.tr_draw_data.trans_id);
+				break
+
+			case 'CLICK':
+				console.log('draw_click');
+				this.model.add_transition_vertex(this.tr_draw_data.trans_id);
+				break;
+			
+			case 'STATE_BORDER_CLICK':
+				const pos = this.gui.get_state_rel_pos(data.event, data.id);
+				if (this.model.set_transition_end(this.tr_draw_data.trans_id, data.id, pos))
+				{
+					this.gui.set_cursor('auto');
+					this.state = this.idle_state;
+				}
+				break;
 		}
 	}
 
@@ -138,7 +236,7 @@ class App {
 	state_resize(evt)
 	{
 		evt.preventDefault();
-		const state_id = this.drag_data.state_id;
+		const state_id = this.resize_data.state_id;
 		const size = this.gui.get_state_rel_pos(evt, state_id);
 		this.model.resize_state(state_id, size);
 		this.gui.states[state_id].resize(this.model.get_state(state_id).size);
@@ -190,7 +288,8 @@ class App {
 			state.text,
 			this.model.options.text_height,
 			(evt) => {this.dispatch('STATE_DRAG', {event: evt, id: state_id});},
-			(evt) => {this.dispatch('STATE_RESIZE', {event: evt, id: state_id});});
+			(evt) => {this.dispatch('STATE_RESIZE', {event: evt, id: state_id});},
+			(evt) => {this.dispatch('STATE_BORDER_CLICK', {event: evt, id: state_id});});
 	}
 
 	trans_drag_start(evt, trans_id)
