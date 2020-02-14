@@ -108,6 +108,7 @@ class App {
 					this.tr_draw_data.trans_id = t;
 					this.render_transiton(t);
 					this.state = this.transition_drawing_state;
+					this.gui.paths[t].highlight(true)
 				}
 				else
 				{
@@ -160,6 +161,7 @@ class App {
 				{
 					this.gui.set_cursor('auto');
 					this.state = this.idle_state;
+					this.gui.paths[this.tr_draw_data.trans_id].highlight(false)
 				}
 				break;
 		}
