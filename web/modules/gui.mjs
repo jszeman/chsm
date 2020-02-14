@@ -153,17 +153,14 @@ export class Gui {
 				const bbox = l.getBBox();
 				return [bbox.width, bbox.height];
 			},
-			highlight: function(on)
+			add_handle_class: function(cl)
 			{
-				if (on)
-				{
-					p2.classList.add('transition_handle_highlight');
-				}
-				else
-				{
-					p2.classList.remove('transition_handle_highlight');
-				}
-			}
+					p2.classList.add(cl);
+			},
+			remove_handle_class: function(cl)
+			{
+					p2.classList.remove(cl);
+			},
 		}
 
 		p2.addEventListener('mousedown', on_mousedown);
