@@ -198,20 +198,36 @@ export class Model {
 	set_transition_end(trans_id, state_id, rel_pos)
 	{
 		const t = this.data.transitions[trans_id];
-		console.log('-----------end');
-		t.vertices.map(v => console.log(v));
 
-		// Remove a vertex if the last three points are on the same line.
-		const [[ax, ay], [bx, by], [cx, cy]] = t.vertices.slice(-3);
-		if (((cx === bx) && (cy === by)) || ((ax === bx) && (ay === by)))
+		// remove the last two vertex from the array
+		const [[ax, ay], [bx, by]] = t.vertices.splice(-2);
+
+		if (t.vertices.length < 2)
 		{
-			t.vertices.splice(-1);
+			t.vertices.push([ax, ay]);
+		}
+		else
+		{
+			const [[cx, cy], [dx, dy]] = t.vertices.slice(-2);
+			// if the last two of the remaining array are in line with a:
+			if (((ax === cx) && (cx === dx)) || ((ay === cy) && (cy === dy)))
+			{
+				t.vertices.splice(-1);
+			}
+			
+			t.vertices.push([ax, ay]);
+
+			if ((ax !== bx) || (ay !== by))
+			{
+				t.vertices.push([bx, by])
+			}
 		}
 
 		// Handle the case where there are only 2 vertices left.
 		if (t.vertices.length == 2)
 		{
-			const m = [Math.round((ax + bx) / 2), Math.round((ay + by) / 2)];
+			const [[x1, y1], [x2, y2]] = t.vertices.slice(-2);
+			const m = [Math.round((x1 + x2) / 2), Math.round((y1 + y2) / 2)];
 			t.vertices.splice(1, 0, [...m]);
 			t.vertices.splice(1, 0, [...m]);
 		}
@@ -219,10 +235,11 @@ export class Model {
 		const v = this.attach_connector_to_state(t.end, state_id, rel_pos);
 		if (v.length == 2)
 		{
-			console.log('-----------');
-			t.vertices.map(v => console.log(v));
+			/*console.log('-----------');
+			t.vertices.map(v => console.log(v));*/
 			return true;
 		}
+
 		return false;
 	}
 
@@ -275,9 +292,6 @@ export class Model {
 
 		t.vertices.push([ax, ay]);
 		t.vertices.push([bx, by]);
-
-		console.log('-----------add');
-		t.vertices.map(v => console.log(v));
 
 		this.elbow = (this.elbow == 'v') ? 'h' : 'v';
 	}

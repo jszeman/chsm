@@ -156,6 +156,7 @@ class App {
 				break;
 			
 			case 'STATE_BORDER_CLICK':
+				data.event.stopPropagation();
 				const pos = this.gui.get_state_rel_pos(data.event, data.id);
 				if (this.model.set_transition_end(this.tr_draw_data.trans_id, data.id, pos))
 				{
