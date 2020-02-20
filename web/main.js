@@ -60,6 +60,12 @@ class App {
 						this.start_transition();
 						this.state = this.select_tr_start_state;
 						break;
+						
+					case 'KeyD':
+						this.start_delete_transition();
+                        this.state = this.delete_tr_state;
+						this.model.transitions().map(v => this.gui.redraw_path_change_line_color(v, true));
+						break;
 				}
 				break;
 
@@ -81,6 +87,11 @@ class App {
 	}
 
 	start_transition()
+	{
+		this.gui.set_cursor('crosshair');
+	}
+	
+	start_delete_transition()
 	{
 		this.gui.set_cursor('crosshair');
 	}
@@ -114,6 +125,31 @@ class App {
 				{
 					this.model.delete_transition(t);
 				}
+				break;
+		}
+	}
+	
+	delete_tr_state(event, data)
+	{
+		switch(event)
+		{
+			case 'KEYDOWN':
+				switch(data.code)
+				{
+					case 'Escape':
+						this.gui.set_cursor('auto');
+						this.state = this.idle_state;
+						this.model.transitions().map(v => this.gui.redraw_path_change_line_color(v, false));
+						break;
+				}
+				break;
+			
+			case 'TR_DRAG':
+				this.model.delete_transition(data.id);
+				this.gui.delete_transition(data.id);
+				this.gui.set_cursor('auto');
+				this.state = this.idle_state;
+				this.model.transitions().map(v => this.gui.redraw_path_change_line_color(v, false));
 				break;
 		}
 	}

@@ -33,15 +33,22 @@
 	.transition_handle:hover {
 		opacity: 0.4;
 	}
-
-	.transition_handle_highlight_draw {
-		opacity: 0.4;
-		cursor: crosshair;
+	
+	.transition_handle_deleting {
+		stroke: red;
+		stroke-width: 0.8;
+		fill: none;
+		rx: 0.5;
+		opacity: 0;
+		cursor: url(del_cur.cur),auto;
 	}
 
-	.transition_handle_highlight_drag {
+	.transition_handle_deleting:hover {
 		opacity: 0.4;
-		cursor: grab;
+	}
+
+	.transition_handle_highlight {
+		opacity: 0.4;
 	}
 
 	.state_separator {
@@ -106,6 +113,7 @@ Commands:
 		space: switch elbow
 		backspace: backtrack
 		escape: cancel operation
+	d: delete transition
 </pre>
 <svg width="800" height="800">
 	<g display='none'>
