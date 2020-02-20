@@ -359,6 +359,7 @@ class App {
 	trans_drag_end(evt)
 	{
 		evt.preventDefault();
+		this.model.simplify_tr_path(this.drag_data.trans_id);
 		this.gui.paths[this.drag_data.trans_id].remove_handle_class('transition_handle_highlight_drag');
 		this.gui.set_cursor('auto');
 	}

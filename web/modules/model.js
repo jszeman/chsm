@@ -102,7 +102,6 @@ export class Model {
 
 	delete_transition(trans_id)
 	{
-
 		const t = this.data.transitions[trans_id];
 		
 		this.delete_connector(t.start);
@@ -723,6 +722,22 @@ export class Model {
 		}
 
 		this.update_transition_label_pos(tr_id, label_width);
+	}
+
+	simplify_tr_path(tr_id)
+	{
+		const t = this.data.transitions[tr_id];
+
+		if (t.vertices.length < 6) return;
+
+		t.vertices = t.vertices.filter((v, i, a) => {
+			if (i === 0) return true;
+			if (i === (a.length - 1)) return true;
+			if ((v[0] === a[i-1][0]) && (v[0] === a[i+1][0])) return false;
+			if ((v[1] === a[i-1][1]) && (v[1] === a[i+1][1])) return false; 
+
+			return true;
+		});
 	}
 
 	connectors()
