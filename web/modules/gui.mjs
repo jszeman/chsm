@@ -152,7 +152,15 @@ export class Gui {
 			{
 				const bbox = l.getBBox();
 				return [bbox.width, bbox.height];
-			}
+			},
+			add_handle_class: function(cl)
+			{
+					p2.classList.add(cl);
+			},
+			remove_handle_class: function(cl)
+			{
+					p2.classList.remove(cl);
+			},
 		}
 
 		p2.addEventListener('mousedown', on_mousedown);

@@ -108,6 +108,7 @@ class App {
 					this.tr_draw_data.trans_id = t;
 					this.render_transiton(t);
 					this.state = this.transition_drawing_state;
+					this.gui.paths[t].add_handle_class('transition_handle_highlight');
 				}
 				else
 				{
@@ -155,11 +156,13 @@ class App {
 				break;
 			
 			case 'STATE_BORDER_CLICK':
+				data.event.stopPropagation();
 				const pos = this.gui.get_state_rel_pos(data.event, data.id);
 				if (this.model.set_transition_end(this.tr_draw_data.trans_id, data.id, pos))
 				{
 					this.gui.set_cursor('auto');
 					this.state = this.idle_state;
+					this.gui.paths[this.tr_draw_data.trans_id].remove_handle_class('transition_handle_highlight');
 				}
 				break;
 		}
@@ -302,6 +305,8 @@ class App {
 		this.drag_data.trans_id = trans_id;
 		this.drag_data.line = line;
 		this.drag_data.label_width = this.gui.get_path_label_size(trans_id)[0];
+		this.gui.paths[trans_id].add_handle_class('transition_handle_highlight');
+		this.gui.set_cursor('grab');
 	}
 
 	trans_drag(evt)
@@ -318,6 +323,8 @@ class App {
 	trans_drag_end(evt)
 	{
 		evt.preventDefault();
+		this.gui.paths[this.drag_data.trans_id].remove_handle_class('transition_handle_highlight');
+		this.gui.set_cursor('auto');
 	}
 
 	render_transiton(trans_id)
