@@ -108,7 +108,7 @@ class App {
 					this.tr_draw_data.trans_id = t;
 					this.render_transiton(t);
 					this.state = this.transition_drawing_state;
-					this.gui.paths[t].add_handle_class('transition_handle_highlight');
+					this.gui.paths[t].add_handle_class('transition_handle_highlight_draw');
 				}
 				else
 				{
@@ -162,7 +162,7 @@ class App {
 				{
 					this.gui.set_cursor('auto');
 					this.state = this.idle_state;
-					this.gui.paths[this.tr_draw_data.trans_id].remove_handle_class('transition_handle_highlight');
+					this.gui.paths[this.tr_draw_data.trans_id].remove_handle_class('transition_handle_highlight_draw');
 				}
 				break;
 		}
@@ -305,7 +305,7 @@ class App {
 		this.drag_data.trans_id = trans_id;
 		this.drag_data.line = line;
 		this.drag_data.label_width = this.gui.get_path_label_size(trans_id)[0];
-		this.gui.paths[trans_id].add_handle_class('transition_handle_highlight');
+		this.gui.paths[trans_id].add_handle_class('transition_handle_highlight_drag');
 		this.gui.set_cursor('grab');
 	}
 
@@ -323,7 +323,7 @@ class App {
 	trans_drag_end(evt)
 	{
 		evt.preventDefault();
-		this.gui.paths[this.drag_data.trans_id].remove_handle_class('transition_handle_highlight');
+		this.gui.paths[this.drag_data.trans_id].remove_handle_class('transition_handle_highlight_drag');
 		this.gui.set_cursor('auto');
 	}
 

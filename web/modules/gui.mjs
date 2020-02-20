@@ -165,7 +165,7 @@ export class Gui {
 
 		p2.addEventListener('mousedown', on_mousedown);
 
-		this.drawing.appendChild(g);
+		this.drawing.prepend(g);
 	}
 
 	get_path_label_size(id)
