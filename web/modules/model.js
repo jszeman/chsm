@@ -67,6 +67,18 @@ export class Model {
 		return trans_id;
 	}
 
+	detach_connector_from_state(conn_id)
+	{
+		const conn = this.data.connectors[conn_id];
+
+		// Remove reference from owner state
+		if (conn.parent in this.data.states)
+		{
+			const s = this.data.states[conn.parent];
+			s.connectors = s.connectors.filter(id => id != conn_id);
+		}
+	}
+
 	delete_connector(conn_id)
 	{
 		if (!(conn_id in this.data.connectors))
@@ -74,12 +86,7 @@ export class Model {
 
 		const conn = this.data.connectors[conn_id];
 		
-		// Remove reference from owner state
-		if (conn.parent in this.data.states)
-		{
-			const s = this.data.states[conn.parent];
-			s.connectors = s.connectors.filter(id => id != conn_id);
-		}
+		this.detach_connector_from_state(conn_id);
 	
 		// Remove reference from attached transition
 		if (conn.transition in this.data.transitions)
@@ -316,6 +323,21 @@ export class Model {
 		const [[x1, y1], [x2, y2]] = t.vertices.slice(line_idx, line_idx+2);
 		const m = [Math.round((x1 + x2) / 2), Math.round((y1 + y2) / 2)];
 		t.vertices.splice(line_idx+1, 0, [...m], [...m]);
+	}
+
+	transition_restart_from_pos(trans_id, pos)
+	{
+		const line_idx = this.transition_get_line_index(trans_id, pos);
+
+		if (line_idx == null) return false;
+
+		const t = this.data.transitions[trans_id];
+
+		this.detach_connector_from_state(t.end);
+
+		t.vertices.splice(line_idx+1);
+		const [l] = t.vertices.slice(-1);
+		t.vertices.push(l, l);
 	}
 
 	make_new_state(init_pos)
