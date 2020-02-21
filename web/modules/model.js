@@ -338,6 +338,10 @@ export class Model {
 		t.vertices.splice(line_idx+1);
 		const [l] = t.vertices.slice(-1);
 		t.vertices.push(l, l);
+
+		const v = t.vertices[0];
+
+		t.label_pos = [v[0] + t.label_offset[0], v[1] + t.label_offset[1]];
 	}
 
 	make_new_state(init_pos)
