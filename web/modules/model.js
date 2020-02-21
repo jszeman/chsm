@@ -306,6 +306,18 @@ export class Model {
 		}
 	}
 
+	transition_split(trans_id, pos)
+	{
+		const line_idx = this.transition_get_line_index(trans_id, pos);
+
+		if (line_idx == null) return;
+
+		const t = this.data.transitions[trans_id];
+		const [[x1, y1], [x2, y2]] = t.vertices.slice(line_idx, line_idx+2);
+		const m = [Math.round((x1 + x2) / 2), Math.round((y1 + y2) / 2)];
+		t.vertices.splice(line_idx+1, 0, [...m], [...m]);
+	}
+
 	make_new_state(init_pos)
 	{
 		const state_id = this.make_new_id(this.data.states, 'state_');

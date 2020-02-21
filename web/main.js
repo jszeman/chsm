@@ -83,6 +83,10 @@ class App {
 				this.trans_drag_start(data.event, data.id);
 				this.state = this.transition_dragging_state;
 				break;
+
+			case 'TR_DBLCLICK':
+				this.trans_split(data.event, data.id);
+				break;
 		}
 	}
 
@@ -345,6 +349,14 @@ class App {
 		this.gui.set_cursor('grab');
 	}
 
+	trans_split(evt, trans_id)
+	{
+		evt.preventDefault();
+
+		const p = this.gui.get_absolute_pos(evt);
+		this.model.transition_split(trans_id, p);
+	}
+
 	trans_drag(evt)
 	{
 		evt.preventDefault();
@@ -372,7 +384,8 @@ class App {
 			tr.vertices,
 			tr.label,
 			tr.label_pos,
-			(evt) => {this.dispatch('TR_DRAG', {event: evt, id: trans_id});});
+			(evt) => {this.dispatch('TR_DRAG', {event: evt, id: trans_id});},
+			(evt) => {this.dispatch('TR_DBLCLICK', {event: evt, id: trans_id});});
 	}
 
 	redraw_transition(trans_id)

@@ -112,7 +112,7 @@ export class Gui {
 		delete this.paths[id];
 	}
 
-	render_transition(id, vertices, label, label_pos, on_mousedown)
+	render_transition(id, vertices, label, label_pos, on_mousedown, on_dblclick)
 	{
 		const path = this.get_path_from_vertices(vertices);
 		const arrow_transform = this.get_arrow_transform_from_vertices(vertices);
@@ -175,6 +175,7 @@ export class Gui {
 		}
 
 		p2.addEventListener('mousedown', on_mousedown);
+		p2.addEventListener('dblclick', on_dblclick);
 
 		this.drawing.prepend(g);
 	}
