@@ -87,6 +87,18 @@ class App {
 			case 'TR_DBLCLICK':
 				this.trans_split(data.event, data.id);
 				break;
+
+			case 'TR_CLICK':
+				if (data.event.ctrlKey)
+				{
+					const p = this.gui.get_absolute_pos(data.event);
+					this.model.transition_restart_from_pos(data.id, p);
+					this.tr_draw_data.trans_id = data.id;
+					this.redraw_transition(this.tr_draw_data.trans_id);
+					this.state = this.transition_drawing_state;
+				}
+				break;
+
 		}
 	}
 
@@ -262,7 +274,7 @@ class App {
 	state_drag_start(evt, state_id)
 	{
 		evt.preventDefault();
-		const [ex, ey] = this.gui.get_absolute_pos(evt, state_id);
+		const [ex, ey] = this.gui.get_absolute_pos(evt);
 		const [sx, sy] = this.model.get_state(state_id).pos;
 		this.drag_data.offset = [ex-sx, ey-sy];
 		this.drag_data.state_id = state_id;
@@ -384,8 +396,9 @@ class App {
 			tr.vertices,
 			tr.label,
 			tr.label_pos,
-			(evt) => {this.dispatch('TR_DRAG', {event: evt, id: trans_id});},
-			(evt) => {this.dispatch('TR_DBLCLICK', {event: evt, id: trans_id});});
+			evt => this.dispatch('TR_DRAG', {event: evt, id: trans_id}),
+			evt => this.dispatch('TR_DBLCLICK', {event: evt, id: trans_id}),
+			evt => this.dispatch('TR_CLICK', {event: evt, id: trans_id}));
 	}
 
 	redraw_transition(trans_id)
