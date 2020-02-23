@@ -250,6 +250,7 @@ export class Gui {
 		this.states[id] = {
 			obj: g,
 			mod_svg: this.modify_svg_elem,
+			make_svg: this.make_svg_elem,
 			resize: function(size)
 			{
 				const [w, h] = size;
@@ -258,12 +259,39 @@ export class Gui {
 				this.mod_svg(s1, {x2: w});
 				this.mod_svg(s2, {x2: w});
 				this.mod_svg(m, {x1: w-1, y1: h, x2: w, y2: h-1});
-				this.mod_svg(drag_handle, {width: w, height: offset});
+				this.mod_svg(drag_handle, {width: w});
 				this.mod_svg(resize_handle, {cx: w-0.25, cy: h-0.25});
 			},
 			move: function(pos)
 			{
 				this.mod_svg(g, {transform: `translate(${pos[0]}, ${pos[1]})`});
+			},
+			set_text(txt)
+			{
+				if (txt.length > text.childElementCount)
+				{
+					while (text.childElementCount < txt.length)
+					{
+						const tspan = this.make_svg('tspan', {x: th*0.3, dy: th});
+						text.appendChild(tspan);
+					}
+				}
+				else if (txt.length < text.childElementCount)
+				{
+					while (text.childElementCount > txt.length)
+					{
+						text.removeChild(text.lastChild);
+					  }
+				}
+
+				const offset = th + th*txt.length;
+				this.mod_svg(s2, {y1: offset, y2: offset});
+				this.mod_svg(drag_handle, {height: offset});
+
+				for (const [i, s] of txt.entries())
+				{
+					text.children[i].textContent = s;
+				}
 			}
 		};
 
