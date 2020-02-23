@@ -361,6 +361,20 @@ export class Model {
 		return state_id;
 	}
 
+	set_state_text(state_id, text)
+	{
+		const s = this.data.states[state_id];
+		const h_diff = (text.length - s.text.length) * this.options.text_height;
+		s.text = text;
+
+		if (h_diff !== 0)
+		{
+			const [w, h] = s.size;
+			this.resize_state(state_id, [w, h + h_diff]);
+			this.move_substates(state_id, 0, h_diff);
+		}
+	}
+
 	ack_changes()
 	{
 		this.changes.states = [];
@@ -460,15 +474,9 @@ export class Model {
 		tr.label_pos[1] += dy;
 	}
 
-
-	move_state(state_id, pos)
+	move_substates(state_id, dx, dy)
 	{
-		const s = this.data.states[state_id];
-		const [dx, dy] = [pos[0] - s.pos[0], pos[1] - s.pos[1]];
-		this.data.states[state_id].pos = pos;
-
 		const subs = this.get_substates(state_id);
-		const conns = this.get_state_connectors(state_id);
 		const [internal, external] = this.get_state_transitions(state_id);
 
 		for (const id of subs)
@@ -484,6 +492,15 @@ export class Model {
 		this.changes.states.push(...subs);
 		this.changes.transitions.push(...internal);
 		this.changes.transitions.push(...external);
+	}
+
+	move_state(state_id, pos)
+	{
+		const s = this.data.states[state_id];
+		const [dx, dy] = [pos[0] - s.pos[0], pos[1] - s.pos[1]];
+		s.pos = pos;
+
+		this.move_substates(state_id, dx, dy);
 	}
 
 	remove_child(parent_id, child_id)
@@ -549,8 +566,6 @@ export class Model {
 				return 0;
 			}
 		}, this);
-
-
 
 		state.size[0] = Math.max(w,
 			this.options.state_min_width,
