@@ -265,6 +265,20 @@ class App {
 		}
 	}
 
+	set_state_text(state_id, text)
+	{
+		this.model.set_state_text(state_id, text);
+		this.gui.states[state_id].set_text(text);
+		this.gui.states[state_id].resize(this.model.get_state(state_id).size);
+
+
+		this.model.changes.states.map((id) => {
+			this.gui.states[id].move(this.model.get_state(id).pos);
+			}, this);
+
+		this.model.changes.transitions.map(this.redraw_transition, this);
+	}
+
 	create_state(pos)
 	{
 		const state_id = this.model.make_new_state(pos);
