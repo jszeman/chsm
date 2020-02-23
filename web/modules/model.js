@@ -361,6 +361,13 @@ export class Model {
 		return state_id;
 	}
 
+	update_state_transitions(state_id)
+	{
+		const s = this.data.states[state_id];
+		const trs = s.connectors.map(c => this.data.connectors[c].transition, this);
+		trs.map(this.update_transition_path, this);
+	}
+
 	set_state_text(state_id, text)
 	{
 		const s = this.data.states[state_id];
@@ -372,6 +379,7 @@ export class Model {
 			const [w, h] = s.size;
 			this.resize_state(state_id, [w, h + h_diff]);
 			this.move_substates(state_id, 0, h_diff);
+			this.update_state_transitions(state_id);
 		}
 	}
 
