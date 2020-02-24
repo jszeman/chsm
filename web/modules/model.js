@@ -117,6 +117,49 @@ export class Model {
 		delete this.data.transitions[trans_id];
 	}
 
+	delete_state(state_id)
+	{
+		const s = this.data.states[state_id];
+
+		//removing all substates
+		while(s.children.length > 0)
+		{
+			this.delete_state(s.children[0]);
+		}
+
+		//removing 'child' entry from the parent of s
+		//delete this.data.states[s.parent].children[state_id]; //this does no affect, i don't know why...
+		for(var i = 0; i < this.data.states[s.parent].children.length; i++) //..., so trying a different way of delete:
+		{
+			if(this.data.states[s.parent].children[i] == state_id)
+			{
+				this.data.states[s.parent].children.splice(i, 1);
+				i--;
+			}
+		}
+		
+		//The __top__ superstate contains all states, including sub-states, too.
+		//So if this is a sub-state, then we need to eliminate this state from children of the __top__ too.
+		if(s.parent != '__top__')
+		{
+			for(var j = 0; j < this.data.states['__top__'].children.length; j++)
+			{
+				if(this.data.states['__top__'].children[j] == state_id)
+				{
+					this.data.states['__top__'].children.splice(j, 1);
+					j--;
+				}
+			}
+		}
+
+		while(s.connectors.length > 0)
+		{
+			this.delete_connector(s.connectors[0]);
+		}
+
+		delete this.data.states[state_id];
+	}
+
 	attach_connector_to_state(conn_id, state_id, rel_pos)
 	{
 		const conn = this.data.connectors[conn_id];

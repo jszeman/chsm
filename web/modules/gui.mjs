@@ -112,6 +112,12 @@ export class Gui {
 		delete this.paths[id];
 	}
 
+	delete_state(id)
+	{
+		this.drawing.removeChild(this.states[id].obj);
+		delete this.states[id];
+	}
+
 	render_transition(id, vertices, label, label_pos, on_mousedown, on_dblclick, on_click)
 	{
 		const path = this.get_path_from_vertices(vertices);
@@ -266,6 +272,17 @@ export class Gui {
 			{
 				this.mod_svg(g, {transform: `translate(${pos[0]}, ${pos[1]})`});
 			},
+			redraw_border: function(is_deleting)
+			{
+				if(is_deleting)
+				{
+					this.mod_svg(r2, {class: 'state_border_deleting'});
+				}
+				else
+				{
+					this.mod_svg(r2, {class: 'state_border'});
+				}
+			},
 			set_text(txt)
 			{
 				if (txt.length > text.childElementCount)
@@ -297,5 +314,10 @@ export class Gui {
 
 		this.drawing.appendChild(g);
 	}
+
+	redraw_state_change_border(id, is_deleting)
+	{
+		this.states[id].redraw_border(is_deleting);
+    }
 };
 

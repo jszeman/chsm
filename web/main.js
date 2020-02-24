@@ -62,9 +62,10 @@ class App {
 						break;
 						
 					case 'KeyD':
-						this.start_delete_transition();
-                        this.state = this.delete_tr_state;
-						this.model.transitions().map(v => this.gui.redraw_path_change_line_color(v, true));
+						this.start_delete_state_or_transition();
+                        this.state = this.delete_st_or_tr_state;
+						this.model.transitions().map(t => this.gui.redraw_path_change_line_color(t, true));
+						this.model.states().map(s => this.gui.redraw_state_change_border(s, true));
 						break;
 				}
 				break;
@@ -107,7 +108,7 @@ class App {
 		this.gui.set_cursor('crosshair');
 	}
 	
-	start_delete_transition()
+	start_delete_state_or_transition()
 	{
 		this.gui.set_cursor('crosshair');
 	}
@@ -144,8 +145,17 @@ class App {
 				break;
 		}
 	}
+
+	delete_state_from_gui(state_id)		//This method delete a state with all substates from the gui.
+	{									//In order to reach all sub-sub-...-sub states, this function recursively calles itself.
+		for(var i = 0; i < this.model.data.states[state_id].children.length; i++)
+		{
+			this.delete_state_from_gui(this.model.data.states[state_id].children[i]);
+		}
+		this.gui.delete_state(state_id);		//last, delete the state, that user clicked on its border
+	}
 	
-	delete_tr_state(event, data)
+	delete_st_or_tr_state(event, data)
 	{
 		switch(event)
 		{
@@ -153,21 +163,37 @@ class App {
 				switch(data.code)
 				{
 					case 'Escape':
-						this.gui.set_cursor('auto');
-						this.state = this.idle_state;
-						this.model.transitions().map(v => this.gui.redraw_path_change_line_color(v, false));
+						this.leave_delete_state();
 						break;
 				}
 				break;
 			
-			case 'TR_DRAG':
+			case 'TR_DRAG':								//deleting a transition
 				this.model.delete_transition(data.id);
 				this.gui.delete_transition(data.id);
-				this.gui.set_cursor('auto');
-				this.state = this.idle_state;
-				this.model.transitions().map(v => this.gui.redraw_path_change_line_color(v, false));
+				this.leave_delete_state();
+				break;
+
+			case 'STATE_BORDER_CLICK':					//deleting a state
+				/*/first delete all substate from the gui
+				for(var i = 0; i < this.model.data.states[data.id].children.length; i++)
+				{
+					this.gui.delete_state(this.model.data.states[data.id].children[i]);
+				}
+				this.gui.delete_state(data.id);		//last, delete the state, that user clicked on its border */
+				this.delete_state_from_gui(data.id);
+				this.model.delete_state(data.id);	//and finally delete all states from the model-pool
+				this.leave_delete_state();
 				break;
 		}
+	}
+
+	leave_delete_state()
+	{
+		this.gui.set_cursor('auto');
+		this.state = this.idle_state;
+		this.model.transitions().map(t => this.gui.redraw_path_change_line_color(t, false));
+		this.model.states().map(s => this.gui.redraw_state_change_border(s, false));
 	}
 
 	transition_drawing_state(event, data)

@@ -20,6 +20,18 @@
 	.state_border:hover {
 		opacity: 0.4;
 	}
+
+	.state_border_deleting {
+		stroke: red; 
+		stroke-width: 0.8;
+		fill: none;
+		rx: 0.5;
+		opacity: 0;
+	}
+
+	.state_border_deleting:hover {
+		opacity: 0.4;
+	}
 	
 	.transition_handle {
 		stroke: deepskyblue; 
@@ -119,7 +131,7 @@ Commands:
 		space: switch elbow
 		backspace: backtrack
 		escape: cancel operation
-	d: delete transition
+	d: delete state or transition
 </pre>
 <svg width="800" height="800">
 	<g display='none'>
