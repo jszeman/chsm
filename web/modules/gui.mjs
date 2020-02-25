@@ -114,6 +114,8 @@ export class Gui {
 
 	render_transition(id, vertices, label, label_pos, on_mousedown, on_dblclick, on_click)
 	{
+		if (id in this.paths) return;
+		
 		const path = this.get_path_from_vertices(vertices);
 		const arrow_transform = this.get_arrow_transform_from_vertices(vertices);
 

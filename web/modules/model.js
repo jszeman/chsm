@@ -12,9 +12,37 @@ export class Model {
 		this.changes = {
 			states:				[],
 			transitions:		[],
+
+			trans_new:			[],
+			trans_del:			[],
+			trans_redraw:		[],
+			state_new:			[],
+			state_del:			[],
+			state_resize:		[],
+			state_move:			[],
+			state_set_text:		[],
+			state_set_title:	[],
 		};
 		this.elbow = 			'v';
 		this.tmp_seg_cnt =		2;
+	}
+
+	ack_changes()
+	{
+		this.changes = {
+			states:				[],
+			transitions:		[],
+
+			trans_new:			[],
+			trans_del:			[],
+			trans_redraw:		[],
+			state_new:			[],
+			state_del:			[],
+			state_resize:		[],
+			state_move:			[],
+			state_set_text:		[],
+			state_set_title:	[],
+		};
 	}
 
 	make_new_id(array, prefix)
@@ -63,6 +91,8 @@ export class Model {
 		this.data.transitions[trans_id] = t;
 		this.data.connectors[start_id] = start;
 		this.data.connectors[end_id] = end;
+
+		this.changes.trans_new.push([trans_id, t]);
 
 		return trans_id;
 	}
@@ -115,6 +145,8 @@ export class Model {
 		this.delete_connector(t.end);
 
 		delete this.data.transitions[trans_id];
+
+		this.changes.trans_del.push([trans_id, t]);
 	}
 
 	attach_connector_to_state(conn_id, state_id, rel_pos)
@@ -196,8 +228,10 @@ export class Model {
 		{
 			t.vertices = [[...v], [...v], [...v]];
 			t.label_pos = [v[0] + t.label_offset[0], v[1] + t.label_offset[1]];
+			this.changes.trans_redraw.push([trans_id, t]);
 			return true;
 		}
+		this.changes.trans_del.push([trans_id, t]);
 		return false;
 	}
 
@@ -243,9 +277,11 @@ export class Model {
 		{
 			/*console.log('-----------');
 			t.vertices.map(v => console.log(v));*/
+			this.changes.trans_redraw.push([trans_id, t]);
 			return true;
 		}
 
+		this.changes.trans_redraw.push([trans_id, t]);
 		return false;
 	}
 
@@ -260,6 +296,8 @@ export class Model {
 		const v = (this.elbow == 'v') ? [x, ly] : [lx, y];
 		t.vertices.push(v);
 		t.vertices.push([x, y]);
+
+		this.changes.trans_redraw.push([trans_id, t]);
 	}
 
 	switch_transition_elbow(trans_id, pos)
@@ -270,6 +308,8 @@ export class Model {
 			this.elbow = (this.elbow == 'v') ? 'h' : 'v';
 		}
 		this.set_transition_endpoint(trans_id, pos);
+
+		this.changes.trans_redraw.push([trans_id, t]);
 	}
 
 	add_transition_vertex(trans_id)
@@ -300,6 +340,8 @@ export class Model {
 		t.vertices.push([bx, by]);
 
 		this.elbow = (this.elbow == 'v') ? 'h' : 'v';
+
+		this.changes.trans_redraw.push([trans_id, t]);
 	}
 
 	remove_transition_vertex(trans_id, pos)
@@ -310,6 +352,8 @@ export class Model {
 			t.vertices.splice(-1, 1);
 			this.elbow = (this.elbow == 'v') ? 'h' : 'v';
 			this.set_transition_endpoint(trans_id, pos);
+
+			this.changes.trans_redraw.push([trans_id, t]);
 		}
 	}
 
@@ -323,6 +367,8 @@ export class Model {
 		const [[x1, y1], [x2, y2]] = t.vertices.slice(line_idx, line_idx+2);
 		const m = [Math.round((x1 + x2) / 2), Math.round((y1 + y2) / 2)];
 		t.vertices.splice(line_idx+1, 0, [...m], [...m]);
+
+		this.changes.trans_redraw.push([trans_id, t]);
 	}
 
 	transition_restart_from_pos(trans_id, pos)
@@ -342,6 +388,8 @@ export class Model {
 		const v = t.vertices[0];
 
 		t.label_pos = [v[0] + t.label_offset[0], v[1] + t.label_offset[1]];
+
+		this.changes.trans_redraw.push([trans_id, t]);
 	}
 
 	make_new_state(init_pos)
@@ -381,12 +429,6 @@ export class Model {
 			this.move_substates(state_id, 0, h_diff);
 			this.update_state_transitions(state_id);
 		}
-	}
-
-	ack_changes()
-	{
-		this.changes.states = [];
-		this.changes.transitions = [];
 	}
 
 	make_point(x, y)
@@ -480,6 +522,8 @@ export class Model {
 		tr.vertices.map(v => {v[0] += dx; v[1] += dy});
 		tr.label_pos[0] += dx;
 		tr.label_pos[1] += dy;
+
+		this.changes.trans_redraw.push([tr_id, tr]);
 	}
 
 	move_substates(state_id, dx, dy)
@@ -721,6 +765,8 @@ export class Model {
 		const [ax, ay] = tr.vertices[tr.label_anchor];
 		const [ox, oy] = tr.label_offset;
 		tr.label_pos = [ax + ox, ay + oy];
+
+		this.changes.trans_redraw.push([tr_id, tr]);
 	}
 
 	transition_drag(tr_id, line_idx, p, label_width)
@@ -783,6 +829,8 @@ export class Model {
 		}
 
 		this.update_transition_label_pos(tr_id, label_width);
+
+		this.changes.trans_redraw.push([tr_id, tr]);
 	}
 
 	simplify_tr_path(tr_id)
@@ -799,6 +847,8 @@ export class Model {
 
 			return true;
 		});
+
+		this.changes.trans_redraw.push([tr_id, t]);
 	}
 
 	connectors()
@@ -886,5 +936,6 @@ export class Model {
 		}
 
 		this.update_transition_label_pos(tr_id);
+		this.changes.trans_redraw.push([tr_id, tr]);
 	}
 }
