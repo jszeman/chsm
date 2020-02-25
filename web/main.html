@@ -9,6 +9,11 @@
 		rx: 0.5;
 	}
 
+	html, body {
+		width: 100%;
+		height: 100%;
+	}
+
 	.state_border {
 		stroke: seagreen; 
 		stroke-width: 0.8;
@@ -121,7 +126,7 @@ Commands:
 		escape: cancel operation
 	d: delete transition
 </pre>
-<svg width="800" height="800">
+<svg height="100%" width="100%" viewBox="0 0 1000 1000"  preserveAspectRatio="xMinYMin ">
 	<g display='none'>
 		<path id='arrow' d='M 0 0 L 0.7 -0.3 L 0.7 0.3 Z' class='arrow_template'/>
 	</g>
