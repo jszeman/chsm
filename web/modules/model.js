@@ -312,27 +312,33 @@ export class Model {
 
 		// remove the last two vertex from the array
 		const [[ax, ay], [bx, by]] = t.vertices.splice(-2);
-
+		
 		if (t.vertices.length < 2)
 		{
-			t.vertices.push([ax, ay]);
+			// Make sure that the first line in the transition path has non-zero length.
+			const [dx, dy] = t.vertices[0];
+			if ((ax !== dx) || (ay !== dy))
+			{
+				t.vertices.push([ax, ay]);
+				this.elbow = (this.elbow == 'v') ? 'h' : 'v';
+			}
 		}
 		else
 		{
 			const [[cx, cy], [dx, dy]] = t.vertices.slice(-2);
-			// if the last two of the remaining array are in line with a:
+
+			// Remove unnecessary vertices that are in line with the adjacent points
 			if (((ax === cx) && (cx === dx)) || ((ay === cy) && (cy === dy)))
 			{
 				t.vertices.splice(-1);
 			}
 			
 			t.vertices.push([ax, ay]);
+			this.elbow = (this.elbow == 'v') ? 'h' : 'v';
 		}
 
 		t.vertices.push([ax, ay]);
 		t.vertices.push([bx, by]);
-
-		this.elbow = (this.elbow == 'v') ? 'h' : 'v';
 
 		this.changes.trans_redraw.push([trans_id, t]);
 	}
