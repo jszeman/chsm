@@ -395,7 +395,7 @@ export class Model {
 	make_new_state(init_pos)
 	{
 		const state_id = this.make_new_id(this.data.states, 'state_');
-		this.data.states[state_id] = {
+		const s = {
 			pos: init_pos, 
 			size: [15, 15],
 			title: state_id,
@@ -404,7 +404,10 @@ export class Model {
 			parent: '__top__',
 			children: [],
 			};
+		this.data.states[state_id] = s;
 		this.data.states['__top__'].children.push(state_id);
+
+		this.changes.state_new.push([state_id, s]);
 
 		return state_id;
 	}
@@ -429,6 +432,8 @@ export class Model {
 			this.move_substates(state_id, 0, h_diff);
 			this.update_state_transitions(state_id);
 		}
+
+		this.changes.state_set_text.push([state_id, s]);
 	}
 
 	make_point(x, y)
@@ -536,6 +541,7 @@ export class Model {
 			const sub = this.data.states[id]; 
 			const old_pos = sub.pos;
 			sub.pos = [old_pos[0] + dx, old_pos[1] + dy];
+			this.changes.state_move.push([id, sub]);
 		}
 
 		internal.map(t => this.move_transition(t, [dx, dy]));
@@ -553,6 +559,7 @@ export class Model {
 		s.pos = pos;
 
 		this.move_substates(state_id, dx, dy);
+		this.changes.state_move.push([state_id, s]);
 	}
 
 	remove_child(parent_id, child_id)
@@ -625,6 +632,10 @@ export class Model {
 		state.size[1] = Math.max(h,
 			(state.text.length + 2)*this.options.text_height,
 			Math.max(...vert_offsets)+1);
+
+		this.changes.state_resize.push([state_id, state]);
+
+		state.connectors.map(c => this.update_transition_path(this.data.connectors[c].transition), this);
 	}
 
 	get_state(state_id)
