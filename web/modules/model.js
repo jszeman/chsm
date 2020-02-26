@@ -10,9 +10,6 @@ export class Model {
 			text_height: 		2,
 		};
 		this.changes = {
-			states:				[],
-			transitions:		[],
-
 			trans_new:			[],
 			trans_del:			[],
 			trans_redraw:		[],
@@ -30,9 +27,6 @@ export class Model {
 	ack_changes()
 	{
 		this.changes = {
-			states:				[],
-			transitions:		[],
-
 			trans_new:			[],
 			trans_del:			[],
 			trans_redraw:		[],
@@ -319,7 +313,6 @@ export class Model {
 		// remove the last two vertex from the array
 		const [[ax, ay], [bx, by]] = t.vertices.splice(-2);
 
-
 		if (t.vertices.length < 2)
 		{
 			t.vertices.push([ax, ay]);
@@ -546,10 +539,6 @@ export class Model {
 
 		internal.map(t => this.move_transition(t, [dx, dy]));
 		external.map(this.update_transition_path, this);
-		this.changes.states.push(state_id);
-		this.changes.states.push(...subs);
-		this.changes.transitions.push(...internal);
-		this.changes.transitions.push(...external);
 	}
 
 	move_state(state_id, pos)
