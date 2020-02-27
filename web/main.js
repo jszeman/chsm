@@ -65,7 +65,7 @@ class App {
 						this.start_delete_state_or_transition();
                         this.state = this.delete_st_or_tr_state;
 						this.model.transitions().map(t => this.gui.redraw_path_change_line_color(t, true));
-						this.model.states().map(s => this.gui.redraw_state_change_border(s, true));
+						//this.model.states().map(s => this.gui.redraw_state_change_border(s, true));
 						break;
 				}
 				break;
@@ -146,14 +146,14 @@ class App {
 		}
 	}
 
-	delete_state_from_gui(state_id)		//This method delete a state with all substates from the gui.
+	/*delete_state_from_gui(state_id)		//This method delete a state with all substates from the gui.
 	{									//In order to reach all sub-sub-...-sub states, this function recursively calles itself.
 		for(var i = 0; i < this.model.data.states[state_id].children.length; i++)
 		{
 			this.delete_state_from_gui(this.model.data.states[state_id].children[i]);
 		}
 		this.gui.delete_state(state_id);		//last, delete the state, that user clicked on its border
-	}
+	} // */
 	
 	delete_st_or_tr_state(event, data)
 	{
@@ -174,16 +174,32 @@ class App {
 				this.leave_delete_state();
 				break;
 
-			case 'STATE_BORDER_CLICK':					//deleting a state
-				/*/first delete all substate from the gui
-				for(var i = 0; i < this.model.data.states[data.id].children.length; i++)
-				{
-					this.gui.delete_state(this.model.data.states[data.id].children[i]);
-				}
-				this.gui.delete_state(data.id);		//last, delete the state, that user clicked on its border */
-				this.delete_state_from_gui(data.id);
-				this.model.delete_state(data.id);	//and finally delete all states from the model-pool
+			case 'STATE_DRAG':							//deleting a state
+				//collecting affected components
+				const substs = this.model.get_substates(data.id);
+				const [alltransint, alltransext] = this.model.get_state_transitions(data.id);
+
+				//delete elements from the gui
+				alltransint.map(ti => this.gui.delete_transition(ti));
+				alltransext.map(ti => this.gui.delete_transition(ti));
+				substs.map(s => this.gui.delete_state(s));
+				this.gui.delete_state(data.id);
+
+				//deleting elements from the model pool
+				alltransint.map(ti => this.model.delete_transition(ti));
+				alltransext.map(ti => this.model.delete_transition(ti));
+				substs.map(s => this.model.delete_state(s));
+				this.model.delete_state(data.id);
+
 				this.leave_delete_state();
+				break;
+
+			case 'STATE_DRAGHANDLE_MOVER':
+				this.gui.redraw_state_change_border(data.id, true);
+				break;
+
+			case 'STATE_DRAGHANDLE_MLEAVE':
+				this.gui.redraw_state_change_border(data.id, false);
 				break;
 		}
 	}
@@ -193,7 +209,7 @@ class App {
 		this.gui.set_cursor('auto');
 		this.state = this.idle_state;
 		this.model.transitions().map(t => this.gui.redraw_path_change_line_color(t, false));
-		this.model.states().map(s => this.gui.redraw_state_change_border(s, false));
+		//this.model.states().map(s => this.gui.redraw_state_change_border(s, false));
 	}
 
 	transition_drawing_state(event, data)
@@ -384,7 +400,10 @@ class App {
 			this.model.options.text_height,
 			(evt) => {this.dispatch('STATE_DRAG', {event: evt, id: state_id});},
 			(evt) => {this.dispatch('STATE_RESIZE', {event: evt, id: state_id});},
-			(evt) => {this.dispatch('STATE_BORDER_CLICK', {event: evt, id: state_id});});
+			(evt) => {this.dispatch('STATE_BORDER_CLICK', {event: evt, id: state_id});},
+			(evt) => {this.dispatch('STATE_DRAGHANDLE_MOVER', {event: evt, id: state_id});},
+			(evt) => {this.dispatch('STATE_DRAGHANDLE_MLEAVE', {event: evt, id: state_id});}
+			);
 	}
 
 	trans_drag_start(evt, trans_id)

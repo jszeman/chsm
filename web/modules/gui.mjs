@@ -209,14 +209,11 @@ export class Gui {
 		const th = text_height;
 
 		const g = this.make_svg_elem('g', {transform: `translate(${x}, ${y})`})
-		const r = this.make_svg_elem('rect',
-			{x: 0, y: 0, width: w, height: h, class: 'state_body'});
-		const r2 = this.make_svg_elem('rect',
-			{x: 0, y: 0, width: w, height: h, class: 'state_border'});
-		r2.addEventListener('click', on_border_click);
+		const r = this.make_svg_elem('rect', {x: 0, y: 0, width: w, height: h, class: 'state_body'});
+		const st_border = this.make_svg_elem('rect', {x: 0, y: 0, width: w, height: h, class: 'state_border'});
+		st_border.addEventListener('click', on_border_click);
 
-		const s1 = this.make_svg_elem('line',
-			{x1: 0, y1: th, x2: w, y2: th, class: 'state_separator'});
+		const s1 = this.make_svg_elem('line', {x1: 0, y1: th, x2: w, y2: th, class: 'state_separator'});
 		const t = this.make_svg_elem('text', {x: th*0.3, y: th*0.8, class: 'state_title'});
 		t.textContent = title;
 
@@ -228,19 +225,17 @@ export class Gui {
 			text.appendChild(tspan);
 		}
 
-		const m = this.make_svg_elem('line',
-			{x1: w-1, y1: h, x2: w, y2: h-1, class: 'state_resize_mark'});
+		const m = this.make_svg_elem('line', {x1: w-1, y1: h, x2: w, y2: h-1, class: 'state_resize_mark'});
 
 		const offset = th + th*strings.length;
-		const s2 = this.make_svg_elem('line',
-			{x1: 0, y1: offset, x2: w, y2: offset, class: 'state_separator'});
+		const s2 = this.make_svg_elem('line', {x1: 0, y1: offset, x2: w, y2: offset, class: 'state_separator'});
 
-		const drag_handle = this.make_svg_elem('rect',
-			{x: 0, y: 0, width: w, height: offset, class: 'state_drag_handle'});
+		const drag_handle = this.make_svg_elem('rect', {x: 0, y: 0, width: w, height: offset, class: 'state_drag_handle'});
 		drag_handle.addEventListener('mousedown', on_drag_start);
+		drag_handle.addEventListener('mouseover', on_mouse_over);
+		drag_handle.addEventListener('mouseleave', on_mouse_leave);
 
-		const resize_handle = this.make_svg_elem('circle',
-			{cx: w-0.25, cy: h-0.25, class: 'state_resize_handle'});
+		const resize_handle = this.make_svg_elem('circle', {cx: w-0.25, cy: h-0.25, class: 'state_resize_handle'});
 		resize_handle.addEventListener('mousedown', on_resize_start)
 
 		g.appendChild(r);
@@ -250,7 +245,7 @@ export class Gui {
 		g.appendChild(s2);
 		g.appendChild(m);
 		g.appendChild(drag_handle);
-		g.appendChild(r2);
+		g.appendChild(st_border);
 		g.appendChild(resize_handle);
 
 		this.states[id] = {
@@ -261,7 +256,7 @@ export class Gui {
 			{
 				const [w, h] = size;
 				this.mod_svg(r, {width: w, height: h});
-				this.mod_svg(r2, {width: w, height: h});
+				this.mod_svg(st_border, {width: w, height: h});
 				this.mod_svg(s1, {x2: w});
 				this.mod_svg(s2, {x2: w});
 				this.mod_svg(m, {x1: w-1, y1: h, x2: w, y2: h-1});
@@ -272,7 +267,25 @@ export class Gui {
 			{
 				this.mod_svg(g, {transform: `translate(${pos[0]}, ${pos[1]})`});
 			},
-			redraw_border: function(is_deleting)
+			mod_component_class: function(component, cl, removing)
+			{
+				switch(component)
+				{
+					case 'border':
+						if(removing)
+						{
+							st_border.classList.remove(cl);
+						}
+						else
+						{
+							st_border.classList.add(cl);
+						}
+						break;
+					default:
+						break;
+				}
+			},
+			/*redraw_border: function(is_deleting)
 			{
 				if(is_deleting)
 				{
@@ -282,7 +295,7 @@ export class Gui {
 				{
 					this.mod_svg(r2, {class: 'state_border'});
 				}
-			},
+			}, // */
 			set_text(txt)
 			{
 				if (txt.length > text.childElementCount)
@@ -317,7 +330,8 @@ export class Gui {
 
 	redraw_state_change_border(id, is_deleting)
 	{
-		this.states[id].redraw_border(is_deleting);
+		this.states[id].mod_component_class('border', 'state_border', is_deleting);
+		this.states[id].mod_component_class('border', 'state_border_deleting', !is_deleting);
     }
 };
 
