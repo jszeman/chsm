@@ -8,15 +8,6 @@
 <body>
 	<div class='wrapper'>
 		<main class='main'>
-			<pre>
-			Commands:
-				s: create a state under the pointer
-				t: start drawing a transition
-					space: switch elbow
-					backspace: backtrack
-					escape: cancel operation
-				d: delete transition
-			</pre>
 			<svg height="100%" width="100%">
 				<g display='none'>
 					<path id='arrow' d='M 0 0 L 0.7 -0.3 L 0.7 0.3 Z' class='arrow_template'/>
@@ -26,11 +17,23 @@
 			</svg>
 		</main>
 		<nav class='sidebar'>
-			<h3>Sidebar</h3>
-			<strong>Title</strong>
-			<input type="text">
-			<strong>Text</strong>
-			<textarea></textarea>
+			<ul class='props'>
+				<li><h3>Sidebar</h3></li>
+				<li><strong>Title</strong></li>
+				<li><input type="text" class='prop-title'></li>
+				<li>&nbsp</li>
+				<li><strong>Text</strong></li>
+				<li><textarea class='prop-text'></textarea></li>
+				<li>&nbsp</li>
+				<li><strong>Commands</strong></li>
+				<li>
+					<ul>
+						<li>s: create a state</li>
+						<li>t: draw transition</li>
+						<li>d: delete transition</li>
+					</ul>
+				</li>
+			</ul>
 		</nav>
 	</div>
 </body>
