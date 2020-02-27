@@ -167,17 +167,6 @@ export class Gui {
 			{
 					p2.classList.remove(cl);
 			},
-            change_trans_line_color: function(is_deleting)
-            {
-                if (is_deleting)
-                {
-                    this.mod_svg(p2, { class: 'transition_handle_deleting' })
-                }
-                else
-                {
-                    this.mod_svg(p2, { class: 'transition_handle' })
-                }
-            },
 		}
 
 		p2.addEventListener('mousedown', on_mousedown);
@@ -199,7 +188,8 @@ export class Gui {
 
 	redraw_path_change_line_color(id, is_deleting)
 	{
-		this.paths[id].change_trans_line_color(is_deleting);
+		this.paths[id].remove_handle_class(is_deleting ? 'transition_handle' : 'transition_handle_deleting');
+		this.paths[id].add_handle_class(is_deleting ? 'transition_handle_deleting' : 'transition_handle');
     }
 
     render_state(id, title, pos, size, strings, text_height, on_drag_start, on_resize_start, on_border_click, on_mouse_over, on_mouse_leave)
