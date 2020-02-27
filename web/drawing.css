@@ -1,0 +1,105 @@
+.state_body {
+    stroke: black;
+    stroke-width: 0.2;
+    fill: none;
+    rx: 0.5;
+}
+
+.state_border {
+    stroke: seagreen; 
+    stroke-width: 0.8;
+    fill: none;
+    rx: 0.5;
+    opacity: 0;
+}
+
+.state_border:hover {
+    opacity: 0.4;
+}
+
+.transition_handle {
+    stroke: deepskyblue; 
+    stroke-width: 0.8;
+    fill: none;
+    rx: 0.5;
+    opacity: 0;
+    cursor: grab;
+}
+
+.transition_handle:hover {
+    opacity: 0.4;
+}
+
+.transition_handle_deleting {
+    stroke: red;
+    stroke-width: 0.8;
+    fill: none;
+    rx: 0.5;
+    opacity: 0;
+    cursor: auto;
+}
+
+.transition_handle_deleting:hover {
+    opacity: 0.4;
+}
+
+.transition_handle_highlight_draw {
+    opacity: 0.4;
+    cursor: crosshair;
+}
+
+.transition_handle_highlight_drag {
+    opacity: 0.4;
+    cursor: grab;
+}
+
+.state_separator {
+    stroke: grey;
+    stroke-width: 0.1;
+    shape-rendering: crispEdges;
+}
+
+.state_resize_mark {
+    stroke: grey;
+    stroke-width: 0.1;
+}
+
+.state_title {
+    font: bold 0.08em arial,helvetica,sans-serif;
+}
+
+.state_text {
+    font: normal 0.08em arial,helvetica,sans-serif;
+}
+
+.transition_label {
+    font: normal 0.07em arial,helvetica,sans-serif;
+}
+
+.state_drag_handle {
+    fill: rgb(211, 102, 1);
+    opacity: 0.1;
+    stroke: none;
+    rx: 0.5;
+    cursor: move;
+}
+
+.state_resize_handle {
+    fill: white;
+    opacity: 0.0;
+    stroke: none;
+    r: 0.5;
+    cursor: nwse-resize;
+}
+
+.transition_line {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 0.2;
+}
+
+.transition_arrow {
+    fill: steelblue;
+    stroke: none;
+    stroke-width: 0.0;
+}
