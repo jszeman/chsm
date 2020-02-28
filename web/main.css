@@ -40,12 +40,12 @@ svg {
     padding: 0;
 }
 
-.prop-title {
+#prop-title {
     width: 95%;
     margin: 0.1em;
 }
 
-.prop-text {
+#prop-text {
     width: 95%;
     margin: 0.1em;
     height: 20em;

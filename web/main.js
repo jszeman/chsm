@@ -13,16 +13,26 @@ class App {
 		this.resize_data = {};
 		this.tr_draw_data = {};
 		this.mouse_pos = [0, 0];
+		this.enable_keys = true;
 		
 		this.model.states().map(s => this.render_state(s), this);
 		this.model.transitions().map(t => this.render_transiton(t), this);
 		
 		document.querySelector('body').addEventListener("keydown", event => {
+			if (!this.enable_keys) return;
 			if (event.isComposing || event.keyCode === 229) {
 				return;
 			}
 			this.dispatch('KEYDOWN', event);
 		});
+
+		this.title_input = document.querySelector('#prop-title');
+		this.title_input.addEventListener('focus', e => {this.enable_keys = false});
+		this.title_input.addEventListener('blur', e => {this.enable_keys = true});
+
+		this.text_area = document.querySelector('#prop-text');
+		this.text_area.addEventListener('focus', e => {this.enable_keys = false});
+		this.text_area.addEventListener('blur', e => {this.enable_keys = true});
 
 		this.gui.add_event_handler('mousemove', event => {
 			this.mouse_pos = this.gui.get_absolute_pos(event);
@@ -101,7 +111,9 @@ class App {
 				}
 				break;
 
-			case 'STATE_DRAG':
+			case 'STATE_HEADER_M_DOWN':
+				this.title_input.value = this.model.get_state(data.id).title;
+				this.text_area.value = this.model.get_state(data.id).text.join('\n');
 				this.state_drag_start(data.event, data.id);
 				this.state = this.state_dragging_state;
 				break;
@@ -111,7 +123,7 @@ class App {
 				this.state = this.state_resizing_state;
 				break;
 
-			case 'TR_DRAG':
+			case 'TR_M_DOWN':
 				this.trans_drag_start(data.event, data.id);
 				this.state = this.transition_dragging_state;
 				break;
@@ -191,21 +203,21 @@ class App {
 				}
 				break;
 			
-			case 'TR_DRAG':								//deleting a transition
+			case 'TR_M_DOWN':								//deleting a transition
 				this.model.delete_transition(data.id);
 				this.leave_delete_state();
 				break;
 
-			case 'STATE_DRAG':							//deleting a state
+			case 'STATE_HEADER_M_DOWN':							//deleting a state
 				this.model.delete_state(data.id);
 				this.leave_delete_state();
 				break;
 
-			case 'STATE_DRAGHANDLE_MOVER':
+			case 'STATE_HEADER_M_OVER':
 				this.gui.redraw_state_change_border(data.id, true);
 				break;
 
-			case 'STATE_DRAGHANDLE_MLEAVE':
+			case 'STATE_HEADER_M_LEAVE':
 				this.gui.redraw_state_change_border(data.id, false);
 				break;
 		}
@@ -369,18 +381,21 @@ class App {
 	{
 		const state = state_data !== null ? state_data : this.model.get_state(state_id);
 
-		this.gui.render_state(state_id,
-			state.title,
-			state.pos,
-			state.size,
-			state.text,
-			this.model.options.text_height,
-			(evt) => {this.dispatch('STATE_DRAG', {event: evt, id: state_id});},
-			(evt) => {this.dispatch('STATE_RESIZE', {event: evt, id: state_id});},
-			(evt) => {this.dispatch('STATE_BORDER_CLICK', {event: evt, id: state_id});},
-			(evt) => {this.dispatch('STATE_DRAGHANDLE_MOVER', {event: evt, id: state_id});},
-			(evt) => {this.dispatch('STATE_DRAGHANDLE_MLEAVE', {event: evt, id: state_id});}
-			);
+		const params = {
+			id: 					state_id,
+			title: 					state.title,
+			pos: 					state.pos,
+			size:					state.size,
+			strings:				state.text,
+			text_height:			this.model.options.text_height,
+			on_header_mouse_down:	evt => this.dispatch('STATE_HEADER_M_DOWN', {event: evt, id: state_id}),
+			on_corner_mouse_down:	evt => this.dispatch('STATE_RESIZE', {event: evt, id: state_id}),
+			on_border_click:		evt => this.dispatch('STATE_BORDER_CLICK', {event: evt, id: state_id}),
+			on_header_mouse_over:	evt => this.dispatch('STATE_HEADER_M_OVER', {event: evt, id: state_id}),
+			on_header_mouse_leave:	evt => this.dispatch('STATE_HEADER_M_LEAVE', {event: evt, id: state_id})
+		};
+
+		this.gui.render_state(params);
 	}
 
 	trans_drag_start(evt, trans_id)
@@ -431,7 +446,7 @@ class App {
 			tr.vertices,
 			tr.label,
 			tr.label_pos,
-			evt => this.dispatch('TR_DRAG', {event: evt, id: trans_id}),
+			evt => this.dispatch('TR_M_DOWN', {event: evt, id: trans_id}),
 			evt => this.dispatch('TR_DBLCLICK', {event: evt, id: trans_id}),
 			evt => this.dispatch('TR_CLICK', {event: evt, id: trans_id}));
 	}
