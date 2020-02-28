@@ -17,6 +17,14 @@
     opacity: 0.4;
 }
 
+.state_border_deleting {
+    stroke: red; 
+    stroke-width: 0.8;
+    fill: none;
+    rx: 0.5;
+    opacity: 0.4;
+}
+
 .transition_handle {
     stroke: deepskyblue; 
     stroke-width: 0.8;

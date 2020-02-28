@@ -56,6 +56,7 @@ class App {
 	push_state_changes_to_gui()
 	{
 		this.model.changes.state_new.map(d => this.render_state(...d), this);
+		this.model.changes.state_del.map(d => this.gui.delete_state(d[0]), this);
 		this.model.changes.state_move.map(d => this.gui.states[d[0]].move(d[1].pos), this);
 		this.model.changes.state_resize.map(d => this.gui.states[d[0]].resize(d[1].size), this);
 		this.model.changes.state_set_text.map(d => this.gui.states[d[0]].set_text(d[1].text), this);
@@ -93,9 +94,9 @@ class App {
 						break;
 						
 					case 'KeyD':
-						this.start_delete_transition();
-                        this.state = this.delete_tr_state;
-						this.model.transitions().map(v => this.gui.redraw_path_change_line_color(v, true));
+						this.start_delete_state_or_transition();
+                        this.state = this.delete_st_or_tr_state;
+						this.model.transitions().map(t => this.gui.redraw_path_change_line_color(t, true));
 						break;
 				}
 				break;
@@ -139,7 +140,7 @@ class App {
 		this.gui.set_cursor('crosshair');
 	}
 	
-	start_delete_transition()
+	start_delete_state_or_transition()
 	{
 		this.gui.set_cursor('crosshair');
 	}
@@ -177,7 +178,7 @@ class App {
 		}
 	}
 	
-	delete_tr_state(event, data)
+	delete_st_or_tr_state(event, data)
 	{
 		switch(event)
 		{
@@ -185,20 +186,36 @@ class App {
 				switch(data.code)
 				{
 					case 'Escape':
-						this.gui.set_cursor('auto');
-						this.state = this.idle_state;
-						this.model.transitions().map(v => this.gui.redraw_path_change_line_color(v, false));
+						this.leave_delete_state();
 						break;
 				}
 				break;
 			
-			case 'TR_DRAG':
+			case 'TR_DRAG':								//deleting a transition
 				this.model.delete_transition(data.id);
-				this.gui.set_cursor('auto');
-				this.state = this.idle_state;
-				this.model.transitions().map(v => this.gui.redraw_path_change_line_color(v, false));
+				this.leave_delete_state();
+				break;
+
+			case 'STATE_DRAG':							//deleting a state
+				this.model.delete_state(data.id);
+				this.leave_delete_state();
+				break;
+
+			case 'STATE_DRAGHANDLE_MOVER':
+				this.gui.redraw_state_change_border(data.id, true);
+				break;
+
+			case 'STATE_DRAGHANDLE_MLEAVE':
+				this.gui.redraw_state_change_border(data.id, false);
 				break;
 		}
+	}
+
+	leave_delete_state()
+	{
+		this.gui.set_cursor('auto');
+		this.state = this.idle_state;
+		this.model.transitions().map(t => this.gui.redraw_path_change_line_color(t, false));
 	}
 
 	transition_drawing_state(event, data)
@@ -360,7 +377,10 @@ class App {
 			this.model.options.text_height,
 			(evt) => {this.dispatch('STATE_DRAG', {event: evt, id: state_id});},
 			(evt) => {this.dispatch('STATE_RESIZE', {event: evt, id: state_id});},
-			(evt) => {this.dispatch('STATE_BORDER_CLICK', {event: evt, id: state_id});});
+			(evt) => {this.dispatch('STATE_BORDER_CLICK', {event: evt, id: state_id});},
+			(evt) => {this.dispatch('STATE_DRAGHANDLE_MOVER', {event: evt, id: state_id});},
+			(evt) => {this.dispatch('STATE_DRAGHANDLE_MLEAVE', {event: evt, id: state_id});}
+			);
 	}
 
 	trans_drag_start(evt, trans_id)

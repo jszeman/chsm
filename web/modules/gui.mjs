@@ -112,6 +112,12 @@ export class Gui {
 		delete this.paths[id];
 	}
 
+	delete_state(id)
+	{
+		this.drawing.removeChild(this.states[id].obj);
+		delete this.states[id];
+	}
+
 	render_transition(id, vertices, label, label_pos, on_mousedown, on_dblclick, on_click)
 	{
 		if (id in this.paths) return;
@@ -162,18 +168,7 @@ export class Gui {
 			remove_handle_class: function(cl)
 			{
 					p2.classList.remove(cl);
-			},
-            change_trans_line_color: function(is_deleting)
-            {
-                if (is_deleting)
-                {
-                    this.mod_svg(p2, { class: 'transition_handle_deleting' })
-                }
-                else
-                {
-                    this.mod_svg(p2, { class: 'transition_handle' })
-                }
-            },
+			}
 		}
 
 		p2.addEventListener('mousedown', on_mousedown);
@@ -195,7 +190,8 @@ export class Gui {
 
 	redraw_path_change_line_color(id, is_deleting)
 	{
-		this.paths[id].change_trans_line_color(is_deleting);
+		this.paths[id].remove_handle_class(is_deleting ? 'transition_handle' : 'transition_handle_deleting');
+		this.paths[id].add_handle_class(is_deleting ? 'transition_handle_deleting' : 'transition_handle');
     }
 
     render_state(id, title, pos, size, strings, text_height, on_drag_start, on_resize_start, on_border_click, on_mouse_over, on_mouse_leave)
@@ -207,9 +203,9 @@ export class Gui {
 		const g = this.make_svg_elem('g', {transform: `translate(${x}, ${y})`})
 		const r = this.make_svg_elem('rect',
 			{x: 0, y: 0, width: w, height: h, class: 'state_body'});
-		const r2 = this.make_svg_elem('rect',
+		const st_border = this.make_svg_elem('rect',
 			{x: 0, y: 0, width: w, height: h, class: 'state_border'});
-		r2.addEventListener('click', on_border_click);
+			st_border.addEventListener('click', on_border_click);
 
 		const s1 = this.make_svg_elem('line',
 			{x1: 0, y1: th, x2: w, y2: th, class: 'state_separator'});
@@ -234,6 +230,8 @@ export class Gui {
 		const drag_handle = this.make_svg_elem('rect',
 			{x: 0, y: 0, width: w, height: offset, class: 'state_drag_handle'});
 		drag_handle.addEventListener('mousedown', on_drag_start);
+		drag_handle.addEventListener('mouseover', on_mouse_over);
+		drag_handle.addEventListener('mouseleave', on_mouse_leave);
 
 		const resize_handle = this.make_svg_elem('circle',
 			{cx: w-0.25, cy: h-0.25, class: 'state_resize_handle'});
@@ -246,7 +244,7 @@ export class Gui {
 		g.appendChild(s2);
 		g.appendChild(m);
 		g.appendChild(drag_handle);
-		g.appendChild(r2);
+		g.appendChild(st_border);
 		g.appendChild(resize_handle);
 
 		this.states[id] = {
@@ -257,7 +255,7 @@ export class Gui {
 			{
 				const [w, h] = size;
 				this.mod_svg(r, {width: w, height: h});
-				this.mod_svg(r2, {width: w, height: h});
+				this.mod_svg(st_border, {width: w, height: h});
 				this.mod_svg(s1, {x2: w});
 				this.mod_svg(s2, {x2: w});
 				this.mod_svg(m, {x1: w-1, y1: h, x2: w, y2: h-1});
@@ -267,6 +265,24 @@ export class Gui {
 			move: function(pos)
 			{
 				this.mod_svg(g, {transform: `translate(${pos[0]}, ${pos[1]})`});
+			},
+			mod_component_class: function(component, cl, removing)
+			{
+				switch(component)
+				{
+					case 'border':
+						if(removing)
+						{
+							st_border.classList.remove(cl);
+						}
+						else
+						{
+							st_border.classList.add(cl);
+						}
+						break;
+					default:
+						break;
+				}
 			},
 			set_text(txt)
 			{
@@ -299,5 +315,11 @@ export class Gui {
 
 		this.drawing.appendChild(g);
 	}
+
+	redraw_state_change_border(id, is_deleting)
+	{
+		this.states[id].mod_component_class('border', 'state_border', is_deleting);
+		this.states[id].mod_component_class('border', 'state_border_deleting', !is_deleting);
+    }
 };
 

@@ -39,6 +39,24 @@ export class Model {
 		};
 	}
 
+	delete_state(state_id)
+	{
+		const s = this.data.states[state_id];
+		const parent = this.data.states[s.parent];
+
+		const del_states = [state_id].concat(this.get_substates(state_id));
+		const [alltransint, alltransext] = this.get_state_transitions(state_id);
+	
+		parent.children = parent.children.filter(ch => ch != state_id);
+
+		alltransint.map(ti => this.delete_transition(ti));
+		alltransext.map(ti => this.delete_transition(ti));
+
+		del_states.map(s_id => delete this.data.states[s_id], this);
+
+		del_states.map(s_id => this.changes.state_del.push([s_id, null]));
+	}
+
 	make_new_id(array, prefix)
 	{
 		for (let i=0; i<65536; i++)
@@ -645,7 +663,7 @@ export class Model {
 
 	states()
 	{
-		return this.data.states['__top__'].children;
+		return Object.keys(this.data.states);
 	}
 
 	transitions()
