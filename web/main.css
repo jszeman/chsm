@@ -1,0 +1,53 @@
+
+
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
+.wrapper {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    gap: 0em;
+    grid-template-columns: 15em 1fr;
+    grid-template-areas:
+        "s m";
+}
+
+.main {
+    grid-area: m;
+    width: 100%;
+    height: 100%;
+}
+
+svg {
+    width: 100%;
+    height: 100%;
+}
+
+.sidebar {
+    grid-area: s;
+    border-right: 2px solid #eee;;
+    padding: 0.2em;
+    font-family: arial,helvetica,sans-serif;
+    color: rgb(54, 54, 54);
+}
+
+.props {
+    list-style: none;
+    width: 100%;
+    padding: 0;
+}
+
+.prop-title {
+    width: 95%;
+    margin: 0.1em;
+}
+
+.prop-text {
+    width: 95%;
+    margin: 0.1em;
+    height: 20em;
+    resize: vertical;
+}

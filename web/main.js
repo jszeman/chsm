@@ -14,8 +14,8 @@ class App {
 		this.tr_draw_data = {};
 		this.mouse_pos = [0, 0];
 		
-		this.model.states().map(this.render_state, this);
-		this.model.transitions().map(this.render_transiton, this);
+		this.model.states().map(s => this.render_state(s), this);
+		this.model.transitions().map(t => this.render_transiton(t), this);
 		
 		document.querySelector('body').addEventListener("keydown", event => {
 			if (event.isComposing || event.keyCode === 229) {
@@ -40,9 +40,40 @@ class App {
 		this.state = this.idle_state;
 	}
 
+	push_transition_changes_to_gui()
+	{
+		this.model.changes.trans_new.map(d => this.render_transiton(...d), this);
+
+		this.model.changes.trans_redraw.map(d =>
+			{
+				const [tr_id, tr] = d;
+				this.gui.redraw_path_with_arrow(tr_id, tr.vertices, tr.label, tr.label_pos);
+			}, this);
+
+		this.model.changes.trans_del.map(d => this.gui.delete_transition(d[0]), this);
+	}
+
+	push_state_changes_to_gui()
+	{
+		this.model.changes.state_new.map(d => this.render_state(...d), this);
+		this.model.changes.state_move.map(d => this.gui.states[d[0]].move(d[1].pos), this);
+		this.model.changes.state_resize.map(d => this.gui.states[d[0]].resize(d[1].size), this);
+		this.model.changes.state_set_text.map(d => this.gui.states[d[0]].set_text(d[1].text), this);
+	}
+
+	push_model_changes_to_gui()
+	{
+		this.push_transition_changes_to_gui();
+		this.push_state_changes_to_gui();
+
+		this.model.ack_changes();
+	}
+
 	dispatch(event, data)
 	{
 		this.state(event, data);
+
+		this.push_model_changes_to_gui();
 	}
 
 	idle_state(event, data)
@@ -93,8 +124,9 @@ class App {
 				{
 					const p = this.gui.get_absolute_pos(data.event);
 					this.model.transition_restart_from_pos(data.id, p);
+					this.start_transition();
+					this.gui.paths[data.id].add_handle_class('transition_handle_highlight_draw');
 					this.tr_draw_data.trans_id = data.id;
-					this.redraw_transition(this.tr_draw_data.trans_id);
 					this.state = this.transition_drawing_state;
 				}
 				break;
@@ -162,7 +194,6 @@ class App {
 			
 			case 'TR_DRAG':
 				this.model.delete_transition(data.id);
-				this.gui.delete_transition(data.id);
 				this.gui.set_cursor('auto');
 				this.state = this.idle_state;
 				this.model.transitions().map(v => this.gui.redraw_path_change_line_color(v, false));
@@ -179,31 +210,26 @@ class App {
 				{
 					case 'Escape':
 						this.model.delete_transition(this.tr_draw_data.trans_id);
-						this.gui.delete_transition(this.tr_draw_data.trans_id);
 						this.gui.set_cursor('auto');
 						this.state = this.idle_state;
 						break;
 
 					case 'Space':
 						this.model.switch_transition_elbow(this.tr_draw_data.trans_id, this.mouse_pos);
-						this.redraw_transition(this.tr_draw_data.trans_id);
 						break;
 
 					case 'Backspace':
 						data.preventDefault();
 						this.model.remove_transition_vertex(this.tr_draw_data.trans_id, this.mouse_pos);
-						this.redraw_transition(this.tr_draw_data.trans_id);
 						break;
 				}
 				break;
 
 			case 'MOUSEMOVE':
 				this.model.set_transition_endpoint(this.tr_draw_data.trans_id, this.mouse_pos);
-				this.redraw_transition(this.tr_draw_data.trans_id);
 				break
 
 			case 'CLICK':
-				console.log('draw_click');
 				this.model.add_transition_vertex(this.tr_draw_data.trans_id);
 				break;
 			
@@ -268,21 +294,12 @@ class App {
 	set_state_text(state_id, text)
 	{
 		this.model.set_state_text(state_id, text);
-		this.gui.states[state_id].set_text(text);
-		this.gui.states[state_id].resize(this.model.get_state(state_id).size);
-
-
-		this.model.changes.states.map((id) => {
-			this.gui.states[id].move(this.model.get_state(id).pos);
-			}, this);
-
-		this.model.changes.transitions.map(this.redraw_transition, this);
+		this.push_model_changes_to_gui();
 	}
 
 	create_state(pos)
 	{
 		const state_id = this.model.make_new_state(pos);
-		this.render_state(state_id);
 	}
 
 	state_drag_start(evt, state_id)
@@ -308,12 +325,6 @@ class App {
 		const state_id = this.resize_data.state_id;
 		const size = this.gui.get_state_rel_pos(evt, state_id);
 		this.model.resize_state(state_id, size);
-		this.gui.states[state_id].resize(this.model.get_state(state_id).size);
-		this.resize_data.transitions.map(
-			(t) => {
-				this.model.update_transition_path(t);
-				this.redraw_transition(t);
-			});
 	}
 
 	state_resize_end(evt)
@@ -329,15 +340,6 @@ class App {
 		const pos = [ex-ox, ey-oy];
 		const state_id = this.drag_data.state_id;
 		this.model.move_state(state_id, pos);
-	
-		this.model.changes.states.map((id) => {
-			this.gui.states[id].move(this.model.get_state(id).pos);
-			}, this);
-
-
-		this.model.changes.transitions.map(this.redraw_transition, this);
-
-		this.model.ack_changes();
 	}
 
 	state_drag_end(evt)
@@ -346,9 +348,9 @@ class App {
 		this.model.update_parent(this.drag_data.state_id);
 	}
 
-	render_state(state_id)
+	render_state(state_id, state_data=null)
 	{
-		const state = this.model.get_state(state_id);
+		const state = state_data !== null ? state_data : this.model.get_state(state_id);
 
 		this.gui.render_state(state_id,
 			state.title,
@@ -391,7 +393,6 @@ class App {
 		const trans_id = this.drag_data.trans_id;
 		const line = this.drag_data.line;
 		this.model.transition_drag(trans_id, line, p, this.drag_data.label_width);
-		this.redraw_transition(trans_id);
 	}
 
 	trans_drag_end(evt)
@@ -402,9 +403,9 @@ class App {
 		this.gui.set_cursor('auto');
 	}
 
-	render_transiton(trans_id)
+	render_transiton(trans_id, tr_data=null)
 	{
-		const tr = this.model.get_transition(trans_id);
+		const tr = tr_data !== null ? tr_data : this.model.get_transition(trans_id);
 		this.gui.render_transition(
 			trans_id,
 			tr.vertices,
@@ -413,12 +414,6 @@ class App {
 			evt => this.dispatch('TR_DRAG', {event: evt, id: trans_id}),
 			evt => this.dispatch('TR_DBLCLICK', {event: evt, id: trans_id}),
 			evt => this.dispatch('TR_CLICK', {event: evt, id: trans_id}));
-	}
-
-	redraw_transition(trans_id)
-	{
-		const tr = this.model.get_transition(trans_id);
-		this.gui.redraw_path_with_arrow(trans_id, tr.vertices, tr.label, tr.label_pos);
 	}
 }
 
