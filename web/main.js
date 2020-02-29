@@ -26,11 +26,11 @@ class App {
 			this.dispatch('KEYDOWN', event);
 		});
 
-		this.title_input = document.querySelector('#prop-title');
+		this.title_input = document.querySelector('#obj-label');
 		this.title_input.addEventListener('focus', e => {this.enable_keys = false});
 		this.title_input.addEventListener('blur', e => {this.enable_keys = true});
 
-		this.text_area = document.querySelector('#prop-text');
+		this.text_area = document.querySelector('#obj-text');
 		this.text_area.addEventListener('focus', e => {this.enable_keys = false});
 		this.text_area.addEventListener('blur', e => {this.enable_keys = true});
 
@@ -112,8 +112,7 @@ class App {
 				break;
 
 			case 'STATE_HEADER_M_DOWN':
-				this.title_input.value = this.model.get_state(data.id).title;
-				this.text_area.value = this.model.get_state(data.id).text.join('\n');
+				this.show_state_text(data.id);
 				this.state_drag_start(data.event, data.id);
 				this.state = this.state_dragging_state;
 				break;
@@ -133,6 +132,7 @@ class App {
 				break;
 
 			case 'TR_CLICK':
+				this.show_transition_text(data.id);
 				if (data.event.ctrlKey)
 				{
 					const p = this.gui.get_absolute_pos(data.event);
@@ -145,6 +145,21 @@ class App {
 				break;
 
 		}
+	}
+
+	show_state_text(state_id)
+	{
+		const s = this.model.get_state(state_id);
+		this.title_input.value = s.title;
+		this.text_area.disabled = false;
+		this.text_area.value = s.text.join('\n');
+	}
+
+	show_transition_text(tr_id)
+	{
+		this.title_input.value = this.model.get_transition(tr_id).label;
+		this.text_area.value = '';
+		this.text_area.disabled = true;
 	}
 
 	start_transition()

@@ -252,10 +252,10 @@ export class Gui {
 
 		g.appendChild(r);
 		g.appendChild(s1);
-		g.appendChild(t);
-		g.appendChild(text);
 		g.appendChild(s2);
 		g.appendChild(m);
+		g.appendChild(t);
+		g.appendChild(text);
 		g.appendChild(header);
 		g.appendChild(border);
 		g.appendChild(resize_handle);

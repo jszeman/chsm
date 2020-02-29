@@ -18,14 +18,28 @@
 		</main>
 		<nav class='sidebar'>
 			<ul class='props'>
-				<li><h3>Sidebar</h3></li>
-				<li><strong>Title</strong></li>
-				<li><input type="text" id='prop-title'></li>
+				<li><h2>CHSM</h2></li>
+				<li><div id='btn-state' class='button'>New state</div></li>
+				<li><div id='btn-trans' class='button'>New transition</div></li>
+				<li><div id='btn-delobj' class='button'>Delete object</div></li>
 				<li>&nbsp</li>
-				<li><strong>Text</strong></li>
-				<li><textarea id='prop-text'></textarea></li>
+
+				<li class='row'>
+					<span class='row-title'>Label</span>
+					<div id='btn-label-reset' class='button-inline'>Reset</div>
+					<div id='btn-label-apply' class='button-inline'>Apply</div>
+				</li>
+				<li><input type="text" id='obj-label'></li>
 				<li>&nbsp</li>
-				<li><strong>Commands</strong></li>
+
+				<li class='row'>
+					<span class='row-title'>Text</span>
+					<div id='btn-text-reset' class='button-inline'>Reset</div>
+					<div id='btn-text-apply' class='button-inline'>Apply</div>
+				</li>
+				<li><textarea id='obj-text'></textarea></li>
+				<li>&nbsp</li>
+				<li><strong>commands</strong></li>
 				<li>
 					<ul>
 						<li>s: create a state</li>
