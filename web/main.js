@@ -34,6 +34,14 @@ class App {
 		this.text_area.addEventListener('focus', e => {this.enable_keys = false});
 		this.text_area.addEventListener('blur', e => {this.enable_keys = true});
 
+		this.sidebar = document.querySelector('#sidebar');
+		this.sidebar_handle = document.querySelector('#sidebar-handle');
+		this.sidebar_handle_text = document.querySelector('#sidebar-handle-text');
+		this.sidebar_handle.addEventListener('click', e => {
+			this.sidebar.hidden = !this.sidebar.hidden;
+			this.sidebar_handle_text.textContent = this.sidebar.hidden ? '>' : '<';
+		});
+
 		this.gui.add_event_handler('mousemove', event => {
 			this.mouse_pos = this.gui.get_absolute_pos(event);
 			this.dispatch('MOUSEMOVE', event);

@@ -7,16 +7,7 @@
 </head>
 <body>
 	<div class='wrapper'>
-		<main class='main'>
-			<svg height="100%" width="100%">
-				<g display='none'>
-					<path id='arrow' d='M 0 0 L 0.7 -0.3 L 0.7 0.3 Z' class='arrow_template'/>
-				</g>
-				<g id='drawing' transform='translate(10, 10) scale(10, 10)'>
-				</g>
-			</svg>
-		</main>
-		<nav class='sidebar'>
+		<nav id='sidebar'>
 			<ul class='props'>
 				<li><h2>CHSM</h2></li>
 				<li><div id='btn-state' class='button'>New state</div></li>
@@ -49,6 +40,16 @@
 				</li>
 			</ul>
 		</nav>
+		<div id='sidebar-handle'><span id='sidebar-handle-text'>&lt<span></div>
+		<main class='main'>
+			<svg height="100%" width="100%">
+				<g display='none'>
+					<path id='arrow' d='M 0 0 L 0.7 -0.3 L 0.7 0.3 Z' class='arrow_template'/>
+				</g>
+				<g id='drawing' transform='translate(10, 10) scale(10, 10)'>
+				</g>
+			</svg>
+		</main>
 	</div>
 </body>
 </html>
