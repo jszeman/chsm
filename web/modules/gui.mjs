@@ -156,6 +156,10 @@ export class Gui {
 				this.mod_svg(l, {x: label_pos[0], y: label_pos[1]});
 				l.textContent = label;
 			},
+			set_label(label)
+			{
+				l.textContent = label;
+			},
 			get_label_bbox: function()
 			{
 				const bbox = l.getBBox();

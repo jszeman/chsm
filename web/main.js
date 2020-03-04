@@ -15,6 +15,7 @@ class App {
 		this.mouse_pos = [0, 0];
 		this.enable_keys = true;
 		this.text_state_id = '';
+		this.text_tr_id = '';
 		
 		this.model.states().map(s => this.render_state(s), this);
 		this.model.transitions().map(t => this.render_transiton(t), this);
@@ -28,12 +29,12 @@ class App {
 		});
 
 		this.title_input = document.querySelector('#obj-label');
-		this.title_input.addEventListener('focus', e => {this.enable_keys = false});
-		this.title_input.addEventListener('blur', e => {this.enable_keys = true});
+		this.title_input.addEventListener('focus', e => this.dispatch('LABEL_FOCUS', e));
+		this.title_input.addEventListener('blur', e => this.dispatch('LABEL_BLUR', e));
 
 		this.text_area = document.querySelector('#obj-text');
-		this.text_area.addEventListener('focus', e => {this.enable_keys = false});
-		this.text_area.addEventListener('blur', e => {this.enable_keys = true});
+		this.text_area.addEventListener('focus', e => this.dispatch('TEXT_FOCUS', e));
+		this.text_area.addEventListener('blur', e => this.dispatch('TEXT_BLUR', e));
 
 		this.sidebar = document.querySelector('#sidebar');
 		this.sidebar_handle = document.querySelector('#sidebar-handle');
@@ -44,16 +45,16 @@ class App {
 		});
 
 		this.title_reset_btn = document.querySelector('#btn-label-reset');
-		this.title_reset_btn.addEventListener('click', e => this.reset_title());
+		this.title_reset_btn.addEventListener('click', e => this.dispatch('RESET_TITLE', e));
 
 		this.text_reset_btn = document.querySelector('#btn-text-reset');
-		this.text_reset_btn.addEventListener('click', e => this.reset_text());
+		this.text_reset_btn.addEventListener('click', e => this.dispatch('RESET_TEXT', e));
 
 		this.title_apply_btn = document.querySelector('#btn-label-apply');
-		this.title_apply_btn.addEventListener('click', e => this.apply_title());
+		this.title_apply_btn.addEventListener('click', e => this.dispatch('APPLY_TITLE', e));
 
 		this.text_apply_btn = document.querySelector('#btn-text-apply');
-		this.text_apply_btn.addEventListener('click', e => this.apply_text());
+		this.text_apply_btn.addEventListener('click', e => this.dispatch('APPLY_TEXT', e));
 
 		this.gui.add_event_handler('mousemove', event => {
 			this.mouse_pos = this.gui.get_absolute_pos(event);
@@ -80,6 +81,8 @@ class App {
 				const [tr_id, tr] = d;
 				this.gui.redraw_path_with_arrow(tr_id, tr.vertices, tr.label, tr.label_pos);
 			}, this);
+
+		this.model.changes.trans_set_label.map(d => this.gui.paths[d[0]].set_label(d[1].label), this);
 
 		this.model.changes.trans_del.map(d => this.gui.delete_transition(d[0]), this);
 	}
@@ -133,6 +136,32 @@ class App {
 				}
 				break;
 
+			case 'RESET_TITLE':
+				this.reset_title();
+				break
+
+			case 'RESET_TEXT':
+				this.reset_text();
+				break;
+
+			case 'APPLY_TITLE':
+				this.apply_title();
+				break;
+
+			case 'APPLY_TEXT':
+				this.apply_text();
+				break;
+
+			case 'LABEL_FOCUS':
+			case 'TEXT_FOCUS':
+				this.enable_keys = false;
+				break;
+
+			case 'LABEL_BLUR':
+			case 'TEXT_BLUR':
+				this.enable_keys = true;
+				break;
+
 			case 'STATE_HEADER_M_DOWN':
 				this.show_state_text(data.id);
 				this.state_drag_start(data.event, data.id);
@@ -176,6 +205,10 @@ class App {
 			const text = this.model.reset_state_title(this.text_state_id);
 			this.title_input.value = text.title;
 		}
+		else if (this.text_tr_id !== '')
+		{
+			this.title_input.value = this.model.reset_transition_label(this.text_tr_id);
+		}
 	}
 
 	apply_title()
@@ -184,8 +217,10 @@ class App {
 		{
 			this.model.apply_state_title(this.text_state_id, this.title_input.value);
 		}
-
-		this.push_model_changes_to_gui();
+		else if (this.text_tr_id !== '')
+		{
+			this.model.apply_transition_label(this.text_tr_id, this.title_input.value);
+		}
 	}
 
 	reset_text()
@@ -203,8 +238,6 @@ class App {
 		{
 			this.model.apply_state_text(this.text_state_id, this.text_area.value);
 		}
-
-		this.push_model_changes_to_gui();
 	}
 
 	cache_text_changes()
@@ -214,13 +247,19 @@ class App {
 			const text = {title: this.title_input.value, text: this.text_area.value};
 			this.model.cache_state_text(this.text_state_id, text);
 		}
+
+		if (this.text_tr_id !== '')
+		{
+			this.model.cache_transition_label(this.text_tr_id, this.title_input.value);
+		}
 	}
 
 	show_state_text(state_id)
 	{
 		this.cache_text_changes();
-
+		this.text_tr_id = '';
 		this.text_state_id = state_id;
+
 		const text = this.model.get_state_text(state_id);
 		this.title_input.value = text.title;
 		this.text_area.disabled = false;
@@ -229,7 +268,11 @@ class App {
 
 	show_transition_text(tr_id)
 	{
-		this.title_input.value = this.model.get_transition(tr_id).label;
+		this.cache_text_changes();
+		this.text_state_id = '';
+		this.text_tr_id = tr_id;
+
+		this.title_input.value = this.model.get_transition_text(tr_id);
 		this.text_area.value = '';
 		this.text_area.disabled = true;
 	}

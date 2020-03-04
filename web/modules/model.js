@@ -10,10 +10,21 @@ export class Model {
 			text_height: 		2,
 		};
 
+		this.elbow = 			'v';
+
+		this.state_text_cache = {};
+		this.tr_text_cache = {};
+
+		this.ack_changes();
+	}
+
+	ack_changes()
+	{
 		this.changes = {
 			trans_new:			[],
 			trans_del:			[],
 			trans_redraw:		[],
+			trans_set_label:	[],
 			state_new:			[],
 			state_del:			[],
 			state_resize:		[],
@@ -21,10 +32,37 @@ export class Model {
 			state_set_text:		[],
 			state_set_title:	[],
 		};
+	}
 
-		this.elbow = 			'v';
+	get_transition_text(tr_id)
+	{
+		if (!(tr_id in this.tr_text_cache))
+		{
+			const t = this.data.transitions[tr_id];
+			this.tr_text_cache[tr_id] = t.label;
+		}
 
-		this.state_text_cache = {};
+		return this.tr_text_cache[tr_id];
+	}
+
+	cache_transition_label(tr_id, label)
+	{
+		this.tr_text_cache[tr_id] = label;
+	}
+
+	reset_transition_label(tr_id)
+	{
+		const t = this.data.transitions[tr_id];
+		this.tr_text_cache[tr_id] = t.label;
+		return this.tr_text_cache[tr_id];
+	}
+
+	apply_transition_label(tr_id, label)
+	{
+		this.tr_text_cache[tr_id] = label;
+		const t = this.data.transitions[tr_id];
+		t.label = label;
+		this.changes.trans_set_label.push([tr_id, t]);
 	}
 
 	get_state_text(state_id)
@@ -58,33 +96,18 @@ export class Model {
 		this.changes.state_set_title.push([state_id, s]);
 	}
 
-	reset_state_title(state_id, text)
+	reset_state_title(state_id)
 	{
 		const s = this.data.states[state_id];
 		this.state_text_cache[state_id].title = s.title;
 		return this.state_text_cache[state_id];
 	}
 
-	reset_state_text(state_id, text)
+	reset_state_text(state_id)
 	{
 		const s = this.data.states[state_id];
 		this.state_text_cache[state_id].text = s.text.join('\n');
 		return this.state_text_cache[state_id];
-	}
-
-	ack_changes()
-	{
-		this.changes = {
-			trans_new:			[],
-			trans_del:			[],
-			trans_redraw:		[],
-			state_new:			[],
-			state_del:			[],
-			state_resize:		[],
-			state_move:			[],
-			state_set_text:		[],
-			state_set_title:	[],
-		};
 	}
 
 	delete_state(state_id)
