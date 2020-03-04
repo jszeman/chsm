@@ -14,6 +14,7 @@ class App {
 		this.tr_draw_data = {};
 		this.mouse_pos = [0, 0];
 		this.enable_keys = true;
+		this.text_state_id = '';
 		
 		this.model.states().map(s => this.render_state(s), this);
 		this.model.transitions().map(t => this.render_transiton(t), this);
@@ -41,6 +42,18 @@ class App {
 			this.sidebar.hidden = !this.sidebar.hidden;
 			this.sidebar_handle_text.textContent = this.sidebar.hidden ? '>' : '<';
 		});
+
+		this.title_reset_btn = document.querySelector('#btn-label-reset');
+		this.title_reset_btn.addEventListener('click', e => this.reset_title());
+
+		this.text_reset_btn = document.querySelector('#btn-text-reset');
+		this.text_reset_btn.addEventListener('click', e => this.reset_text());
+
+		this.title_apply_btn = document.querySelector('#btn-label-apply');
+		this.title_apply_btn.addEventListener('click', e => this.apply_title());
+
+		this.text_apply_btn = document.querySelector('#btn-text-apply');
+		this.text_apply_btn.addEventListener('click', e => this.apply_text());
 
 		this.gui.add_event_handler('mousemove', event => {
 			this.mouse_pos = this.gui.get_absolute_pos(event);
@@ -78,6 +91,7 @@ class App {
 		this.model.changes.state_move.map(d => this.gui.states[d[0]].move(d[1].pos), this);
 		this.model.changes.state_resize.map(d => this.gui.states[d[0]].resize(d[1].size), this);
 		this.model.changes.state_set_text.map(d => this.gui.states[d[0]].set_text(d[1].text), this);
+		this.model.changes.state_set_title.map(d => this.gui.states[d[0]].set_title(d[1].title), this);
 	}
 
 	push_model_changes_to_gui()
@@ -155,12 +169,62 @@ class App {
 		}
 	}
 
+	reset_title()
+	{
+		if (this.text_state_id !== '')
+		{
+			const text = this.model.reset_state_title(this.text_state_id);
+			this.title_input.value = text.title;
+		}
+	}
+
+	apply_title()
+	{
+		if (this.text_state_id !== '')
+		{
+			this.model.apply_state_title(this.text_state_id, this.title_input.value);
+		}
+
+		this.push_model_changes_to_gui();
+	}
+
+	reset_text()
+	{
+		if (this.text_state_id !== '')
+		{
+			const text = this.model.reset_state_text(this.text_state_id);
+			this.text_area.value = text.text;
+		}
+	}
+
+	apply_text()
+	{
+		if (this.text_state_id !== '')
+		{
+			this.model.apply_state_text(this.text_state_id, this.text_area.value);
+		}
+
+		this.push_model_changes_to_gui();
+	}
+
+	cache_text_changes()
+	{
+		if (this.text_state_id !== '')
+		{
+			const text = {title: this.title_input.value, text: this.text_area.value};
+			this.model.cache_state_text(this.text_state_id, text);
+		}
+	}
+
 	show_state_text(state_id)
 	{
-		const s = this.model.get_state(state_id);
-		this.title_input.value = s.title;
+		this.cache_text_changes();
+
+		this.text_state_id = state_id;
+		const text = this.model.get_state_text(state_id);
+		this.title_input.value = text.title;
 		this.text_area.disabled = false;
-		this.text_area.value = s.text.join('\n');
+		this.text_area.value = text.text;
 	}
 
 	show_transition_text(tr_id)

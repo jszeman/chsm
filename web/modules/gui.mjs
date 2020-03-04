@@ -323,6 +323,10 @@ export class Gui {
 				{
 					text.children[i].textContent = s;
 				}
+			},
+			set_title(title)
+			{
+				t.textContent = title;
 			}
 		};
 

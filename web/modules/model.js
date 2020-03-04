@@ -9,6 +9,7 @@ export class Model {
 			state_min_height: 	3,
 			text_height: 		2,
 		};
+
 		this.changes = {
 			trans_new:			[],
 			trans_del:			[],
@@ -20,8 +21,55 @@ export class Model {
 			state_set_text:		[],
 			state_set_title:	[],
 		};
+
 		this.elbow = 			'v';
-		this.tmp_seg_cnt =		2;
+
+		this.state_text_cache = {};
+	}
+
+	get_state_text(state_id)
+	{
+		if (!(state_id in this.state_text_cache))
+		{
+			const s = this.data.states[state_id];
+			this.state_text_cache[state_id] = {title: s.title, text: s.text.join('\n')};
+		}
+
+		return this.state_text_cache[state_id];
+	}
+
+	cache_state_text(state_id, text)
+	{
+		this.state_text_cache[state_id] = text;
+	}
+
+	apply_state_text(state_id, text)
+	{
+		this.state_text_cache[state_id].text = text;
+		const s = this.data.states[state_id];
+		this.set_state_text(state_id, text.split('\n'))
+	}
+
+	apply_state_title(state_id, title)
+	{
+		this.state_text_cache[state_id].title = title;
+		const s = this.data.states[state_id];
+		s.title = title;
+		this.changes.state_set_title.push([state_id, s]);
+	}
+
+	reset_state_title(state_id, text)
+	{
+		const s = this.data.states[state_id];
+		this.state_text_cache[state_id].title = s.title;
+		return this.state_text_cache[state_id];
+	}
+
+	reset_state_text(state_id, text)
+	{
+		const s = this.data.states[state_id];
+		this.state_text_cache[state_id].text = s.text.join('\n');
+		return this.state_text_cache[state_id];
 	}
 
 	ack_changes()
