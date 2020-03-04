@@ -40,7 +40,7 @@ svg {
 }
 
 #sidebar-handle:hover {
-    background-color: coral;
+    background-color: #ccc;
 }
 
 .props {
@@ -71,8 +71,8 @@ svg {
 }
 
 .button:hover {
-    background-color: teal;
-    cursor: pointer;
+    background-color: rgb(44, 118, 179);
+    cursor: default;
 }
 
 .row {
@@ -96,6 +96,6 @@ svg {
 }
 
 .button-inline:hover {
-    background-color: teal;
-    cursor: pointer;
+    background-color: rgb(44, 118, 179);
+    cursor: default;
 }
