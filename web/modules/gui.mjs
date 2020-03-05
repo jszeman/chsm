@@ -207,6 +207,7 @@ export class Gui {
 			strings,
 			text_height,
 			on_header_mouse_down,
+			on_header_click,
 			on_corner_mouse_down,
 			on_border_click,
 			on_header_mouse_over,
@@ -252,6 +253,7 @@ export class Gui {
 		header.addEventListener('mousedown', on_header_mouse_down);
 		header.addEventListener('mouseover', on_header_mouse_over);
 		header.addEventListener('mouseleave', on_header_mouse_leave);
+		header.addEventListener('click', on_header_click);
 		resize_handle.addEventListener('mousedown', on_corner_mouse_down)
 
 		g.appendChild(r);
@@ -283,23 +285,13 @@ export class Gui {
 			{
 				this.mod_svg(g, {transform: `translate(${pos[0]}, ${pos[1]})`});
 			},
-			mod_component_class: function(component, cl, removing)
+			add_border_class(cl)
 			{
-				switch(component)
-				{
-					case 'border':
-						if(removing)
-						{
-							border.classList.remove(cl);
-						}
-						else
-						{
-							border.classList.add(cl);
-						}
-						break;
-					default:
-						break;
-				}
+				border.classList.add(cl);
+			},
+			remove_border_class(cl)
+			{
+				border.classList.remove(cl);
 			},
 			set_text(txt)
 			{
@@ -336,11 +328,5 @@ export class Gui {
 
 		this.drawing.appendChild(g);
 	}
-
-	redraw_state_change_border(id, is_deleting)
-	{
-		this.states[id].mod_component_class('border', 'state_border', is_deleting);
-		this.states[id].mod_component_class('border', 'state_border_deleting', !is_deleting);
-    }
 };
 

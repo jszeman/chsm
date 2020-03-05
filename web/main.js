@@ -16,6 +16,10 @@ class App {
 		this.enable_keys = true;
 		this.text_state_id = '';
 		this.text_tr_id = '';
+		this.prop_editor = {
+			obj_id: null,
+			obj_type: null
+		};
 		
 		this.model.states().map(s => this.render_state(s), this);
 		this.model.transitions().map(t => this.render_transiton(t), this);
@@ -154,16 +158,11 @@ class App {
 
 			case 'LABEL_FOCUS':
 			case 'TEXT_FOCUS':
-				this.enable_keys = false;
-				break;
-
-			case 'LABEL_BLUR':
-			case 'TEXT_BLUR':
-				this.enable_keys = true;
+				this.enter_property_editing_state();
+				this.state = this.property_editing_state;
 				break;
 
 			case 'STATE_HEADER_M_DOWN':
-				this.show_state_text(data.id);
 				this.state_drag_start(data.event, data.id);
 				this.state = this.state_dragging_state;
 				break;
@@ -183,84 +182,198 @@ class App {
 				break;
 
 			case 'TR_CLICK':
-				this.show_transition_text(data.id);
-				if (data.event.ctrlKey)
-				{
-					const p = this.gui.get_absolute_pos(data.event);
-					this.model.transition_restart_from_pos(data.id, p);
-					this.start_transition();
-					this.gui.paths[data.id].add_handle_class('transition_handle_highlight_draw');
-					this.tr_draw_data.trans_id = data.id;
-					this.state = this.transition_drawing_state;
-				}
+				this.enter_property_editing_state(data.id, 'transition');
+				this.state = this.property_editing_state;
 				break;
 
+			case 'STATE_HEADER_CLICK':
+				this.enter_property_editing_state(data.id, 'state');
+				this.state = this.property_editing_state;
+				break;
+
+			case 'TR_CTRL_CLICK':
+				const p = this.gui.get_absolute_pos(data.event);
+				this.model.transition_restart_from_pos(data.id, p);
+				this.start_transition();
+				this.gui.paths[data.id].add_handle_class('transition_handle_highlight_draw');
+				this.tr_draw_data.trans_id = data.id;
+				this.state = this.transition_drawing_state;
+				break;
+		}
+	}
+
+	property_editing_state(event, data)
+	{
+		switch(event)
+		{
+			case 'LABEL_BLUR':
+			case 'TEXT_BLUR':
+				this.exit_property_editing_state();
+				this.state = this.idle_state;
+				break;
+
+			case 'RESET_TITLE':
+				this.reset_title();
+				break
+
+			case 'RESET_TEXT':
+				this.reset_text();
+				break;
+
+			case 'APPLY_TITLE':
+				this.apply_title();
+				break;
+
+			case 'APPLY_TEXT':
+				this.apply_text();
+				break;
+
+			case 'TR_CLICK':
+				this.dim_object();
+				this.cache_text_changes();
+				this.prop_editor.obj_id = data.id;
+				this.prop_editor.obj_type = 'transition';
+				this.highlight_object();
+				this.show_obj_text();
+				break;
+
+			case 'STATE_HEADER_CLICK':
+				this.dim_object();
+				this.cache_text_changes();
+				this.prop_editor.obj_id = data.id;
+				this.prop_editor.obj_type = 'state';
+				this.highlight_object();
+				this.show_obj_text();
+				break;
+
+			default:
+				/*const exit = this.idle_state(event, data);
+				if (exit)
+				{
+					this.exit_property_editing_state();
+				}*/
+				break;
+		}
+	}
+
+	enter_property_editing_state(obj_id=null, obj_type=null)
+	{
+		if (obj_id !== null)
+		{
+			this.prop_editor.obj_id = obj_id;
+			this.prop_editor.obj_type = obj_type;
+		}
+		this.highlight_object();
+		this.enable_keys = false;
+		this.show_obj_text();
+	}
+
+	exit_property_editing_state()
+	{
+		this.dim_object();
+		this.prop_editor.obj_id = null;
+		this.prop_editor.obj_type = null;
+		this.enable_keys = true;
+	}
+
+	highlight_object()
+	{
+		const {obj_id, obj_type} = this.prop_editor;
+
+		if (obj_type === 'state')
+		{
+			this.gui.states[obj_id].add_border_class('state_border_highlight');
+		}
+		else if (obj_type === 'transition')
+		{
+			this.gui.paths[obj_id].add_handle_class('transition_handle_highlight_draw');
+		}
+	}
+
+	dim_object()
+	{
+		const {obj_id, obj_type} = this.prop_editor;
+
+		if (obj_type === 'state')
+		{
+			this.gui.states[obj_id].remove_border_class('state_border_highlight');
+		}
+		else if (obj_type === 'transition')
+		{
+			this.gui.paths[obj_id].remove_handle_class('transition_handle_highlight_draw');
 		}
 	}
 
 	reset_title()
 	{
-		if (this.text_state_id !== '')
+		const {obj_id, obj_type} = this.prop_editor;
+
+		if (obj_type === 'state')
 		{
-			const text = this.model.reset_state_title(this.text_state_id);
+			const text = this.model.reset_state_title(obj_id);
 			this.title_input.value = text.title;
 		}
-		else if (this.text_tr_id !== '')
+		else if (obj_type === 'transition')
 		{
-			this.title_input.value = this.model.reset_transition_label(this.text_tr_id);
+			this.title_input.value = this.model.reset_transition_label(obj_id);
 		}
 	}
 
 	apply_title()
 	{
-		if (this.text_state_id !== '')
+		const {obj_id, obj_type} = this.prop_editor;
+
+		if (obj_type === 'state')
 		{
-			this.model.apply_state_title(this.text_state_id, this.title_input.value);
+			this.model.apply_state_title(obj_id, this.title_input.value);
 		}
-		else if (this.text_tr_id !== '')
+		else if (obj_type === 'transition')
 		{
-			this.model.apply_transition_label(this.text_tr_id, this.title_input.value);
+			this.model.apply_transition_label(obj_id, this.title_input.value);
 		}
 	}
 
 	reset_text()
 	{
-		if (this.text_state_id !== '')
+		const {obj_id, obj_type} = this.prop_editor;
+
+		if (obj_type === 'state')
 		{
-			const text = this.model.reset_state_text(this.text_state_id);
+			const text = this.model.reset_state_text(obj_id);
 			this.text_area.value = text.text;
 		}
 	}
 
 	apply_text()
 	{
-		if (this.text_state_id !== '')
+		const {obj_id, obj_type} = this.prop_editor;
+
+		if (obj_type === 'state')
 		{
-			this.model.apply_state_text(this.text_state_id, this.text_area.value);
+			this.model.apply_state_text(obj_id, this.text_area.value);
 		}
 	}
 
 	cache_text_changes()
 	{
-		if (this.text_state_id !== '')
+		const {obj_id, obj_type} = this.prop_editor;
+
+		if (obj_type === 'state')
 		{
 			const text = {title: this.title_input.value, text: this.text_area.value};
-			this.model.cache_state_text(this.text_state_id, text);
+			console.log(obj_id, text);
+			this.model.cache_state_text(obj_id, text);
 		}
-
-		if (this.text_tr_id !== '')
+		else if (obj_type === 'transition')
 		{
-			this.model.cache_transition_label(this.text_tr_id, this.title_input.value);
+			this.model.cache_transition_label(obj_id, this.title_input.value);
 		}
 	}
 
 	show_state_text(state_id)
 	{
-		this.cache_text_changes();
-		this.text_tr_id = '';
-		this.text_state_id = state_id;
-
 		const text = this.model.get_state_text(state_id);
+
 		this.title_input.value = text.title;
 		this.text_area.disabled = false;
 		this.text_area.value = text.text;
@@ -268,13 +381,23 @@ class App {
 
 	show_transition_text(tr_id)
 	{
-		this.cache_text_changes();
-		this.text_state_id = '';
-		this.text_tr_id = tr_id;
-
 		this.title_input.value = this.model.get_transition_text(tr_id);
 		this.text_area.value = '';
 		this.text_area.disabled = true;
+	}
+
+	show_obj_text()
+	{
+		const {obj_id, obj_type} = this.prop_editor;
+
+		if (obj_type === 'state')
+		{
+			this.show_state_text(obj_id);
+		}
+		else if (obj_type === 'transition')
+		{
+			this.show_transition_text(obj_id);
+		}
 	}
 
 	start_transition()
@@ -344,11 +467,11 @@ class App {
 				break;
 
 			case 'STATE_HEADER_M_OVER':
-				this.gui.redraw_state_change_border(data.id, true);
+				this.gui.states[data.id].add_border_class('state_border_deleting');
 				break;
 
 			case 'STATE_HEADER_M_LEAVE':
-				this.gui.redraw_state_change_border(data.id, false);
+				this.gui.states[data.id].remove_border_class('state_border_deleting');
 				break;
 		}
 	}
@@ -519,6 +642,7 @@ class App {
 			strings:				state.text,
 			text_height:			this.model.options.text_height,
 			on_header_mouse_down:	evt => this.dispatch('STATE_HEADER_M_DOWN', {event: evt, id: state_id}),
+			on_header_click:		evt => this.dispatch('STATE_HEADER_CLICK', {event: evt, id: state_id}),
 			on_corner_mouse_down:	evt => this.dispatch('STATE_RESIZE', {event: evt, id: state_id}),
 			on_border_click:		evt => this.dispatch('STATE_BORDER_CLICK', {event: evt, id: state_id}),
 			on_header_mouse_over:	evt => this.dispatch('STATE_HEADER_M_OVER', {event: evt, id: state_id}),
@@ -578,7 +702,16 @@ class App {
 			tr.label_pos,
 			evt => this.dispatch('TR_M_DOWN', {event: evt, id: trans_id}),
 			evt => this.dispatch('TR_DBLCLICK', {event: evt, id: trans_id}),
-			evt => this.dispatch('TR_CLICK', {event: evt, id: trans_id}));
+			evt => {
+				if (evt.ctrlKey)
+				{
+					this.dispatch('TR_CTRL_CLICK', {event: evt, id: trans_id});
+				}
+				else
+				{
+					this.dispatch('TR_CLICK', {event: evt, id: trans_id});
+				}
+			});
 	}
 }
 

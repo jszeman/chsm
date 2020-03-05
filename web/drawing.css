@@ -17,6 +17,10 @@
     opacity: 0.4;
 }
 
+.state_border_highlight {
+    opacity: 0.4;
+}
+
 .state_border_deleting {
     stroke: red; 
     stroke-width: 0.8;
