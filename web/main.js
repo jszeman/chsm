@@ -155,11 +155,8 @@ class App {
 			case 'LABEL_FOCUS':
 			case 'TEXT_FOCUS':
 				this.enable_keys = false;
-				break;
-
-			case 'LABEL_BLUR':
-			case 'TEXT_BLUR':
-				this.enable_keys = true;
+				this.highlight_edit_object();
+				this.state = this.property_editing_state;
 				break;
 
 			case 'STATE_HEADER_M_DOWN':
@@ -195,6 +192,47 @@ class App {
 				}
 				break;
 
+		}
+	}
+
+	property_editing_state(event, data)
+	{
+		switch(event)
+		{
+			case 'LABEL_BLUR':
+			case 'TEXT_BLUR':
+				this.enable_keys = true;
+				this.dim_edit_object();
+				this.state = this.idle_state;
+				break;
+
+			default:
+				this.idle_state(event, data);
+				break;
+		}
+	}
+
+	highlight_edit_object()
+	{
+		if (this.text_state_id !== '')
+		{
+			//this.gui.states[this.text_state_id].add_border_class('');
+		}
+		else if (this.text_tr_id !== '')
+		{
+			this.gui.paths[this.text_tr_id].add_handle_class('transition_handle_highlight_draw');
+		}
+	}
+
+	dim_edit_object()
+	{
+		if (this.text_state_id !== '')
+		{
+
+		}
+		else if (this.text_tr_id !== '')
+		{
+			this.gui.paths[this.text_tr_id].remove_handle_class('transition_handle_highlight_draw');
 		}
 	}
 
@@ -256,6 +294,7 @@ class App {
 
 	show_state_text(state_id)
 	{
+		this.dim_edit_object();
 		this.cache_text_changes();
 		this.text_tr_id = '';
 		this.text_state_id = state_id;
@@ -268,6 +307,7 @@ class App {
 
 	show_transition_text(tr_id)
 	{
+		this.dim_edit_object();
 		this.cache_text_changes();
 		this.text_state_id = '';
 		this.text_tr_id = tr_id;
@@ -344,11 +384,11 @@ class App {
 				break;
 
 			case 'STATE_HEADER_M_OVER':
-				this.gui.redraw_state_change_border(data.id, true);
+				this.gui.states[data.id].add_border_class('state_border_deleting');
 				break;
 
 			case 'STATE_HEADER_M_LEAVE':
-				this.gui.redraw_state_change_border(data.id, false);
+				this.gui.states[data.id].remove_border_class('state_border_deleting');
 				break;
 		}
 	}
