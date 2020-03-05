@@ -304,6 +304,47 @@ class App {
 		}
 	}
 
+	property_editing_state(event, data)
+	{
+		switch(event)
+		{
+			case 'LABEL_BLUR':
+			case 'TEXT_BLUR':
+				this.enable_keys = true;
+				this.dim_edit_object();
+				this.state = this.idle_state;
+				break;
+
+			default:
+				this.idle_state(event, data);
+				break;
+		}
+	}
+
+	highlight_edit_object()
+	{
+		if (this.text_state_id !== '')
+		{
+			//this.gui.states[this.text_state_id].add_border_class('');
+		}
+		else if (this.text_tr_id !== '')
+		{
+			this.gui.paths[this.text_tr_id].add_handle_class('transition_handle_highlight_draw');
+		}
+	}
+
+	dim_edit_object()
+	{
+		if (this.text_state_id !== '')
+		{
+
+		}
+		else if (this.text_tr_id !== '')
+		{
+			this.gui.paths[this.text_tr_id].remove_handle_class('transition_handle_highlight_draw');
+		}
+	}
+
 	reset_title()
 	{
 		const {obj_id, obj_type} = this.prop_editor;
@@ -372,6 +413,11 @@ class App {
 
 	show_state_text(state_id)
 	{
+		this.dim_edit_object();
+		this.cache_text_changes();
+		this.text_tr_id = '';
+		this.text_state_id = state_id;
+
 		const text = this.model.get_state_text(state_id);
 
 		this.title_input.value = text.title;
