@@ -158,8 +158,13 @@ class App {
 
 			case 'LABEL_FOCUS':
 			case 'TEXT_FOCUS':
-				this.enter_property_editing_state();
-				this.state = this.property_editing_state;
+				this.highlight_object();
+				this.enable_keys = false;
+				break;
+
+			case 'LABEL_BLUR':
+			case 'TEXT_BLUR':
+				this.enable_keys = true;
 				break;
 
 			case 'STATE_HEADER_M_DOWN':
@@ -182,6 +187,7 @@ class App {
 				break;
 
 			case 'TR_CLICK':
+				data.event.stopPropagation();
 				this.dim_object();
 				this.cache_text_changes();
 				this.prop_editor.obj_id = data.id;
@@ -191,6 +197,7 @@ class App {
 				break;
 
 			case 'STATE_HEADER_CLICK':
+				data.event.stopPropagation();
 				this.dim_object();
 				this.cache_text_changes();
 				this.prop_editor.obj_id = data.id;
@@ -207,6 +214,11 @@ class App {
 				this.tr_draw_data.trans_id = data.id;
 				this.state = this.transition_drawing_state;
 				break;
+
+			case 'CLICK':
+				this.dim_object();
+				this.cache_text_changes();
+				break; 
 		}
 	}
 
@@ -217,10 +229,12 @@ class App {
 		if (obj_type === 'state')
 		{
 			this.gui.states[obj_id].add_border_class('state_border_highlight');
+			this.sidebar.style.background = 'rgba(23, 197, 67, 0.1)';
 		}
 		else if (obj_type === 'transition')
 		{
-			this.gui.paths[obj_id].add_handle_class('transition_handle_highlight_draw');
+			this.gui.paths[obj_id].add_handle_class('transition_handle_highlight_edit');
+			this.sidebar.style.background = 'rgba(23, 197, 67, 0.1)';
 		}
 	}
 
@@ -234,8 +248,10 @@ class App {
 		}
 		else if (obj_type === 'transition')
 		{
-			this.gui.paths[obj_id].remove_handle_class('transition_handle_highlight_draw');
+			this.gui.paths[obj_id].remove_handle_class('transition_handle_highlight_edit');
 		}
+		
+		this.sidebar.style.background = 'white';
 	}
 
 	reset_title()
@@ -295,7 +311,6 @@ class App {
 		if (obj_type === 'state')
 		{
 			const text = {title: this.title_input.value, text: this.text_area.value};
-			console.log(obj_id, text);
 			this.model.cache_state_text(obj_id, text);
 		}
 		else if (obj_type === 'transition')
