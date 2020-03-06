@@ -182,53 +182,6 @@ class App {
 				break;
 
 			case 'TR_CLICK':
-				this.enter_property_editing_state(data.id, 'transition');
-				this.state = this.property_editing_state;
-				break;
-
-			case 'STATE_HEADER_CLICK':
-				this.enter_property_editing_state(data.id, 'state');
-				this.state = this.property_editing_state;
-				break;
-
-			case 'TR_CTRL_CLICK':
-				const p = this.gui.get_absolute_pos(data.event);
-				this.model.transition_restart_from_pos(data.id, p);
-				this.start_transition();
-				this.gui.paths[data.id].add_handle_class('transition_handle_highlight_draw');
-				this.tr_draw_data.trans_id = data.id;
-				this.state = this.transition_drawing_state;
-				break;
-		}
-	}
-
-	property_editing_state(event, data)
-	{
-		switch(event)
-		{
-			case 'LABEL_BLUR':
-			case 'TEXT_BLUR':
-				this.exit_property_editing_state();
-				this.state = this.idle_state;
-				break;
-
-			case 'RESET_TITLE':
-				this.reset_title();
-				break
-
-			case 'RESET_TEXT':
-				this.reset_text();
-				break;
-
-			case 'APPLY_TITLE':
-				this.apply_title();
-				break;
-
-			case 'APPLY_TEXT':
-				this.apply_text();
-				break;
-
-			case 'TR_CLICK':
 				this.dim_object();
 				this.cache_text_changes();
 				this.prop_editor.obj_id = data.id;
@@ -246,34 +199,15 @@ class App {
 				this.show_obj_text();
 				break;
 
-			default:
-				/*const exit = this.idle_state(event, data);
-				if (exit)
-				{
-					this.exit_property_editing_state();
-				}*/
+			case 'TR_CTRL_CLICK':
+				const p = this.gui.get_absolute_pos(data.event);
+				this.model.transition_restart_from_pos(data.id, p);
+				this.start_transition();
+				this.gui.paths[data.id].add_handle_class('transition_handle_highlight_draw');
+				this.tr_draw_data.trans_id = data.id;
+				this.state = this.transition_drawing_state;
 				break;
 		}
-	}
-
-	enter_property_editing_state(obj_id=null, obj_type=null)
-	{
-		if (obj_id !== null)
-		{
-			this.prop_editor.obj_id = obj_id;
-			this.prop_editor.obj_type = obj_type;
-		}
-		this.highlight_object();
-		this.enable_keys = false;
-		this.show_obj_text();
-	}
-
-	exit_property_editing_state()
-	{
-		this.dim_object();
-		this.prop_editor.obj_id = null;
-		this.prop_editor.obj_type = null;
-		this.enable_keys = true;
 	}
 
 	highlight_object()
@@ -301,47 +235,6 @@ class App {
 		else if (obj_type === 'transition')
 		{
 			this.gui.paths[obj_id].remove_handle_class('transition_handle_highlight_draw');
-		}
-	}
-
-	property_editing_state(event, data)
-	{
-		switch(event)
-		{
-			case 'LABEL_BLUR':
-			case 'TEXT_BLUR':
-				this.enable_keys = true;
-				this.dim_edit_object();
-				this.state = this.idle_state;
-				break;
-
-			default:
-				this.idle_state(event, data);
-				break;
-		}
-	}
-
-	highlight_edit_object()
-	{
-		if (this.text_state_id !== '')
-		{
-			//this.gui.states[this.text_state_id].add_border_class('');
-		}
-		else if (this.text_tr_id !== '')
-		{
-			this.gui.paths[this.text_tr_id].add_handle_class('transition_handle_highlight_draw');
-		}
-	}
-
-	dim_edit_object()
-	{
-		if (this.text_state_id !== '')
-		{
-
-		}
-		else if (this.text_tr_id !== '')
-		{
-			this.gui.paths[this.text_tr_id].remove_handle_class('transition_handle_highlight_draw');
 		}
 	}
 
@@ -413,11 +306,6 @@ class App {
 
 	show_state_text(state_id)
 	{
-		this.dim_edit_object();
-		this.cache_text_changes();
-		this.text_tr_id = '';
-		this.text_state_id = state_id;
-
 		const text = this.model.get_state_text(state_id);
 
 		this.title_input.value = text.title;
