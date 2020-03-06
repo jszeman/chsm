@@ -41,6 +41,17 @@ svg {
     align-items: center;
 }
 
+#sidebar-handle-text {
+    height: 4em;
+    width: inherit;
+    background-color: #aaa;
+    color: blue;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font: 1.2em arial,helvetica,sans-serif;
+}
+
 #sidebar-handle:hover {
     background-color: #ccc;
 }

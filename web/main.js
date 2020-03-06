@@ -43,7 +43,7 @@ class App {
 		this.sidebar = document.querySelector('#sidebar');
 		this.sidebar_handle = document.querySelector('#sidebar-handle');
 		this.sidebar_handle_text = document.querySelector('#sidebar-handle-text');
-		this.sidebar_handle.addEventListener('click', e => {
+		this.sidebar_handle_text.addEventListener('click', e => {
 			this.sidebar.hidden = !this.sidebar.hidden;
 			this.sidebar_handle_text.textContent = this.sidebar.hidden ? '>' : '<';
 		});
