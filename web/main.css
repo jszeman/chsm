@@ -28,7 +28,7 @@ svg {
 
 #sidebar {
     padding: 0.2em;
-    width: 15em;
+    flex: 0 0 200px;
     margin-left: 5px;
 }
 
@@ -39,6 +39,7 @@ svg {
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: ew-resize;
 }
 
 #sidebar-handle-text {
@@ -50,10 +51,19 @@ svg {
     justify-content: center;
     align-items: center;
     font: 1.2em arial,helvetica,sans-serif;
+    cursor: default;
 }
 
-#sidebar-handle:hover {
-    background-color: #ccc;
+#sidebar-handle-text:hover {
+    height: 4em;
+    width: inherit;
+    background-color: #aba;
+    color: blue;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font: 1.2em arial,helvetica,sans-serif;
+    cursor: default;
 }
 
 .props {

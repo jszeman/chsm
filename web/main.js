@@ -23,8 +23,10 @@ class App {
 		
 		this.model.states().map(s => this.render_state(s), this);
 		this.model.transitions().map(t => this.render_transiton(t), this);
+
+		this.body = document.querySelector('body');
 		
-		document.querySelector('body').addEventListener("keydown", event => {
+		this.body.addEventListener("keydown", event => {
 			if (!this.enable_keys) return;
 			if (event.isComposing || event.keyCode === 229) {
 				return;
@@ -41,12 +43,13 @@ class App {
 		this.text_area.addEventListener('blur', e => this.dispatch('TEXT_BLUR', e));
 
 		this.sidebar = document.querySelector('#sidebar');
+
 		this.sidebar_handle = document.querySelector('#sidebar-handle');
+		this.sidebar_handle.addEventListener('mousedown', e => this.dispatch('SB_HANDLE_MDOWN', e));
+
 		this.sidebar_handle_text = document.querySelector('#sidebar-handle-text');
-		this.sidebar_handle_text.addEventListener('click', e => {
-			this.sidebar.hidden = !this.sidebar.hidden;
-			this.sidebar_handle_text.textContent = this.sidebar.hidden ? '>' : '<';
-		});
+		this.sidebar_handle_text.addEventListener('click', e => this.dispatch('SB_HANDLE_TEXT_CLICK', e));
+		this.sidebar_handle_text.addEventListener('mousedown', e => this.dispatch('SB_HANDLE_TEXT_MDOWN', e));
 
 		this.title_reset_btn = document.querySelector('#btn-label-reset');
 		this.title_reset_btn.addEventListener('click', e => this.dispatch('RESET_TITLE', e));
@@ -60,16 +63,16 @@ class App {
 		this.text_apply_btn = document.querySelector('#btn-text-apply');
 		this.text_apply_btn.addEventListener('click', e => this.dispatch('APPLY_TEXT', e));
 
-		this.gui.add_event_handler('mousemove', event => {
+		this.body.addEventListener('mousemove', event => {
 			this.mouse_pos = this.gui.get_absolute_pos(event);
 			this.dispatch('MOUSEMOVE', event);
 		});
 
-		this.gui.add_event_handler('mouseup', event => {
+		this.body.addEventListener('mouseup', event => {
 			this.dispatch('MOUSEUP', event);
 		});
 
-		this.gui.add_event_handler('click', event => {
+		this.body.addEventListener('click', event => {
 			this.dispatch('CLICK', event);
 		});
 
@@ -118,6 +121,7 @@ class App {
 
 	idle_state(event, data)
 	{
+		//console.log('idle', event);
 		switch(event)
 		{
 			case 'KEYDOWN':
@@ -138,6 +142,10 @@ class App {
 						this.model.transitions().map(t => this.gui.redraw_path_change_line_color(t, true));
 						break;
 				}
+				break;
+
+			case 'MOUSEMOVE':
+				//console.log('idle', 'MOUSE_MOVE', data);
 				break;
 
 			case 'RESET_TITLE':
@@ -218,9 +226,58 @@ class App {
 			case 'CLICK':
 				this.dim_object();
 				this.cache_text_changes();
-				break; 
+				break;
+
+			case 'SB_HANDLE_MDOWN':
+				data.stopPropagation();
+				this.state = this.sidebar_resizing_state;
+				break;
+
+			case 'SB_HANDLE_TEXT_MDOWN':
+				data.stopPropagation();
+				break;
+
+
+			case 'SB_HANDLE_TEXT_CLICK':
+				data.stopPropagation();
+				data.preventDefault();
+				this.sidebar.hidden = !this.sidebar.hidden;
+				this.sidebar_handle_text.textContent = this.sidebar.hidden ? '>' : '<';
+				break;
 		}
 	}
+
+	sidebar_resizing_state(event, data)
+	{
+		console.log('resize', event);
+		switch(event)
+		{
+			case 'KEYDOWN':
+				switch(data.code)
+				{
+					case 'Escape':
+						this.gui.set_cursor('auto');
+						this.state = this.idle_state;
+						break;
+				}
+				break;
+
+			case 'MOUSEMOVE':
+				data.preventDefault();
+				data.stopPropagation();
+				if (!this.sidebar.hidden)
+				{
+					this.sidebar.style.flex = `0 0 ${(data.x - this.sidebar.getBoundingClientRect().left - 10)}px`;
+				}
+				break
+
+			case 'MOUSEUP':
+				this.gui.set_cursor('auto');
+				this.state = this.idle_state;
+				break;
+		}
+	}
+
 
 	highlight_object()
 	{
