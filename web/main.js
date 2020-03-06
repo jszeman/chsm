@@ -135,6 +135,11 @@ class App {
 						this.start_transition();
 						this.state = this.select_tr_start_state;
 						break;
+
+					case 'Tab':
+						data.preventDefault();
+						this.toggle_sidebar();
+						break;
 						
 					case 'KeyD':
 						this.start_delete_state_or_transition();
@@ -241,10 +246,15 @@ class App {
 			case 'SB_HANDLE_TEXT_CLICK':
 				data.stopPropagation();
 				data.preventDefault();
-				this.sidebar.hidden = !this.sidebar.hidden;
-				this.sidebar_handle_text.textContent = this.sidebar.hidden ? '>' : '<';
+				this.toggle_sidebar();
 				break;
 		}
+	}
+
+	toggle_sidebar()
+	{
+		this.sidebar.hidden = !this.sidebar.hidden;
+		this.sidebar_handle_text.textContent = this.sidebar.hidden ? '>' : '<';
 	}
 
 	sidebar_resizing_state(event, data)
