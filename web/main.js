@@ -13,27 +13,66 @@ class App {
 		this.resize_data = {};
 		this.tr_draw_data = {};
 		this.mouse_pos = [0, 0];
+		this.enable_keys = true;
+		this.text_state_id = '';
+		this.text_tr_id = '';
+		this.prop_editor = {
+			obj_id: null,
+			obj_type: null
+		};
 		
 		this.model.states().map(s => this.render_state(s), this);
 		this.model.transitions().map(t => this.render_transiton(t), this);
+
+		this.body = document.querySelector('body');
 		
-		document.querySelector('body').addEventListener("keydown", event => {
+		this.body.addEventListener("keydown", event => {
+			if (!this.enable_keys) return;
 			if (event.isComposing || event.keyCode === 229) {
 				return;
 			}
 			this.dispatch('KEYDOWN', event);
 		});
 
-		this.gui.add_event_handler('mousemove', event => {
+		this.title_input = document.querySelector('#obj-label');
+		this.title_input.addEventListener('focus', e => this.dispatch('LABEL_FOCUS', e));
+		this.title_input.addEventListener('blur', e => this.dispatch('LABEL_BLUR', e));
+
+		this.text_area = document.querySelector('#obj-text');
+		this.text_area.addEventListener('focus', e => this.dispatch('TEXT_FOCUS', e));
+		this.text_area.addEventListener('blur', e => this.dispatch('TEXT_BLUR', e));
+
+		this.sidebar = document.querySelector('#sidebar');
+
+		this.sidebar_handle = document.querySelector('#sidebar-handle');
+		this.sidebar_handle.addEventListener('mousedown', e => this.dispatch('SB_HANDLE_MDOWN', e));
+
+		this.sidebar_handle_text = document.querySelector('#sidebar-handle-text');
+		this.sidebar_handle_text.addEventListener('click', e => this.dispatch('SB_HANDLE_TEXT_CLICK', e));
+		this.sidebar_handle_text.addEventListener('mousedown', e => this.dispatch('SB_HANDLE_TEXT_MDOWN', e));
+
+		this.title_reset_btn = document.querySelector('#btn-label-reset');
+		this.title_reset_btn.addEventListener('click', e => this.dispatch('RESET_TITLE', e));
+
+		this.text_reset_btn = document.querySelector('#btn-text-reset');
+		this.text_reset_btn.addEventListener('click', e => this.dispatch('RESET_TEXT', e));
+
+		this.title_apply_btn = document.querySelector('#btn-label-apply');
+		this.title_apply_btn.addEventListener('click', e => this.dispatch('APPLY_TITLE', e));
+
+		this.text_apply_btn = document.querySelector('#btn-text-apply');
+		this.text_apply_btn.addEventListener('click', e => this.dispatch('APPLY_TEXT', e));
+
+		this.body.addEventListener('mousemove', event => {
 			this.mouse_pos = this.gui.get_absolute_pos(event);
 			this.dispatch('MOUSEMOVE', event);
 		});
 
-		this.gui.add_event_handler('mouseup', event => {
+		this.body.addEventListener('mouseup', event => {
 			this.dispatch('MOUSEUP', event);
 		});
 
-		this.gui.add_event_handler('click', event => {
+		this.body.addEventListener('click', event => {
 			this.dispatch('CLICK', event);
 		});
 
@@ -50,6 +89,8 @@ class App {
 				this.gui.redraw_path_with_arrow(tr_id, tr.vertices, tr.label, tr.label_pos);
 			}, this);
 
+		this.model.changes.trans_set_label.map(d => this.gui.paths[d[0]].set_label(d[1].label), this);
+
 		this.model.changes.trans_del.map(d => this.gui.delete_transition(d[0]), this);
 	}
 
@@ -60,6 +101,7 @@ class App {
 		this.model.changes.state_move.map(d => this.gui.states[d[0]].move(d[1].pos), this);
 		this.model.changes.state_resize.map(d => this.gui.states[d[0]].resize(d[1].size), this);
 		this.model.changes.state_set_text.map(d => this.gui.states[d[0]].set_text(d[1].text), this);
+		this.model.changes.state_set_title.map(d => this.gui.states[d[0]].set_title(d[1].title), this);
 	}
 
 	push_model_changes_to_gui()
@@ -79,6 +121,7 @@ class App {
 
 	idle_state(event, data)
 	{
+		//console.log('idle', event);
 		switch(event)
 		{
 			case 'KEYDOWN':
@@ -92,6 +135,11 @@ class App {
 						this.start_transition();
 						this.state = this.select_tr_start_state;
 						break;
+
+					case 'Tab':
+						data.preventDefault();
+						this.toggle_sidebar();
+						break;
 						
 					case 'KeyD':
 						this.start_delete_state_or_transition();
@@ -101,7 +149,38 @@ class App {
 				}
 				break;
 
-			case 'STATE_DRAG':
+			case 'MOUSEMOVE':
+				//console.log('idle', 'MOUSE_MOVE', data);
+				break;
+
+			case 'RESET_TITLE':
+				this.reset_title();
+				break
+
+			case 'RESET_TEXT':
+				this.reset_text();
+				break;
+
+			case 'APPLY_TITLE':
+				this.apply_title();
+				break;
+
+			case 'APPLY_TEXT':
+				this.apply_text();
+				break;
+
+			case 'LABEL_FOCUS':
+			case 'TEXT_FOCUS':
+				this.highlight_object();
+				this.enable_keys = false;
+				break;
+
+			case 'LABEL_BLUR':
+			case 'TEXT_BLUR':
+				this.enable_keys = true;
+				break;
+
+			case 'STATE_HEADER_M_DOWN':
 				this.state_drag_start(data.event, data.id);
 				this.state = this.state_dragging_state;
 				break;
@@ -111,7 +190,7 @@ class App {
 				this.state = this.state_resizing_state;
 				break;
 
-			case 'TR_DRAG':
+			case 'TR_M_DOWN':
 				this.trans_drag_start(data.event, data.id);
 				this.state = this.transition_dragging_state;
 				break;
@@ -121,17 +200,219 @@ class App {
 				break;
 
 			case 'TR_CLICK':
-				if (data.event.ctrlKey)
+				data.event.stopPropagation();
+				this.dim_object();
+				this.cache_text_changes();
+				this.prop_editor.obj_id = data.id;
+				this.prop_editor.obj_type = 'transition';
+				this.highlight_object();
+				this.show_obj_text();
+				break;
+
+			case 'STATE_HEADER_CLICK':
+				data.event.stopPropagation();
+				this.dim_object();
+				this.cache_text_changes();
+				this.prop_editor.obj_id = data.id;
+				this.prop_editor.obj_type = 'state';
+				this.highlight_object();
+				this.show_obj_text();
+				break;
+
+			case 'TR_CTRL_CLICK':
+				const p = this.gui.get_absolute_pos(data.event);
+				this.model.transition_restart_from_pos(data.id, p);
+				this.start_transition();
+				this.gui.paths[data.id].add_handle_class('transition_handle_highlight_draw');
+				this.tr_draw_data.trans_id = data.id;
+				this.state = this.transition_drawing_state;
+				break;
+
+			case 'CLICK':
+				this.dim_object();
+				this.cache_text_changes();
+				break;
+
+			case 'SB_HANDLE_MDOWN':
+				data.stopPropagation();
+				this.state = this.sidebar_resizing_state;
+				break;
+
+			case 'SB_HANDLE_TEXT_MDOWN':
+				data.stopPropagation();
+				break;
+
+
+			case 'SB_HANDLE_TEXT_CLICK':
+				data.stopPropagation();
+				data.preventDefault();
+				this.toggle_sidebar();
+				break;
+		}
+	}
+
+	toggle_sidebar()
+	{
+		this.sidebar.hidden = !this.sidebar.hidden;
+		this.sidebar_handle_text.textContent = this.sidebar.hidden ? '>' : '<';
+	}
+
+	sidebar_resizing_state(event, data)
+	{
+		console.log('resize', event);
+		switch(event)
+		{
+			case 'KEYDOWN':
+				switch(data.code)
 				{
-					const p = this.gui.get_absolute_pos(data.event);
-					this.model.transition_restart_from_pos(data.id, p);
-					this.start_transition();
-					this.gui.paths[data.id].add_handle_class('transition_handle_highlight_draw');
-					this.tr_draw_data.trans_id = data.id;
-					this.state = this.transition_drawing_state;
+					case 'Escape':
+						this.gui.set_cursor('auto');
+						this.state = this.idle_state;
+						break;
 				}
 				break;
 
+			case 'MOUSEMOVE':
+				data.preventDefault();
+				data.stopPropagation();
+				if (!this.sidebar.hidden)
+				{
+					this.sidebar.style.flex = `0 0 ${(data.x - this.sidebar.getBoundingClientRect().left - 10)}px`;
+				}
+				break
+
+			case 'MOUSEUP':
+				this.gui.set_cursor('auto');
+				this.state = this.idle_state;
+				break;
+		}
+	}
+
+
+	highlight_object()
+	{
+		const {obj_id, obj_type} = this.prop_editor;
+
+		if (obj_type === 'state')
+		{
+			this.gui.states[obj_id].add_border_class('state_border_highlight');
+			this.sidebar.style.background = 'rgba(23, 197, 67, 0.1)';
+		}
+		else if (obj_type === 'transition')
+		{
+			this.gui.paths[obj_id].add_handle_class('transition_handle_highlight_edit');
+			this.sidebar.style.background = 'rgba(23, 197, 67, 0.1)';
+		}
+	}
+
+	dim_object()
+	{
+		const {obj_id, obj_type} = this.prop_editor;
+
+		if (obj_type === 'state')
+		{
+			this.gui.states[obj_id].remove_border_class('state_border_highlight');
+		}
+		else if (obj_type === 'transition')
+		{
+			this.gui.paths[obj_id].remove_handle_class('transition_handle_highlight_edit');
+		}
+		
+		this.sidebar.style.background = 'white';
+	}
+
+	reset_title()
+	{
+		const {obj_id, obj_type} = this.prop_editor;
+
+		if (obj_type === 'state')
+		{
+			const text = this.model.reset_state_title(obj_id);
+			this.title_input.value = text.title;
+		}
+		else if (obj_type === 'transition')
+		{
+			this.title_input.value = this.model.reset_transition_label(obj_id);
+		}
+	}
+
+	apply_title()
+	{
+		const {obj_id, obj_type} = this.prop_editor;
+
+		if (obj_type === 'state')
+		{
+			this.model.apply_state_title(obj_id, this.title_input.value);
+		}
+		else if (obj_type === 'transition')
+		{
+			this.model.apply_transition_label(obj_id, this.title_input.value);
+		}
+	}
+
+	reset_text()
+	{
+		const {obj_id, obj_type} = this.prop_editor;
+
+		if (obj_type === 'state')
+		{
+			const text = this.model.reset_state_text(obj_id);
+			this.text_area.value = text.text;
+		}
+	}
+
+	apply_text()
+	{
+		const {obj_id, obj_type} = this.prop_editor;
+
+		if (obj_type === 'state')
+		{
+			this.model.apply_state_text(obj_id, this.text_area.value);
+		}
+	}
+
+	cache_text_changes()
+	{
+		const {obj_id, obj_type} = this.prop_editor;
+
+		if (obj_type === 'state')
+		{
+			const text = {title: this.title_input.value, text: this.text_area.value};
+			this.model.cache_state_text(obj_id, text);
+		}
+		else if (obj_type === 'transition')
+		{
+			this.model.cache_transition_label(obj_id, this.title_input.value);
+		}
+	}
+
+	show_state_text(state_id)
+	{
+		const text = this.model.get_state_text(state_id);
+
+		this.title_input.value = text.title;
+		this.text_area.disabled = false;
+		this.text_area.value = text.text;
+	}
+
+	show_transition_text(tr_id)
+	{
+		this.title_input.value = this.model.get_transition_text(tr_id);
+		this.text_area.value = '';
+		this.text_area.disabled = true;
+	}
+
+	show_obj_text()
+	{
+		const {obj_id, obj_type} = this.prop_editor;
+
+		if (obj_type === 'state')
+		{
+			this.show_state_text(obj_id);
+		}
+		else if (obj_type === 'transition')
+		{
+			this.show_transition_text(obj_id);
 		}
 	}
 
@@ -191,22 +472,22 @@ class App {
 				}
 				break;
 			
-			case 'TR_DRAG':								//deleting a transition
+			case 'TR_M_DOWN':								//deleting a transition
 				this.model.delete_transition(data.id);
 				this.leave_delete_state();
 				break;
 
-			case 'STATE_DRAG':							//deleting a state
+			case 'STATE_HEADER_M_DOWN':							//deleting a state
 				this.model.delete_state(data.id);
 				this.leave_delete_state();
 				break;
 
-			case 'STATE_DRAGHANDLE_MOVER':
-				this.gui.redraw_state_change_border(data.id, true);
+			case 'STATE_HEADER_M_OVER':
+				this.gui.states[data.id].add_border_class('state_border_deleting');
 				break;
 
-			case 'STATE_DRAGHANDLE_MLEAVE':
-				this.gui.redraw_state_change_border(data.id, false);
+			case 'STATE_HEADER_M_LEAVE':
+				this.gui.states[data.id].remove_border_class('state_border_deleting');
 				break;
 		}
 	}
@@ -369,18 +650,22 @@ class App {
 	{
 		const state = state_data !== null ? state_data : this.model.get_state(state_id);
 
-		this.gui.render_state(state_id,
-			state.title,
-			state.pos,
-			state.size,
-			state.text,
-			this.model.options.text_height,
-			(evt) => {this.dispatch('STATE_DRAG', {event: evt, id: state_id});},
-			(evt) => {this.dispatch('STATE_RESIZE', {event: evt, id: state_id});},
-			(evt) => {this.dispatch('STATE_BORDER_CLICK', {event: evt, id: state_id});},
-			(evt) => {this.dispatch('STATE_DRAGHANDLE_MOVER', {event: evt, id: state_id});},
-			(evt) => {this.dispatch('STATE_DRAGHANDLE_MLEAVE', {event: evt, id: state_id});}
-			);
+		const params = {
+			id: 					state_id,
+			title: 					state.title,
+			pos: 					state.pos,
+			size:					state.size,
+			strings:				state.text,
+			text_height:			this.model.options.text_height,
+			on_header_mouse_down:	evt => this.dispatch('STATE_HEADER_M_DOWN', {event: evt, id: state_id}),
+			on_header_click:		evt => this.dispatch('STATE_HEADER_CLICK', {event: evt, id: state_id}),
+			on_corner_mouse_down:	evt => this.dispatch('STATE_RESIZE', {event: evt, id: state_id}),
+			on_border_click:		evt => this.dispatch('STATE_BORDER_CLICK', {event: evt, id: state_id}),
+			on_header_mouse_over:	evt => this.dispatch('STATE_HEADER_M_OVER', {event: evt, id: state_id}),
+			on_header_mouse_leave:	evt => this.dispatch('STATE_HEADER_M_LEAVE', {event: evt, id: state_id})
+		};
+
+		this.gui.render_state(params);
 	}
 
 	trans_drag_start(evt, trans_id)
@@ -431,9 +716,18 @@ class App {
 			tr.vertices,
 			tr.label,
 			tr.label_pos,
-			evt => this.dispatch('TR_DRAG', {event: evt, id: trans_id}),
+			evt => this.dispatch('TR_M_DOWN', {event: evt, id: trans_id}),
 			evt => this.dispatch('TR_DBLCLICK', {event: evt, id: trans_id}),
-			evt => this.dispatch('TR_CLICK', {event: evt, id: trans_id}));
+			evt => {
+				if (evt.ctrlKey)
+				{
+					this.dispatch('TR_CTRL_CLICK', {event: evt, id: trans_id});
+				}
+				else
+				{
+					this.dispatch('TR_CLICK', {event: evt, id: trans_id});
+				}
+			});
 	}
 }
 

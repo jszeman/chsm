@@ -3,22 +3,22 @@
 html, body {
     width: 100%;
     height: 100%;
+    margin-left: 0px;
 }
 
 .wrapper {
     width: 100%;
     height: 100%;
-    display: grid;
-    gap: 0em;
-    grid-template-columns: 15em 1fr;
-    grid-template-areas:
-        "s m";
+    display: flex;
+    flex-direction: row;
+    align-items: top;
+    justify-content: space-between
 }
 
 .main {
-    grid-area: m;
     width: 100%;
     height: 100%;
+
 }
 
 svg {
@@ -26,28 +26,99 @@ svg {
     height: 100%;
 }
 
-.sidebar {
-    grid-area: s;
-    border-right: 2px solid #eee;;
+#sidebar {
     padding: 0.2em;
-    font-family: arial,helvetica,sans-serif;
-    color: rgb(54, 54, 54);
+    flex: 0 0 200px;
+    margin-left: 5px;
+}
+
+#sidebar-handle {
+    width: 10px;
+    height: 100%;
+    background-color: #eee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: ew-resize;
+}
+
+#sidebar-handle-text {
+    height: 4em;
+    width: inherit;
+    background-color: #aaa;
+    color: blue;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font: 1.2em arial,helvetica,sans-serif;
+    cursor: default;
+}
+
+#sidebar-handle-text:hover {
+    height: 4em;
+    width: inherit;
+    background-color: #aba;
+    color: blue;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font: 1.2em arial,helvetica,sans-serif;
+    cursor: default;
 }
 
 .props {
     list-style: none;
     width: 100%;
-    padding: 0;
+    padding-left: 0;    
 }
 
-.prop-title {
+#obj-label {
     width: 95%;
     margin: 0.1em;
 }
 
-.prop-text {
+#obj-text {
     width: 95%;
     margin: 0.1em;
     height: 20em;
     resize: vertical;
+}
+
+.button {
+    background-color: steelblue;
+    color: white;
+    margin-bottom: 0.5em;
+    padding: 0.3em;
+    border-radius: 0.2em;
+    width: 7em;
+}
+
+.button:hover {
+    background-color: rgb(44, 118, 179);
+    cursor: default;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between
+}
+
+.row-title {
+    font: bold 1.2em arial,helvetica,sans-serif;
+}
+
+.button-inline {
+    background-color: steelblue;
+    color: white;
+    padding: 0.3em;
+    border-radius: 0.2em;
+    width: fit-content;
+    margin: 0.2em;
+}
+
+.button-inline:hover {
+    background-color: rgb(44, 118, 179);
+    cursor: default;
 }

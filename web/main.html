@@ -7,6 +7,41 @@
 </head>
 <body>
 	<div class='wrapper'>
+		<nav id='sidebar'>
+			<ul class='props'>
+				<li><h2>CHSM</h2></li>
+				<li><div id='btn-state' class='button'>New state</div></li>
+				<li><div id='btn-trans' class='button'>New transition</div></li>
+				<li><div id='btn-delobj' class='button'>Delete object</div></li>
+				<li>&nbsp</li>
+
+				<li class='row'>
+					<span class='row-title'>Label</span>
+					<div id='btn-label-reset' class='button-inline'>Reset</div>
+					<div id='btn-label-apply' class='button-inline'>Apply</div>
+				</li>
+				<li><input type="text" id='obj-label'></li>
+				<li>&nbsp</li>
+
+				<li class='row'>
+					<span class='row-title'>Text</span>
+					<div id='btn-text-reset' class='button-inline'>Reset</div>
+					<div id='btn-text-apply' class='button-inline'>Apply</div>
+				</li>
+				<li><textarea id='obj-text'></textarea></li>
+				<li>&nbsp</li>
+				<li><strong>commands</strong></li>
+				<li>
+					<ul>
+						<li>s: create a state</li>
+						<li>t: draw transition</li>
+						<li>d: delete object</li>
+						<li>tab: toggle sidebar</li>
+					</ul>
+				</li>
+			</ul>
+		</nav>
+		<div id='sidebar-handle'><span id='sidebar-handle-text'>&lt<span></div>
 		<main class='main'>
 			<svg height="100%" width="100%">
 				<g display='none'>
@@ -16,25 +51,6 @@
 				</g>
 			</svg>
 		</main>
-		<nav class='sidebar'>
-			<ul class='props'>
-				<li><h3>Sidebar</h3></li>
-				<li><strong>Title</strong></li>
-				<li><input type="text" class='prop-title'></li>
-				<li>&nbsp</li>
-				<li><strong>Text</strong></li>
-				<li><textarea class='prop-text'></textarea></li>
-				<li>&nbsp</li>
-				<li><strong>Commands</strong></li>
-				<li>
-					<ul>
-						<li>s: create a state</li>
-						<li>t: draw transition</li>
-						<li>d: delete transition</li>
-					</ul>
-				</li>
-			</ul>
-		</nav>
 	</div>
 </body>
 </html>

@@ -9,19 +9,13 @@ export class Model {
 			state_min_height: 	3,
 			text_height: 		2,
 		};
-		this.changes = {
-			trans_new:			[],
-			trans_del:			[],
-			trans_redraw:		[],
-			state_new:			[],
-			state_del:			[],
-			state_resize:		[],
-			state_move:			[],
-			state_set_text:		[],
-			state_set_title:	[],
-		};
+
 		this.elbow = 			'v';
-		this.tmp_seg_cnt =		2;
+
+		this.state_text_cache = {};
+		this.tr_text_cache = {};
+
+		this.ack_changes();
 	}
 
 	ack_changes()
@@ -30,6 +24,7 @@ export class Model {
 			trans_new:			[],
 			trans_del:			[],
 			trans_redraw:		[],
+			trans_set_label:	[],
 			state_new:			[],
 			state_del:			[],
 			state_resize:		[],
@@ -37,6 +32,82 @@ export class Model {
 			state_set_text:		[],
 			state_set_title:	[],
 		};
+	}
+
+	get_transition_text(tr_id)
+	{
+		if (!(tr_id in this.tr_text_cache))
+		{
+			const t = this.data.transitions[tr_id];
+			this.tr_text_cache[tr_id] = t.label;
+		}
+
+		return this.tr_text_cache[tr_id];
+	}
+
+	cache_transition_label(tr_id, label)
+	{
+		this.tr_text_cache[tr_id] = label;
+	}
+
+	reset_transition_label(tr_id)
+	{
+		const t = this.data.transitions[tr_id];
+		this.tr_text_cache[tr_id] = t.label;
+		return this.tr_text_cache[tr_id];
+	}
+
+	apply_transition_label(tr_id, label)
+	{
+		this.tr_text_cache[tr_id] = label;
+		const t = this.data.transitions[tr_id];
+		t.label = label;
+		this.changes.trans_set_label.push([tr_id, t]);
+	}
+
+	get_state_text(state_id)
+	{
+		if (!(state_id in this.state_text_cache))
+		{
+			const s = this.data.states[state_id];
+			this.state_text_cache[state_id] = {title: s.title, text: s.text.join('\n')};
+		}
+
+		return this.state_text_cache[state_id];
+	}
+
+	cache_state_text(state_id, text)
+	{
+		this.state_text_cache[state_id] = text;
+	}
+
+	apply_state_text(state_id, text)
+	{
+		this.state_text_cache[state_id].text = text;
+		const s = this.data.states[state_id];
+		this.set_state_text(state_id, text.split('\n'))
+	}
+
+	apply_state_title(state_id, title)
+	{
+		this.state_text_cache[state_id].title = title;
+		const s = this.data.states[state_id];
+		s.title = title;
+		this.changes.state_set_title.push([state_id, s]);
+	}
+
+	reset_state_title(state_id)
+	{
+		const s = this.data.states[state_id];
+		this.state_text_cache[state_id].title = s.title;
+		return this.state_text_cache[state_id];
+	}
+
+	reset_state_text(state_id)
+	{
+		const s = this.data.states[state_id];
+		this.state_text_cache[state_id].text = s.text.join('\n');
+		return this.state_text_cache[state_id];
 	}
 
 	delete_state(state_id)
