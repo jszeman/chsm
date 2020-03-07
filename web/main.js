@@ -72,7 +72,7 @@ class App {
 			this.dispatch('MOUSEUP', event);
 		});
 
-		this.body.addEventListener('click', event => {
+		this.gui.svg.addEventListener('click', event => {
 			this.dispatch('CLICK', event);
 		});
 
@@ -241,7 +241,6 @@ class App {
 			case 'SB_HANDLE_TEXT_MDOWN':
 				data.stopPropagation();
 				break;
-
 
 			case 'SB_HANDLE_TEXT_CLICK':
 				data.stopPropagation();
