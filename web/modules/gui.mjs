@@ -16,17 +16,22 @@ export class Gui {
 		this.zoom_speed = 0.5;
 	}
 
+	set_transform()
+	{
+		const [tx, ty] = this.translate;
+		const s = this.scale; 
+		this.drawing.attributes.transform.value = `translate(${tx}, ${ty}) scale(${s}, ${s})`;
+	}
+
 	zoom_in(pos)
 	{
 		const zs = this.zoom_speed;
 		const [x, y] = pos;
 		const [dtx, dty] = [-zs * x, -zs * y];
 		const [tx, ty] = this.translate;
-		const [ntx, nty] = [tx + dtx, ty + dty];
-		this.translate = [ntx, nty];
+		this.translate = [tx + dtx, ty + dty];
 		this.scale += zs;
-		const s = this.scale;
-		this.drawing.attributes.transform.value = `translate(${tx}, ${ty}) scale(${s}, ${s})`;
+		this.set_transform();
 	}
 
 	zoom_out(pos)
@@ -39,11 +44,9 @@ export class Gui {
 		const [x, y] = pos;
 		const [dtx, dty] = [-zs * x, -zs * y];
 		const [tx, ty] = this.translate;
-		const [ntx, nty] = [tx + dtx, ty + dty];
-		this.translate = [ntx, nty];
+		this.translate = [tx + dtx, ty + dty];
 		this.scale += zs;
-		const s = this.scale;
-		this.drawing.attributes.transform.value = `translate(${tx}, ${ty}) scale(${s}, ${s})`;
+		this.set_transform();
 	}
 
 	get_absolute_pos(evt)

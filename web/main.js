@@ -77,7 +77,18 @@ class App {
 		});
 
 		this.gui.svg.addEventListener('wheel', event => {
-			this.dispatch('WHEEL', event);
+			this.dispatch('DRAWING_WHEEL', event);
+		});
+
+		this.gui.svg.addEventListener('mousedown', event => {
+			if (event.ctrlKey)
+			{
+				this.dispatch('DRAWING_CTRL_MDOWN', event);
+			}
+			else
+			{
+				this.dispatch('DRAWING_MDOWN', event);
+			}
 		});
 
 		this.state = this.idle_state;
@@ -225,12 +236,12 @@ class App {
 
 			case 'TR_CTRL_CLICK':
 				{
-				const p = this.gui.get_absolute_pos(data.event);
-				this.model.transition_restart_from_pos(data.id, p);
-				this.start_transition();
-				this.gui.paths[data.id].add_handle_class('transition_handle_highlight_draw');
-				this.tr_draw_data.trans_id = data.id;
-				this.state = this.transition_drawing_state;
+					const p = this.gui.get_absolute_pos(data.event);
+					this.model.transition_restart_from_pos(data.id, p);
+					this.start_transition();
+					this.gui.paths[data.id].add_handle_class('transition_handle_highlight_draw');
+					this.tr_draw_data.trans_id = data.id;
+					this.state = this.transition_drawing_state;
 				}
 				break;
 
@@ -254,18 +265,25 @@ class App {
 				this.toggle_sidebar();
 				break;
 
-			case 'WHEEL':
-				data.stopPropagation();
-				data.preventDefault();
-				const p = this.gui.get_absolute_pos(data);
-				if (data.wheelDelta > 0)
+			case 'DRAWING_WHEEL':
 				{
-					this.gui.zoom_in(p);
+					data.stopPropagation();
+					data.preventDefault();
+					const p = this.gui.get_absolute_pos(data);
+					if (data.wheelDelta > 0)
+					{
+						this.gui.zoom_in(p);
+					}
+					else
+					{
+						this.gui.zoom_out(p);
+					}
 				}
-				else
-				{
-					this.gui.zoom_out(p);
-				}
+				break;
+
+			case 'DRAWING_CTRL_MDOWN':
+				this.state_drag_start(data, '__top__');
+				this.state = this.state_dragging_state;
 				break;
 		}
 	}
@@ -567,6 +585,16 @@ class App {
 	{
 		switch(event)
 		{
+			case 'KEYDOWN':
+				switch(data.code)
+				{
+					case 'Escape':
+						this.gui.set_cursor('auto');
+						this.state = this.idle_state;
+						break;
+				}
+				break;
+
 			case 'MOUSEMOVE':
 				this.trans_drag(data);
 				break
@@ -582,6 +610,16 @@ class App {
 	{
 		switch(event)
 		{
+			case 'KEYDOWN':
+				switch(data.code)
+				{
+					case 'Escape':
+						this.gui.set_cursor('auto');
+						this.state = this.idle_state;
+						break;
+				}
+				break;
+
 			case 'MOUSEMOVE':
 				this.state_resize(data);
 				break
@@ -597,6 +635,16 @@ class App {
 	{
 		switch(event)
 		{
+			case 'KEYDOWN':
+				switch(data.code)
+				{
+					case 'Escape':
+						this.gui.set_cursor('auto');
+						this.state = this.idle_state;
+						break;
+				}
+				break;
+				
 			case 'MOUSEMOVE':
 				this.state_drag(data);
 				break
