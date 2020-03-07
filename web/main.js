@@ -76,6 +76,10 @@ class App {
 			this.dispatch('CLICK', event);
 		});
 
+		this.gui.svg.addEventListener('wheel', event => {
+			this.dispatch('WHEEL', event);
+		});
+
 		this.state = this.idle_state;
 	}
 
@@ -220,12 +224,14 @@ class App {
 				break;
 
 			case 'TR_CTRL_CLICK':
+				{
 				const p = this.gui.get_absolute_pos(data.event);
 				this.model.transition_restart_from_pos(data.id, p);
 				this.start_transition();
 				this.gui.paths[data.id].add_handle_class('transition_handle_highlight_draw');
 				this.tr_draw_data.trans_id = data.id;
 				this.state = this.transition_drawing_state;
+				}
 				break;
 
 			case 'CLICK':
@@ -246,6 +252,20 @@ class App {
 				data.stopPropagation();
 				data.preventDefault();
 				this.toggle_sidebar();
+				break;
+
+			case 'WHEEL':
+				data.stopPropagation();
+				data.preventDefault();
+				const p = this.gui.get_absolute_pos(data);
+				if (data.wheelDelta > 0)
+				{
+					this.gui.zoom_in(p);
+				}
+				else
+				{
+					this.gui.zoom_out(p);
+				}
 				break;
 		}
 	}

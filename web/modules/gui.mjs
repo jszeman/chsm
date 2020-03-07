@@ -11,6 +11,39 @@ export class Gui {
 			state_min_size: [5,5]
 		};
 
+		this.translate = [10, 10];
+		this.scale = 10;
+		this.zoom_speed = 0.5;
+	}
+
+	zoom_in(pos)
+	{
+		const zs = this.zoom_speed;
+		const [x, y] = pos;
+		const [dtx, dty] = [-zs * x, -zs * y];
+		const [tx, ty] = this.translate;
+		const [ntx, nty] = [tx + dtx, ty + dty];
+		this.translate = [ntx, nty];
+		this.scale += zs;
+		const s = this.scale;
+		this.drawing.attributes.transform.value = `translate(${tx}, ${ty}) scale(${s}, ${s})`;
+	}
+
+	zoom_out(pos)
+	{
+		if (this.scale < 2)
+		{
+			return;
+		}
+		const zs = -this.zoom_speed;
+		const [x, y] = pos;
+		const [dtx, dty] = [-zs * x, -zs * y];
+		const [tx, ty] = this.translate;
+		const [ntx, nty] = [tx + dtx, ty + dty];
+		this.translate = [ntx, nty];
+		this.scale += zs;
+		const s = this.scale;
+		this.drawing.attributes.transform.value = `translate(${tx}, ${ty}) scale(${s}, ${s})`;
 	}
 
 	get_absolute_pos(evt)
