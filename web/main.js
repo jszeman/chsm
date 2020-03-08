@@ -157,6 +157,7 @@ class App {
 						break;
 						
 					case 'KeyD':
+						this.clear_sidebar();
 						this.start_delete_state_or_transition();
                         this.state = this.delete_st_or_tr_state;
 						this.model.transitions().map(t => this.gui.redraw_path_change_line_color(t, true));
@@ -286,6 +287,15 @@ class App {
 				this.state = this.state_dragging_state;
 				break;
 		}
+	}
+
+	clear_sidebar()
+	{
+		this.dim_object();
+		this.cache_text_changes();
+		this.clear_text_inputs();
+		this.prop_editor.obj_id = null;
+		this.prop_editor.obj_type = null;
 	}
 
 	toggle_sidebar()
@@ -437,6 +447,13 @@ class App {
 		this.title_input.value = this.model.get_transition_text(tr_id);
 		this.text_area.value = '';
 		this.text_area.disabled = true;
+	}
+
+	clear_text_inputs()
+	{
+		this.title_input.value = '';
+		this.text_area.disabled = false;
+		this.text_area.value = '';
 	}
 
 	show_obj_text()
