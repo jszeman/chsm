@@ -25,6 +25,7 @@ class App {
 		this.model.transitions().map(t => this.render_transiton(t), this);
 
 		this.body = document.querySelector('body');
+		this.main = document.querySelector('main');
 		
 		this.body.addEventListener("keydown", event => {
 			if (!this.enable_keys) return;
@@ -62,6 +63,9 @@ class App {
 
 		this.text_apply_btn = document.querySelector('#btn-text-apply');
 		this.text_apply_btn.addEventListener('click', e => this.dispatch('APPLY_TEXT', e));
+
+		this.save_btn = document.querySelector('#btn-save');
+		this.save_btn.addEventListener('click', e => this.dispatch('SAVE', e));
 
 		this.body.addEventListener('mousemove', event => {
 			this.mouse_pos = this.gui.get_absolute_pos(event);
@@ -296,6 +300,10 @@ class App {
 			case 'DRAWING_CTRL_MDOWN':
 				this.state_drag_start(data, '__top__');
 				this.state = this.state_dragging_state;
+				break;
+
+			case 'SAVE':
+				eel.save_state_machine(this.main.innerHTML, this.model.get_data_string());
 				break;
 		}
 	}
