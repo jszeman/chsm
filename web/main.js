@@ -271,7 +271,7 @@ class App {
 					data.stopPropagation();
 					data.preventDefault();
 					const p = this.gui.get_absolute_pos(data);
-					if (data.wheelDelta > 0)
+					if (data.deltaY < 0)
 					{
 						this.gui.zoom_in(p);
 					}
