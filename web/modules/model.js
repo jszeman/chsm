@@ -18,6 +18,11 @@ export class Model {
 		this.ack_changes();
 	}
 
+	get_data_string()
+	{
+		return JSON.stringify(this.data, null, 4);
+	}
+
 	ack_changes()
 	{
 		this.changes = {
