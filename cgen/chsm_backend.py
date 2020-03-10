@@ -1,3 +1,14 @@
+"""
+Cgen.
+
+Usage:
+  cgen.py [options] <cfile>
+
+Options:
+  -i --include_dir Include directory path [default: ../inc].
+  -d --doc_dir     Drawing directory path [default: ../doc].
+  -c --config      Config file path [default: ../doc/chsmconf.json] 
+"""
 import eel
 
 @eel.expose
