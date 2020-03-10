@@ -9,6 +9,7 @@ export const state_machine = {
 			connectors: [],
 			parent: null,
 			children: ['state_0', 'state_1'],
+			type: 'top'
 			},
 		state_0: {
 			pos: [2, 2],
@@ -18,6 +19,7 @@ export const state_machine = {
 			connectors: ['conn_0', 'conn_2'],
 			parent: '__top__',
 			children: ['state_2'],
+			type: 'normal'
 			},
 		state_1: {
 			pos: [2, 35],
@@ -27,6 +29,7 @@ export const state_machine = {
 			connectors: ['conn_1', 'conn_3'],
 			parent: '__top__',
 			children: [],
+			type: 'normal'
 			},
 		state_2: {
 			pos: [3, 9],
@@ -36,7 +39,18 @@ export const state_machine = {
 			connectors: ['conn_4', 'conn_5'],
 			parent: 'state_0',
 			children: [],
-			}
+			type: 'normal'
+			},
+		istate_3: {
+			pos: [20, 10],
+			size: [2, 2],
+			title: '',
+			text: [],
+			connectors: [],
+			parent: '__top__',
+			children: [],
+			type: 'initial'
+		}
 	},
 
 	connectors: {

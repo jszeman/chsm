@@ -740,6 +740,7 @@ class App {
 			pos: 					state.pos,
 			size:					state.size,
 			strings:				state.text,
+			type:					state.type,
 			text_height:			this.model.options.text_height,
 			on_header_mouse_down:	evt => this.dispatch('STATE_HEADER_M_DOWN', {event: evt, id: state_id}),
 			on_header_click:		evt => this.dispatch('STATE_HEADER_CLICK', {event: evt, id: state_id}),

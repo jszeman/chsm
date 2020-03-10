@@ -65,11 +65,7 @@ export class Gui {
 
 	get_state_rel_pos(evt, state_id)
 	{
-		const CTM = this.states[state_id].obj.getScreenCTM();
-		const x = Math.round((evt.clientX - CTM.e) / CTM.a);
-		const y = Math.round((evt.clientY - CTM.f) / CTM.d);
-
-		return [x, y];
+		return this.states[state_id].get_rel_pos(evt);
 	}
 
 	add_event_handler(event, handler)
@@ -232,15 +228,73 @@ export class Gui {
 	{
 		this.paths[id].remove_handle_class(is_deleting ? 'transition_handle' : 'transition_handle_deleting');
 		this.paths[id].add_handle_class(is_deleting ? 'transition_handle_deleting' : 'transition_handle');
-    }
+	}
+	
+	render_initial_state(params)
+	{
+		const {id,
+			pos,
+			on_header_mouse_down,
+			on_header_click,
+			on_border_click,
+			on_header_mouse_over,
+			on_header_mouse_leave} = params;
+
+		const [x, y] = pos;
+
+		const initial = this.make_svg_elem('circle',
+			{cx: x, cy: y, class: 'initial_state'});
+
+		initial.addEventListener('click', on_border_click);
+		initial.addEventListener('mousedown', on_header_mouse_down);
+		initial.addEventListener('mouseover', on_header_mouse_over);
+		initial.addEventListener('mouseleave', on_header_mouse_leave);
+
+		this.states[id] = {
+			obj: initial,
+			mod_svg: this.modify_svg_elem,
+			make_svg: this.make_svg_elem,
+			resize: function(size) {},
+			move: function(pos)
+			{
+				this.mod_svg(initial, {cx: pos[0], cy: pos[1]});
+			},
+			get_rel_pos: function(evt)
+			{
+				return [0, 0];
+			},
+			add_border_class(cl) {},
+			remove_border_class(cl) {},
+			set_text(txt) {},
+			set_title(title) {}
+		};
+
+		this.drawing.appendChild(initial);
+	}
+
+	get_obj_rel_pos(evt, obj)
+	{
+		const CTM = obj.getScreenCTM();
+		const x = Math.round((evt.clientX - CTM.e) / CTM.a);
+		const y = Math.round((evt.clientY - CTM.f) / CTM.d);
+
+		return [x, y];
+	}
 
 	render_state(params)
 	{
+		if (params.type == 'initial')
+		{
+			this.render_initial_state(params);
+			return;
+		}
+
 		const {id,
 			title,
 			pos,
 			size,
 			strings,
+			type,
 			text_height,
 			on_header_mouse_down,
 			on_header_click,
@@ -248,6 +302,9 @@ export class Gui {
 			on_border_click,
 			on_header_mouse_over,
 			on_header_mouse_leave} = params;
+
+
+
 		const [x, y] = pos;
 		const [w, h] = size;
 		const th = text_height;
@@ -306,6 +363,11 @@ export class Gui {
 			obj: g,
 			mod_svg: this.modify_svg_elem,
 			make_svg: this.make_svg_elem,
+			get_evt_pos: this.get_obj_rel_pos,
+			get_rel_pos: function(evt)
+			{
+				return this.get_evt_pos(evt, this.obj);
+			},
 			resize: function(size)
 			{
 				const [w, h] = size;

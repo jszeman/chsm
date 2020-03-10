@@ -244,7 +244,13 @@ export class Model {
 		
 		let v = [0, 0];
 
-		if ((rx === 0) && (ry > 0) && (ry < h)) //left
+		if (s.type == 'initial')
+		{
+			conn.side = 'all';
+			conn.offset = 0;
+			v = [x, y];
+			this.elbow = 'v';
+		} else if ((rx === 0) && (ry > 0) && (ry < h)) //left
 		{
 			conn.side = 'left';
 			conn.offset = ry;
