@@ -23,10 +23,15 @@
 }
 
 .initial_state {
-    stroke: black;
-    stroke-width: 0.3;
+    stroke: none;
+    stroke-width: 0.4;
     fill: black;
-    r: 0.5px;
+    r: 0.7px;
+}
+
+.initial_state:hover {
+    stroke: deepskyblue;
+    stroke-width: 0.5px;
 }
 
 .state_border_deleting {

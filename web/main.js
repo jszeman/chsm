@@ -367,11 +367,11 @@ class App {
 	{
 		const {obj_id, obj_type} = this.prop_editor;
 
-		if (obj_type === 'state')
+		if ((obj_type === 'state') && (obj_id in this.gui.states))
 		{
 			this.gui.states[obj_id].remove_border_class('state_border_highlight');
 		}
-		else if (obj_type === 'transition')
+		else if ((obj_type === 'transition') && (obj_id in this.gui.paths))
 		{
 			this.gui.paths[obj_id].remove_handle_class('transition_handle_highlight_edit');
 		}

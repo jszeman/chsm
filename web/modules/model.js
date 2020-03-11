@@ -509,12 +509,12 @@ export class Model {
 		this.changes.trans_redraw.push([trans_id, t]);
 	}
 
-	make_new_state(init_pos, id_prefix='state_', state_type='normal')
+	make_new_state(init_pos, id_prefix='state_', state_type='normal', init_size=[15, 15])
 	{
 		const state_id = this.make_new_id(this.data.states, id_prefix);
 		const s = {
 			pos: init_pos, 
-			size: [15, 15],
+			size: init_size,
 			title: state_id,
 			text: ['entry/', 'exit/'],
 			connectors: [],
@@ -533,7 +533,7 @@ export class Model {
 
 	make_new_initial_state(init_pos)
 	{
-		return this.make_new_state(init_pos, 'istate_', 'initial');
+		return this.make_new_state(init_pos, 'istate_', 'initial', [2, 2]);
 	}
 
 	update_state_transitions(state_id)
@@ -700,7 +700,10 @@ export class Model {
 
 		if (parent_id != s.parent)
 		{
-			this.remove_child(s.parent, state_id);
+			if (s.parent !== null)
+			{
+				this.remove_child(s.parent, state_id);
+			}
 			this.add_child(parent_id, state_id);
 			s.parent = parent_id;
 		}
@@ -727,17 +730,10 @@ export class Model {
 
 		if (parent_id != s.parent)
 		{
-			if (s.type === 'initial')
+			if ((s.type === 'initial') && 
+				((s.connectors.length !== 0) || (this.get_initial_state(parent_id) !== null)))
 			{
-				if (s.connectors.length !== 0) // already connected to somewhere
-				{
-					this.delete_state(state_id);
-				}
-
-				if (this.get_initial_state(parent_id) !== null) // parent already has an initial transition
-				{
-					this.delete_state(state_id);
-				}
+				this.delete_state(state_id);
 			}
 			else
 			{
@@ -918,7 +914,10 @@ export class Model {
 
 		const middle = Math.round((anchors.length - 1) / 2);
 
-		tr.label_anchor = anchors[middle][0];
+		if (middle < anchors.length)
+		{
+			tr.label_anchor = anchors[middle][0];
+		}
 	}
 
 	update_transition_label_pos(tr_id)
