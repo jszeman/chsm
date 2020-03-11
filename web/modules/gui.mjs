@@ -140,8 +140,11 @@ export class Gui {
 
 	delete_transition(id)
 	{
-		this.drawing.removeChild(this.paths[id].obj);
-		delete this.paths[id];
+		if (id in this.paths)
+		{
+			this.drawing.removeChild(this.paths[id].obj);
+			delete this.paths[id];
+		}
 	}
 
 	delete_state(id)

@@ -77,7 +77,14 @@ class App {
 		});
 
 		this.gui.svg.addEventListener('wheel', event => {
-			this.dispatch('DRAWING_WHEEL', event);
+			if (event.ctrlKey)
+			{
+				this.dispatch('DRAWING_CTRL_WHEEL', event);
+			}
+			else
+			{
+				this.dispatch('DRAWING_WHEEL', event);
+			}
 		});
 
 		this.gui.svg.addEventListener('mousedown', event => {
@@ -144,6 +151,10 @@ class App {
 				{
 					case 'KeyS':
 						this.create_state(this.mouse_pos);
+						break;
+
+					case 'KeyI':
+						this.create_initial_state(this.mouse_pos);
 						break;
 
 					case 'KeyT':
@@ -266,7 +277,7 @@ class App {
 				this.toggle_sidebar();
 				break;
 
-			case 'DRAWING_WHEEL':
+			case 'DRAWING_CTRL_WHEEL':
 				{
 					data.stopPropagation();
 					data.preventDefault();
@@ -497,17 +508,13 @@ class App {
 			case 'STATE_BORDER_CLICK':
 				data.event.stopPropagation();
 				const pos = this.gui.get_state_rel_pos(data.event, data.id);
-				const t = this.model.make_new_transition();
-				if (this.model.set_transition_start(t, data.id, pos))
+				const tr_id = this.model.set_transition_start(data.id, pos);
+				if (tr_id !== '')
 				{
-					this.tr_draw_data.trans_id = t;
-					this.render_transiton(t);
+					this.tr_draw_data.trans_id = tr_id;
+					this.render_transiton(tr_id);
 					this.state = this.transition_drawing_state;
-					this.gui.paths[t].add_handle_class('transition_handle_highlight_draw');
-				}
-				else
-				{
-					this.model.delete_transition(t);
+					this.gui.paths[tr_id].add_handle_class('transition_handle_highlight_draw');
 				}
 				break;
 		}
@@ -681,7 +688,12 @@ class App {
 
 	create_state(pos)
 	{
-		const state_id = this.model.make_new_state(pos);
+		this.model.make_new_state(pos);
+	}
+
+	create_initial_state(pos)
+	{
+		this.model.make_new_initial_state(pos);
 	}
 
 	state_drag_start(evt, state_id)

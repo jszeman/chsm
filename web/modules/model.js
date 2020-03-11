@@ -118,7 +118,10 @@ export class Model {
 		const del_states = [state_id].concat(this.get_substates(state_id));
 		const [alltransint, alltransext] = this.get_state_transitions(state_id);
 	
-		parent.children = parent.children.filter(ch => ch != state_id);
+		if (parent)
+		{
+			parent.children = parent.children.filter(ch => ch != state_id);
+		}
 
 		alltransint.map(ti => this.delete_transition(ti));
 		alltransext.map(ti => this.delete_transition(ti));
@@ -174,8 +177,6 @@ export class Model {
 		this.data.transitions[trans_id] = t;
 		this.data.connectors[start_id] = start;
 		this.data.connectors[end_id] = end;
-
-		this.changes.trans_new.push([trans_id, t]);
 
 		return trans_id;
 	}
@@ -246,11 +247,16 @@ export class Model {
 
 		if (s.type == 'initial')
 		{
+			if (s.connectors.length !== 0)
+			{
+				return [];
+			}
 			conn.side = 'all';
 			conn.offset = 0;
 			v = [x, y];
 			this.elbow = 'v';
-		} else if ((rx === 0) && (ry > 0) && (ry < h)) //left
+		}
+		else if ((rx === 0) && (ry > 0) && (ry < h)) //left
 		{
 			conn.side = 'left';
 			conn.offset = ry;
@@ -308,34 +314,50 @@ export class Model {
 		return v;
 	}
 
-	set_transition_start(trans_id, state_id, rel_pos)
+	set_transition_start(state_id, rel_pos)
 	{
+		const trans_id = this.make_new_transition();
 		const t = this.data.transitions[trans_id];
 		const v = this.attach_connector_to_state(t.start, state_id, rel_pos);
 
-		if (v.length == 2)
+		if (v.length === 0)
 		{
-			t.vertices = [[...v], [...v], [...v]];
-			t.label_pos = [v[0] + t.label_offset[0], v[1] + t.label_offset[1]];
-			this.changes.trans_redraw.push([trans_id, t]);
-			return true;
+			this.delete_transition(trans_id);
+			return '';
 		}
-		this.changes.trans_del.push([trans_id, t]);
-		return false;
+
+		t.vertices = [[...v], [...v], [...v]];
+		t.label_pos = [v[0] + t.label_offset[0], v[1] + t.label_offset[1]];
+		this.changes.trans_new.push([trans_id, t]);
+		return trans_id;
 	}
 
 	set_transition_end(trans_id, state_id, rel_pos)
 	{
 		const t = this.data.transitions[trans_id];
 
+		const start_state = this.data.states[this.data.connectors[t.start].parent];
+		
+		// Make sure that an initial transition connects siblings
+		if (start_state.type === 'initial')
+		{
+			const end_state = this.data.states[state_id];
+			if (start_state.parent !== end_state.parent)
+			{
+				return false; 
+			}
+		}
+
+		const s = this.data.states[state_id];
+		if (s.type === 'initial')
+		{
+			return false;
+		}
+
 		// remove the last two vertex from the array
 		const [[ax, ay], [bx, by]] = t.vertices.splice(-2);
 
-		if (t.vertices.length < 2)
-		{
-			t.vertices.push([ax, ay]);
-		}
-		else
+		if (t.vertices.length > 2)
 		{
 			const [[cx, cy], [dx, dy]] = t.vertices.slice(-2);
 			// if the last two of the remaining array are in line with a:
@@ -343,14 +365,15 @@ export class Model {
 			{
 				t.vertices.splice(-1);
 			}
-			
-			t.vertices.push([ax, ay]);
-
-			if ((ax !== bx) || (ay !== by))
-			{
-				t.vertices.push([bx, by])
-			}
 		}
+			
+		t.vertices.push([ax, ay]);
+
+		if ((ax !== bx) || (ay !== by))
+		{
+			t.vertices.push([bx, by])
+		}
+		
 
 		// Handle the case where there are only 2 vertices left.
 		if (t.vertices.length == 2)
@@ -392,7 +415,7 @@ export class Model {
 	switch_transition_elbow(trans_id, pos)
 	{
 		const t = this.data.transitions[trans_id];
-		if (t.vertices.length > 3)
+		if ((t.vertices.length > 3) || (this.data.connectors[t.start].side === 'all'))
 		{
 			this.elbow = (this.elbow == 'v') ? 'h' : 'v';
 		}
@@ -486,24 +509,31 @@ export class Model {
 		this.changes.trans_redraw.push([trans_id, t]);
 	}
 
-	make_new_state(init_pos)
+	make_new_state(init_pos, id_prefix='state_', state_type='normal')
 	{
-		const state_id = this.make_new_id(this.data.states, 'state_');
+		const state_id = this.make_new_id(this.data.states, id_prefix);
 		const s = {
 			pos: init_pos, 
 			size: [15, 15],
 			title: state_id,
 			text: ['entry/', 'exit/'],
 			connectors: [],
-			parent: '__top__',
+			parent: null,
 			children: [],
+			type: state_type,
 			};
 		this.data.states[state_id] = s;
-		this.data.states['__top__'].children.push(state_id);
+
+		this.update_parent(state_id);
 
 		this.changes.state_new.push([state_id, s]);
 
 		return state_id;
+	}
+
+	make_new_initial_state(init_pos)
+	{
+		return this.make_new_state(init_pos, 'istate_', 'initial');
 	}
 
 	update_state_transitions(state_id)
@@ -676,14 +706,43 @@ export class Model {
 		}
 	}
 
+	get_initial_state(state_id)
+	{
+		const s = this.data.states[state_id];
+
+		const i_list = s.children.filter(c_id => this.data.states[c_id].type === 'initial');
+		if (i_list.length !== 0)
+		{
+			return i_list[0];
+		}
+		
+		return null;
+	}
+
 	update_parent(state_id)
 	{
 		const s = this.data.states[state_id];
-		const parent = this.find_state_at(new Point(...s.pos));
+		const parent_id = this.find_state_at(new Point(...s.pos));
+		
 
-		if (parent != s.parent)
+		if (parent_id != s.parent)
 		{
-			this.set_parent(state_id, parent);
+			if (s.type === 'initial')
+			{
+				if (s.connectors.length !== 0) // already connected to somewhere
+				{
+					this.delete_state(state_id);
+				}
+
+				if (this.get_initial_state(parent_id) !== null) // parent already has an initial transition
+				{
+					this.delete_state(state_id);
+				}
+			}
+			else
+			{
+				this.set_parent(state_id, parent_id);
+			}
 		}
 	}
 
@@ -823,6 +882,9 @@ export class Model {
 			case 'left':
 			case 'right': conn.offset = y - sy;
 				break;
+
+			case 'all':
+				break;
 		}
 	}
 
@@ -883,33 +945,33 @@ export class Model {
 		const l1 = tr.vertices[line_idx];
 		const l2 = tr.vertices[line_idx+1];
 
-		if (line_idx == 0)
+		if (line_idx == 0) // first segment
 		{
-			const [min, max] = this.get_connector_movement_limits(tr.start);
-			if (l1[0] === l2[0])
+			const [xmin, xmax, ymin, ymax] = this.get_connector_movement_limits(tr.start);
+			if (l1[0] === l2[0]) // vertical line 
 			{
-				l1[0] = Math.min(max, Math.max(x, min));
+				l1[0] = Math.min(xmax, Math.max(x, xmin));
 				l2[0] = l1[0];
 			}
-			else
+			else // horizontal line
 			{
-				l1[1] = Math.min(max, Math.max(y, min));
+				l1[1] = Math.min(ymax, Math.max(y, ymin));
 				l2[1] = l1[1];
 			}
 
 			this.move_connector(tr.start, l1);
 		}
-		else if (line_idx == (tr.vertices.length - 2))
+		else if (line_idx == (tr.vertices.length - 2)) // last segment
 		{
-			const [min, max] = this.get_connector_movement_limits(tr.end);
-			if (l1[0] === l2[0])
+			const [xmin, xmax, ymin, ymax] = this.get_connector_movement_limits(tr.end);
+			if (l1[0] === l2[0]) // vertical line
 			{
-				l1[0] = Math.min(max, Math.max(x, min));
+				l1[0] = Math.min(xmax, Math.max(x, xmin));
 				l2[0] = l1[0];
 			}
 			else
 			{
-				l1[1] = Math.min(max, Math.max(y, min));
+				l1[1] = Math.min(ymax, Math.max(y, ymin));
 				l2[1] = l1[1];
 			}
 
@@ -974,6 +1036,9 @@ export class Model {
 
 			case 'right':
 				return [parent.pos[0] + parent.size[0], parent.pos[1] + conn.offset];
+
+			case 'all':
+				return [...parent.pos];
 		}
 	}
 
@@ -987,11 +1052,14 @@ export class Model {
 		switch (conn.side) {
 			case 'top':
 			case 'bottom':
-				return [x + 1, x + w - 1];
+				return [x + 1, x + w - 1, y, y];
 
 			case 'left':
 			case 'right':
-				return [y + 1, y + h - 1];
+				return [x, x, y + 1, y + h - 1];
+
+			case 'all':
+				return [x, x, y, y];
 		}
 	}
 
@@ -1001,21 +1069,46 @@ export class Model {
 		const [sx, sy] = this.get_connector_pos(tr.start);
 		const [ex, ey] = this.get_connector_pos(tr.end);
 
-		const [xs, ys] = tr.vertices[0];
+		const [x0, y0] = tr.vertices[0];
+		const [x1, y1] = tr.vertices[1];
 		const [xe, ye] = tr.vertices.slice(-1);
 
 		// Check if the start connector has moved
-		if ((sx !== xs) || (sy !== ys))
+		if ((sx !== x0) || (sy !== y0))
 		{
 			tr.vertices[0] = [sx, sy];
 
-			if (['left', 'right'].includes(this.data.connectors[tr.start].side))
+			/*if (['left', 'right'].includes(this.data.connectors[tr.start].side))
 			{
 				tr.vertices[1][1] = sy;
 			}
 			else
 			{
 				tr.vertices[1][0] = sx;
+			}*/
+
+			switch (this.data.connectors[tr.start].side)
+			{
+				case 'left':
+				case 'right':
+					tr.vertices[1][1] = sy;
+					break;
+					
+				case 'top':
+				case 'bottom':
+					tr.vertices[1][0] = sx;
+					break;
+				
+				case 'all':
+					if (x0 === x1) // the first segment is vertical
+					{
+						tr.vertices[1][0] = sx;
+					}
+					else // the first segment is horizontal
+					{
+						tr.vertices[1][1] = sy;
+					}
+					break;
 			}
 		}
 

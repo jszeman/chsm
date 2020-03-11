@@ -8,7 +8,7 @@ export const state_machine = {
 			text: [],
 			connectors: [],
 			parent: null,
-			children: ['state_0', 'state_1'],
+			children: ['state_0', 'state_1', 'istate_3'],
 			type: 'top'
 			},
 		state_0: {
@@ -42,7 +42,7 @@ export const state_machine = {
 			type: 'normal'
 			},
 		istate_3: {
-			pos: [20, 10],
+			pos: [30, 10],
 			size: [2, 2],
 			title: '',
 			text: [],
