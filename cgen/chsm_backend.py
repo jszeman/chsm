@@ -5,11 +5,14 @@ Usage:
   cgen.py [options] <cfile>
 
 Options:
-  -i --include_dir Include directory path [default: ../inc].
-  -d --doc_dir     Drawing directory path [default: ../doc].
-  -c --config      Config file path [default: ../doc/chsmconf.json] 
+  --inc_dir PATH    Include directory path [default: ../inc].
+  --doc_dir PATH    Drawing directory path [default: ../doc].
+  --config PATH     Config file path [default: ../doc/chsmconf.json]
 """
 import eel
+from pathlib import Path
+from os import path
+from docopt import docopt
 
 @eel.expose
 def save_state_machine(drawing: str, json_data: str):
@@ -25,9 +28,16 @@ def save_state_machine(drawing: str, json_data: str):
     f.close()
     print(output)
 
-    
-
 if __name__ == '__main__':
+    args = docopt(__doc__)
+    backend_path = Path(__file__).parent.absolute()
+    webdir = (backend_path / '../web').absolute().resolve()
+    target_file = backend_path / args['<cfile>']
+    target_dir = target_file.parent
+    inc_file = target_dir / args['--inc_dir'] / (target_file.stem + 'h')
+    html_file = target_dir / args['--doc_dir'] / (target_file.stem + 'html')
 
-    eel.init('../web')
+    print(target_file, inc_file, html_file)
+
+    eel.init(webdir)
     eel.start('main.html')
