@@ -18,8 +18,8 @@ export class Gui {
 
 	clear()
 	{
-		Object.keys(this.states).map(s => this.delete_state, this);
-		Object.keys(this.paths).map(s => this.delete_transition, this);
+		Object.keys(this.states).map(this.delete_state, this);
+		Object.keys(this.paths).map(this.delete_transition, this);
 
 		this.reset_view();
 	}
