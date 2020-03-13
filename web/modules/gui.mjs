@@ -16,6 +16,23 @@ export class Gui {
 		this.zoom_speed = 0.5;
 	}
 
+	clear()
+	{
+		Object.keys(this.states).map(s => this.delete_state, this);
+		Object.keys(this.paths).map(s => this.delete_transition, this);
+
+		this.reset_view();
+	}
+
+	reset_view()
+	{
+		this.translate = [10, 10];
+		this.scale = 10;
+		this.zoom_speed = 0.5;
+
+		this.set_transform();
+	}
+
 	set_transform()
 	{
 		const [tx, ty] = this.translate;

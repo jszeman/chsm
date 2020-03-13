@@ -6,7 +6,7 @@ import { state_machine } from './data.js';
 class App {
 	constructor(model)
 	{
-		this.model = new Model(model);
+		this.model = new Model(state_machine);
 		this.gui = new Gui();
 		this.drawing = null;
 		this.drag_data = {};
@@ -103,6 +103,17 @@ class App {
 		});
 
 		this.state = this.idle_state;
+
+		const data = eel.open_state_machine();
+	}
+
+	load_model(data)
+	{
+		this.gui.clear();
+
+		this.model = new Model(JSON.parse(data));
+		this.model.states().map(s => this.render_state(s), this);
+		this.model.transitions().map(t => this.render_transiton(t), this);
 	}
 
 	push_transition_changes_to_gui()
@@ -836,4 +847,11 @@ class App {
 	}
 }
 
-window.addEventListener('DOMContentLoaded', (event) => {window.app = new App(state_machine)});
+window.addEventListener('DOMContentLoaded', event => {window.app = new App(state_machine)});
+
+
+eel.expose(load_files); // Expose this function to Python
+function load_files(files) {
+	console.log('load_files', files);
+	window.app.load_model(files['test.c']);
+}
