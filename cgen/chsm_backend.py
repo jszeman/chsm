@@ -14,6 +14,7 @@ import eel
 import json
 from pathlib import Path
 from docopt import docopt
+import logging
 
 class HtmlException(Exception):
   pass
@@ -33,18 +34,24 @@ class File:
       html.write(content)
 
   def read_html(self):
+    if not self.html_file_path.exists():
+      logging.error(f'File not found: {self.html_file_path}')
+      return None
+
     with open(self.html_file_path, 'r') as html:
       content = html.read()
       m = re.search("\<pre id='chsm-json-data'\>\\n(?P<json>.+)\<\/pre\>", content, re.DOTALL)
       if not m:
+        logging.error(f'No JSON data was found in file: {self.html_file_path}')
         return None
 
       try:
         data = m.group('json')
         j = json.loads(data)
         return data
-      except json.decoder.JSONDecodeError as e:
-        raise(HtmlException(str(e))) 
+      except Exception as e:
+        logging.error(f'JSON syntax error in html file {str(self.html_file_path)}. \nError message: {str(e)}')
+        return None
 
       
 
@@ -56,8 +63,13 @@ class Project:
 
     self.template_html =  self.template_dir / 'template.html'
     self.drawing_js =  self.template_dir / 'wheel.js'
+    self.model_json = self.template_dir / 'model.json'
     self.drawing_css = self.web_dir / 'drawing.css'
     self.files = []
+
+    self.model = ''
+    with open(self.model_json) as model:
+      self.model = model.read()
 
   def __repr__(self):
     retval = f'backend: {self.backend_path} web_dir: {self.web_dir}, templates: {self.template_dir}\nFiles:\n'
@@ -82,7 +94,12 @@ class Project:
     self.files.append(File(file_path, inc_dir, doc_dir))
 
   def open_html(self):
-    eel.load_files({f.c_file_path.name:f.read_html() for f in self.files})
+    prj = {f.c_file_path.name:f.read_html() for f in self.files}
+    for k, v in prj.items():
+      if v == None:
+        prj[k] = self.model
+
+    eel.load_files(prj)
 
 project = Project()
 
@@ -95,6 +112,7 @@ def open_state_machine():
   return project.open_html()
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.WARNING)
     args = docopt(__doc__)
 
     project.add_file(args['<cfile>'], args['--inc_dir'], args['--doc_dir'])

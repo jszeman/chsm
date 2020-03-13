@@ -1,0 +1,20 @@
+
+{
+	"states": {
+		"__top__": {
+			"pos": [-100000000, -100000000],
+			"size": [200000000, 200000000],
+			"title": "__top__",
+			"text": [],
+			"connectors": [],
+			"parent": null,
+			"children": [],
+			"type": "top"
+			}
+	},
+
+	"connectors": {},
+
+	"transitions": {}
+}
+
