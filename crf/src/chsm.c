@@ -10,55 +10,86 @@
 #include <stdlib.h>
 
 
-const CEvent chsm_init_event = {.sig=C_SIG_INIT, .gc_info=0};
-const CEvent chsm_entry_event = {.sig=C_SIG_ENTRY, .gc_info=0};
+const cevent_tst chsm_init_event_st = {.sig=C_SIG_INIT, .gc_info=0};
 
-uint16_t chsm_top(CHsm *this, const CEvent *e)
+void chsm_ctor(chsm_tst *self, chsm_state_tpft init_state_pft)
 {
-	return C_IGNORED();
+	assert(NULL != self);
+	assert(NULL != init_state_pft);
+
+	self->state_handler_pft = init_state_pft;
 }
 
-void chsm_ctor(CHsm *this, chsm_state_t init_state)
+void chsm_init(chsm_tst *self)
 {
-	assert(NULL != this);
-	assert(NULL != init_state);
+	uint16_t result_u16;
 
-	this->state_handler = init_state;
+	assert(NULL != self);
+
+	chsm_dispatch(self, &chsm_init_event_st);
 }
 
-void chsm_init(CHsm *this)
+void chsm_exit_children(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst)
 {
-	uint16_t result;
+	chsm_user_func_tpft *exit_ppft;
 
-	assert(NULL != this);
+	exit_ppft = ctx_pst->exit_stack_apft;
 
-	do {
-		result = this->state_handler(this, &chsm_entry_event);
-	} while (C_RET_HANDLED != result);
-}
-
-void chsm_dispatch(CHsm *this, const CEvent *e)
-{
-	uint16_t result;
-	chsm_state_t prev_state;
-	uint16_t i;
-
-	assert(NULL != this);
-	assert(NULL != e);
-
-	for (i=CHSM_MAX_NESTING_LEVEL; i; i--)
+	for (int i=0; i<CHSM_MAX_NESTING_LEVEL; i++)
 	{
-		prev_state = this->state_handler;
-
-		result = this->state_handler(this, e);
-
-		switch(result)
+		if (NULL != *exit_ppft)
 		{
-		case C_RET_NONE: return;
-		case C_RET_HANDLED: return;
-		case C_RET_TRANS: return;
+			(*exit_ppft)(self, e_pst);
+		}
+		else
+		{
+			return;
+		}
+
+		exit_ppft++;
+	}
+}
+
+/*chsm_result_ten chsm_handle_in_parent(chsm_tst *self, chsm_call_ctx_tst *ctx_pst, chsm_state_tpft parent, void *exit_func)
+{
+	self->state_handler_pft = parent;
+	if (exit_func)
+	{
+		*(ctx_pst->exit_ppft) = (chsm_user_func_tpft)exit_func;
+		ctx_pst->exit_ppft++;
+	}
+    return C_RES_PARENT;
+}*/
+
+void chsm_dispatch(chsm_tst *self, const cevent_tst  *e_pst)
+{
+	assert(NULL != self);
+	assert(NULL != e_pst);
+
+	chsm_result_ten 	result_en;
+	chsm_call_ctx_tst 	ctx_st = {0};
+
+	ctx_st.exit_ppft = ctx_st.exit_stack_apft;
+	ctx_st.start_pft = self->state_handler_pft;
+
+	for (int i=0; i<CHSM_MAX_NESTING_LEVEL; i++)
+	{
+		result_en = self->state_handler_pft(self, e_pst, &ctx_st);
+
+		switch(result_en)
+		{
+			case C_RES_HANDLED:
+			case C_RES_IGNORED:
+				self->state_handler_pft = ctx_st.start_pft;
+				return;
+
+			case C_RES_TRANS:
+				return;
+
+			case C_RES_PARENT:
+				break;
 		}
 	}
 
-	//assert(i);
+	//TODO: error handling for nesting overflow	
 }

@@ -6,10 +6,9 @@
 /**
  * Signal class registry:
  * 	0x0000 - 0x00ff:	HSM framework
- * 	0x0100 - 0x01ff:	CANOpen
  */
 
-/** CEvent - Base class for events
+/** cevent - Base class for events
  *
  * Fields:
  * 		sig:		Event signal.
@@ -18,11 +17,11 @@
  * 					handles the physical memory used by the event.
  */
 
-typedef struct crf_event_t
+typedef struct cevent_st
 {
 	uint16_t		sig;
 	uint16_t		gc_info;
-} CEvent;
+} cevent_tst;
 
 
 

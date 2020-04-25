@@ -14,52 +14,52 @@
 #define CPOOL_ID_MASK		0xF000
 #define CPOOL_REF_CNT_MASK	(~CPOOL_ID_MASK)
 
-int32_t cpool_init(CPool *this, void *buff, uint16_t event_size, uint16_t event_count, uint16_t id)
+int32_t cpool_init(cpool_tst *self, void *buff, uint16_t event_size, uint16_t event_count, uint16_t id)
 {
 	assert(NULL != buff);
-	assert(NULL != this);
+	assert(NULL != self);
 	assert(0 != (id & CPOOL_ID_MASK));
 
-	this->pool = buff;
-	this->esize = event_size;
-	this->ecnt = event_count;
-	this->id = id;
+	self->pool = buff;
+	self->esize = event_size;
+	self->ecnt = event_count;
+	self->id = id;
 
-	memset(this->pool, 0, (size_t)(this->esize * this->ecnt));
+	memset(self->pool, 0, (size_t)(self->esize * self->ecnt));
 
 	return 0;
 }
 
-CEvent *cpool_new(CPool *this)
+cevent_tst *cpool_new(cpool_tst *self)
 {
 	void *e;
 
-	assert(NULL != this);
+	assert(NULL != self);
 
-	for (e = this->pool; e<this->pool + this->ecnt * this->esize; e+=this->esize)
+	for (e = self->pool; e<self->pool + self->ecnt * self->esize; e+=self->esize)
 	{
-		if (0 == ((CEvent *)e)->gc_info)
+		if (0 == ((cevent_tst *)e)->gc_info)
 		{
-			((CEvent *)e)->gc_info = this->id;
-			return (CEvent *)e;
+			((cevent_tst *)e)->gc_info = self->id;
+			return (cevent_tst *)e;
 		}
 	}
 
 	return NULL;
 }
 
-int32_t cpool_gc(CPool *this, CEvent *e)
+int32_t cpool_gc(cpool_tst *self, cevent_tst *e)
 {
-	assert(NULL != this);
+	assert(NULL != self);
 	assert(NULL != e);
-	assert(this->id == (e->gc_info & CPOOL_ID_MASK));
+	assert(self->id == (e->gc_info & CPOOL_ID_MASK));
 
 	if (e->gc_info & CPOOL_REF_CNT_MASK)
 	{
 		e->gc_info--;
 	}
 
-	if (this->id == e->gc_info)
+	if (self->id == e->gc_info) // Ref counter is 0
 	{
 		e->gc_info = 0;
 	}
