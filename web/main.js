@@ -67,6 +67,12 @@ class App {
 		this.save_btn = document.querySelector('#btn-save');
 		this.save_btn.addEventListener('click', e => this.dispatch('SAVE', e));
 
+		this.open_btn = document.querySelector('#btn-open');
+		this.open_btn.addEventListener('click', e => this.dispatch('OPEN', e));
+
+		this.codegen_btn = document.querySelector('#btn-codegen');
+		this.codegen_btn.addEventListener('click', e => this.dispatch('CODE_GEN', e));
+
 		this.body.addEventListener('mousemove', event => {
 			this.mouse_pos = this.gui.get_absolute_pos(event);
 			this.dispatch('MOUSEMOVE', event);
@@ -104,7 +110,7 @@ class App {
 
 		this.state = this.idle_state;
 
-		const data = eel.open_state_machine();
+		//const data = eel.open_state_machine(); // This will cause the python code to call this.load_model
 	}
 
 	load_model(data)
@@ -315,6 +321,15 @@ class App {
 
 			case 'SAVE':
 				eel.save_state_machine(this.main.innerHTML, this.model.get_data_string());
+				break;
+
+			case 'OPEN':
+				eel.open_file();
+				break;
+
+			case 'CODE_GEN':
+				eel.save_state_machine(this.main.innerHTML, this.model.get_data_string());
+				eel.genereate_code();
 				break;
 		}
 	}
@@ -849,9 +864,15 @@ class App {
 
 window.addEventListener('DOMContentLoaded', event => {window.app = new App(state_machine)});
 
-
 eel.expose(load_files); // Expose this function to Python
 function load_files(files) {
 	console.log('load_files', files);
 	window.app.load_model(files['test.c']);
+}
+
+
+eel.expose(load_json); // Expose this function to Python
+function load_json(data) {
+	console.log(data)
+	window.app.load_model(data);
 }
