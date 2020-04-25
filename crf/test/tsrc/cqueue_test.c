@@ -13,8 +13,8 @@
 
 TEST_GROUP(eq);
 
-CQueue	eq;
-CEvent 	*events[8];
+cqueue_tst 	eq;
+cevent_tst  	*events[8];
 
 TEST_SETUP(eq)
 {
@@ -33,11 +33,11 @@ TEST_TEAR_DOWN(eq)
  */
 TEST(eq, put_1_get_1)
 {
-	CEvent e;
-	const CEvent *ep;
+	cevent_tst  e;
+	const cevent_tst  *ep;
 	int32_t r;
 
-	cqueue_init(&eq, (const CEvent **)events, 4);
+	cqueue_init(&eq, (const cevent_tst  **)events, 4);
 	r = cqueue_put(&eq, &e);
 	ep = cqueue_get(&eq);
 
@@ -51,11 +51,11 @@ TEST(eq, put_1_get_1)
  */
 TEST(eq, put_2_get_1)
 {
-	CEvent e1, e2;
-	const CEvent *ep;
+	cevent_tst  e1, e2;
+	const cevent_tst  *ep;
 	int32_t r1, r2;
 
-	cqueue_init(&eq, (const CEvent **)events, 4);
+	cqueue_init(&eq, (const cevent_tst  **)events, 4);
 	r1 = cqueue_put(&eq, &e1);
 	r2 = cqueue_put(&eq, &e2);
 	ep = cqueue_get(&eq);
@@ -71,10 +71,10 @@ TEST(eq, put_2_get_1)
  */
 TEST(eq, put_2_get_2)
 {
-	CEvent e1, e2;
-	const CEvent *ep1, *ep2;
+	cevent_tst  e1, e2;
+	const cevent_tst  *ep1, *ep2;
 
-	cqueue_init(&eq, (const CEvent **)events, 4);
+	cqueue_init(&eq, (const cevent_tst  **)events, 4);
 	cqueue_put(&eq, &e1);
 	cqueue_put(&eq, &e2);
 	ep1 = cqueue_get(&eq);
@@ -90,9 +90,9 @@ TEST(eq, put_2_get_2)
  */
 TEST(eq, get_from_empty)
 {
-	const CEvent *ep1;
+	const cevent_tst  *ep1;
 
-	cqueue_init(&eq, (const CEvent **)events, 4);
+	cqueue_init(&eq, (const cevent_tst  **)events, 4);
 	ep1 = cqueue_get(&eq);
 
 	TEST_ASSERT(NULL == ep1);
@@ -103,10 +103,10 @@ TEST(eq, get_from_empty)
  */
 TEST(eq, put_more_than_capacity)
 {
-	CEvent e1;
+	cevent_tst  e1;
 	int32_t r;
 
-	cqueue_init(&eq, (const CEvent **)events, 4);
+	cqueue_init(&eq, (const cevent_tst  **)events, 4);
 	for (uint16_t i=0; i<5; i++)
 	{
 		r = cqueue_put(&eq, &e1);
@@ -121,9 +121,9 @@ TEST(eq, put_more_than_capacity)
  */
 TEST(eq, test_put_roll)
 {
-	CEvent e1;
+	cevent_tst  e1;
 
-	cqueue_init(&eq, (const CEvent **)events, 4);
+	cqueue_init(&eq, (const cevent_tst  **)events, 4);
 
 	for (uint16_t i=0; i<5; i++)
 	{
@@ -140,10 +140,10 @@ TEST(eq, test_put_roll)
  */
 TEST(eq, test_get_roll)
 {
-	CEvent e1;
-	const CEvent *ep1;
+	cevent_tst  e1;
+	const cevent_tst  *ep1;
 
-	cqueue_init(&eq, (const CEvent **)events, 4);
+	cqueue_init(&eq, (const cevent_tst  **)events, 4);
 
 	for (uint16_t i=0; i<5; i++)
 	{

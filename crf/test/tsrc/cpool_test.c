@@ -16,7 +16,7 @@ TEST_GROUP(ep);
 
 #define BUFF_SIZE 	32
 
-CPool 				pool;
+cpool_tst  				pool;
 uint8_t				buff[BUFF_SIZE];
 
 TEST_SETUP(ep)
@@ -35,7 +35,7 @@ TEST_TEAR_DOWN(ep)
  */
 TEST(ep, new_1)
 {
-	CEvent *e;
+	cevent_tst  *e;
 
 	cpool_init(&pool, buff, 8, 4, 0x1000);
 	e = cpool_new(&pool);
@@ -52,7 +52,7 @@ TEST(ep, new_1)
  */
 TEST(ep, new_2)
 {
-	CEvent *e[2];
+	cevent_tst  *e[2];
 
 	cpool_init(&pool, buff, 8, 4, 0x1000);
 	e[0] = cpool_new(&pool);
@@ -72,7 +72,7 @@ TEST(ep, new_2)
  */
 TEST(ep, overallocate)
 {
-	CEvent *e;
+	cevent_tst  *e;
 
 	cpool_init(&pool, buff, 8, 4, 0x1000);
 
@@ -90,8 +90,8 @@ TEST(ep, overallocate)
  */
 TEST(ep, reuse_event)
 {
-	CEvent *e[6];
-	CEvent *e3;
+	cevent_tst  *e[6];
+	cevent_tst  *e3;
 
 	cpool_init(&pool, buff, 8, 4, 0x1000);
 

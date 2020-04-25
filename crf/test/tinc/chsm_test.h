@@ -9,8 +9,6 @@
 #define TINC_CHSM_TEST_H_
 
 #include <stdint.h>
-#include "chsm.h"
-
 
 
 #endif /* TINC_CHSM_TEST_H_ */
