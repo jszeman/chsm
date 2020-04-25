@@ -26,7 +26,7 @@ void run_hsm_tests(void)
 	RUN_TEST_GROUP(hsm);
 }
 
-int main(int argc, char * argv[])
+int main(int argc, const char * argv[])
 {
 	return UnityMain(argc, argv, run_hsm_tests);
 }

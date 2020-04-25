@@ -6,6 +6,11 @@ set(test_files  tsrc/main.c
                 tsrc/cpool_test.c
                 tsrc/cqueue_test.c
                 tsrc/chsm_test.c
+                tsrc/chsm_test_functions.c
+                tsrc/chsm_test_machine.c
+                tsrc/chsm_test_machine2.c
+                tsrc/chsm_test_machine3.c
+                tsrc/chsm_test_machine4.c
                 ../src/chsm.c
                 ../src/cpool.c
                 ../src/cqueue.c

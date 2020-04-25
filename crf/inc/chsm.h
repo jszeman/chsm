@@ -13,45 +13,100 @@
 
 #define CHSM_MAX_NESTING_LEVEL	4
 
-enum chsm_events
+typedef enum
 {
 	C_SIG_NONE,
 	C_SIG_INIT,
-	C_SIG_ENTRY,
-	C_SIG_EXIT,
+} chsm_signals_ten;
+
+typedef enum
+{
+	C_RES_HANDLED,
+	C_RES_TRANS,
+	C_RES_PARENT,
+	C_RES_IGNORED,
+} chsm_result_ten;
+
+typedef struct chsm_st chsm_tst;
+typedef struct chsm_call_ctx_st chsm_call_ctx_tst;
+
+/*
+ * This is the type for functions the generated state machine will call.
+ */
+typedef void (*chsm_user_func_tpft)(chsm_tst *self, const cevent_tst *e_pst);
+
+;
+
+/*
+ * This is the type for functions that implement state behaviour.
+ * Return:
+ * 		A state function will return NULL, when the event was handled, or change the state
+ * 		handler function to its parent state, and return a pointer for its own exit function.
+ * Params:
+ * 		self: Pointer to the state machine.
+ *		e_pst: Pointer to the event to be handled.
+ *		funcs_apft: A NULL terminated array of function pointers, that store the pointers to the exit functions of
+ *			children states which could not handle the event.
+ */
+typedef chsm_result_ten (*chsm_state_tpft)(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst);
+
+/*
+ * Call context structure
+ * A pointer to such a structure will be passed to state handler functions.
+ * In case a state handler wants to defer event processing to its parent, it should write
+ * the pointer to the exit function in *exit_pft, then increase it.
+ * If a state handler executes a state transition, it should call the functions from
+ * the exit_stack_apft array.
+ */
+typedef struct chsm_call_ctx_st
+{
+	chsm_user_func_tpft		exit_stack_apft[CHSM_MAX_NESTING_LEVEL];
+	chsm_user_func_tpft		*exit_ppft;
+	chsm_state_tpft			start_pft;
+} chsm_call_ctx_tst;
+
+/*
+ * State machine
+ */
+struct chsm_st
+{
+	chsm_state_tpft		state_handler_pft;
 };
 
-enum chsm_result
+void chsm_ctor(chsm_tst *self , chsm_state_tpft init_state_pft);
+void chsm_init(chsm_tst *self);
+void chsm_dispatch(chsm_tst *self, const cevent_tst *e_pst);
+
+void chsm_exit_children(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
+
+extern const cevent_tst chsm_init_event_st;
+
+static inline chsm_result_ten chsm_handle_in_parent(chsm_tst *self, chsm_call_ctx_tst *ctx_pst, chsm_state_tpft parent, void *exit_func)
 {
-	C_RET_NONE,
-	C_RET_HANDLED,
-	C_RET_SUPER,
-	C_RET_ENTRY,
-	C_RET_EXIT,
-	C_RET_TRANS,
-};
+	self->state_handler_pft = parent;
+	if (exit_func)
+	{
+		*(ctx_pst->exit_ppft) = (chsm_user_func_tpft)exit_func;
+		ctx_pst->exit_ppft++;
+	}
+    return C_RES_PARENT;
+}
 
-typedef struct crf_hsm_t CHsm;
-
-typedef uint16_t (*chsm_state_t)(CHsm *this, const CEvent *e);
-
-typedef struct crf_hsm_t
+static inline chsm_result_ten chsm_transition(chsm_tst *self, chsm_state_tpft target)
 {
-	chsm_state_t		state_handler;
-} CHsm;
+	self->state_handler_pft = target;
 
-void chsm_ctor(CHsm *this, chsm_state_t init_state);
-void chsm_init(CHsm *this);
-void chsm_dispatch(CHsm *this, const CEvent *e);
+    return C_RES_TRANS;
+}
 
-#define C_HANDLED()			C_RET_HANDLED
-#define C_ENTRY(_child)		(this->state_handler = _child, 	C_RET_ENTRY)
-#define C_EXIT()			(this->state_handler = NULL, 	C_RET_EXIT)
-#define C_SUPER(_super)		(this->state_handler = _super, 	C_RET_SUPER)
-#define C_TRANS(_target)	(this->state_handler = _target, C_RET_TRANS)
-#define C_IGNORED()			C_RET_NONE
+static inline chsm_result_ten chsm_ignored(chsm_tst *self)
+{
+    return C_RES_IGNORED;
+}
 
-extern const CEvent chsm_init_event;
-extern const CEvent chsm_entry_event;
+static inline chsm_result_ten chsm_handled(chsm_tst *self)
+{
+    return C_RES_HANDLED;
+}
 
 #endif /* INC_CHSM_H_ */

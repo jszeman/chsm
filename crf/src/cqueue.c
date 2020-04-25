@@ -11,64 +11,64 @@
 #include <cevent.h>
 #include <cqueue.h>
 
-int32_t 			cqueue_init(CQueue *this, const CEvent **events, uint16_t max_event_count);
-int32_t 			cqueue_put(CQueue *this, const CEvent *e);
-const CEvent		*cqueue_get(CQueue *this);
-//uint32_t 			cqueue_is_empty(CQueue *this);
+int32_t 			cqueue_init(cqueue_tst *self, const cevent_tst **events, uint16_t max_event_count);
+int32_t 			cqueue_put(cqueue_tst *self, const cevent_tst *e);
+const cevent_tst	*cqueue_get(cqueue_tst *self);
+//uint32_t 			cqueue_is_empty(cqueue_tst *self);
 
-int32_t cqueue_init(CQueue *this, const CEvent **events, uint16_t max_event_count)
+int32_t cqueue_init(cqueue_tst *self, const cevent_tst **events, uint16_t max_event_count)
 {
-	assert(NULL != this);
+	assert(NULL != self);
 	assert(NULL != events);
 	assert(max_event_count > 0);
 
-	this->events = events;
-	this->max = max_event_count;
-	this->head = 0;
-	this->tail = 0;
-	this->free = max_event_count;
+	self->events = events;
+	self->max = max_event_count;
+	self->head = 0;
+	self->tail = 0;
+	self->free = max_event_count;
 
 	return 0;
 }
 
-int32_t cqueue_put(CQueue *this, const CEvent *e)
+int32_t cqueue_put(cqueue_tst *self, const cevent_tst *e)
 {
-	assert(NULL != this);
+	assert(NULL != self);
 
-	if (0 == this->free)
+	if (0 == self->free)
 	{
 		return -1;
 	}
 
-	this->events[this->head] = e;
-	this->head++;
-	if (this->head >= this->max)
+	self->events[self->head] = e;
+	self->head++;
+	if (self->head >= self->max)
 	{
-		this->head = 0;
+		self->head = 0;
 	}
-	this->free--;
+	self->free--;
 
 	return 0;
 }
 
-const CEvent *cqueue_get(CQueue *this)
+const cevent_tst *cqueue_get(cqueue_tst *self)
 {
-	const CEvent *e;
+	const cevent_tst *e;
 
-	assert(NULL != this);
+	assert(NULL != self);
 
-	if (this->head == this->tail)
+	if (self->head == self->tail)
 	{
 		return NULL;
 	}
 
-	e = this->events[this->tail];
-	this->tail++;
-	if (this->tail >= this->max)
+	e = self->events[self->tail];
+	self->tail++;
+	if (self->tail >= self->max)
 	{
-		this->tail = 0;
+		self->tail = 0;
 	}
-	this->free++;
+	self->free++;
 	return e;
 }
 

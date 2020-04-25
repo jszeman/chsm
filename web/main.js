@@ -6,7 +6,7 @@ import { state_machine } from './data.js';
 class App {
 	constructor(model)
 	{
-		this.model = new Model(model);
+		this.model = new Model(state_machine);
 		this.gui = new Gui();
 		this.drawing = null;
 		this.drag_data = {};
@@ -25,6 +25,7 @@ class App {
 		this.model.transitions().map(t => this.render_transiton(t), this);
 
 		this.body = document.querySelector('body');
+		this.main = document.querySelector('main');
 		
 		this.body.addEventListener("keydown", event => {
 			if (!this.enable_keys) return;
@@ -63,6 +64,15 @@ class App {
 		this.text_apply_btn = document.querySelector('#btn-text-apply');
 		this.text_apply_btn.addEventListener('click', e => this.dispatch('APPLY_TEXT', e));
 
+		this.save_btn = document.querySelector('#btn-save');
+		this.save_btn.addEventListener('click', e => this.dispatch('SAVE', e));
+
+		this.open_btn = document.querySelector('#btn-open');
+		this.open_btn.addEventListener('click', e => this.dispatch('OPEN', e));
+
+		this.codegen_btn = document.querySelector('#btn-codegen');
+		this.codegen_btn.addEventListener('click', e => this.dispatch('CODE_GEN', e));
+
 		this.body.addEventListener('mousemove', event => {
 			this.mouse_pos = this.gui.get_absolute_pos(event);
 			this.dispatch('MOUSEMOVE', event);
@@ -99,6 +109,17 @@ class App {
 		});
 
 		this.state = this.idle_state;
+
+		//const data = eel.open_state_machine(); // This will cause the python code to call this.load_model
+	}
+
+	load_model(data)
+	{
+		this.gui.clear();
+
+		this.model = new Model(JSON.parse(data));
+		this.model.states().map(s => this.render_state(s), this);
+		this.model.transitions().map(t => this.render_transiton(t), this);
 	}
 
 	push_transition_changes_to_gui()
@@ -296,6 +317,19 @@ class App {
 			case 'DRAWING_CTRL_MDOWN':
 				this.state_drag_start(data, '__top__');
 				this.state = this.state_dragging_state;
+				break;
+
+			case 'SAVE':
+				eel.save_state_machine(this.main.innerHTML, this.model.get_data_string());
+				break;
+
+			case 'OPEN':
+				eel.open_file();
+				break;
+
+			case 'CODE_GEN':
+				eel.save_state_machine(this.main.innerHTML, this.model.get_data_string());
+				eel.genereate_code();
 				break;
 		}
 	}
@@ -828,4 +862,17 @@ class App {
 	}
 }
 
-window.addEventListener('DOMContentLoaded', (event) => {window.app = new App(state_machine)});
+window.addEventListener('DOMContentLoaded', event => {window.app = new App(state_machine)});
+
+eel.expose(load_files); // Expose this function to Python
+function load_files(files) {
+	console.log('load_files', files);
+	window.app.load_model(files['test.c']);
+}
+
+
+eel.expose(load_json); // Expose this function to Python
+function load_json(data) {
+	console.log(data)
+	window.app.load_model(data);
+}

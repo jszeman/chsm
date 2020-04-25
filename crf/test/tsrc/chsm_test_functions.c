@@ -9,77 +9,256 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include "chsm.h"
-#include "chsm_test.h"
+#include "cevent.h"
+#include "chsm_test_machine.h"
 
-extern char log_str[1024];
-
-/* CHSM: test
-@startuml
-state s {
-        s: entry/ s_entry()
-        s: exit/ s_exit()
-        s: init/ s_init()
-        s: I/ s_i()
-
-        state s1 {
-            s1: entry/ s1_entry()
-            s1: exit/ s1_exit()
-            s1: init/ s1_init()
-            s1: I/ s1_i()
-
-            state s11 {
-                s11: entry/ s11_entry()
-                s11: exit/ s11_exit()
-                s11: init/ s11_init()
-                s11: I/ s11_i()
-            }
-
-            [*] --> s11
-        }
-
-        state s2 {
-            s2: entry/ s2_entry()
-            s2: exit/ s2_exit()
-            s2: init/ s2_init()
-            s2: I/ s2_i()
-
-            state s21 {
-                s21: entry/ s21_entry()
-                s21: exit/ s21_exit()
-                s21: init/ s21_init()
-                s21: I/ s21_i()
-
-                state s211 {
-                    s211: entry/ s211_entry()
-                    s211: exit/ s211_exit()
-                    s211: init/ s211_init()
-                    s211: I/ s211_i()
-                }
-
-                [*] --> s211
-            }
-            [*] --> s211
-        }
-
-      [*] --> s11
+static void load(test_hsm_tst *self, const char *str)
+{
+    while (*str)
+    {
+        *self->log = *str;
+        self->log++;
+        str++;
     }
+}
 
-    [*] --> s2
-    s1 --> s: D
-    s --> s11: E
-    s1 --> s11: B
-    s1 --> s1: A
-    s11 --> s: H
-    s1 --> s2: C
-    s2 --> s1: C
-    s11 --> s211: G
-    s21 --> s11: G
-    s2 --> s11: F
-    s1 --> s211: F
-    s21 --> s21: A
-    s21 --> s211: B
-    s211 --> s21: D
-    s211 -> s: H
-@enduml
- */
+void clear_log(test_hsm_tst  *self)
+{
+    memset(&self->log_buff, 0, sizeof(self->log_buff));
+    self->log = self->log_buff;
+}
+
+void s_entry(test_hsm_tst *self, const cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+
+void s_exit(test_hsm_tst *self, const cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+
+void s_init(test_hsm_tst *self, const cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+
+void s1_entry(test_hsm_tst *self, const cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+
+void s1_exit(test_hsm_tst *self, const cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+
+void s1_init(test_hsm_tst *self, const cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+
+void s2_entry(test_hsm_tst *self, const cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+
+void s2_exit(test_hsm_tst *self, const cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+
+void s2_init(test_hsm_tst *self, const cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+
+void s_sig1_handler(test_hsm_tst *self, const cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+
+void s_sig2_handler(test_hsm_tst *self, const cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+
+void s_sig3_handler(test_hsm_tst *self, const cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+
+void d_func(test_hsm_tst *self, cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+
+void s11_entry(test_hsm_tst *self, cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+
+void s11_exit(test_hsm_tst *self, cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+
+void s11_func(test_hsm_tst *self, cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+
+void s11_init(test_hsm_tst *self, cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+
+void s1_func(test_hsm_tst *self, cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+
+void s211_entry(test_hsm_tst *self, cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+
+void s211_exit(test_hsm_tst *self, cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+
+void s211_init(test_hsm_tst *self, cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+
+void s21_entry(test_hsm_tst *self, cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+
+void s21_exit(test_hsm_tst *self, cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+
+void s21_init(test_hsm_tst *self, cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+
+
+void s11_id(test_hsm_tst *self, const cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+
+void s211_id(test_hsm_tst *self, const cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+
+void s11_g1(test_hsm_tst *self, const cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+
+void s11_g2(test_hsm_tst *self, const cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+
+bool cond(test_hsm_tst *self, cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+    return self->cond;
+}
+
+bool k_guard(test_hsm_tst *self, cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+    return self->k_guard;
+}
+
+bool j_guard(test_hsm_tst *self, cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+    return self->j_guard;
+}
+
+bool s11_guard(test_hsm_tst *self, cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+    return self->s11_guard;
+}
+
+bool s1_guard(test_hsm_tst *self, cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+    return self->s1_guard;
+}
+
+bool s211_i_guard(test_hsm_tst *self, cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+    return self->s211_i_guard;
+}
+
+bool s21_entry_guard(test_hsm_tst *self, cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+    return self->s21_entry_guard;
+}
+
+bool s11_g_guard1(test_hsm_tst *self, const cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+    return self->s11_g_guard1;
+}
+
+bool s11_g_guard2(test_hsm_tst *self, const cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+    return self->s11_g_guard2;
+}
+
