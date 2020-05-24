@@ -9,6 +9,7 @@
 #define INC_CPOOL_H_
 
 #include <stdint.h>
+#include <stdbool.h>
 #include "cevent.h"
 
 typedef struct cpool_st
@@ -22,7 +23,7 @@ typedef struct cpool_st
 
 int32_t 	cpool_init(cpool_tst *self, void *buff, uint16_t event_size, uint16_t event_count, uint16_t id);
 cevent_tst 	*cpool_new(cpool_tst *self);
-int32_t 	cpool_gc(cpool_tst *self, cevent_tst *e);
+bool 	    cpool_gc(cpool_tst *self, cevent_tst *e);
 
 
 #endif /* INC_CPOOL_H_ */

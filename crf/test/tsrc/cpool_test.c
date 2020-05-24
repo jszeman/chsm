@@ -6,6 +6,7 @@
  */
 
 #include <stdint.h>
+#include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
 #include "unity_fixture.h"
@@ -92,6 +93,7 @@ TEST(ep, reuse_event)
 {
 	cevent_tst  *e[6];
 	cevent_tst  *e3;
+	bool gc_result_b;
 
 	cpool_init(&pool, buff, 8, 4, 0x1000);
 
@@ -105,11 +107,32 @@ TEST(ep, reuse_event)
 
 	//printf("\ngc_info: %x\n", e3->gc_info);
 
-	cpool_gc(&pool, e[3]);
+	gc_result_b = cpool_gc(&pool, e[3]);
 
 	e[5] = cpool_new(&pool);
 
 	TEST_ASSERT_EQUAL_HEX32(e3, e[5]);
+	TEST_ASSERT_TRUE(gc_result_b);
+}
+
+/**
+ * Call cpool_gc on an event with a different id and check
+ * that it returns 0;
+ */
+TEST(ep, ignore_foreign_event)
+{
+	cevent_tst  e = {.sig = 0xabcd, .gc_info = 10};
+	bool gc_result_b;
+
+	cpool_init(&pool, buff, 8, 4, 0x1000);
+
+	gc_result_b = cpool_gc(&pool, &e);
+	TEST_ASSERT_FALSE(gc_result_b);
+
+	e.gc_info = 0x2005;
+
+	gc_result_b = cpool_gc(&pool, &e);
+	TEST_ASSERT_FALSE(gc_result_b);
 }
 
 TEST_GROUP_RUNNER(ep)
@@ -118,7 +141,7 @@ TEST_GROUP_RUNNER(ep)
 	RUN_TEST_CASE(ep, new_2);
 	RUN_TEST_CASE(ep, overallocate);
 	RUN_TEST_CASE(ep, reuse_event);
-//	RUN_TEST_CASE(ep, new_1);
+	RUN_TEST_CASE(ep, ignore_foreign_event);
 //	RUN_TEST_CASE(ep, new_1);
 //	RUN_TEST_CASE(ep, new_1);
 //	RUN_TEST_CASE(ep, new_1);

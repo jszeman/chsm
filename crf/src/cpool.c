@@ -6,6 +6,7 @@
  */
 
 #include <stdint.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
@@ -48,11 +49,15 @@ cevent_tst *cpool_new(cpool_tst *self)
 	return NULL;
 }
 
-int32_t cpool_gc(cpool_tst *self, cevent_tst *e)
+bool cpool_gc(cpool_tst *self, cevent_tst *e)
 {
 	assert(NULL != self);
 	assert(NULL != e);
-	assert(self->id == (e->gc_info & CPOOL_ID_MASK));
+	
+	if (self->id != (e->gc_info & CPOOL_ID_MASK))
+	{
+		return false;
+	}
 
 	if (e->gc_info & CPOOL_REF_CNT_MASK)
 	{
@@ -64,6 +69,6 @@ int32_t cpool_gc(cpool_tst *self, cevent_tst *e)
 		e->gc_info = 0;
 	}
 
-	return 0;
+	return true;
 }
 
