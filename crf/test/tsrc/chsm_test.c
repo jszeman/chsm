@@ -8,7 +8,7 @@
 #include <chsm.h>
 #include "cevent.h"
 #include <stdint.h>
-#include<stdbool.h>
+#include <stdbool.h>
 #include <string.h>
 #include "unity_fixture.h"
 #include "chsm_test.h"
@@ -21,7 +21,7 @@ TEST_GROUP(hsm);
 test_hsm_tst  hsm;
 
 
-const cevent_tst event_none = {.sig=C_SIG_NONE, .gc_info=0};
+static const cevent_tst event_none = {.sig=C_SIG_NONE, .gc_info=0};
 
 const cevent_tst event1 = {.sig=TEST_SIG1, .gc_info=0};
 const cevent_tst event2 = {.sig=TEST_SIG2, .gc_info=0};

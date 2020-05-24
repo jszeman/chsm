@@ -11,29 +11,27 @@
 #define INC_CRF_H_
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #include "cevent.h"
 #include "cpool.h"
 #include "cqueue.h"
 #include "chsm.h"
 
-typedef struct cobject_st
-{
-	cqueue_tst			events;
-	chsm_tst			hsm;
-} cobject_tst;
+#define CRF_MAX_POOL_COUNT 4
 
-typedef struct crf_st
-{
-	cobject_tst			*objects;		//< Pointer to the array of objects in the application
-	cpool_tst			*pools;			//< Pointer to an array of memory pools.
-} crf_tst;
+typedef struct crf_st crf_tst;
 
-int32_t 			crf_init(crf_tst *self , cobject_tst *objects, cpool_tst  *pools);
-cevent_tst  		_crf_event_new(crf_tst *self );
-int32_t				crf_event_del(crf_tst *self , const cevent_tst  *e);
-int32_t				crf_event_post(const cevent_tst  *e, cobject_tst *object);
-const cevent_tst 	_crf_event_get(cpool_tst  *pool);
-int32_t				crf_run(crf_tst *self );
+struct crf_st
+{
+	cevent_tst*			(*new_event)(crf_tst *self, uint32_t size);
+	void				(*gc)(crf_tst *self, cevent_tst* e);
+
+	chsm_tst			**chsm_ap;		//< Pointer to the array of objects in the application
+	cpool_tst			*pool_ast;			//< Pointer to an array of memory pools.
+	uint16_t			pool_cnt_u16;
+} ;
+
+bool crf_init(crf_tst *self , chsm_tst **chsm_ap, cpool_tst *pool_ast, uint16_t pool_cnt);
 
 #endif /* INC_CRF_H_ */
