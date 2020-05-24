@@ -8,8 +8,10 @@
 #ifndef INC_CHSM_H_
 #define INC_CHSM_H_
 
-#include <cevent.h>
 #include <stdint.h>
+
+#include "cevent.h"
+#include "cqueue.h"
 
 #define CHSM_MAX_NESTING_LEVEL	4
 
@@ -70,6 +72,7 @@ typedef struct chsm_call_ctx_st
  */
 struct chsm_st
 {
+	cqueue_tst			events;
 	chsm_state_tpft		state_handler_pft;
 };
 
