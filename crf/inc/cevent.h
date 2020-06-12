@@ -17,10 +17,16 @@
  * 					handles the physical memory used by the event.
  */
 
+typedef struct gc_info_tst
+{
+	uint16_t		ref_cnt: 12;
+	uint16_t		pool_id: 4;
+} gc_info_tst;
+
 typedef struct cevent_st
 {
 	uint16_t		sig;
-	uint16_t		gc_info;
+	gc_info_tst		gc_info;
 } cevent_tst;
 
 

@@ -72,8 +72,16 @@ typedef struct chsm_call_ctx_st
  */
 struct chsm_st
 {
-	cqueue_tst			events;
+	cqueue_tst			events_st;
 	chsm_state_tpft		state_handler_pft;
+
+	/** send
+	 * 		The state machine implementation shall call this function, when an
+	 *		event was created and need to be sent to the other parts of the system.
+	 *		This function should distribute the event to all queues in the application
+	 *		that may need it by calling cqueue_put.
+	 */
+	void				(*send)(chsm_tst *self, const cevent_tst *e_pst);
 };
 
 void chsm_ctor(chsm_tst *self , chsm_state_tpft init_state_pft);

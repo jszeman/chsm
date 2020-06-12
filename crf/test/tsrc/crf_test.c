@@ -43,6 +43,7 @@ cpool_tst			pool_ast[POOL_CNT];
 
 crf_tst				crf;
 
+
 /* bus_driver::send_data
  * 		Send an event with some arbitrary data 
  */
@@ -63,8 +64,8 @@ TEST_SETUP(crf)
 	memset(&buff1, 0, sizeof(buff1));
 	memset(&buff2, 0, sizeof(buff2));
 
-	cpool_init(pool_ast+0, buff1, 8, 4, 0x1000);
-	cpool_init(pool_ast+1, buff2, 64, 4, 0x2000);
+	cpool_init(pool_ast+0, buff1, 8, 4, 1);
+	cpool_init(pool_ast+1, buff2, 64, 4, 2);
 }
 
 TEST_TEAR_DOWN(crf)
@@ -228,6 +229,21 @@ TEST(crf, garbage_collect)
 		(uint8_t *)e_new);
 }
 
+/* send: 
+ * Create a small event and send it to a state machine.
+ */
+TEST(crf, post)
+{
+	event_small_tst *e;
+
+	e = (event_small_tst *)crf.new_event(&crf, sizeof(event_small_tst));
+	e->e.sig = TEST_SIG_SEND_DATA;
+
+	crf.post(&crf, (cevent_tst *)e, (cqueue_tst *)(&bus_driver));
+
+	crf.step(&crf);
+}
+
 /* sratchpad
  */
 /*TEST(crf, sandbox)
@@ -247,7 +263,7 @@ TEST_GROUP_RUNNER(crf)
 	RUN_TEST_CASE(crf, too_many_small_event);
 	RUN_TEST_CASE(crf, too_many_events);
 	RUN_TEST_CASE(crf, garbage_collect);
-	//RUN_TEST_CASE(crf, test0);
+	RUN_TEST_CASE(crf, post);
 	//RUN_TEST_CASE(crf, test0);
 	//RUN_TEST_CASE(crf, test0);
 	//RUN_TEST_CASE(crf, test0);

@@ -38,7 +38,7 @@ TEST(ep, new_1)
 {
 	cevent_tst  *e;
 
-	cpool_init(&pool, buff, 8, 4, 0x1000);
+	cpool_init(&pool, buff, 8, 4, 1);
 	e = cpool_new(&pool);
 	TEST_ASSERT(NULL != e);
 	TEST_ASSERT((uint8_t *)e >= (uint8_t *)buff);
@@ -55,7 +55,7 @@ TEST(ep, new_2)
 {
 	cevent_tst  *e[2];
 
-	cpool_init(&pool, buff, 8, 4, 0x1000);
+	cpool_init(&pool, buff, 8, 4, 1);
 	e[0] = cpool_new(&pool);
 	e[1] = cpool_new(&pool);
 	TEST_ASSERT(NULL != e[0]);
@@ -75,7 +75,7 @@ TEST(ep, overallocate)
 {
 	cevent_tst  *e;
 
-	cpool_init(&pool, buff, 8, 4, 0x1000);
+	cpool_init(&pool, buff, 8, 4, 1);
 
 	for (uint16_t i=0; i<5; i++)
 	{
@@ -95,7 +95,7 @@ TEST(ep, reuse_event)
 	cevent_tst  *e3;
 	bool gc_result_b;
 
-	cpool_init(&pool, buff, 8, 4, 0x1000);
+	cpool_init(&pool, buff, 8, 4, 1);
 
 	for (uint16_t i=0; i<5; i++)
 	{
@@ -121,15 +121,16 @@ TEST(ep, reuse_event)
  */
 TEST(ep, ignore_foreign_event)
 {
-	cevent_tst  e = {.sig = 0xabcd, .gc_info = 10};
+	cevent_tst  e = {.sig = 0xabcd, .gc_info = {.pool_id = 0, .ref_cnt = 10}};
 	bool gc_result_b;
 
-	cpool_init(&pool, buff, 8, 4, 0x1000);
+	cpool_init(&pool, buff, 8, 4, 1);
 
 	gc_result_b = cpool_gc(&pool, &e);
 	TEST_ASSERT_FALSE(gc_result_b);
 
-	e.gc_info = 0x2005;
+	e.gc_info.pool_id = 2;
+	e.gc_info.ref_cnt = 5;
 
 	gc_result_b = cpool_gc(&pool, &e);
 	TEST_ASSERT_FALSE(gc_result_b);

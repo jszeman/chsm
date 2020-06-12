@@ -34,8 +34,6 @@ static cevent_tst* new_event(crf_tst *self, uint32_t size)
 
 static void	gc(crf_tst *self, cevent_tst* e)
 {
-
-    printf("\nGC info: %d\n", e->gc_info);
     for (int i=0; i<self->pool_cnt_u16; i++)
     {
         if (cpool_gc(self->pool_ast+i, e))
@@ -47,6 +45,33 @@ static void	gc(crf_tst *self, cevent_tst* e)
     return;
 }
 
+/*
+ * TODO: implement publish/subscribe method as a fallback, when the application
+ * does'n provide a send function for a state macine
+ */
+static void	publish(crf_tst *self, const cevent_tst* e)
+{
+
+}
+
+static void	post(crf_tst *self, cevent_tst* e, cqueue_tst *q)
+{
+    e->gc_info.ref_cnt++;
+    cqueue_put(q, e);
+}
+
+static void	step(crf_tst *self)
+{
+    const cevent_tst *e_pst;
+    e_pst = cqueue_get(&(self->chsm_ap[0]->events_st));
+    
+}
+
+static void	start(crf_tst *self)
+{
+
+}
+
 bool crf_init(crf_tst *self , chsm_tst **chsm_ap, cpool_tst *pool_ast, uint16_t pool_cnt)
 {
     if (NULL == self) return false;
@@ -55,6 +80,9 @@ bool crf_init(crf_tst *self , chsm_tst **chsm_ap, cpool_tst *pool_ast, uint16_t 
 
     self->new_event = new_event;
     self->gc = gc;
+    self->publish = publish;
+    self->post = post;
+    self->step = step;
     self->chsm_ap = chsm_ap;
     self->pool_ast = pool_ast;
     self->pool_cnt_u16 = pool_cnt;
