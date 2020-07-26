@@ -42,7 +42,7 @@ typedef void (*chsm_user_func_tpft)(chsm_tst *self, const cevent_tst *e_pst);
 /*
  * This is the type for functions that implement state behaviour.
  * Return:
- * 		A state function will return NULL, when the event was handled, or change the state
+ * 		A state function will return NULL when the event was handled, or change the state
  * 		handler function to its parent state, and return a pointer for its own exit function.
  * Params:
  * 		self: Pointer to the state machine.
@@ -57,7 +57,7 @@ typedef chsm_result_ten (*chsm_state_tpft)(chsm_tst *self, const cevent_tst *e_p
  * A pointer to such a structure will be passed to state handler functions.
  * In case a state handler wants to defer event processing to its parent, it should write
  * the pointer to the exit function in *exit_pft, then increase it.
- * If a state handler executes a state transition, it should call the functions from
+ * If the parent state handler executes a state transition, it should call the functions from
  * the exit_stack_apft array.
  */
 typedef struct chsm_call_ctx_st
@@ -84,7 +84,7 @@ struct chsm_st
 	void				(*send)(chsm_tst *self, const cevent_tst *e_pst);
 };
 
-void chsm_ctor(chsm_tst *self , chsm_state_tpft init_state_pft);
+void chsm_ctor(chsm_tst *self, chsm_state_tpft init_state_pft, const cevent_tst **events, uint16_t max_event_count);
 void chsm_init(chsm_tst *self);
 void chsm_dispatch(chsm_tst *self, const cevent_tst *e_pst);
 

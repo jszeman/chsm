@@ -274,6 +274,8 @@ class StateMachine:
 
             for f in g.trans_funcs:
                 i.add_true(Call(f, self.templates['user_func_args']))
+                
+        if g.target:
             i.add_true(Return(self.templates['trans_result'].format(target=g.target_title)))
         else:
             i.add_true(Return(self.templates['handled_result']))

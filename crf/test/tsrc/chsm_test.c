@@ -13,6 +13,7 @@
 #include "unity_fixture.h"
 #include "chsm_test.h"
 #include "chsm_test_machine.h"
+#include "cpool.h"
 
 #include <stdio.h>
 
@@ -37,6 +38,9 @@ const cevent_tst event_g = {.sig=TEST_SIG_G, .gc_info=0};
 const cevent_tst event_h = {.sig=TEST_SIG_H, .gc_info=0};
 const cevent_tst event_id = {.sig=TEST_SIG_ID, .gc_info=0};
 
+#define EVENT_QUEUE_SIZE 8
+static const cevent_tst* events[EVENT_QUEUE_SIZE];
+
 TEST_SETUP(hsm)
 {
 	memset(&hsm, 0, sizeof(hsm));
@@ -56,7 +60,7 @@ TEST_TEAR_DOWN(hsm)
  */
 TEST(hsm, enter_initial_state)
 {
-	chsm_ctor(&hsm.sm, __top__1);
+	chsm_ctor(&hsm.sm, __top__1, events, EVENT_QUEUE_SIZE);
 	chsm_init(&hsm.sm);
 
 	TEST_ASSERT_EQUAL_STRING("s_entry s_init ", hsm.log_buff);
@@ -75,7 +79,7 @@ TEST(hsm, enter_initial_state)
 
 TEST(hsm, handle_unknown_event)
 {
-	chsm_ctor(&hsm.sm, __top__1);
+	chsm_ctor(&hsm.sm, __top__1, events, EVENT_QUEUE_SIZE);
 	chsm_init(&hsm.sm);
 	
 	clear_log(&hsm);
@@ -93,7 +97,7 @@ TEST(hsm, handle_unknown_event)
 
 TEST(hsm, handle_event_in_parent)
 {
-	chsm_ctor(&hsm.sm, __top__2);
+	chsm_ctor(&hsm.sm, __top__2, events, EVENT_QUEUE_SIZE);
 	chsm_init(&hsm.sm);
 	TEST_ASSERT_EQUAL_STRING("s_entry s_init s1_entry s1_init ", hsm.log_buff);
 	
@@ -111,7 +115,7 @@ TEST(hsm, handle_event_in_parent)
 
 TEST(hsm, handle_event_in_parent_orig_state)
 {
-	chsm_ctor(&hsm.sm, __top__2);
+	chsm_ctor(&hsm.sm, __top__2, events, EVENT_QUEUE_SIZE);
 	chsm_init(&hsm.sm);
 	chsm_dispatch(&hsm.sm, &event1);
 
@@ -130,7 +134,7 @@ TEST(hsm, handle_event_in_parent_orig_state)
 
 TEST(hsm, handle_exit_from_child)
 {
-	chsm_ctor(&hsm.sm, __top__3);
+	chsm_ctor(&hsm.sm, __top__3, events, EVENT_QUEUE_SIZE);
 	chsm_init(&hsm.sm);
 
 	clear_log(&hsm);
@@ -150,7 +154,7 @@ TEST(hsm, handle_exit_from_child)
 
 TEST(hsm, sm4_init)
 {
-	chsm_ctor(&hsm.sm, __top__4);
+	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
 	chsm_init(&hsm.sm);
 
 	TEST_ASSERT_EQUAL_STRING("s_entry s_init s1_entry s1_init s11_entry s11_init ", hsm.log_buff);
@@ -168,7 +172,7 @@ TEST(hsm, sm4_init)
 
 TEST(hsm, sm4_s11_g_guard1)
 {
-	chsm_ctor(&hsm.sm, __top__4);
+	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
 	chsm_init(&hsm.sm);
 
 	clear_log(&hsm);
@@ -188,7 +192,7 @@ TEST(hsm, sm4_s11_g_guard1)
 
 TEST(hsm, sm4_s11_g_guard2)
 {
-	chsm_ctor(&hsm.sm, __top__4);
+	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
 	chsm_init(&hsm.sm);
 
 	clear_log(&hsm);
@@ -208,7 +212,7 @@ TEST(hsm, sm4_s11_g_guard2)
 
 TEST(hsm, sm4_s11_g_guards)
 {
-	chsm_ctor(&hsm.sm, __top__4);
+	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
 	chsm_init(&hsm.sm);
 
 	clear_log(&hsm);
@@ -228,7 +232,7 @@ TEST(hsm, sm4_s11_g_guards)
 
 TEST(hsm, sm4_s11_d_false_guard)
 {
-	chsm_ctor(&hsm.sm, __top__4);
+	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
 	chsm_init(&hsm.sm);
 
 	clear_log(&hsm);
@@ -247,7 +251,7 @@ TEST(hsm, sm4_s11_d_false_guard)
 
 TEST(hsm, sm4_s11_d_false_guard_no_parent)
 {
-	chsm_ctor(&hsm.sm, __top__4);
+	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
 	chsm_init(&hsm.sm);
 
 	clear_log(&hsm);
@@ -266,7 +270,7 @@ TEST(hsm, sm4_s11_d_false_guard_no_parent)
 
 TEST(hsm, sm4_s11_evaluate_guards)
 {
-	chsm_ctor(&hsm.sm, __top__4);
+	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
 	chsm_init(&hsm.sm);
 
 	clear_log(&hsm);
@@ -286,7 +290,7 @@ TEST(hsm, sm4_s11_evaluate_guards)
 
 TEST(hsm, sm4_s11_execute_sa_guarded_it)
 {
-	chsm_ctor(&hsm.sm, __top__4);
+	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
 	chsm_init(&hsm.sm);
 
 	clear_log(&hsm);
@@ -308,7 +312,7 @@ TEST(hsm, sm4_s11_execute_sa_guarded_it)
 
 TEST(hsm, sm4_s11_execute_sa_guarded_et)
 {
-	chsm_ctor(&hsm.sm, __top__4);
+	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
 	chsm_init(&hsm.sm);
 
 	clear_log(&hsm);
@@ -328,7 +332,7 @@ TEST(hsm, sm4_s11_execute_sa_guarded_et)
 
 TEST(hsm, sm4_s11_execute_parent_guarded_it)
 {
-	chsm_ctor(&hsm.sm, __top__4);
+	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
 	chsm_init(&hsm.sm);
 
 	clear_log(&hsm);
@@ -348,7 +352,7 @@ TEST(hsm, sm4_s11_execute_parent_guarded_it)
 
 TEST(hsm, sm4_s11_a)
 {
-	chsm_ctor(&hsm.sm, __top__4);
+	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
 	chsm_init(&hsm.sm);
 
 	clear_log(&hsm);
@@ -367,7 +371,7 @@ TEST(hsm, sm4_s11_a)
 
 TEST(hsm, sm4_s11_parent_sa_guard_et)
 {
-	chsm_ctor(&hsm.sm, __top__4);
+	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
 	chsm_init(&hsm.sm);
 
 	clear_log(&hsm);
@@ -387,7 +391,7 @@ TEST(hsm, sm4_s11_parent_sa_guard_et)
 
 TEST(hsm, sm4_s11_h)
 {
-	chsm_ctor(&hsm.sm, __top__4);
+	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
 	chsm_init(&hsm.sm);
 
 	clear_log(&hsm);
@@ -407,7 +411,7 @@ TEST(hsm, sm4_s11_h)
 
 TEST(hsm, sm4_s11_b)
 {
-	chsm_ctor(&hsm.sm, __top__4);
+	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
 	chsm_init(&hsm.sm);
 
 	clear_log(&hsm);
@@ -427,7 +431,7 @@ TEST(hsm, sm4_s11_b)
 
 TEST(hsm, sm4_s11_e)
 {
-	chsm_ctor(&hsm.sm, __top__4);
+	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
 	chsm_init(&hsm.sm);
 
 	clear_log(&hsm);
@@ -445,7 +449,7 @@ TEST(hsm, sm4_s11_e)
 
 TEST(hsm, sm4_s11_d_guard_true)
 {
-	chsm_ctor(&hsm.sm, __top__4);
+	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
 	chsm_init(&hsm.sm);
 
 	clear_log(&hsm);
@@ -465,7 +469,7 @@ TEST(hsm, sm4_s11_d_guard_true)
 
 TEST(hsm, sm4_s11_f)
 {
-	chsm_ctor(&hsm.sm, __top__4);
+	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
 	chsm_init(&hsm.sm);
 
 	clear_log(&hsm);
@@ -484,7 +488,7 @@ TEST(hsm, sm4_s11_f)
 
 TEST(hsm, sm4_s11_c)
 {
-	chsm_ctor(&hsm.sm, __top__4);
+	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
 	chsm_init(&hsm.sm);
 
 	clear_log(&hsm);
@@ -503,7 +507,7 @@ TEST(hsm, sm4_s11_c)
 
 TEST(hsm, sm4_s211_a)
 {
-	chsm_ctor(&hsm.sm, __top__4);
+	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
 	chsm_init(&hsm.sm);
 	chsm_dispatch(&hsm.sm, &event_c); // Go to s211
 
@@ -523,7 +527,7 @@ TEST(hsm, sm4_s211_a)
 
 TEST(hsm, sm4_s211_b)
 {
-	chsm_ctor(&hsm.sm, __top__4);
+	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
 	chsm_init(&hsm.sm);
 	chsm_dispatch(&hsm.sm, &event_c); // Go to s211
 
@@ -543,7 +547,7 @@ TEST(hsm, sm4_s211_b)
 
 TEST(hsm, sm4_s211_c)
 {
-	chsm_ctor(&hsm.sm, __top__4);
+	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
 	chsm_init(&hsm.sm);
 	chsm_dispatch(&hsm.sm, &event_c); // Go to s211
 
@@ -563,7 +567,7 @@ TEST(hsm, sm4_s211_c)
 
 TEST(hsm, sm4_s211_f)
 {
-	chsm_ctor(&hsm.sm, __top__4);
+	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
 	chsm_init(&hsm.sm);
 	chsm_dispatch(&hsm.sm, &event_c); // Go to s211
 
@@ -583,7 +587,7 @@ TEST(hsm, sm4_s211_f)
 
 TEST(hsm, sm4_s211_h)
 {
-	chsm_ctor(&hsm.sm, __top__4);
+	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
 	chsm_init(&hsm.sm);
 	chsm_dispatch(&hsm.sm, &event_c); // Go to s211
 
@@ -594,6 +598,25 @@ TEST(hsm, sm4_s211_h)
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.sm, &event_id);
 	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
+}
+
+/* init_event_queue:
+ *		Check that the constructor properly initializes the event queue by
+ *		using the HSM as a queue.
+ */
+
+TEST(hsm, init_event_queue)
+{
+	const cevent_tst *e = NULL;
+
+	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
+
+	cqueue_put((cqueue_tst *)&hsm, &event1);
+
+	e = cqueue_get((cqueue_tst *)&hsm);
+
+	TEST_ASSERT_EQUAL(&event1, e);
+
 }
 
 TEST_GROUP_RUNNER(hsm)
@@ -626,5 +649,13 @@ TEST_GROUP_RUNNER(hsm)
 	RUN_TEST_CASE(hsm, sm4_s211_c);
 	RUN_TEST_CASE(hsm, sm4_s211_f);
 	RUN_TEST_CASE(hsm, sm4_s211_h);
+	RUN_TEST_CASE(hsm, init_event_queue);
+	//RUN_TEST_CASE(hsm, test0);
+	//RUN_TEST_CASE(hsm, test0);
+	//RUN_TEST_CASE(hsm, test0);
+	//RUN_TEST_CASE(hsm, test0);
+	//RUN_TEST_CASE(hsm, test0);
+	//RUN_TEST_CASE(hsm, test0);
+	//RUN_TEST_CASE(hsm, test0);
 	//RUN_TEST_CASE(hsm, test0);
 }

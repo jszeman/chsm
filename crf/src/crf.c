@@ -64,7 +64,8 @@ static void	step(crf_tst *self)
 {
     const cevent_tst *e_pst;
     e_pst = cqueue_get(&(self->chsm_ap[0]->events_st));
-    
+
+    chsm_dispatch(self->chsm_ap[0], e_pst);
 }
 
 static void	start(crf_tst *self)

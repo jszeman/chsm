@@ -21,7 +21,7 @@ typedef struct cpool_st
 	uint16_t		id;		// Pool id
 } cpool_tst;
 
-int32_t 	cpool_init(cpool_tst *self, void *buff, uint16_t event_size, uint16_t event_count, uint16_t id);
+void 		cpool_init(cpool_tst *self, void *buff, uint16_t event_size, uint16_t event_count, uint16_t id);
 cevent_tst 	*cpool_new(cpool_tst *self);
 bool 	    cpool_gc(cpool_tst *self, cevent_tst *e);
 

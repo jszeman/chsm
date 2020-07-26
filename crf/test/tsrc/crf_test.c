@@ -15,6 +15,7 @@
 #include "unity_fixture.h"
 #include "chsm_test.h"
 #include "bus_driver.h"
+#include "dev_driver.h"
 #include "events.h"
 #include "crf.h"
 
@@ -31,10 +32,13 @@ static const cevent_tst event_send_data = {.sig=TEST_SIG_SEND_DATA, .gc_info=0};
 
 #define POOL_CNT	2
 
-const cevent_tst  	*events0[8];
+#define EVENT_QUEUE_SIZE	8
+const cevent_tst*	bus_events[EVENT_QUEUE_SIZE];
+const cevent_tst*	dev_events[EVENT_QUEUE_SIZE];
 bus_driver_tst  	bus_driver;
+dev_driver_tst		dev_driver;
 
-chsm_tst 			*hsm_ap[] = {(chsm_tst *)&bus_driver, NULL};
+chsm_tst 			*hsm_ap[] = {(chsm_tst *)&bus_driver, (chsm_tst *)&dev_driver, NULL};
 
 uint8_t 			buff1[BUFF1_SIZE];
 uint8_t				buff2[BUFF2_SIZE];
@@ -52,7 +56,20 @@ void send_data(bus_driver_tst *self, const cevent_tst *e_pst)
 	event_bus_data_tst *e;
 
 	//e = crf.new_event(&crf, )
-    printf("\n\nsend_data\n\n");
+    //printf("\nsend_data\n");
+	self->tmp_u16 = 0xcafe;
+}
+
+/* bus_driver::emit_event
+ * 		Send an event with some arbitrary data 
+ */
+void emit_event(bus_driver_tst *self, const cevent_tst *e_pst)
+{
+	event_bus_data_tst *e;
+
+	e = (event_bus_data_tst *)crf.new_event(&crf, sizeof(event_bus_data_tst));
+
+	self->sm.send((chsm_tst *)self, (const cevent_tst *)e);
 }
 
 
@@ -66,6 +83,11 @@ TEST_SETUP(crf)
 
 	cpool_init(pool_ast+0, buff1, 8, 4, 1);
 	cpool_init(pool_ast+1, buff2, 64, 4, 2);
+
+	chsm_ctor((chsm_tst *)&bus_driver, bus_driver_top, bus_events, EVENT_QUEUE_SIZE);
+	chsm_ctor((chsm_tst *)&dev_driver, dev_driver_top, dev_events, EVENT_QUEUE_SIZE);
+	chsm_init((chsm_tst *)&bus_driver);
+	chsm_init((chsm_tst *)&dev_driver);
 }
 
 TEST_TEAR_DOWN(crf)
@@ -229,8 +251,8 @@ TEST(crf, garbage_collect)
 		(uint8_t *)e_new);
 }
 
-/* send: 
- * Create a small event and send it to a state machine.
+/* post: 
+ * Allocate a small event and send it to a state machine.
  */
 TEST(crf, post)
 {
@@ -242,6 +264,25 @@ TEST(crf, post)
 	crf.post(&crf, (cevent_tst *)e, (cqueue_tst *)(&bus_driver));
 
 	crf.step(&crf);
+
+	TEST_ASSERT_EQUAL(0xcafe, bus_driver.tmp_u16);
+}
+
+/* emmit: 
+ * Make one state machine send an event to another
+ */
+TEST(crf, emmit)
+{
+	event_small_tst *e;
+
+	e = (event_small_tst *)crf.new_event(&crf, sizeof(event_small_tst));
+	e->e.sig = TEST_SIG_SEND_DATA;
+
+	crf.post(&crf, (cevent_tst *)e, (cqueue_tst *)(&bus_driver));
+
+	crf.step(&crf);
+
+	TEST_ASSERT_EQUAL(0xcafe, bus_driver.tmp_u16);
 }
 
 /* sratchpad

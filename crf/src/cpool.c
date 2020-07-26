@@ -14,7 +14,7 @@
 
 
 
-int32_t cpool_init(cpool_tst *self, void *buff, uint16_t event_size, uint16_t event_count, uint16_t id)
+void cpool_init(cpool_tst *self, void *buff, uint16_t event_size, uint16_t event_count, uint16_t id)
 {
 	assert(NULL != buff);
 	assert(NULL != self);
@@ -27,8 +27,6 @@ int32_t cpool_init(cpool_tst *self, void *buff, uint16_t event_size, uint16_t ev
 	self->id = id;
 
 	memset(self->pool, 0, (size_t)(self->esize * self->ecnt));
-
-	return 0;
 }
 
 cevent_tst *cpool_new(cpool_tst *self)

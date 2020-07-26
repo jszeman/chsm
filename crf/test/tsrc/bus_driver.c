@@ -1,4 +1,4 @@
-/*Generated with CHSM v0.0.0 at 2020.05.17 21.35.56*/
+/*Generated with CHSM v0.0.0 at 2020.07.26 07.12.40*/
 
 #include "cevent.h"
 #include "chsm.h"
@@ -15,6 +15,10 @@ static chsm_result_ten idle(chsm_tst *self, const cevent_tst *e_pst, chsm_call_c
     {
         case TEST_SIG_SEND_DATA:
             send_data((bus_driver_tst *)self, e_pst);
+            return chsm_handled(self);
+
+        case TEST_SIG_TICK_1MS:
+            emit_event((bus_driver_tst *)self, e_pst);
             return chsm_handled(self);
 
         case TEST_SIG_START_WAIT:

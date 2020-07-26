@@ -16,7 +16,13 @@ enum test_events_en
     TEST_SIG_SEND_DATA = 512,
     TEST_SIG_START_WAIT,
     TEST_SIG_STOP_WAIT,
-    TEST_SIG_DATA_RECEIVED
+    TEST_SIG_DATA_RECEIVED,
+    TEST_SIG_TICK_1MS,
+
+    TEST_SIG_READ = 512,
+    TEST_SIG_WRITE,
+    TEST_SIG_RECEIVE,
+    TEST_SIG_CANCEL,
 };
 
 typedef struct event_bus_data_st

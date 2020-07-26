@@ -14,6 +14,8 @@ set(test_files  tsrc/main.c
                 tsrc/chsm_test_machine4.c
                 tsrc/bus_driver.c
                 tsrc/bus_driver_functions.c
+                tsrc/dev_driver.c
+                tsrc/dev_driver_functions.c
                 ../src/chsm.c
                 ../src/cpool.c
                 ../src/cqueue.c
