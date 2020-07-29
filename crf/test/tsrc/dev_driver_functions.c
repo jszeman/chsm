@@ -23,6 +23,11 @@ void dev_driver_clear_log(dev_driver_tst  *self)
     self->log = self->log_buff;
 }
 
+void dev_drv_init(dev_driver_tst *self, const cevent_tst *e_pst)
+{
+    dev_driver_clear_log(self);
+}
+
 void cancel_request(dev_driver_tst *self, const cevent_tst *e_pst)
 {
     load(self, __func__);

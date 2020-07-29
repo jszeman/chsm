@@ -68,14 +68,21 @@ void emit_event(bus_driver_tst *self, const cevent_tst *e_pst)
 	event_bus_data_tst *e;
 
 	e = (event_bus_data_tst *)crf.new_event(&crf, sizeof(event_bus_data_tst));
+	e->e.sig = TEST_SIG_READ;
 
 	self->sm.send((chsm_tst *)self, (const cevent_tst *)e);
+}
+
+void bus_send(chsm_tst *self, const cevent_tst *e_pst)
+{
+	crf.post(&crf, (cevent_tst *)e_pst, (cqueue_tst *)(&dev_driver));
 }
 
 
 TEST_SETUP(crf)
 {
 	memset(&bus_driver, 0, sizeof(bus_driver));
+	memset(&dev_driver, 0, sizeof(dev_driver));
 
 	memset(&pool_ast, 0, sizeof(pool_ast));
 	memset(&buff1, 0, sizeof(buff1));
@@ -86,6 +93,9 @@ TEST_SETUP(crf)
 
 	chsm_ctor((chsm_tst *)&bus_driver, bus_driver_top, bus_events, EVENT_QUEUE_SIZE);
 	chsm_ctor((chsm_tst *)&dev_driver, dev_driver_top, dev_events, EVENT_QUEUE_SIZE);
+
+	bus_driver.sm.send = bus_send;
+
 	chsm_init((chsm_tst *)&bus_driver);
 	chsm_init((chsm_tst *)&dev_driver);
 }
@@ -276,13 +286,13 @@ TEST(crf, emmit)
 	event_small_tst *e;
 
 	e = (event_small_tst *)crf.new_event(&crf, sizeof(event_small_tst));
-	e->e.sig = TEST_SIG_SEND_DATA;
+	e->e.sig = TEST_SIG_TICK_1MS;
 
 	crf.post(&crf, (cevent_tst *)e, (cqueue_tst *)(&bus_driver));
 
 	crf.step(&crf);
 
-	TEST_ASSERT_EQUAL(0xcafe, bus_driver.tmp_u16);
+	TEST_ASSERT_EQUAL_STRING("send_read_request start_timer ", dev_driver.log_buff);
 }
 
 /* sratchpad
@@ -305,7 +315,7 @@ TEST_GROUP_RUNNER(crf)
 	RUN_TEST_CASE(crf, too_many_events);
 	RUN_TEST_CASE(crf, garbage_collect);
 	RUN_TEST_CASE(crf, post);
-	//RUN_TEST_CASE(crf, test0);
+	RUN_TEST_CASE(crf, emmit);
 	//RUN_TEST_CASE(crf, test0);
 	//RUN_TEST_CASE(crf, test0);
 	//RUN_TEST_CASE(crf, test0);

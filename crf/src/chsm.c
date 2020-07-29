@@ -12,11 +12,17 @@
 
 const cevent_tst chsm_init_event_st = {.sig=C_SIG_INIT, .gc_info=0};
 
+static void send(chsm_tst *self, const cevent_tst *e_pst)
+{
+
+}
+
 void chsm_ctor(chsm_tst *self, chsm_state_tpft init_state_pft, const cevent_tst **events, uint16_t max_event_count)
 {
 	assert(NULL != self);
 	assert(NULL != init_state_pft);
 
+	self->send = send;
 	self->state_handler_pft = init_state_pft;
 	cqueue_init(&self->events_st, events, max_event_count);
 }

@@ -1,4 +1,4 @@
-/*Generated with CHSM v0.0.0 at 2020.06.28 07.57.46*/
+/*Generated with CHSM v0.0.0 at 2020.07.29 06.46.58*/
 
 #include "cevent.h"
 #include "chsm.h"
@@ -45,17 +45,22 @@ static chsm_result_ten wait_response(chsm_tst *self, const cevent_tst *e_pst, ch
         case TEST_SIG_CANCEL:
             chsm_exit_children(self, e_pst, ctx_pst);
             cancel_request((dev_driver_tst *)self, e_pst);
+            dev_drv_init((dev_driver_tst *)self, e_pst);
             return chsm_transition(self, idle);
 
     }
 
     if(timeout((dev_driver_tst *)self, e_pst))
     {
+        chsm_exit_children(self, e_pst, ctx_pst);
+        dev_drv_init((dev_driver_tst *)self, e_pst);
         return chsm_transition(self, idle);
     }
 
     if(response_complete((dev_driver_tst *)self, e_pst))
     {
+        chsm_exit_children(self, e_pst, ctx_pst);
+        dev_drv_init((dev_driver_tst *)self, e_pst);
         return chsm_transition(self, idle);
     }
 
@@ -68,6 +73,7 @@ chsm_result_ten dev_driver_top(chsm_tst *self, const cevent_tst *e_pst, chsm_cal
     {
         case C_SIG_INIT:
             chsm_exit_children(self, e_pst, ctx_pst);
+            dev_drv_init((dev_driver_tst *)self, e_pst);
             return chsm_transition(self, idle);
 
     }

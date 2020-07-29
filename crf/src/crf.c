@@ -62,10 +62,17 @@ static void	post(crf_tst *self, cevent_tst* e, cqueue_tst *q)
 
 static void	step(crf_tst *self)
 {
-    const cevent_tst *e_pst;
-    e_pst = cqueue_get(&(self->chsm_ap[0]->events_st));
+    const cevent_tst *e_pst = NULL;
+    chsm_tst **hsm_pst;
 
-    chsm_dispatch(self->chsm_ap[0], e_pst);
+    for (hsm_pst = self->chsm_ap; *hsm_pst; hsm_pst++)
+    {
+        e_pst = cqueue_get(&((*hsm_pst)->events_st));
+        if (e_pst)
+        {
+            chsm_dispatch(*hsm_pst, e_pst);
+        }
+    }
 }
 
 static void	start(crf_tst *self)
