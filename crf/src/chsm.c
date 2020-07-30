@@ -24,7 +24,7 @@ void chsm_ctor(chsm_tst *self, chsm_state_tpft init_state_pft, const cevent_tst 
 
 	self->send = send;
 	self->state_handler_pft = init_state_pft;
-	cqueue_init(&self->events_st, events, max_event_count);
+	cqueue_init(&self->eq_st, events, max_event_count);
 }
 
 void chsm_init(chsm_tst *self)

@@ -60,13 +60,13 @@ TEST_TEAR_DOWN(hsm)
  */
 TEST(hsm, enter_initial_state)
 {
-	chsm_ctor(&hsm.sm, __top__1, events, EVENT_QUEUE_SIZE);
-	chsm_init(&hsm.sm);
+	chsm_ctor(&hsm.super, __top__1, events, EVENT_QUEUE_SIZE);
+	chsm_init(&hsm.super);
 
 	TEST_ASSERT_EQUAL_STRING("s_entry s_init ", hsm.log_buff);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event1);
+	chsm_dispatch(&hsm.super, &event1);
 
 	TEST_ASSERT_EQUAL_STRING("s_sig1_handler ", hsm.log_buff);
 }
@@ -79,13 +79,13 @@ TEST(hsm, enter_initial_state)
 
 TEST(hsm, handle_unknown_event)
 {
-	chsm_ctor(&hsm.sm, __top__1, events, EVENT_QUEUE_SIZE);
-	chsm_init(&hsm.sm);
+	chsm_ctor(&hsm.super, __top__1, events, EVENT_QUEUE_SIZE);
+	chsm_init(&hsm.super);
 	
 	clear_log(&hsm);
 
-	chsm_dispatch(&hsm.sm, &event2);
-	chsm_dispatch(&hsm.sm, &event1);
+	chsm_dispatch(&hsm.super, &event2);
+	chsm_dispatch(&hsm.super, &event1);
 
 	TEST_ASSERT_EQUAL_STRING("s_sig1_handler ", hsm.log_buff);
 }
@@ -97,12 +97,12 @@ TEST(hsm, handle_unknown_event)
 
 TEST(hsm, handle_event_in_parent)
 {
-	chsm_ctor(&hsm.sm, __top__2, events, EVENT_QUEUE_SIZE);
-	chsm_init(&hsm.sm);
+	chsm_ctor(&hsm.super, __top__2, events, EVENT_QUEUE_SIZE);
+	chsm_init(&hsm.super);
 	TEST_ASSERT_EQUAL_STRING("s_entry s_init s1_entry s1_init ", hsm.log_buff);
 	
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event1);
+	chsm_dispatch(&hsm.super, &event1);
 	TEST_ASSERT_EQUAL_STRING("s_sig1_handler ", hsm.log_buff);
 }
 
@@ -115,12 +115,12 @@ TEST(hsm, handle_event_in_parent)
 
 TEST(hsm, handle_event_in_parent_orig_state)
 {
-	chsm_ctor(&hsm.sm, __top__2, events, EVENT_QUEUE_SIZE);
-	chsm_init(&hsm.sm);
-	chsm_dispatch(&hsm.sm, &event1);
+	chsm_ctor(&hsm.super, __top__2, events, EVENT_QUEUE_SIZE);
+	chsm_init(&hsm.super);
+	chsm_dispatch(&hsm.super, &event1);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event2);
+	chsm_dispatch(&hsm.super, &event2);
 	TEST_ASSERT_EQUAL_STRING("s_sig2_handler ", hsm.log_buff);
 }
 
@@ -134,11 +134,11 @@ TEST(hsm, handle_event_in_parent_orig_state)
 
 TEST(hsm, handle_exit_from_child)
 {
-	chsm_ctor(&hsm.sm, __top__3, events, EVENT_QUEUE_SIZE);
-	chsm_init(&hsm.sm);
+	chsm_ctor(&hsm.super, __top__3, events, EVENT_QUEUE_SIZE);
+	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event1);
+	chsm_dispatch(&hsm.super, &event1);
 
 	TEST_ASSERT_EQUAL_STRING("s_sig1_handler s1_exit s2_entry s2_init ", hsm.log_buff);
 }
@@ -154,13 +154,13 @@ TEST(hsm, handle_exit_from_child)
 
 TEST(hsm, sm4_init)
 {
-	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
-	chsm_init(&hsm.sm);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_init(&hsm.super);
 
 	TEST_ASSERT_EQUAL_STRING("s_entry s_init s1_entry s1_init s11_entry s11_init ", hsm.log_buff);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_id);
+	chsm_dispatch(&hsm.super, &event_id);
 
 	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
 }
@@ -172,16 +172,16 @@ TEST(hsm, sm4_init)
 
 TEST(hsm, sm4_s11_g_guard1)
 {
-	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
-	chsm_init(&hsm.sm);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_g);
+	chsm_dispatch(&hsm.super, &event_g);
 	TEST_ASSERT_EQUAL_STRING("s11_g_guard1 s11_g_guard2 ", hsm.log_buff);
 
 	clear_log(&hsm);
 	hsm.s11_g_guard1 = true;
-	chsm_dispatch(&hsm.sm, &event_g);
+	chsm_dispatch(&hsm.super, &event_g);
 	TEST_ASSERT_EQUAL_STRING("s11_g_guard1 s11_g1 s11_g_guard2 ", hsm.log_buff);
 }
 
@@ -192,16 +192,16 @@ TEST(hsm, sm4_s11_g_guard1)
 
 TEST(hsm, sm4_s11_g_guard2)
 {
-	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
-	chsm_init(&hsm.sm);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
 	hsm.s11_g_guard2 = true;
-	chsm_dispatch(&hsm.sm, &event_g);
+	chsm_dispatch(&hsm.super, &event_g);
 	TEST_ASSERT_EQUAL_STRING("s11_g_guard1 s11_g_guard2 s11_g2 s11_exit s1_exit s2_entry s21_entry s211_entry s211_init ", hsm.log_buff);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_id);
+	chsm_dispatch(&hsm.super, &event_id);
 
 	TEST_ASSERT_EQUAL_STRING("s211_id ", hsm.log_buff);
 }
@@ -212,17 +212,17 @@ TEST(hsm, sm4_s11_g_guard2)
 
 TEST(hsm, sm4_s11_g_guards)
 {
-	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
-	chsm_init(&hsm.sm);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
 	hsm.s11_g_guard1 = true;
 	hsm.s11_g_guard2 = true;
-	chsm_dispatch(&hsm.sm, &event_g);
+	chsm_dispatch(&hsm.super, &event_g);
 	TEST_ASSERT_EQUAL_STRING("s11_g_guard1 s11_g1 s11_g_guard2 s11_g2 s11_exit s1_exit s2_entry s21_entry s211_entry s211_init ", hsm.log_buff);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_id);
+	chsm_dispatch(&hsm.super, &event_id);
 	TEST_ASSERT_EQUAL_STRING("s211_id ", hsm.log_buff);
 }
 
@@ -232,15 +232,15 @@ TEST(hsm, sm4_s11_g_guards)
 
 TEST(hsm, sm4_s11_d_false_guard)
 {
-	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
-	chsm_init(&hsm.sm);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_d);
+	chsm_dispatch(&hsm.super, &event_d);
 	TEST_ASSERT_EQUAL_STRING("cond ", hsm.log_buff);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_id);
+	chsm_dispatch(&hsm.super, &event_id);
 	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
 }
 
@@ -251,16 +251,16 @@ TEST(hsm, sm4_s11_d_false_guard)
 
 TEST(hsm, sm4_s11_d_false_guard_no_parent)
 {
-	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
-	chsm_init(&hsm.sm);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
 	hsm.s1_guard = true;
-	chsm_dispatch(&hsm.sm, &event_d);
+	chsm_dispatch(&hsm.super, &event_d);
 	TEST_ASSERT_EQUAL_STRING("cond ", hsm.log_buff);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_id);
+	chsm_dispatch(&hsm.super, &event_id);
 	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
 }
 
@@ -270,15 +270,15 @@ TEST(hsm, sm4_s11_d_false_guard_no_parent)
 
 TEST(hsm, sm4_s11_evaluate_guards)
 {
-	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
-	chsm_init(&hsm.sm);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_none);
+	chsm_dispatch(&hsm.super, &event_none);
 	TEST_ASSERT_EQUAL_STRING("s11_guard k_guard s1_guard j_guard ", hsm.log_buff);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_id);
+	chsm_dispatch(&hsm.super, &event_id);
 	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
 }
 
@@ -290,16 +290,16 @@ TEST(hsm, sm4_s11_evaluate_guards)
 
 TEST(hsm, sm4_s11_execute_sa_guarded_it)
 {
-	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
-	chsm_init(&hsm.sm);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
 	hsm.s11_guard = true;
-	chsm_dispatch(&hsm.sm, &event_none);
+	chsm_dispatch(&hsm.super, &event_none);
 	TEST_ASSERT_EQUAL_STRING("s11_guard s11_func ", hsm.log_buff);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_id);
+	chsm_dispatch(&hsm.super, &event_id);
 	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
 }
 
@@ -312,16 +312,16 @@ TEST(hsm, sm4_s11_execute_sa_guarded_it)
 
 TEST(hsm, sm4_s11_execute_sa_guarded_et)
 {
-	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
-	chsm_init(&hsm.sm);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
 	hsm.k_guard = true;
-	chsm_dispatch(&hsm.sm, &event_none);
+	chsm_dispatch(&hsm.super, &event_none);
 	TEST_ASSERT_EQUAL_STRING("s11_guard k_guard s11_exit s1_exit s2_entry s2_init s21_entry s21_init s211_entry s211_init ", hsm.log_buff);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_id);
+	chsm_dispatch(&hsm.super, &event_id);
 	TEST_ASSERT_EQUAL_STRING("s211_id ", hsm.log_buff);
 }
 
@@ -332,16 +332,16 @@ TEST(hsm, sm4_s11_execute_sa_guarded_et)
 
 TEST(hsm, sm4_s11_execute_parent_guarded_it)
 {
-	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
-	chsm_init(&hsm.sm);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
 	hsm.s1_guard = true;
-	chsm_dispatch(&hsm.sm, &event_none);
+	chsm_dispatch(&hsm.super, &event_none);
 	TEST_ASSERT_EQUAL_STRING("s11_guard k_guard s1_guard s1_func ", hsm.log_buff);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_id);
+	chsm_dispatch(&hsm.super, &event_id);
 	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
 }
 
@@ -352,15 +352,15 @@ TEST(hsm, sm4_s11_execute_parent_guarded_it)
 
 TEST(hsm, sm4_s11_a)
 {
-	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
-	chsm_init(&hsm.sm);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_a);
+	chsm_dispatch(&hsm.super, &event_a);
 	TEST_ASSERT_EQUAL_STRING("s11_guard k_guard s11_exit s1_exit s1_entry s1_init s11_entry s11_init ", hsm.log_buff);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_id);
+	chsm_dispatch(&hsm.super, &event_id);
 	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
 }
 
@@ -371,16 +371,16 @@ TEST(hsm, sm4_s11_a)
 
 TEST(hsm, sm4_s11_parent_sa_guard_et)
 {
-	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
-	chsm_init(&hsm.sm);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
 	hsm.j_guard = true;
-	chsm_dispatch(&hsm.sm, &event_none);
+	chsm_dispatch(&hsm.super, &event_none);
 	TEST_ASSERT_EQUAL_STRING("s11_guard k_guard s1_guard j_guard s11_exit s1_exit s2_entry s2_init s21_entry s21_init s211_entry s211_init ", hsm.log_buff);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_id);
+	chsm_dispatch(&hsm.super, &event_id);
 	TEST_ASSERT_EQUAL_STRING("s211_id ", hsm.log_buff);
 }
 
@@ -391,15 +391,15 @@ TEST(hsm, sm4_s11_parent_sa_guard_et)
 
 TEST(hsm, sm4_s11_h)
 {
-	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
-	chsm_init(&hsm.sm);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_h);
+	chsm_dispatch(&hsm.super, &event_h);
 	TEST_ASSERT_EQUAL_STRING("s11_exit s1_exit s_init s1_entry s1_init s11_entry s11_init ", hsm.log_buff);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_id);
+	chsm_dispatch(&hsm.super, &event_id);
 	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
 }
 
@@ -411,15 +411,15 @@ TEST(hsm, sm4_s11_h)
 
 TEST(hsm, sm4_s11_b)
 {
-	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
-	chsm_init(&hsm.sm);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_b);
+	chsm_dispatch(&hsm.super, &event_b);
 	TEST_ASSERT_EQUAL_STRING("s11_guard k_guard s11_exit s11_entry s11_init ", hsm.log_buff);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_id);
+	chsm_dispatch(&hsm.super, &event_id);
 	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
 }
 
@@ -431,15 +431,15 @@ TEST(hsm, sm4_s11_b)
 
 TEST(hsm, sm4_s11_e)
 {
-	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
-	chsm_init(&hsm.sm);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_e);
+	chsm_dispatch(&hsm.super, &event_e);
 	TEST_ASSERT_EQUAL_STRING("s11_guard k_guard s1_guard j_guard s11_exit s1_exit s1_entry s11_entry s11_init ", hsm.log_buff);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_id);
+	chsm_dispatch(&hsm.super, &event_id);
 	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
 }
 
@@ -449,16 +449,16 @@ TEST(hsm, sm4_s11_e)
 
 TEST(hsm, sm4_s11_d_guard_true)
 {
-	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
-	chsm_init(&hsm.sm);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
 	hsm.cond = true;
-	chsm_dispatch(&hsm.sm, &event_d);
+	chsm_dispatch(&hsm.super, &event_d);
 	TEST_ASSERT_EQUAL_STRING("cond d_func s11_exit s1_init s11_entry s11_init ", hsm.log_buff);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_id);
+	chsm_dispatch(&hsm.super, &event_id);
 	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
 }
 
@@ -469,15 +469,15 @@ TEST(hsm, sm4_s11_d_guard_true)
 
 TEST(hsm, sm4_s11_f)
 {
-	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
-	chsm_init(&hsm.sm);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_f);
+	chsm_dispatch(&hsm.super, &event_f);
 	TEST_ASSERT_EQUAL_STRING("s11_guard k_guard s11_exit s1_exit s2_entry s21_entry s211_entry s211_init ", hsm.log_buff);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_id);
+	chsm_dispatch(&hsm.super, &event_id);
 	TEST_ASSERT_EQUAL_STRING("s211_id ", hsm.log_buff);
 }
 
@@ -488,15 +488,15 @@ TEST(hsm, sm4_s11_f)
 
 TEST(hsm, sm4_s11_c)
 {
-	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
-	chsm_init(&hsm.sm);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_c);
+	chsm_dispatch(&hsm.super, &event_c);
 	TEST_ASSERT_EQUAL_STRING("s11_guard k_guard s11_exit s1_exit s2_entry s2_init s21_entry s21_init s211_entry s211_init ", hsm.log_buff);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_id);
+	chsm_dispatch(&hsm.super, &event_id);
 	TEST_ASSERT_EQUAL_STRING("s211_id ", hsm.log_buff);
 }
 
@@ -507,16 +507,16 @@ TEST(hsm, sm4_s11_c)
 
 TEST(hsm, sm4_s211_a)
 {
-	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
-	chsm_init(&hsm.sm);
-	chsm_dispatch(&hsm.sm, &event_c); // Go to s211
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_init(&hsm.super);
+	chsm_dispatch(&hsm.super, &event_c); // Go to s211
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_a);
+	chsm_dispatch(&hsm.super, &event_a);
 	TEST_ASSERT_EQUAL_STRING("s211_exit s21_exit s21_entry s21_init s211_entry s211_init ", hsm.log_buff);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_id);
+	chsm_dispatch(&hsm.super, &event_id);
 	TEST_ASSERT_EQUAL_STRING("s211_id ", hsm.log_buff);
 }
 
@@ -527,16 +527,16 @@ TEST(hsm, sm4_s211_a)
 
 TEST(hsm, sm4_s211_b)
 {
-	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
-	chsm_init(&hsm.sm);
-	chsm_dispatch(&hsm.sm, &event_c); // Go to s211
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_init(&hsm.super);
+	chsm_dispatch(&hsm.super, &event_c); // Go to s211
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_b);
+	chsm_dispatch(&hsm.super, &event_b);
 	TEST_ASSERT_EQUAL_STRING("s211_exit s211_entry s211_init ", hsm.log_buff);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_id);
+	chsm_dispatch(&hsm.super, &event_id);
 	TEST_ASSERT_EQUAL_STRING("s211_id ", hsm.log_buff);
 }
 
@@ -547,16 +547,16 @@ TEST(hsm, sm4_s211_b)
 
 TEST(hsm, sm4_s211_c)
 {
-	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
-	chsm_init(&hsm.sm);
-	chsm_dispatch(&hsm.sm, &event_c); // Go to s211
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_init(&hsm.super);
+	chsm_dispatch(&hsm.super, &event_c); // Go to s211
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_c);
+	chsm_dispatch(&hsm.super, &event_c);
 	TEST_ASSERT_EQUAL_STRING("s211_exit s21_exit s2_exit s1_entry s1_init s11_entry s11_init ", hsm.log_buff);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_id);
+	chsm_dispatch(&hsm.super, &event_id);
 	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
 }
 
@@ -567,16 +567,16 @@ TEST(hsm, sm4_s211_c)
 
 TEST(hsm, sm4_s211_f)
 {
-	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
-	chsm_init(&hsm.sm);
-	chsm_dispatch(&hsm.sm, &event_c); // Go to s211
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_init(&hsm.super);
+	chsm_dispatch(&hsm.super, &event_c); // Go to s211
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_f);
+	chsm_dispatch(&hsm.super, &event_f);
 	TEST_ASSERT_EQUAL_STRING("s211_exit s21_exit s2_exit s1_entry s11_entry s11_init ", hsm.log_buff);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_id);
+	chsm_dispatch(&hsm.super, &event_id);
 	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
 }
 
@@ -587,16 +587,16 @@ TEST(hsm, sm4_s211_f)
 
 TEST(hsm, sm4_s211_h)
 {
-	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
-	chsm_init(&hsm.sm);
-	chsm_dispatch(&hsm.sm, &event_c); // Go to s211
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_init(&hsm.super);
+	chsm_dispatch(&hsm.super, &event_c); // Go to s211
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_h);
+	chsm_dispatch(&hsm.super, &event_h);
 	TEST_ASSERT_EQUAL_STRING("s211_exit s21_exit s2_exit s_init s1_entry s1_init s11_entry s11_init ", hsm.log_buff);
 
 	clear_log(&hsm);
-	chsm_dispatch(&hsm.sm, &event_id);
+	chsm_dispatch(&hsm.super, &event_id);
 	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
 }
 
@@ -609,11 +609,11 @@ TEST(hsm, init_event_queue)
 {
 	const cevent_tst *e = NULL;
 
-	chsm_ctor(&hsm.sm, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
 
-	cqueue_put((cqueue_tst *)&hsm, &event1);
+	hsm.super.eq_st.put(&(hsm.super.eq_st), &event1);
 
-	e = cqueue_get((cqueue_tst *)&hsm);
+	e = hsm.super.eq_st.get(&(hsm.super.eq_st));
 
 	TEST_ASSERT_EQUAL(&event1, e);
 

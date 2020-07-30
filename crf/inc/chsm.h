@@ -72,7 +72,7 @@ typedef struct chsm_call_ctx_st
  */
 struct chsm_st
 {
-	cqueue_tst			events_st;
+	cqueue_tst			eq_st;
 	chsm_state_tpft		state_handler_pft;
 
 	/** send

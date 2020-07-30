@@ -39,7 +39,7 @@ TEST(ep, new_1)
 	cevent_tst  *e;
 
 	cpool_init(&pool, buff, 8, 4, 1);
-	e = cpool_new(&pool);
+	e = pool.new(&pool);
 	TEST_ASSERT(NULL != e);
 	TEST_ASSERT((uint8_t *)e >= (uint8_t *)buff);
 	TEST_ASSERT((uint8_t *)e <= (uint8_t *)buff + 8*3);
@@ -56,8 +56,8 @@ TEST(ep, new_2)
 	cevent_tst  *e[2];
 
 	cpool_init(&pool, buff, 8, 4, 1);
-	e[0] = cpool_new(&pool);
-	e[1] = cpool_new(&pool);
+	e[0] = pool.new(&pool);
+	e[1] = pool.new(&pool);
 	TEST_ASSERT(NULL != e[0]);
 	TEST_ASSERT((uint8_t *)e[0] >= (uint8_t *)buff);
 	TEST_ASSERT((uint8_t *)e[0] <= (uint8_t *)buff + 8*3);
@@ -79,7 +79,7 @@ TEST(ep, overallocate)
 
 	for (uint16_t i=0; i<5; i++)
 	{
-		e = cpool_new(&pool);
+		e = pool.new(&pool);
 	}
 
 	TEST_ASSERT(NULL == e);
@@ -99,7 +99,7 @@ TEST(ep, reuse_event)
 
 	for (uint16_t i=0; i<5; i++)
 	{
-		e[i] = cpool_new(&pool);
+		e[i] = pool.new(&pool);
 	}
 
 	TEST_ASSERT(NULL == e[4]);
@@ -107,9 +107,9 @@ TEST(ep, reuse_event)
 
 	//printf("\ngc_info: %x\n", e3->gc_info);
 
-	gc_result_b = cpool_gc(&pool, e[3]);
+	gc_result_b = pool.gc(&pool, e[3]);
 
-	e[5] = cpool_new(&pool);
+	e[5] = pool.new(&pool);
 
 	TEST_ASSERT_EQUAL_HEX32(e3, e[5]);
 	TEST_ASSERT_TRUE(gc_result_b);
@@ -126,13 +126,13 @@ TEST(ep, ignore_foreign_event)
 
 	cpool_init(&pool, buff, 8, 4, 1);
 
-	gc_result_b = cpool_gc(&pool, &e);
+	gc_result_b = pool.gc(&pool, &e);
 	TEST_ASSERT_FALSE(gc_result_b);
 
 	e.gc_info.pool_id = 2;
 	e.gc_info.ref_cnt = 5;
 
-	gc_result_b = cpool_gc(&pool, &e);
+	gc_result_b = pool.gc(&pool, &e);
 	TEST_ASSERT_FALSE(gc_result_b);
 }
 

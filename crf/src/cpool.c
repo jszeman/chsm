@@ -14,22 +14,8 @@
 
 
 
-void cpool_init(cpool_tst *self, void *buff, uint16_t event_size, uint16_t event_count, uint16_t id)
-{
-	assert(NULL != buff);
-	assert(NULL != self);
-	assert(0 != (id & CPOOL_ID_MASK));
-	assert(id < 16);
 
-	self->pool = buff;
-	self->esize = event_size;
-	self->ecnt = event_count;
-	self->id = id;
-
-	memset(self->pool, 0, (size_t)(self->esize * self->ecnt));
-}
-
-cevent_tst *cpool_new(cpool_tst *self)
+static cevent_tst *cpool_new(cpool_tst *self)
 {
 	void *e;
 
@@ -48,7 +34,7 @@ cevent_tst *cpool_new(cpool_tst *self)
 	return NULL;
 }
 
-bool cpool_gc(cpool_tst *self, cevent_tst *e)
+static bool cpool_gc(cpool_tst *self, cevent_tst *e)
 {
 	assert(NULL != self);
 	assert(NULL != e);
@@ -70,3 +56,20 @@ bool cpool_gc(cpool_tst *self, cevent_tst *e)
 	return true;
 }
 
+void cpool_init(cpool_tst *self, void *buff, uint16_t event_size, uint16_t event_count, uint16_t id)
+{
+	assert(NULL != buff);
+	assert(NULL != self);
+	assert(0 != (id & CPOOL_ID_MASK));
+	assert(id < 16);
+
+	self->pool = buff;
+	self->esize = event_size;
+	self->ecnt = event_count;
+	self->id = id;
+
+	self->new = cpool_new;
+	self->gc = cpool_gc;
+
+	memset(self->pool, 0, (size_t)(self->esize * self->ecnt));
+}

@@ -21,7 +21,7 @@ static cevent_tst* new_event(crf_tst *self, uint32_t size)
 
         if (pool->esize >= size)
         {
-            cevent_tst* e = cpool_new(pool);
+            cevent_tst* e = pool->new(pool);
             if (NULL != e)
             {
                 return e;
@@ -36,7 +36,7 @@ static void	gc(crf_tst *self, cevent_tst* e)
 {
     for (int i=0; i<self->pool_cnt_u16; i++)
     {
-        if (cpool_gc(self->pool_ast+i, e))
+        if (self->pool_ast[i].gc(self->pool_ast+i, e))
         {
             return;
         }
@@ -57,7 +57,7 @@ static void	publish(crf_tst *self, const cevent_tst* e)
 static void	post(crf_tst *self, cevent_tst* e, cqueue_tst *q)
 {
     e->gc_info.ref_cnt++;
-    cqueue_put(q, e);
+    q->put(q, e);
 }
 
 static void	step(crf_tst *self)
@@ -67,7 +67,7 @@ static void	step(crf_tst *self)
 
     for (hsm_pst = self->chsm_ap; *hsm_pst; hsm_pst++)
     {
-        e_pst = cqueue_get(&((*hsm_pst)->events_st));
+        e_pst = (*hsm_pst)->eq_st.get(&((*hsm_pst)->eq_st));
         if (e_pst)
         {
             chsm_dispatch(*hsm_pst, e_pst);
