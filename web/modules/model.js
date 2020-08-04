@@ -30,6 +30,7 @@ export class Model {
 			trans_del:			[],
 			trans_redraw:		[],
 			trans_set_label:	[],
+			trans_set_label_pos:[],
 			state_new:			[],
 			state_del:			[],
 			state_resize:		[],
@@ -1000,6 +1001,60 @@ export class Model {
 		this.changes.trans_redraw.push([tr_id, tr]);
 	}
 
+	clamp(num, min, max)
+	{
+		return Math.min(Math.max(num, min), max);
+	};
+
+	get_closest_point(A, B, P)
+	{
+		const a_to_p = [P[0] - A[0], P[1] - A[1]];
+		const a_to_b = [B[0] - A[0], B[1] - A[1]];
+
+		const atb2 = a_to_b[0]**2 + a_to_b[1]**2;
+
+		const atp_dot_atb = a_to_p[0]*a_to_b[0] + a_to_p[1]*a_to_b[1];
+
+		const t = atp_dot_atb / atb2;
+
+		const t2 = this.clamp(t, 0.0, 1.0);
+
+		const c = [A[0] + a_to_b[0]*t2, A[1] + a_to_b[1]*t2];
+
+		const c_to_p = [P[0] - c[0], P[1] - c[1]];
+		const ctp2 = c_to_p[0]**2 + c_to_p[1]**2; // distance of the point from the line
+
+		return [c, ctp2];
+	}
+
+	transition_label_drag(tr_id, p)
+	{
+		const tr = this.data.transitions[tr_id];
+
+		const len = tr.vertices.length - 1;
+
+		let closest_p = [...tr.vertices[0]];
+		let t_min = 9999999;
+
+		for (let i=0; i<len; i++)
+		{
+			if ((tr.vertices[i][0] !== tr.vertices[i+1][0]) || (tr.vertices[i][1] !== tr.vertices[i+1][1]))
+			{
+				const [a, t] = this.get_closest_point(tr.vertices[i], tr.vertices[i+1], p);
+
+				console.log(a, t);
+				if (Math.abs(t) < Math.abs(t_min))
+				{
+					t_min = t;
+					closest_p = [...a];
+				}
+			}
+		}
+
+		this.changes.trans_set_label_pos.push([tr_id, closest_p]);
+		console.log('===>', closest_p, t_min);
+	}
+
 	simplify_tr_path(tr_id)
 	{
 		const t = this.data.transitions[tr_id];
@@ -1104,14 +1159,8 @@ export class Model {
 					break;
 				
 				case 'all':
-					if (x0 === x1) // the first segment is vertical
-					{
-						tr.vertices[1][0] = sx;
-					}
-					else // the first segment is horizontal
-					{
-						tr.vertices[1][1] = sy;
-					}
+					tr.vertices[1][0] = sx;
+					tr.vertices[1][1] = sy;
 					break;
 			}
 		}

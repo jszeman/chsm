@@ -265,4 +265,4 @@ if __name__ == '__main__':
     #project.generate_code()
 
     eel.init((Path(__file__).parent / '../web').absolute().resolve())
-    eel.start('main.html')
+    eel.start('main.html', mode=None)

@@ -135,6 +135,8 @@ class App {
 		this.model.changes.trans_set_label.map(d => this.gui.paths[d[0]].set_label(d[1].label), this);
 
 		this.model.changes.trans_del.map(d => this.gui.delete_transition(d[0]), this);
+
+		this.model.changes.trans_set_label_pos.map(d => this.gui.paths[d[0]].set_label_pos(d[1]), this);
 	}
 
 	push_state_changes_to_gui()
@@ -241,6 +243,11 @@ class App {
 			case 'TR_M_DOWN':
 				this.trans_drag_start(data.event, data.id);
 				this.state = this.transition_dragging_state;
+				break;
+
+			case 'TR_LABEL_M_DOWN':
+				this.trans_label_drag_start(data.event, data.id);
+				this.state = this.transition_label_dragging_state;
 				break;
 
 			case 'TR_DBLCLICK':
@@ -664,6 +671,31 @@ class App {
 		}
 	}
 
+	transition_label_dragging_state(event, data)
+	{
+		switch(event)
+		{
+			case 'KEYDOWN':
+				switch(data.code)
+				{
+					case 'Escape':
+						this.gui.set_cursor('auto');
+						this.state = this.idle_state;
+						break;
+				}
+				break;
+
+			case 'MOUSEMOVE':
+				this.trans_label_drag(data);
+				break
+
+			case 'MOUSEUP':
+				this.trans_label_drag_end(data);
+				this.state = this.idle_state;
+				break;
+		}
+	}
+
 	state_resizing_state(event, data)
 	{
 		switch(event)
@@ -839,6 +871,31 @@ class App {
 		this.gui.set_cursor('auto');
 	}
 
+	trans_label_drag_start(evt, trans_id)
+	{
+		evt.preventDefault();
+
+		const p = this.gui.get_absolute_pos(evt);
+
+		this.drag_data.trans_id = trans_id;
+		this.gui.set_cursor('grab');
+	}
+
+	trans_label_drag(evt)
+	{
+		evt.preventDefault();
+
+		const p = this.gui.get_absolute_pos(evt);
+		const trans_id = this.drag_data.trans_id;
+		this.model.transition_label_drag(trans_id, p);
+	}
+
+	trans_label_drag_end(evt)
+	{
+		evt.preventDefault();
+		this.gui.set_cursor('auto');
+	}
+
 	render_transiton(trans_id, tr_data=null)
 	{
 		const tr = tr_data !== null ? tr_data : this.model.get_transition(trans_id);
@@ -858,7 +915,8 @@ class App {
 				{
 					this.dispatch('TR_CLICK', {event: evt, id: trans_id});
 				}
-			});
+			},
+			evt => this.dispatch('TR_LABEL_M_DOWN', {event: evt, id: trans_id}),);
 	}
 }
 
