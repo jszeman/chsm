@@ -45,4 +45,8 @@ struct crf_st
 
 bool crf_init(crf_tst *self , chsm_tst **chsm_ap, cpool_tst *pool_ast, uint16_t pool_cnt);
 
+#define CRF_NEW_EVENT(event_type) 		((event_type *)crf.new_event(&crf, sizeof(event_type)))
+#define CRF_GC(event_ptr) 				crf.gc(&crf, (cevent_tst *)(event_ptr))
+#define CRF_POST(event_ptr, hsm_ptr) 	crf.post(&crf, (cevent_tst *)event_ptr, (cqueue_tst *)(hsm_ptr))
+#define CRF_STEP()						crf.step(&crf)
 #endif /* INC_CRF_H_ */

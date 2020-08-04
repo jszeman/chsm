@@ -49,19 +49,15 @@ crf_tst				crf;
 
 
 /* bus_driver::send_data
- * 		Send an event with some arbitrary data 
+ * 		Just set a field to as a proof thatthis function was called.
  */
 void send_data(bus_driver_tst *self, const cevent_tst *e_pst)
 {
-	event_bus_data_tst *e;
-
-	//e = crf.new_event(&crf, )
-    //printf("\nsend_data\n");
 	self->tmp_u16 = 0xcafe;
 }
 
 /* bus_driver::emit_event
- * 		Send an event with some arbitrary data 
+ * 		Emit an event with some arbitrary data 
  */
 void emit_event(bus_driver_tst *self, const cevent_tst *e_pst)
 {
@@ -143,7 +139,7 @@ TEST(crf, one_small_event)
 {
 	event_small_tst *e;
 
-	e = (event_small_tst *)crf.new_event(&crf, sizeof(event_small_tst));
+	e = CRF_NEW_EVENT(event_small_tst);
 
 	TEST_ASSERT_NOT_NULL(e);
 	TEST_ASSERT_GREATER_OR_EQUAL(buff1, (uint8_t *)e);
@@ -161,8 +157,8 @@ TEST(crf, two_small_event)
 	event_small_tst *e1;
 	event_small_tst *e2;
 
-	e1 = (event_small_tst *)crf.new_event(&crf, sizeof(event_small_tst));
-	e2 = (event_small_tst *)crf.new_event(&crf, sizeof(event_small_tst));
+	e1 = CRF_NEW_EVENT(event_small_tst);
+	e2 = CRF_NEW_EVENT(event_small_tst);
 
 	TEST_ASSERT_NOT_EQUAL(e1, e2);
 	TEST_ASSERT_NOT_NULL(e2);
@@ -181,7 +177,7 @@ TEST(crf, too_many_small_event)
 
 	for (int i=0; i<5; i++)
 	{
-		e[i] = (event_small_tst *)crf.new_event(&crf, sizeof(event_small_tst));
+		e[i] = CRF_NEW_EVENT(event_small_tst);
 	}
 
 	for (int i=0; i<4; i++)
@@ -209,7 +205,7 @@ TEST(crf, too_many_events)
 
 	for (int i=0; i<9; i++)
 	{
-		e[i] = (event_small_tst *)crf.new_event(&crf, sizeof(event_small_tst));
+		e[i] = CRF_NEW_EVENT(event_small_tst);
 	}
 
 	for (int i=0; i<4; i++)
@@ -243,17 +239,16 @@ TEST(crf, too_many_events)
 TEST(crf, garbage_collect)
 {
 	event_small_tst *e[5];
+	event_small_tst *e_new;
 
 	for (int i=0; i<5; i++)
 	{
-		e[i] = (event_small_tst *)crf.new_event(&crf, sizeof(event_small_tst));
+		e[i] = CRF_NEW_EVENT(event_small_tst);
 	}
 
-	crf.gc(&crf, (cevent_tst *)(e[2]));
+	CRF_GC(e[2]);
 
-	event_small_tst *e_new;
-
-	e_new = (event_small_tst *)crf.new_event(&crf, sizeof(event_small_tst));
+	e_new = CRF_NEW_EVENT(event_small_tst);
 
 	TEST_ASSERT_NOT_NULL(e);
 	TEST_ASSERT_GREATER_OR_EQUAL(buff1, (uint8_t *)e_new);
@@ -268,12 +263,12 @@ TEST(crf, post)
 {
 	event_small_tst *e;
 
-	e = (event_small_tst *)crf.new_event(&crf, sizeof(event_small_tst));
+	e = CRF_NEW_EVENT(event_small_tst);
 	e->e.sig = TEST_SIG_SEND_DATA;
 
-	crf.post(&crf, (cevent_tst *)e, (cqueue_tst *)(&bus_driver));
+	CRF_POST(e, &bus_driver);
 
-	crf.step(&crf);
+	CRF_STEP();
 
 	TEST_ASSERT_EQUAL(0xcafe, bus_driver.tmp_u16);
 }
@@ -285,12 +280,12 @@ TEST(crf, emmit)
 {
 	event_small_tst *e;
 
-	e = (event_small_tst *)crf.new_event(&crf, sizeof(event_small_tst));
+	e = CRF_NEW_EVENT(event_small_tst);
 	e->e.sig = TEST_SIG_TICK_1MS;
 
-	crf.post(&crf, (cevent_tst *)e, (cqueue_tst *)(&bus_driver));
+	CRF_POST(e, &bus_driver);
 
-	crf.step(&crf);
+	CRF_STEP();
 
 	TEST_ASSERT_EQUAL_STRING("send_read_request start_timer ", dev_driver.log_buff);
 }
