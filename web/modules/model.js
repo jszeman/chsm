@@ -8,6 +8,7 @@ export class Model {
 			state_min_width: 	5,
 			state_min_height: 	3,
 			text_height: 		2,
+			label_offset:		[0.5, -0.4],
 		};
 
 		this.elbow = 			'v';
@@ -162,7 +163,7 @@ export class Model {
 			end: end_id,
 			vertices: [],
 			label: trans_id,
-			label_offset: [0.5, -0.4],
+			label_offset: [...this.options.label_offset],
 			label_anchor: 0,
 			label_pos: [],
 		};
@@ -890,46 +891,22 @@ export class Model {
 		}
 	}
 
-	/* This function should select a suitable anchor point for the label.
-	 * A good point is the leftmost vertex of the longest horizontal line.
+	/* It is very easy to update the transition label: we just simply try to drag it
+	 * to its current position. The function will find the best place.
 	 */
-	update_transition_label_anchor(tr_id, label_width)
+	update_transition_label_offset(tr_id, label_width)
 	{
 		const tr = this.get_transition(tr_id);
-		const v = tr.vertices;
 
-		let anchor = null;
-		let len = -1;
-		const anchors = [];
+		const [lx, ly] = [...tr.label_pos];
 
-		for (let i = 0; i < v.length - 1; i++)
-		{
-			if (v[i][1] == v[i + 1][1]) // horizontal line
-			{
-				const l = Math.abs(v[i][0] - v[i + 1][0]);
-				if (v[i][0] < v[i + 1][0])
-				{
-					anchors.push([i, l])
-				}
-				else
-				{
-					anchors.push([i + 1, l])
-				}
-			}
-		}
-
-		const middle = Math.round((anchors.length - 1) / 2);
-
-		if (middle < anchors.length)
-		{
-			tr.label_anchor = anchors[middle][0];
-		}
+		this.transition_label_drag(tr_id, [lx-this.options.label_offset[0], ly-this.options.label_offset[1]]);
 	}
 
 	update_transition_label_pos(tr_id)
 	{
 		const tr = this.get_transition(tr_id);
-		this.update_transition_label_anchor(tr_id);
+		this.update_transition_label_offset(tr_id);
 		const [ax, ay] = tr.vertices[tr.label_anchor];
 		const [ox, oy] = tr.label_offset;
 		tr.label_pos = [ax + ox, ay + oy];
@@ -1006,10 +983,11 @@ export class Model {
 		return Math.min(Math.max(num, min), max);
 	};
 
+	// Calculate the closest point to P that is on the line defined by A and B
 	get_closest_point(A, B, P)
 	{
-		const a_to_p = [P[0] - A[0], P[1] - A[1]];
-		const a_to_b = [B[0] - A[0], B[1] - A[1]];
+		const a_to_p = [P[0] - A[0], P[1] - A[1]]; // vector A --> P
+		const a_to_b = [B[0] - A[0], B[1] - A[1]]; // vector A --> B
 
 		const atb2 = a_to_b[0]**2 + a_to_b[1]**2;
 
@@ -1017,14 +995,14 @@ export class Model {
 
 		const t = atp_dot_atb / atb2;
 
-		const t2 = this.clamp(t, 0.0, 1.0);
+		const t2 = this.clamp(t, 0.0, 1.0); // keep the point between A and B
 
-		const c = [A[0] + a_to_b[0]*t2, A[1] + a_to_b[1]*t2];
+		const c = [A[0] + a_to_b[0]*t2, A[1] + a_to_b[1]*t2]; // calculate the closest point
 
 		const c_to_p = [P[0] - c[0], P[1] - c[1]];
 		const ctp2 = c_to_p[0]**2 + c_to_p[1]**2; // distance of the point from the line
 
-		return [c, ctp2];
+		return [c, ctp2]; // return the point and the squared distance of that point from P
 	}
 
 	transition_label_drag(tr_id, p)
@@ -1034,25 +1012,29 @@ export class Model {
 		const len = tr.vertices.length - 1;
 
 		let closest_p = [...tr.vertices[0]];
-		let t_min = 9999999;
+		let d_min = 9999999;
+		let anchor_idx = 0;
 
 		for (let i=0; i<len; i++)
 		{
 			if ((tr.vertices[i][0] !== tr.vertices[i+1][0]) || (tr.vertices[i][1] !== tr.vertices[i+1][1]))
 			{
-				const [a, t] = this.get_closest_point(tr.vertices[i], tr.vertices[i+1], p);
+				const [a, d] = this.get_closest_point(tr.vertices[i], tr.vertices[i+1], p);
 
-				console.log(a, t);
-				if (Math.abs(t) < Math.abs(t_min))
+				if (Math.abs(d) < Math.abs(d_min))
 				{
-					t_min = t;
+					d_min = d;
 					closest_p = [...a];
+					anchor_idx = i;
 				}
 			}
 		}
 
-		this.changes.trans_set_label_pos.push([tr_id, closest_p]);
-		console.log('===>', closest_p, t_min);
+		tr.label_anchor = anchor_idx;
+		tr.label_pos = [closest_p[0] + this.options.label_offset[0], closest_p[1] + this.options.label_offset[1]];
+		tr.label_offset = [tr.label_pos[0] - tr.vertices[anchor_idx][0] , tr.label_pos[1] - tr.vertices[anchor_idx][1]];
+
+		this.changes.trans_set_label_pos.push([tr_id, tr.label_pos]);
 	}
 
 	simplify_tr_path(tr_id)
