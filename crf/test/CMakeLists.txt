@@ -6,11 +6,16 @@ set(test_files  tsrc/main.c
                 tsrc/cpool_test.c
                 tsrc/cqueue_test.c
                 tsrc/chsm_test.c
+                tsrc/crf_test.c
                 tsrc/chsm_test_functions.c
                 tsrc/chsm_test_machine.c
                 tsrc/chsm_test_machine2.c
                 tsrc/chsm_test_machine3.c
                 tsrc/chsm_test_machine4.c
+                tsrc/bus_driver.c
+                tsrc/bus_driver_functions.c
+                tsrc/dev_driver.c
+                tsrc/dev_driver_functions.c
                 ../src/chsm.c
                 ../src/cpool.c
                 ../src/cqueue.c
@@ -28,3 +33,5 @@ include_directories(tinc
 
 
 add_executable(crf_test ${test_files})
+
+add_compile_definitions(NDEBUG)

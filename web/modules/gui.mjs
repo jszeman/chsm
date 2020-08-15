@@ -170,7 +170,7 @@ export class Gui {
 		delete this.states[id];
 	}
 
-	render_transition(id, vertices, label, label_pos, on_mousedown, on_dblclick, on_click)
+	render_transition(id, vertices, label, label_pos, on_mousedown, on_dblclick, on_click, on_label_mousedown)
 	{
 		if (id in this.paths) return;
 		
@@ -212,6 +212,10 @@ export class Gui {
 			{
 				l.textContent = label;
 			},
+			set_label_pos(label_pos)
+			{
+				this.mod_svg(l, {x: label_pos[0], y: label_pos[1]});
+			},
 			get_label_bbox: function()
 			{
 				const bbox = l.getBBox();
@@ -230,6 +234,7 @@ export class Gui {
 		p2.addEventListener('mousedown', on_mousedown);
 		p2.addEventListener('dblclick', on_dblclick);
 		p2.addEventListener('click', on_click);
+		l.addEventListener('mousedown', on_label_mousedown);
 
 		this.drawing.prepend(g);
 	}

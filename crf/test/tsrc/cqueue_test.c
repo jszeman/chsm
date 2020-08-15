@@ -38,8 +38,8 @@ TEST(eq, put_1_get_1)
 	int32_t r;
 
 	cqueue_init(&eq, (const cevent_tst  **)events, 4);
-	r = cqueue_put(&eq, &e);
-	ep = cqueue_get(&eq);
+	r = eq.put(&eq, &e);
+	ep = eq.get(&eq);
 
 	TEST_ASSERT_EQUAL(0, r);
 	TEST_ASSERT(ep == &e);
@@ -56,9 +56,9 @@ TEST(eq, put_2_get_1)
 	int32_t r1, r2;
 
 	cqueue_init(&eq, (const cevent_tst  **)events, 4);
-	r1 = cqueue_put(&eq, &e1);
-	r2 = cqueue_put(&eq, &e2);
-	ep = cqueue_get(&eq);
+	r1 = eq.put(&eq, &e1);
+	r2 = eq.put(&eq, &e2);
+	ep = eq.get(&eq);
 
 	TEST_ASSERT_EQUAL(0, r1);
 	TEST_ASSERT_EQUAL(0, r2);
@@ -75,10 +75,10 @@ TEST(eq, put_2_get_2)
 	const cevent_tst  *ep1, *ep2;
 
 	cqueue_init(&eq, (const cevent_tst  **)events, 4);
-	cqueue_put(&eq, &e1);
-	cqueue_put(&eq, &e2);
-	ep1 = cqueue_get(&eq);
-	ep2 = cqueue_get(&eq);
+	eq.put(&eq, &e1);
+	eq.put(&eq, &e2);
+	ep1 = eq.get(&eq);
+	ep2 = eq.get(&eq);
 
 	TEST_ASSERT(ep1 == &e1);
 	TEST_ASSERT(ep2 == &e2);
@@ -93,7 +93,7 @@ TEST(eq, get_from_empty)
 	const cevent_tst  *ep1;
 
 	cqueue_init(&eq, (const cevent_tst  **)events, 4);
-	ep1 = cqueue_get(&eq);
+	ep1 = eq.get(&eq);
 
 	TEST_ASSERT(NULL == ep1);
 }
@@ -109,7 +109,7 @@ TEST(eq, put_more_than_capacity)
 	cqueue_init(&eq, (const cevent_tst  **)events, 4);
 	for (uint16_t i=0; i<5; i++)
 	{
-		r = cqueue_put(&eq, &e1);
+		r = eq.put(&eq, &e1);
 	}
 
 	TEST_ASSERT(-1 == r);
@@ -127,8 +127,8 @@ TEST(eq, test_put_roll)
 
 	for (uint16_t i=0; i<5; i++)
 	{
-		cqueue_put(&eq, &e1);
-		cqueue_get(&eq);
+		eq.put(&eq, &e1);
+		eq.get(&eq);
 	}
 
 	TEST_ASSERT(NULL == events[4]);
@@ -147,8 +147,8 @@ TEST(eq, test_get_roll)
 
 	for (uint16_t i=0; i<5; i++)
 	{
-		cqueue_put(&eq, &e1);
-		ep1 = cqueue_get(&eq);
+		eq.put(&eq, &e1);
+		ep1 = eq.get(&eq);
 	}
 
 	TEST_ASSERT(&e1 == ep1);

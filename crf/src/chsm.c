@@ -12,12 +12,19 @@
 
 const cevent_tst chsm_init_event_st = {.sig=C_SIG_INIT, .gc_info=0};
 
-void chsm_ctor(chsm_tst *self, chsm_state_tpft init_state_pft)
+static void send(chsm_tst *self, const cevent_tst *e_pst)
+{
+
+}
+
+void chsm_ctor(chsm_tst *self, chsm_state_tpft init_state_pft, const cevent_tst **events, uint16_t max_event_count)
 {
 	assert(NULL != self);
 	assert(NULL != init_state_pft);
 
+	self->send = send;
 	self->state_handler_pft = init_state_pft;
+	cqueue_init(&self->eq_st, events, max_event_count);
 }
 
 void chsm_init(chsm_tst *self)
@@ -49,17 +56,6 @@ void chsm_exit_children(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_
 		exit_ppft++;
 	}
 }
-
-/*chsm_result_ten chsm_handle_in_parent(chsm_tst *self, chsm_call_ctx_tst *ctx_pst, chsm_state_tpft parent, void *exit_func)
-{
-	self->state_handler_pft = parent;
-	if (exit_func)
-	{
-		*(ctx_pst->exit_ppft) = (chsm_user_func_tpft)exit_func;
-		ctx_pst->exit_ppft++;
-	}
-    return C_RES_PARENT;
-}*/
 
 void chsm_dispatch(chsm_tst *self, const cevent_tst  *e_pst)
 {

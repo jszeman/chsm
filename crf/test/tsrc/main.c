@@ -24,6 +24,7 @@ void run_hsm_tests(void)
 	RUN_TEST_GROUP(ep);
 	RUN_TEST_GROUP(eq);
 	RUN_TEST_GROUP(hsm);
+	RUN_TEST_GROUP(crf);
 }
 
 int main(int argc, const char * argv[])

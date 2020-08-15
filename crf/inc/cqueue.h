@@ -12,18 +12,21 @@
 #include <stdlib.h>
 #include "cevent.h"
 
-typedef struct cqueue_st
+typedef struct cqueue_tst cqueue_tst;
+
+struct cqueue_tst
 {
 	const cevent_tst	**events;
 	uint16_t			max;
 	uint16_t			head;
 	uint16_t			tail;
 	uint16_t			free;
-} cqueue_tst;
+	
+	int32_t 			(*put)(cqueue_tst *self, const cevent_tst *e);
+	const cevent_tst*	(*get)(cqueue_tst *self);
+	uint32_t 			(*is_empty)(cqueue_tst *self);
+};
 
-int32_t 			cqueue_init(cqueue_tst *self, const cevent_tst **events, uint16_t max_event_count);
-int32_t 			cqueue_put(cqueue_tst *self, const cevent_tst *e);
-const cevent_tst	*cqueue_get(cqueue_tst *self);
-uint32_t 			cqueue_is_empty(cqueue_tst *self);
+int32_t 				cqueue_init(cqueue_tst *self, const cevent_tst **events, uint16_t max_event_count);
 
 #endif /* INC_CQUEUE_H */

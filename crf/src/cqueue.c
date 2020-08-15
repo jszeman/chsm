@@ -11,27 +11,7 @@
 #include <cevent.h>
 #include <cqueue.h>
 
-int32_t 			cqueue_init(cqueue_tst *self, const cevent_tst **events, uint16_t max_event_count);
-int32_t 			cqueue_put(cqueue_tst *self, const cevent_tst *e);
-const cevent_tst	*cqueue_get(cqueue_tst *self);
-//uint32_t 			cqueue_is_empty(cqueue_tst *self);
-
-int32_t cqueue_init(cqueue_tst *self, const cevent_tst **events, uint16_t max_event_count)
-{
-	assert(NULL != self);
-	assert(NULL != events);
-	assert(max_event_count > 0);
-
-	self->events = events;
-	self->max = max_event_count;
-	self->head = 0;
-	self->tail = 0;
-	self->free = max_event_count;
-
-	return 0;
-}
-
-int32_t cqueue_put(cqueue_tst *self, const cevent_tst *e)
+static int32_t cqueue_put(cqueue_tst *self, const cevent_tst *e)
 {
 	assert(NULL != self);
 
@@ -51,7 +31,7 @@ int32_t cqueue_put(cqueue_tst *self, const cevent_tst *e)
 	return 0;
 }
 
-const cevent_tst *cqueue_get(cqueue_tst *self)
+static const cevent_tst *cqueue_get(cqueue_tst *self)
 {
 	const cevent_tst *e;
 
@@ -72,3 +52,20 @@ const cevent_tst *cqueue_get(cqueue_tst *self)
 	return e;
 }
 
+int32_t cqueue_init(cqueue_tst *self, const cevent_tst **events, uint16_t max_event_count)
+{
+	assert(NULL != self);
+	assert(NULL != events);
+	assert(max_event_count > 0);
+
+	self->events = events;
+	self->max = max_event_count;
+	self->head = 0;
+	self->tail = 0;
+	self->free = max_event_count;
+
+	self->put = cqueue_put;
+	self->get = cqueue_get;
+
+	return 0;
+}

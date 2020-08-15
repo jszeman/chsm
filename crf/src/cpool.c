@@ -6,31 +6,16 @@
  */
 
 #include <stdint.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 #include "crf.h"
 
-#define CPOOL_ID_MASK		0xF000
-#define CPOOL_REF_CNT_MASK	(~CPOOL_ID_MASK)
 
-int32_t cpool_init(cpool_tst *self, void *buff, uint16_t event_size, uint16_t event_count, uint16_t id)
-{
-	assert(NULL != buff);
-	assert(NULL != self);
-	assert(0 != (id & CPOOL_ID_MASK));
 
-	self->pool = buff;
-	self->esize = event_size;
-	self->ecnt = event_count;
-	self->id = id;
 
-	memset(self->pool, 0, (size_t)(self->esize * self->ecnt));
-
-	return 0;
-}
-
-cevent_tst *cpool_new(cpool_tst *self)
+static cevent_tst *cpool_new(cpool_tst *self)
 {
 	void *e;
 
@@ -38,9 +23,10 @@ cevent_tst *cpool_new(cpool_tst *self)
 
 	for (e = self->pool; e<self->pool + self->ecnt * self->esize; e+=self->esize)
 	{
-		if (0 == ((cevent_tst *)e)->gc_info)
+		if (0 == ((cevent_tst *)e)->gc_info.pool_id)
 		{
-			((cevent_tst *)e)->gc_info = self->id;
+			((cevent_tst *)e)->gc_info.pool_id = self->id;
+			((cevent_tst *)e)->gc_info.ref_cnt = 0;
 			return (cevent_tst *)e;
 		}
 	}
@@ -48,22 +34,42 @@ cevent_tst *cpool_new(cpool_tst *self)
 	return NULL;
 }
 
-int32_t cpool_gc(cpool_tst *self, cevent_tst *e)
+static bool cpool_gc(cpool_tst *self, cevent_tst *e)
 {
 	assert(NULL != self);
 	assert(NULL != e);
-	assert(self->id == (e->gc_info & CPOOL_ID_MASK));
-
-	if (e->gc_info & CPOOL_REF_CNT_MASK)
+	
+	if (self->id != e->gc_info.pool_id)
 	{
-		e->gc_info--;
+		return false;
 	}
 
-	if (self->id == e->gc_info) // Ref counter is 0
+	if (e->gc_info.ref_cnt)
 	{
-		e->gc_info = 0;
+		e->gc_info.ref_cnt--;
+	}
+	else
+	{
+		e->gc_info.pool_id = 0;
 	}
 
-	return 0;
+	return true;
 }
 
+void cpool_init(cpool_tst *self, void *buff, uint16_t event_size, uint16_t event_count, uint16_t id)
+{
+	assert(NULL != buff);
+	assert(NULL != self);
+	assert(0 != (id & CPOOL_ID_MASK));
+	assert(id < 16);
+
+	self->pool = buff;
+	self->esize = event_size;
+	self->ecnt = event_count;
+	self->id = id;
+
+	self->new = cpool_new;
+	self->gc = cpool_gc;
+
+	memset(self->pool, 0, (size_t)(self->esize * self->ecnt));
+}

@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin-left: 0px;
+        }
+
+        main {
+            width: 100%;
+            height: 100%;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .state_body {
+    stroke: black;
+    stroke-width: 0.2;
+    fill: none;
+    rx: 0.5px;
+}
+
+.state_border {
+    stroke: deepskyblue; 
+    stroke-width: 0.8;
+    fill: none;
+    rx: 0.5px;
+    opacity: 0;
+}
+
+.state_border:hover {
+    opacity: 0.4;
+}
+
+.state_border_highlight {
+    stroke: rgb(23, 197, 66);
+    opacity: 0.4;
+}
+
+.initial_state {
+    stroke: none;
+    stroke-width: 0.4;
+    fill: black;
+    r: 0.7px;
+}
+
+.initial_state:hover {
+    stroke: deepskyblue;
+    stroke-width: 0.5px;
+}
+
+.state_border_deleting {
+    stroke: red; 
+    stroke-width: 0.8;
+    fill: none;
+    rx: 0.5px;
+    opacity: 0.4;
+}
+
+.transition_handle {
+    stroke: deepskyblue; 
+    stroke-width: 0.8;
+    fill: none;
+    rx: 0.5px;
+    opacity: 0;
+    cursor: grab;
+}
+
+.transition_handle:hover {
+    opacity: 0.4;
+}
+
+.transition_handle_deleting {
+    stroke: red;
+    stroke-width: 0.8;
+    fill: none;
+    rx: 0.5px;
+    opacity: 0;
+    cursor: auto;
+}
+
+.transition_handle_deleting:hover {
+    opacity: 0.4;
+}
+
+.transition_handle_highlight_draw {
+    opacity: 0.4;
+    cursor: crosshair;
+}
+
+.transition_handle_highlight_edit {
+    stroke: rgb(23, 197, 66);
+    opacity: 0.4;
+    cursor: grab;
+}
+
+.transition_handle_highlight_drag {
+    opacity: 0.4;
+    cursor: grab;
+}
+
+.state_separator {
+    stroke: grey;
+    stroke-width: 0.1;
+    shape-rendering: crispEdges;
+}
+
+.state_resize_mark {
+    stroke: grey;
+    stroke-width: 0.1;
+}
+
+.state_title {
+    font: bold 0.08em arial,helvetica,sans-serif;
+}
+
+.state_text {
+    font: normal 0.08em arial,helvetica,sans-serif;
+}
+
+.transition_label {
+    font: normal 0.07em arial,helvetica,sans-serif;
+}
+
+.state_drag_handle {
+    fill: rgb(211, 102, 1);
+    opacity: 0.1;
+    stroke: none;
+    rx: 0.5px;
+    cursor: move;
+}
+
+.state_resize_handle {
+    fill: white;
+    opacity: 0.0;
+    stroke: none;
+    r: 0.5px;
+    cursor: nwse-resize;
+}
+
+.transition_line {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 0.2;
+}
+
+.transition_arrow {
+    fill: steelblue;
+    stroke: none;
+    stroke-width: 0.0;
+}
+    </style>
+</head>
+<body>
+    <main>
+        
+			<svg height="100%" width="100%">
+				<g display="none">
+					<path id="arrow" d="M 0 0 L 0.7 -0.3 L 0.7 0.3 Z" class="arrow_template"></path>
+				</g>
+				<g id="drawing" transform="translate(10, 10) scale(10, 10)"><g><path d="M 29 19 L 29 19 L 29 24" class="transition_line"></path><use href="#arrow" transform="translate(29 24) rotate(-90) " class="transition_arrow" display="block"></use><text x="29.5" y="18.6" class="transition_label"></text><path d="M 29 19 L 29 19 L 29 24" class="transition_handle"></path></g><g><path d="M 57 38 L 49 38 L 49 38 L 40 38" class="transition_line"></path><use href="#arrow" transform="translate(40 38) " class="transition_arrow" display="block"></use><text x="49.5" y="37.6" class="transition_label">STOP_WAIT</text><path d="M 57 38 L 49 38 L 49 38 L 40 38" class="transition_handle"></path></g><g><path d="M 40 27 L 46 27 L 46 27 L 57 27" class="transition_line"></path><use href="#arrow" transform="translate(57 27) rotate(180) " class="transition_arrow" display="block"></use><text x="46.5" y="26.6" class="transition_label">START_WAIT</text><path d="M 40 27 L 46 27 L 46 27 L 57 27" class="transition_handle"></path></g>
+				<g transform="translate(-100000000, -100000000)"><rect x="0" y="0" width="200000000" height="200000000" class="state_body"></rect><line x1="0" y1="2" x2="200000000" y2="2" class="state_separator"></line><line x1="0" y1="2" x2="200000000" y2="2" class="state_separator"></line><line x1="199999999" y1="200000000" x2="200000000" y2="199999999" class="state_resize_mark"></line><text x="0.6" y="1.6" class="state_title">__top__</text><text x="0.6" y="1.6" class="state_text"></text><rect x="0" y="0" width="200000000" height="2" class="state_drag_handle"></rect><rect x="0" y="0" width="200000000" height="200000000" class="state_border"></rect><circle cx="199999999.75" cy="199999999.75" class="state_resize_handle"></circle></g><g transform="translate(20, 24)"><rect x="0" y="0" width="20" height="20" class="state_body"></rect><line x1="0" y1="2" x2="20" y2="2" class="state_separator"></line><line x1="0" y1="10" x2="20" y2="10" class="state_separator"></line><line x1="19" y1="20" x2="20" y2="19" class="state_resize_mark"></line><text x="0.6" y="1.6" class="state_title">idle</text><text x="0.6" y="1.6" class="state_text"><tspan x="0.6" dy="2">entry/</tspan><tspan x="0.6" dy="2">exit/</tspan><tspan x="0.6" dy="2">SEND_DATA/ send_data()</tspan><tspan x="0.6" dy="2">TICK_1MS/ emit_event()</tspan></text><rect x="0" y="0" width="20" height="10" class="state_drag_handle"></rect><rect x="0" y="0" width="20" height="20" class="state_border state_border_highlight"></rect><circle cx="19.75" cy="19.75" class="state_resize_handle"></circle></g><g transform="translate(57, 24)"><rect x="0" y="0" width="16" height="18" class="state_body"></rect><line x1="0" y1="2" x2="16" y2="2" class="state_separator"></line><line x1="0" y1="6" x2="16" y2="6" class="state_separator"></line><line x1="15" y1="18" x2="16" y2="17" class="state_resize_mark"></line><text x="0.6" y="1.6" class="state_title">waiting</text><text x="0.6" y="1.6" class="state_text"><tspan x="0.6" dy="2">entry/</tspan><tspan x="0.6" dy="2">exit/</tspan></text><rect x="0" y="0" width="16" height="6" class="state_drag_handle"></rect><rect x="0" y="0" width="16" height="18" class="state_border"></rect><circle cx="15.75" cy="17.75" class="state_resize_handle"></circle></g><circle cx="29" cy="19" class="initial_state"></circle></g>
+			</svg>
+		
+    </main>
+    <script>
+        let translate = [10, 10];
+let scale = 10;
+const zoom_speed = 0.5;
+const pan_speed = 20;
+const drawing = document.querySelector('#drawing');
+const svg = document.querySelector('svg');
+
+let drag_start_pos = [0, 0];
+
+function set_transform()
+{
+    const [tx, ty] = translate;
+    const s = scale; 
+    drawing.attributes.transform.value = `translate(${tx}, ${ty}) scale(${s}, ${s})`;
+}
+
+function zoom_in(pos)
+{
+    const zs = zoom_speed;
+    const [x, y] = pos;
+    const [dtx, dty] = [-zs * x, -zs * y];
+    const [tx, ty] = translate;
+    translate = [tx + dtx, ty + dty];
+    scale += zs;
+    set_transform();
+}
+
+function zoom_out(pos)
+{
+    if (scale < 2)
+    {
+        return;
+    }
+    const zs = -zoom_speed;
+    const [x, y] = pos;
+    const [dtx, dty] = [-zs * x, -zs * y];
+    const [tx, ty] = translate;
+    translate = [tx + dtx, ty + dty];
+    scale += zs;
+    set_transform();
+}
+
+function get_absolute_pos(evt)
+{
+    const CTM = drawing.getScreenCTM();
+    const x = Math.round((evt.clientX - CTM.e) / CTM.a);
+    const y = Math.round((evt.clientY - CTM.f) / CTM.d);
+
+    return [x, y];
+}
+
+svg.addEventListener('wheel', event => {
+    if (event.ctrlKey)
+    {
+        event.stopPropagation();
+        event.preventDefault();
+        const p = get_absolute_pos(event);
+        if (event.deltaY < 0)
+        {
+            zoom_in(p);
+        }
+        else
+        {
+            zoom_out(p);
+        }
+    }
+    else if (event.shiftKey)
+    {
+        event.stopPropagation();
+        event.preventDefault();
+        if (event.deltaY < 0)
+        {
+            translate[0] += pan_speed;
+        }
+        else
+        {
+            translate[0] -= pan_speed;
+        }
+        set_transform();
+    }
+    else
+    {
+        event.stopPropagation();
+        event.preventDefault();
+        if (event.deltaY < 0)
+        {
+            translate[1] += pan_speed;
+        }
+        else
+        {
+            translate[1] -= pan_speed;
+        }
+        set_transform();
+    }
+});
+    </script>
+    <details>
+        <summary>json</summary>
+        <pre id='chsm-json-data'>
+            {
+    "states": {
+        "__top__": {
+            "pos": [
+                -100000000,
+                -100000000
+            ],
+            "size": [
+                200000000,
+                200000000
+            ],
+            "title": "__top__",
+            "text": [],
+            "connectors": [],
+            "parent": null,
+            "children": [
+                "state_0",
+                "state_1",
+                "istate_0"
+            ],
+            "type": "top"
+        },
+        "state_0": {
+            "pos": [
+                20,
+                24
+            ],
+            "size": [
+                20,
+                20
+            ],
+            "title": "idle",
+            "text": [
+                "entry/",
+                "exit/",
+                "SEND_DATA/ send_data()",
+                "TICK_1MS/ emit_event()"
+            ],
+            "connectors": [
+                "conn_0",
+                "conn_3",
+                "conn_5"
+            ],
+            "parent": "__top__",
+            "children": [],
+            "type": "normal"
+        },
+        "state_1": {
+            "pos": [
+                57,
+                24
+            ],
+            "size": [
+                16,
+                18
+            ],
+            "title": "waiting",
+            "text": [
+                "entry/",
+                "exit/"
+            ],
+            "connectors": [
+                "conn_1",
+                "conn_2"
+            ],
+            "parent": "__top__",
+            "children": [],
+            "type": "normal"
+        },
+        "istate_0": {
+            "pos": [
+                29,
+                19
+            ],
+            "size": [
+                2,
+                2
+            ],
+            "title": "istate_0",
+            "text": [
+                "entry/",
+                "exit/"
+            ],
+            "connectors": [
+                "conn_4"
+            ],
+            "parent": "__top__",
+            "children": [],
+            "type": "initial"
+        }
+    },
+    "connectors": {
+        "conn_0": {
+            "parent": "state_0",
+            "offset": 3,
+            "side": "right",
+            "dir": "out",
+            "transition": "trans_0"
+        },
+        "conn_1": {
+            "parent": "state_1",
+            "offset": 3,
+            "side": "left",
+            "dir": "in",
+            "transition": "trans_0"
+        },
+        "conn_2": {
+            "parent": "state_1",
+            "offset": 14,
+            "side": "left",
+            "dir": "out",
+            "transition": "trans_1"
+        },
+        "conn_3": {
+            "parent": "state_0",
+            "offset": 14,
+            "side": "right",
+            "dir": "in",
+            "transition": "trans_1"
+        },
+        "conn_4": {
+            "parent": "istate_0",
+            "offset": 0,
+            "side": "all",
+            "dir": "out",
+            "transition": "trans_2"
+        },
+        "conn_5": {
+            "parent": "state_0",
+            "offset": 9,
+            "side": "top",
+            "dir": "in",
+            "transition": "trans_2"
+        }
+    },
+    "transitions": {
+        "trans_0": {
+            "start": "conn_0",
+            "end": "conn_1",
+            "vertices": [
+                [
+                    40,
+                    27
+                ],
+                [
+                    46,
+                    27
+                ],
+                [
+                    46,
+                    27
+                ],
+                [
+                    57,
+                    27
+                ]
+            ],
+            "label": "START_WAIT",
+            "label_offset": [
+                0.5,
+                -0.4
+            ],
+            "label_anchor": 2,
+            "label_pos": [
+                46.5,
+                26.6
+            ]
+        },
+        "trans_1": {
+            "start": "conn_2",
+            "end": "conn_3",
+            "vertices": [
+                [
+                    57,
+                    38
+                ],
+                [
+                    49,
+                    38
+                ],
+                [
+                    49,
+                    38
+                ],
+                [
+                    40,
+                    38
+                ]
+            ],
+            "label": "STOP_WAIT",
+            "label_offset": [
+                0.5,
+                -0.4
+            ],
+            "label_anchor": 2,
+            "label_pos": [
+                49.5,
+                37.6
+            ]
+        },
+        "trans_2": {
+            "start": "conn_4",
+            "end": "conn_5",
+            "vertices": [
+                [
+                    29,
+                    19
+                ],
+                [
+                    29,
+                    19
+                ],
+                [
+                    29,
+                    24
+                ]
+            ],
+            "label": "",
+            "label_offset": [
+                0.5,
+                -0.4
+            ],
+            "label_anchor": 1,
+            "label_pos": [
+                29.5,
+                18.6
+            ]
+        }
+    }
+}
+        </pre>
+    </details>
+</body>
+</html>

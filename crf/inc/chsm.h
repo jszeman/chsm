@@ -8,8 +8,10 @@
 #ifndef INC_CHSM_H_
 #define INC_CHSM_H_
 
-#include <cevent.h>
 #include <stdint.h>
+
+#include "cevent.h"
+#include "cqueue.h"
 
 #define CHSM_MAX_NESTING_LEVEL	4
 
@@ -40,7 +42,7 @@ typedef void (*chsm_user_func_tpft)(chsm_tst *self, const cevent_tst *e_pst);
 /*
  * This is the type for functions that implement state behaviour.
  * Return:
- * 		A state function will return NULL, when the event was handled, or change the state
+ * 		A state function will return NULL when the event was handled, or change the state
  * 		handler function to its parent state, and return a pointer for its own exit function.
  * Params:
  * 		self: Pointer to the state machine.
@@ -55,7 +57,7 @@ typedef chsm_result_ten (*chsm_state_tpft)(chsm_tst *self, const cevent_tst *e_p
  * A pointer to such a structure will be passed to state handler functions.
  * In case a state handler wants to defer event processing to its parent, it should write
  * the pointer to the exit function in *exit_pft, then increase it.
- * If a state handler executes a state transition, it should call the functions from
+ * If the parent state handler executes a state transition, it should call the functions from
  * the exit_stack_apft array.
  */
 typedef struct chsm_call_ctx_st
@@ -70,10 +72,19 @@ typedef struct chsm_call_ctx_st
  */
 struct chsm_st
 {
+	cqueue_tst			eq_st;
 	chsm_state_tpft		state_handler_pft;
+
+	/** send
+	 * 		The state machine implementation shall call this function, when an
+	 *		event was created and need to be sent to the other parts of the system.
+	 *		This function should distribute the event to all queues in the application
+	 *		that may need it by calling cqueue_put.
+	 */
+	void				(*send)(chsm_tst *self, const cevent_tst *e_pst);
 };
 
-void chsm_ctor(chsm_tst *self , chsm_state_tpft init_state_pft);
+void chsm_ctor(chsm_tst *self, chsm_state_tpft init_state_pft, const cevent_tst **events, uint16_t max_event_count);
 void chsm_init(chsm_tst *self);
 void chsm_dispatch(chsm_tst *self, const cevent_tst *e_pst);
 

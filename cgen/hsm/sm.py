@@ -41,7 +41,6 @@ class StateMachine:
         self.user_guards = set()
 
         self.states = self.get_states(data)
-        self.resolve_parent_titles(self.states)
         self.add_transitions_to_states(self.states, data)
         self.process_transitions(self.states)
 
@@ -59,6 +58,10 @@ class StateMachine:
         self.templates['user_func_args'] = self.templates['user_func_args_t'].format(type = user_type)
         self.templates['user_func_params'] = self.templates['user_func_params_t'].format(type = user_type)
 
+        self.states['__top__']['title'] = self.top_func
+        self.resolve_parent_titles(self.states)
+
+        #pprint(self.states, indent=4)
         self.ast = self.build_ast(self.states)
 
         self.h_ast = self.build_user_declarations(self.user_funcs, self.user_guards)
@@ -271,6 +274,8 @@ class StateMachine:
 
             for f in g.trans_funcs:
                 i.add_true(Call(f, self.templates['user_func_args']))
+                
+        if g.target:
             i.add_true(Return(self.templates['trans_result'].format(target=g.target_title)))
         else:
             i.add_true(Return(self.templates['handled_result']))
@@ -304,6 +309,9 @@ class StateMachine:
             exit_func = state['events']['exit'].func
         except KeyError:
             pass
+
+        if exit_func == None:
+            exit_func = 'NULL'
 
         if state['parent']:
             result = self.templates['parent_result'].format(parent=state['parent_title'], exit_func=exit_func)

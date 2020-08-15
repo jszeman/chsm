@@ -25,7 +25,7 @@ enum test_events_en
 
 typedef struct
 {
-    chsm_tst    sm;
+    chsm_tst    super;
 
     char        log_buff[TEST_HSM_LOG_SIZE];
     char        *log;

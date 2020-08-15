@@ -33,20 +33,25 @@ svg {
 }
 
 #sidebar-handle {
+    border-left: 1px solid #ddd;
     width: 10px;
     height: 100%;
-    background-color: #eee;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: ew-resize;
 }
 
+#sidebar-handle:hover {
+    border-left: 1px solid #aaa;
+}
+
 #sidebar-handle-text {
+    border-radius: 0 4px 4px 0;
     height: 4em;
-    width: inherit;
+    width: 12px;
     background-color: #aaa;
-    color: blue;
+    color: rgb(20, 20, 126);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -55,15 +60,7 @@ svg {
 }
 
 #sidebar-handle-text:hover {
-    height: 4em;
-    width: inherit;
-    background-color: #aba;
-    color: blue;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font: 1.2em arial,helvetica,sans-serif;
-    cursor: default;
+    background-color: #999;
 }
 
 .props {
