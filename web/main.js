@@ -159,9 +159,34 @@ class App {
 
 	dispatch(event, data)
 	{
+		const start_state = this.state;
+
 		this.state(event, data);
 
 		this.push_model_changes_to_gui();
+
+		if ((this.state === this.idle_state) && (this.state !== start_state))
+		{
+			this.model.save_state();
+		}
+	}
+
+	undo()
+	{
+		this.model.undo();
+		this.gui.clear();
+
+		this.model.states().map(s => this.render_state(s), this);
+		this.model.transitions().map(t => this.render_transiton(t), this);
+	}
+
+	redo()
+	{
+		this.model.redo();
+		this.gui.clear();
+
+		this.model.states().map(s => this.render_state(s), this);
+		this.model.transitions().map(t => this.render_transiton(t), this);
 	}
 
 	idle_state(event, data)
@@ -174,10 +199,12 @@ class App {
 				{
 					case 'KeyS':
 						this.create_state(this.mouse_pos);
+						this.model.save_state();
 						break;
 
 					case 'KeyI':
 						this.create_initial_state(this.mouse_pos);
+						this.model.save_state();
 						break;
 
 					case 'KeyT':
@@ -196,6 +223,29 @@ class App {
                         this.state = this.delete_st_or_tr_state;
 						this.model.transitions().map(t => this.gui.redraw_path_change_line_color(t, true));
 						break;
+
+					case 'KeyZ':
+						if (data.ctrlKey)
+						{
+							this.undo();
+						}
+						break;
+
+					case 'KeyY':
+						if (data.ctrlKey)
+						{
+							this.redo();
+						}
+						break;
+	
+
+					case 'KeyU':
+						this.undo();
+						break;
+
+					case 'KeyR':
+						this.redo();
+						break;
 				}
 				break;
 
@@ -213,10 +263,12 @@ class App {
 
 			case 'APPLY_TITLE':
 				this.apply_title();
+				this.model.save_state();
 				break;
 
 			case 'APPLY_TEXT':
 				this.apply_text();
+				this.model.save_state();
 				break;
 
 			case 'LABEL_FOCUS':
@@ -252,6 +304,7 @@ class App {
 
 			case 'TR_DBLCLICK':
 				this.trans_split(data.event, data.id);
+				this.model.save_state();
 				break;
 
 			case 'TR_CLICK':
