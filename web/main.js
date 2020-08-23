@@ -173,7 +173,7 @@ class App {
 
 		if ((this.state === this.idle_state) && (this.state !== start_state))
 		{
-			this.model.save_state();
+			this.save_state();
 		}
 	}
 
@@ -195,6 +195,14 @@ class App {
 		this.model.transitions().map(t => this.render_transiton(t), this);
 	}
 
+	save_state()
+	{
+		if (this.model.save_state())
+		{
+			this.title.textContent = '*' + this.file_name;
+		}
+	}
+
 	idle_state(event, data)
 	{
 		//console.log('idle', event);
@@ -205,12 +213,12 @@ class App {
 				{
 					case 'KeyS':
 						this.create_state(this.mouse_pos);
-						this.model.save_state();
+						this.save_state();
 						break;
 
 					case 'KeyI':
 						this.create_initial_state(this.mouse_pos);
-						this.model.save_state();
+						this.save_state();
 						break;
 
 					case 'KeyT':

@@ -36,11 +36,15 @@ export class Model {
 		if (this.history.length === 0)
 		{
 			this.history.push(state);
+			return true;
 		}
 		else if (this.history[this.history.length - 1] !== state)
 		{
 			this.history.push(state);
+			return true;
 		}
+
+		return false;
 	}
 
 	undo()
