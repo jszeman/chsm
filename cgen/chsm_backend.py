@@ -245,13 +245,13 @@ def open_file():
 
     if filepath.endswith('.h'):
         global project
-        project = Project()
-        eel.load_json(json.dumps(project.model))
+        project = Project(filepath)
+        eel.load_json(json.dumps(project.model), Path(filepath).name)
 
     elif filepath.endswith('.html'):
         model = open_html(filepath)
         if model:
-            eel.load_json(json.dumps(model))
+            eel.load_json(json.dumps(model), Path(filepath).name)
 
 @eel.expose
 def genereate_code():

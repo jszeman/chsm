@@ -20,12 +20,15 @@ class App {
 			obj_id: null,
 			obj_type: null
 		};
+		this.file_name = '';
 		
 		this.model.states().map(s => this.render_state(s), this);
 		this.model.transitions().map(t => this.render_transiton(t), this);
 
 		this.body = document.querySelector('body');
 		this.main = document.querySelector('main');
+
+		this.title = document.querySelector('title');
 		
 		this.body.addEventListener("keydown", event => {
 			if (!this.enable_keys) return;
@@ -113,13 +116,16 @@ class App {
 		//const data = eel.open_state_machine(); // This will cause the python code to call this.load_model
 	}
 
-	load_model(data)
+	load_model(data, fname)
 	{
 		this.gui.clear();
 
 		this.model = new Model(JSON.parse(data));
 		this.model.states().map(s => this.render_state(s), this);
 		this.model.transitions().map(t => this.render_transiton(t), this);
+
+		this.file_name = fname;
+		this.title.textContent = this.file_name;
 	}
 
 	push_transition_changes_to_gui()
@@ -411,7 +417,7 @@ class App {
 
 	sidebar_resizing_state(event, data)
 	{
-		console.log('resize', event);
+		//console.log('resize', event);
 		switch(event)
 		{
 			case 'KEYDOWN':
@@ -975,15 +981,14 @@ class App {
 
 window.addEventListener('DOMContentLoaded', event => {window.app = new App(state_machine)});
 
-eel.expose(load_files); // Expose this function to Python
-function load_files(files) {
-	console.log('load_files', files);
-	window.app.load_model(files['test.c']);
+eel.expose(load_json); // Expose this function to Python
+function load_json(data, filename) {
+	//console.log(data)
+	window.app.load_model(data, filename);
 }
 
-
-eel.expose(load_json); // Expose this function to Python
-function load_json(data) {
-	console.log(data)
-	window.app.load_model(data);
+eel.expose(set_title);
+function set_title(title)
+{
+	document.querySelector('title').textContent = title;
 }
