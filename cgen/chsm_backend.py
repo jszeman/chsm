@@ -49,14 +49,29 @@ def save_html(html_fname: Path, drawing: str, json_data: str):
 
         if not template_html.exists():
             logging.error(f'File not found: {template_html}')
+            eel.send_event('SAVE_RESULT', {
+                'result': False,
+                'file': f'{template_html}',
+                'message': f'File not found: {template_html}',
+                })
             return
 
         if not drawing_js.exists():
             logging.error(f'File not found: {drawing_js}')
+            eel.send_event('SAVE_RESULT', {
+                'result': False,
+                'file': f'{drawing_js}',
+                'message': f'File not found: {drawing_js}',
+                })
             return
 
         if not drawing_css.exists():
             logging.error(f'File not found: {drawing_css}')
+            eel.send_event('SAVE_RESULT', {
+                'result': False,
+                'file': f'{drawing_css}',
+                'message': f'File not found: {drawing_css}',
+                })
             return
 
         with open(template_html, 'r') as tmp_html, \
@@ -69,6 +84,12 @@ def save_html(html_fname: Path, drawing: str, json_data: str):
             output = template.format(style=css, drawing=drawing, json_data=json_data, script=js)
             html.write(output)
             logging.info(f'Saved drawing in {html_fname}')
+            eel.send_event('SAVE_RESULT', {
+                'result': True,
+                'filepath': f'{html_fname}',
+                'filename': html_fname.name,
+                'message': f'Saved drawing in {html_fname}',
+                })
 
 def open_html(html_path):
     with open(html_path, 'r') as html:
@@ -227,14 +248,16 @@ class Project:
 project = None
 
 @eel.expose
-def save_state_machine(drawing: str, json_data: str):
+def save_state_machine(drawing: str, json_data: str, filepath: str):
     if project:
         project.save_html(drawing, json_data)
+    elif filepath:
+        save_html(Path(filepath), drawing, json_data)
     else:
         tk.Tk().withdraw()
         filepath = asksaveasfilename(title='Save state mechine drawing', filetypes=(('State chart', '.html'),))
         logging.info(f'User selected path: {filepath}')
-        save_html(filepath, drawing, json_data)
+        save_html(Path(filepath), drawing, json_data)
 
 
 @eel.expose
@@ -246,12 +269,12 @@ def open_file():
     if filepath.endswith('.h'):
         global project
         project = Project(filepath)
-        eel.load_json(json.dumps(project.model), Path(filepath).name)
+        eel.load_json(json.dumps(project.model), Path(filepath).name, filepath)
 
     elif filepath.endswith('.html'):
         model = open_html(filepath)
         if model:
-            eel.load_json(json.dumps(model), Path(filepath).name)
+            eel.load_json(json.dumps(model), Path(filepath).name, filepath)
 
 @eel.expose
 def genereate_code():

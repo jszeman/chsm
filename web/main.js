@@ -21,6 +21,7 @@ class App {
 			obj_type: null
 		};
 		this.file_name = '';
+		this.filepath = null;
 		
 		this.model.states().map(s => this.render_state(s), this);
 		this.model.transitions().map(t => this.render_transiton(t), this);
@@ -116,7 +117,7 @@ class App {
 		//const data = eel.open_state_machine(); // This will cause the python code to call this.load_model
 	}
 
-	load_model(data, fname)
+	load_model(data, fname, fpath)
 	{
 		this.gui.clear();
 
@@ -125,6 +126,7 @@ class App {
 		this.model.transitions().map(t => this.render_transiton(t), this);
 
 		this.file_name = fname;
+		this.filepath = fpath;
 		this.title.textContent = this.file_name;
 	}
 
@@ -394,7 +396,7 @@ class App {
 				break;
 
 			case 'SAVE':
-				eel.save_state_machine(this.main.innerHTML, this.model.get_data_string());
+				eel.save_state_machine(this.main.innerHTML, this.model.get_data_string(), this.filepath);
 				break;
 
 			case 'OPEN':
@@ -402,8 +404,19 @@ class App {
 				break;
 
 			case 'CODE_GEN':
-				eel.save_state_machine(this.main.innerHTML, this.model.get_data_string());
+				eel.save_state_machine(this.main.innerHTML, this.model.get_data_string(), this.filepath);
 				eel.genereate_code();
+				break;
+
+			case 'SAVE_RESULT':
+				console.log(data);
+				this.file_name = data.filename;
+				this.title.textContent = this.file_name;
+				this.filepath = data.filepath;
+				break;
+
+			case 'CODEGEN_RESULT':
+				console.log(data);
 				break;
 		}
 	}
@@ -990,13 +1003,13 @@ class App {
 window.addEventListener('DOMContentLoaded', event => {window.app = new App(state_machine)});
 
 eel.expose(load_json); // Expose this function to Python
-function load_json(data, filename) {
+function load_json(data, filename, filepath) {
 	//console.log(data)
-	window.app.load_model(data, filename);
+	window.app.load_model(data, filename, filepath);
 }
 
-eel.expose(set_title);
-function set_title(title)
+eel.expose(send_event);
+function send_event(event, data)
 {
-	document.querySelector('title').textContent = title;
+	window.app.dispatch(event, data);
 }
