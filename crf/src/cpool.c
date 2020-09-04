@@ -14,8 +14,16 @@
 
 
 
-
-static cevent_tst *cpool_new(cpool_tst *self)
+// TODO: Make this thread safe. Basic idea:
+//		1. Set pool_id
+//		2. Increment gc_info atomically
+//		3. Read ref_cnt:
+//			if 1: Success, return the event
+//			else: decrease ref_cnt and continue search
+//
+//		The second case can only happen if the main thread is in the if inside
+//		the loop, but an interrupt have already allocated and sent the event.
+static void *cpool_new(cpool_tst *self)
 {
 	void *e;
 
@@ -27,7 +35,7 @@ static cevent_tst *cpool_new(cpool_tst *self)
 		{
 			((cevent_tst *)e)->gc_info.pool_id = self->id;
 			((cevent_tst *)e)->gc_info.ref_cnt = 0;
-			return (cevent_tst *)e;
+			return e;
 		}
 	}
 

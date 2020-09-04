@@ -4,11 +4,11 @@
 
 	"templates" :{
 		"init_signal":			"C_SIG_INIT",
-		"signal_prefix":		"TEST_SIG_",
+		"signal_prefix":		"",
 		"func_args":        	"self, e_pst, ctx_pst",
 		"func_params":      	"chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst",
 		"user_func_args_t":   	"({type} *)self, e_pst",
-		"user_func_params_t": 	"{type} *self, cevent_tst *e_pst",
+		"user_func_params_t": 	"{type} *self, const cevent_tst *e_pst",
 		"func_return_type": 	"chsm_result_ten",
 		"guard_return_type":	"bool",
 		"switch_variable":  	"e_pst->sig",
@@ -16,6 +16,7 @@
 		"trans_result":     	"chsm_transition(self, {target})",
 		"parent_result":    	"chsm_handle_in_parent(self, ctx_pst, {parent}, {exit_func})",
 		"ignored_result":   	"chsm_handled(self)",
+		"exit_children":		"chsm_exit_children",
 		"c_include_list":		["chsm.h", "cevent.h"],
 		"h_include_list":		["chsm.h", "cevent.h", "<stdbool.h>"],
 		"state_machine_type": 	"typedef\\s+struct.*\\{\\W+chsm_tst\\s+.+\\}\\s*(?P<type>\\w+)\\s*;",

@@ -11,7 +11,7 @@
 
 #define CRF_POOL_CNT_MAX 4
 
-static cevent_tst* new_event(crf_tst *self, uint32_t size)
+static void* new_event(crf_tst *self, uint32_t size)
 {
     for(uint32_t i=0; i<CRF_MAX_POOL_COUNT; i++)
     {
@@ -21,7 +21,7 @@ static cevent_tst* new_event(crf_tst *self, uint32_t size)
 
         if (pool->esize >= size)
         {
-            cevent_tst* e = pool->new(pool);
+            void* e = pool->new(pool);
             if (NULL != e)
             {
                 return e;

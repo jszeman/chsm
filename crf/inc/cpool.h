@@ -22,7 +22,7 @@ struct cpool_tst
 	uint16_t		free;	// Number of free events in the pool
 	uint16_t		id;		// Pool id
 
-	cevent_tst*		(*new)(cpool_tst *self);
+	void*			(*new)(cpool_tst *self);
 	bool 	    	(*gc)(cpool_tst *self, cevent_tst *e);
 };
 
