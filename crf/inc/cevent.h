@@ -29,6 +29,8 @@ typedef struct cevent_st
 	gc_info_tst		gc_info;
 } cevent_tst;
 
+#define CRF_SIGNAL_CLASS_START 1
+#define CRF_SIGNAL_CLASS_SIZE 256
 
 
 #endif /* INC_CEVENT_H_ */

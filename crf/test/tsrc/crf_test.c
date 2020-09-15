@@ -63,7 +63,7 @@ void emit_event(bus_driver_tst *self, const cevent_tst *e_pst)
 {
 	event_bus_data_tst *e;
 
-	e = (event_bus_data_tst *)crf.new_event(&crf, sizeof(event_bus_data_tst));
+	e = crf.new_event(&crf, sizeof(event_bus_data_tst));
 	e->e.sig = TEST_SIG_READ;
 
 	self->sm.send((chsm_tst *)self, (const cevent_tst *)e);

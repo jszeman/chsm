@@ -16,7 +16,53 @@ export class Model {
 		this.state_text_cache = {};
 		this.tr_text_cache = {};
 
+		this.history = [];
+		this.history_idx = 1;
+
 		this.ack_changes();
+		this.save_state();
+	}
+
+	save_state()
+	{
+		const state = JSON.stringify(this.data);
+
+		if (this.history_idx > 1)
+		{
+			this.history.splice(-(this.history_idx-1));
+			this.history_idx = 1;
+		}
+
+		if (this.history.length === 0)
+		{
+			this.history.push(state);
+			return true;
+		}
+		else if (this.history[this.history.length - 1] !== state)
+		{
+			this.history.push(state);
+			return true;
+		}
+
+		return false;
+	}
+
+	undo()
+	{
+		if (this.history_idx < this.history.length)
+		{
+			this.history_idx++;
+			this.data = JSON.parse(this.history[this.history.length - this.history_idx]);
+		}
+	}
+
+	redo()
+	{
+		if (this.history_idx > 1)
+		{
+			this.history_idx--;
+			this.data = JSON.parse(this.history[this.history.length - this.history_idx]);
+		}
 	}
 
 	get_data_string()

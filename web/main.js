@@ -20,12 +20,16 @@ class App {
 			obj_id: null,
 			obj_type: null
 		};
+		this.file_name = '';
+		this.filepath = null;
 		
 		this.model.states().map(s => this.render_state(s), this);
 		this.model.transitions().map(t => this.render_transiton(t), this);
 
 		this.body = document.querySelector('body');
 		this.main = document.querySelector('main');
+
+		this.title = document.querySelector('title');
 		
 		this.body.addEventListener("keydown", event => {
 			if (!this.enable_keys) return;
@@ -113,13 +117,17 @@ class App {
 		//const data = eel.open_state_machine(); // This will cause the python code to call this.load_model
 	}
 
-	load_model(data)
+	load_model(data, fname, fpath)
 	{
 		this.gui.clear();
 
 		this.model = new Model(JSON.parse(data));
 		this.model.states().map(s => this.render_state(s), this);
 		this.model.transitions().map(t => this.render_transiton(t), this);
+
+		this.file_name = fname;
+		this.filepath = fpath;
+		this.title.textContent = this.file_name;
 	}
 
 	push_transition_changes_to_gui()
@@ -159,9 +167,42 @@ class App {
 
 	dispatch(event, data)
 	{
+		const start_state = this.state;
+
 		this.state(event, data);
 
 		this.push_model_changes_to_gui();
+
+		if ((this.state === this.idle_state) && (this.state !== start_state))
+		{
+			this.save_state();
+		}
+	}
+
+	undo()
+	{
+		this.model.undo();
+		this.gui.clear();
+
+		this.model.states().map(s => this.render_state(s), this);
+		this.model.transitions().map(t => this.render_transiton(t), this);
+	}
+
+	redo()
+	{
+		this.model.redo();
+		this.gui.clear();
+
+		this.model.states().map(s => this.render_state(s), this);
+		this.model.transitions().map(t => this.render_transiton(t), this);
+	}
+
+	save_state()
+	{
+		if (this.model.save_state())
+		{
+			this.title.textContent = '*' + this.file_name;
+		}
 	}
 
 	idle_state(event, data)
@@ -174,10 +215,12 @@ class App {
 				{
 					case 'KeyS':
 						this.create_state(this.mouse_pos);
+						this.save_state();
 						break;
 
 					case 'KeyI':
 						this.create_initial_state(this.mouse_pos);
+						this.save_state();
 						break;
 
 					case 'KeyT':
@@ -196,6 +239,29 @@ class App {
                         this.state = this.delete_st_or_tr_state;
 						this.model.transitions().map(t => this.gui.redraw_path_change_line_color(t, true));
 						break;
+
+					case 'KeyZ':
+						if (data.ctrlKey)
+						{
+							this.undo();
+						}
+						break;
+
+					case 'KeyY':
+						if (data.ctrlKey)
+						{
+							this.redo();
+						}
+						break;
+	
+
+					case 'KeyU':
+						this.undo();
+						break;
+
+					case 'KeyR':
+						this.redo();
+						break;
 				}
 				break;
 
@@ -213,10 +279,12 @@ class App {
 
 			case 'APPLY_TITLE':
 				this.apply_title();
+				this.model.save_state();
 				break;
 
 			case 'APPLY_TEXT':
 				this.apply_text();
+				this.model.save_state();
 				break;
 
 			case 'LABEL_FOCUS':
@@ -252,6 +320,7 @@ class App {
 
 			case 'TR_DBLCLICK':
 				this.trans_split(data.event, data.id);
+				this.model.save_state();
 				break;
 
 			case 'TR_CLICK':
@@ -327,7 +396,7 @@ class App {
 				break;
 
 			case 'SAVE':
-				eel.save_state_machine(this.main.innerHTML, this.model.get_data_string());
+				eel.save_state_machine(this.main.innerHTML, this.model.get_data_string(), this.filepath);
 				break;
 
 			case 'OPEN':
@@ -335,8 +404,19 @@ class App {
 				break;
 
 			case 'CODE_GEN':
-				eel.save_state_machine(this.main.innerHTML, this.model.get_data_string());
+				eel.save_state_machine(this.main.innerHTML, this.model.get_data_string(), this.filepath);
 				eel.genereate_code();
+				break;
+
+			case 'SAVE_RESULT':
+				console.log(data);
+				this.file_name = data.filename;
+				this.title.textContent = this.file_name;
+				this.filepath = data.filepath;
+				break;
+
+			case 'CODEGEN_RESULT':
+				console.log(data);
 				break;
 		}
 	}
@@ -358,7 +438,7 @@ class App {
 
 	sidebar_resizing_state(event, data)
 	{
-		console.log('resize', event);
+		//console.log('resize', event);
 		switch(event)
 		{
 			case 'KEYDOWN':
@@ -922,15 +1002,14 @@ class App {
 
 window.addEventListener('DOMContentLoaded', event => {window.app = new App(state_machine)});
 
-eel.expose(load_files); // Expose this function to Python
-function load_files(files) {
-	console.log('load_files', files);
-	window.app.load_model(files['test.c']);
+eel.expose(load_json); // Expose this function to Python
+function load_json(data, filename, filepath) {
+	//console.log(data)
+	window.app.load_model(data, filename, filepath);
 }
 
-
-eel.expose(load_json); // Expose this function to Python
-function load_json(data) {
-	console.log(data)
-	window.app.load_model(data);
+eel.expose(send_event);
+function send_event(event, data)
+{
+	window.app.dispatch(event, data);
 }
