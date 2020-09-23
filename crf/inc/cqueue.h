@@ -26,7 +26,6 @@ struct cqueue_tst
 	int32_t 			(*put_left)(cqueue_tst *self, const cevent_tst *e_cpst);
 	const cevent_tst*	(*get)(cqueue_tst *self);
 	const cevent_tst*	(*get_right)(cqueue_tst *self);
-	uint32_t 			(*is_empty)(cqueue_tst *self);
 };
 
 int32_t 				cqueue_init(cqueue_tst *self, const cevent_tst **events, uint16_t max_event_count);

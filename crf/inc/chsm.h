@@ -37,12 +37,13 @@ typedef struct chsm_call_ctx_st chsm_call_ctx_tst;
  */
 typedef void (*chsm_user_func_tpft)(chsm_tst *self, const cevent_tst *e_pst);
 
-;
-
 /*
  * This is the type for functions that implement state behaviour.
  * Return:
- * 		A state function will return NULL when the event was handled, or change the state
+ * 		C_RES_HANDLED: The event was handled by the state or one of its ancestors
+ *		C_RES_IGNORED: The event was ignored since there was no event hander defined for it
+ *					   in the state or any of its ancestors
+ *		C_RES_TRANS:   The event was handled and resulted in a state transition
  * 		handler function to its parent state, and return a pointer for its own exit function.
  * Params:
  * 		self: Pointer to the state machine.
@@ -72,21 +73,26 @@ typedef struct chsm_call_ctx_st
  */
 struct chsm_st
 {
-	cqueue_tst			eq_st;
+	cqueue_tst			event_q_st;
+	cqueue_tst			defer_q_st;
+
 	chsm_state_tpft		state_handler_pft;
 
 	/** send
 	 * 		The state machine implementation shall call this function, when an
 	 *		event was created and need to be sent to the other parts of the system.
 	 *		This function should distribute the event to all queues in the application
-	 *		that may need it by calling cqueue_put.
+	 *		that may need it by calling theri put method.
 	 */
 	void				(*send)(chsm_tst *self, const cevent_tst *e_pst);
 };
 
-void chsm_ctor(chsm_tst *self, chsm_state_tpft init_state_pft, const cevent_tst **events, uint16_t max_event_count);
+void chsm_ctor(chsm_tst *self, chsm_state_tpft init_state_pft,
+			   const cevent_tst **events, uint16_t event_q_len, uint16_t defer_q_len);
 void chsm_init(chsm_tst *self);
 void chsm_dispatch(chsm_tst *self, const cevent_tst *e_pst);
+void chsm_defer(chsm_tst *self, const cevent_tst *e_pst);
+void chsm_recall(chsm_tst *self, const cevent_tst *e_pst);
 
 void chsm_exit_children(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
 

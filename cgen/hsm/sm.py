@@ -9,11 +9,12 @@ from .ast import Func, If, Switch, Case, Call, Break, Return, Blank, Expr, Ast, 
 # Match the following patterns:
 #   event
 #   event / func()
-#   event [guard] / func()
-#   event [guard]
-#   [guard] / func()
-#   [guard]
+#   event [guard()] / func()
+#   event [guard()]
+#   [guard()] / func()
+#   [guard()]
 EVENT_PATTERN = r'^(\s*(?P<signal>\w+)\s*)*(\[(?P<guard>\w+)\(\)\])*(\s*/\s*(?P<function>\w+)\(\)\s*)*'
+EVENT_PATTERN = r'^(\s*(?P<signal>\w+)\s*)*(\[(?P<guard>\w+)\(\)\])*(\s*/\s*(?P<function>\w+)(?P<parens>\(\))*\s*)*'
 
 class Event:
     def __init__(self, signal, guard=None, func=None, target=None):
@@ -140,8 +141,9 @@ class StateMachine:
             signal = m.group('signal')
             guard = m.group('guard')
             func = m.group('function')
+            parens = m.group('parens')
 
-            if func:
+            if func and parens:
                 self.user_funcs.add(func)
 
             if guard:

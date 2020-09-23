@@ -262,3 +262,9 @@ bool s11_g_guard2(test_hsm_tst *self, const cevent_tst *e_pst)
     return self->s11_g_guard2;
 }
 
+void s3_k_func(test_hsm_tst *self, const cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
+

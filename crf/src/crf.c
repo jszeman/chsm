@@ -67,7 +67,7 @@ static void	step(crf_tst *self)
 
     for (hsm_pst = self->chsm_ap; *hsm_pst; hsm_pst++)
     {
-        e_pst = (*hsm_pst)->eq_st.get(&((*hsm_pst)->eq_st));
+        e_pst = (*hsm_pst)->event_q_st.get(&((*hsm_pst)->event_q_st));
         if (e_pst)
         {
             chsm_dispatch(*hsm_pst, e_pst);

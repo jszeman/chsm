@@ -36,10 +36,13 @@ const cevent_tst event_e = {.sig=TEST_SIG_E, .gc_info=0};
 const cevent_tst event_f = {.sig=TEST_SIG_F, .gc_info=0};
 const cevent_tst event_g = {.sig=TEST_SIG_G, .gc_info=0};
 const cevent_tst event_h = {.sig=TEST_SIG_H, .gc_info=0};
+const cevent_tst event_j = {.sig=TEST_SIG_J, .gc_info=0};
+const cevent_tst event_k = {.sig=TEST_SIG_K, .gc_info=0};
 const cevent_tst event_id = {.sig=TEST_SIG_ID, .gc_info=0};
 
 #define EVENT_QUEUE_SIZE 8
-static const cevent_tst* events[EVENT_QUEUE_SIZE];
+#define DEFER_QUEUE_SIZE 4
+static const cevent_tst* events[EVENT_QUEUE_SIZE + DEFER_QUEUE_SIZE];
 
 TEST_SETUP(hsm)
 {
@@ -60,7 +63,7 @@ TEST_TEAR_DOWN(hsm)
  */
 TEST(hsm, enter_initial_state)
 {
-	chsm_ctor(&hsm.super, __top__1, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__1, events, EVENT_QUEUE_SIZE, 0);
 	chsm_init(&hsm.super);
 
 	TEST_ASSERT_EQUAL_STRING("s_entry s_init ", hsm.log_buff);
@@ -79,7 +82,7 @@ TEST(hsm, enter_initial_state)
 
 TEST(hsm, handle_unknown_event)
 {
-	chsm_ctor(&hsm.super, __top__1, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__1, events, EVENT_QUEUE_SIZE, 0);
 	chsm_init(&hsm.super);
 	
 	clear_log(&hsm);
@@ -97,7 +100,7 @@ TEST(hsm, handle_unknown_event)
 
 TEST(hsm, handle_event_in_parent)
 {
-	chsm_ctor(&hsm.super, __top__2, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__2, events, EVENT_QUEUE_SIZE, 0);
 	chsm_init(&hsm.super);
 	TEST_ASSERT_EQUAL_STRING("s_entry s_init s1_entry s1_init ", hsm.log_buff);
 	
@@ -115,7 +118,7 @@ TEST(hsm, handle_event_in_parent)
 
 TEST(hsm, handle_event_in_parent_orig_state)
 {
-	chsm_ctor(&hsm.super, __top__2, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__2, events, EVENT_QUEUE_SIZE, 0);
 	chsm_init(&hsm.super);
 	chsm_dispatch(&hsm.super, &event1);
 
@@ -134,7 +137,7 @@ TEST(hsm, handle_event_in_parent_orig_state)
 
 TEST(hsm, handle_exit_from_child)
 {
-	chsm_ctor(&hsm.super, __top__3, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__3, events, EVENT_QUEUE_SIZE, 0);
 	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
@@ -154,7 +157,7 @@ TEST(hsm, handle_exit_from_child)
 
 TEST(hsm, sm4_init)
 {
-	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, 0);
 	chsm_init(&hsm.super);
 
 	TEST_ASSERT_EQUAL_STRING("s_entry s_init s1_entry s1_init s11_entry s11_init ", hsm.log_buff);
@@ -172,7 +175,7 @@ TEST(hsm, sm4_init)
 
 TEST(hsm, sm4_s11_g_guard1)
 {
-	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, 0);
 	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
@@ -192,7 +195,7 @@ TEST(hsm, sm4_s11_g_guard1)
 
 TEST(hsm, sm4_s11_g_guard2)
 {
-	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, 0);
 	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
@@ -212,7 +215,7 @@ TEST(hsm, sm4_s11_g_guard2)
 
 TEST(hsm, sm4_s11_g_guards)
 {
-	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, 0);
 	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
@@ -232,7 +235,7 @@ TEST(hsm, sm4_s11_g_guards)
 
 TEST(hsm, sm4_s11_d_false_guard)
 {
-	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, 0);
 	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
@@ -251,7 +254,7 @@ TEST(hsm, sm4_s11_d_false_guard)
 
 TEST(hsm, sm4_s11_d_false_guard_no_parent)
 {
-	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, 0);
 	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
@@ -270,7 +273,7 @@ TEST(hsm, sm4_s11_d_false_guard_no_parent)
 
 TEST(hsm, sm4_s11_evaluate_guards)
 {
-	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, 0);
 	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
@@ -290,7 +293,7 @@ TEST(hsm, sm4_s11_evaluate_guards)
 
 TEST(hsm, sm4_s11_execute_sa_guarded_it)
 {
-	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, 0);
 	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
@@ -312,7 +315,7 @@ TEST(hsm, sm4_s11_execute_sa_guarded_it)
 
 TEST(hsm, sm4_s11_execute_sa_guarded_et)
 {
-	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, 0);
 	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
@@ -332,7 +335,7 @@ TEST(hsm, sm4_s11_execute_sa_guarded_et)
 
 TEST(hsm, sm4_s11_execute_parent_guarded_it)
 {
-	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, 0);
 	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
@@ -352,7 +355,7 @@ TEST(hsm, sm4_s11_execute_parent_guarded_it)
 
 TEST(hsm, sm4_s11_a)
 {
-	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, 0);
 	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
@@ -371,7 +374,7 @@ TEST(hsm, sm4_s11_a)
 
 TEST(hsm, sm4_s11_parent_sa_guard_et)
 {
-	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, 0);
 	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
@@ -391,7 +394,7 @@ TEST(hsm, sm4_s11_parent_sa_guard_et)
 
 TEST(hsm, sm4_s11_h)
 {
-	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, 0);
 	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
@@ -411,7 +414,7 @@ TEST(hsm, sm4_s11_h)
 
 TEST(hsm, sm4_s11_b)
 {
-	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, 0);
 	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
@@ -431,7 +434,7 @@ TEST(hsm, sm4_s11_b)
 
 TEST(hsm, sm4_s11_e)
 {
-	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, 0);
 	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
@@ -449,7 +452,7 @@ TEST(hsm, sm4_s11_e)
 
 TEST(hsm, sm4_s11_d_guard_true)
 {
-	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, 0);
 	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
@@ -469,7 +472,7 @@ TEST(hsm, sm4_s11_d_guard_true)
 
 TEST(hsm, sm4_s11_f)
 {
-	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, 0);
 	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
@@ -488,7 +491,7 @@ TEST(hsm, sm4_s11_f)
 
 TEST(hsm, sm4_s11_c)
 {
-	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, 0);
 	chsm_init(&hsm.super);
 
 	clear_log(&hsm);
@@ -507,7 +510,7 @@ TEST(hsm, sm4_s11_c)
 
 TEST(hsm, sm4_s211_a)
 {
-	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, 0);
 	chsm_init(&hsm.super);
 	chsm_dispatch(&hsm.super, &event_c); // Go to s211
 
@@ -527,7 +530,7 @@ TEST(hsm, sm4_s211_a)
 
 TEST(hsm, sm4_s211_b)
 {
-	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, 0);
 	chsm_init(&hsm.super);
 	chsm_dispatch(&hsm.super, &event_c); // Go to s211
 
@@ -547,7 +550,7 @@ TEST(hsm, sm4_s211_b)
 
 TEST(hsm, sm4_s211_c)
 {
-	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, 0);
 	chsm_init(&hsm.super);
 	chsm_dispatch(&hsm.super, &event_c); // Go to s211
 
@@ -567,7 +570,7 @@ TEST(hsm, sm4_s211_c)
 
 TEST(hsm, sm4_s211_f)
 {
-	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, 0);
 	chsm_init(&hsm.super);
 	chsm_dispatch(&hsm.super, &event_c); // Go to s211
 
@@ -587,7 +590,7 @@ TEST(hsm, sm4_s211_f)
 
 TEST(hsm, sm4_s211_h)
 {
-	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, 0);
 	chsm_init(&hsm.super);
 	chsm_dispatch(&hsm.super, &event_c); // Go to s211
 
@@ -609,14 +612,47 @@ TEST(hsm, init_event_queue)
 {
 	const cevent_tst *e = NULL;
 
-	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE);
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, DEFER_QUEUE_SIZE);
 
-	hsm.super.eq_st.put(&(hsm.super.eq_st), &event1);
+	hsm.super.event_q_st.put(&(hsm.super.event_q_st), &event1);
 
-	e = hsm.super.eq_st.get(&(hsm.super.eq_st));
+	e = hsm.super.event_q_st.get(&(hsm.super.event_q_st));
 
 	TEST_ASSERT_EQUAL(&event1, e);
+}
 
+/* defer_1:
+ *		Defer one event then recall it later.
+ */
+
+TEST(hsm, defer_1)
+{
+	const cevent_tst *e = NULL;
+
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, DEFER_QUEUE_SIZE);
+	chsm_init(&hsm.super);
+	TEST_ASSERT_EQUAL_STRING("s_entry s_init s1_entry s1_init s11_entry s11_init ", hsm.log_buff);
+
+	hsm.super.event_q_st.put(&(hsm.super.event_q_st), &event_k); // this will be deferred
+	hsm.super.event_q_st.put(&(hsm.super.event_q_st), &event_j); // this will result in a transition to a state, where K can be processed
+
+	e = hsm.super.event_q_st.get(&(hsm.super.event_q_st));
+	TEST_ASSERT_EQUAL(&event_k, e);
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, e);
+	TEST_ASSERT_EQUAL_STRING("", hsm.log_buff); // No string is expected since this event is deferred.
+
+	e = hsm.super.event_q_st.get(&(hsm.super.event_q_st));
+	TEST_ASSERT_EQUAL(&event_j, e);
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, e);
+	TEST_ASSERT_EQUAL_STRING("s11_guard k_guard s1_guard j_guard s11_exit s1_exit ", hsm.log_buff);
+
+	e = hsm.super.event_q_st.get(&(hsm.super.event_q_st));
+	TEST_ASSERT_EQUAL(&event_k, e);
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, e);
+	TEST_ASSERT_EQUAL_STRING("s211_exit s21_exit s2_exit s_init s1_entry s1_init s11_entry s11_init ", hsm.log_buff);
 }
 
 TEST_GROUP_RUNNER(hsm)
@@ -650,7 +686,7 @@ TEST_GROUP_RUNNER(hsm)
 	RUN_TEST_CASE(hsm, sm4_s211_f);
 	RUN_TEST_CASE(hsm, sm4_s211_h);
 	RUN_TEST_CASE(hsm, init_event_queue);
-	//RUN_TEST_CASE(hsm, test0);
+	RUN_TEST_CASE(hsm, defer_1);
 	//RUN_TEST_CASE(hsm, test0);
 	//RUN_TEST_CASE(hsm, test0);
 	//RUN_TEST_CASE(hsm, test0);
