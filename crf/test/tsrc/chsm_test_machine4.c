@@ -1,4 +1,4 @@
-/*Generated with CHSM v0.0.0 at 2020.09.23 21.38.17*/
+/*Generated with CHSM v0.0.0 at 2020.09.24 21.01.08*/
 
 #include "cevent.h"
 #include "chsm.h"
@@ -277,6 +277,13 @@ static chsm_result_ten s3(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx
     {
         case TEST_SIG_K:
             s3_k_func(self, e_pst);
+            return chsm_handled(self);
+
+        case TEST_SIG_ID:
+            s3_id(self, e_pst);
+            return chsm_handled(self);
+
+        case TEST_SIG_J:
             chsm_exit_children(self, e_pst, ctx_pst);
             s_init(self, e_pst);
             s1_entry(self, e_pst);

@@ -635,6 +635,7 @@ TEST(hsm, defer_1)
 
 	hsm.super.event_q_st.put(&(hsm.super.event_q_st), &event_k); // this will be deferred
 	hsm.super.event_q_st.put(&(hsm.super.event_q_st), &event_j); // this will result in a transition to a state, where K can be processed
+	hsm.super.event_q_st.put(&(hsm.super.event_q_st), &event_id); // this will result in a transition to a state, where K can be processed
 
 	e = hsm.super.event_q_st.get(&(hsm.super.event_q_st));
 	TEST_ASSERT_EQUAL(&event_k, e);
@@ -652,7 +653,13 @@ TEST(hsm, defer_1)
 	TEST_ASSERT_EQUAL(&event_k, e);
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, e);
-	TEST_ASSERT_EQUAL_STRING("s211_exit s21_exit s2_exit s_init s1_entry s1_init s11_entry s11_init ", hsm.log_buff);
+	TEST_ASSERT_EQUAL_STRING("s3_k_func ", hsm.log_buff);
+
+	e = hsm.super.event_q_st.get(&(hsm.super.event_q_st));
+	TEST_ASSERT_EQUAL(&event_id, e);
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, e);
+	TEST_ASSERT_EQUAL_STRING("s3_id ", hsm.log_buff);
 }
 
 TEST_GROUP_RUNNER(hsm)

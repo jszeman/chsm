@@ -268,3 +268,8 @@ void s3_k_func(test_hsm_tst *self, const cevent_tst *e_pst)
     load(self, " ");
 }
 
+void s3_id(test_hsm_tst *self, const cevent_tst *e_pst)
+{
+    load(self, __func__);
+    load(self, " ");
+}
