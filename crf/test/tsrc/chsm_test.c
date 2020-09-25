@@ -38,6 +38,8 @@ const cevent_tst event_g = {.sig=TEST_SIG_G, .gc_info=0};
 const cevent_tst event_h = {.sig=TEST_SIG_H, .gc_info=0};
 const cevent_tst event_j = {.sig=TEST_SIG_J, .gc_info=0};
 const cevent_tst event_k = {.sig=TEST_SIG_K, .gc_info=0};
+const cevent_tst event_l = {.sig=TEST_SIG_L, .gc_info=0};
+const cevent_tst event_m = {.sig=TEST_SIG_M, .gc_info=0};
 const cevent_tst event_id = {.sig=TEST_SIG_ID, .gc_info=0};
 
 #define EVENT_QUEUE_SIZE 8
@@ -635,7 +637,6 @@ TEST(hsm, defer_1)
 
 	hsm.super.event_q_st.put(&(hsm.super.event_q_st), &event_k); // this will be deferred
 	hsm.super.event_q_st.put(&(hsm.super.event_q_st), &event_j); // this will result in a transition to a state, where K can be processed
-	hsm.super.event_q_st.put(&(hsm.super.event_q_st), &event_id); // this will result in a transition to a state, where K can be processed
 
 	e = hsm.super.event_q_st.get(&(hsm.super.event_q_st));
 	TEST_ASSERT_EQUAL(&event_k, e);
@@ -654,12 +655,53 @@ TEST(hsm, defer_1)
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, e);
 	TEST_ASSERT_EQUAL_STRING("s3_k_func ", hsm.log_buff);
+}
+
+/* defer_1:
+ *		Defer two event then recall them later.
+ */
+
+TEST(hsm, defer_2)
+{
+	const cevent_tst *e = NULL;
+
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, DEFER_QUEUE_SIZE);
+	chsm_init(&hsm.super);
+	TEST_ASSERT_EQUAL_STRING("s_entry s_init s1_entry s1_init s11_entry s11_init ", hsm.log_buff);
+
+	hsm.super.event_q_st.put(&(hsm.super.event_q_st), &event_k); // this will be deferred
+	hsm.super.event_q_st.put(&(hsm.super.event_q_st), &event_l); // this will be deferred
+	hsm.super.event_q_st.put(&(hsm.super.event_q_st), &event_j); // this will result in a transition to a state, where K can be processed
 
 	e = hsm.super.event_q_st.get(&(hsm.super.event_q_st));
-	TEST_ASSERT_EQUAL(&event_id, e);
+	TEST_ASSERT_EQUAL(&event_k, e);
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, e);
-	TEST_ASSERT_EQUAL_STRING("s3_id ", hsm.log_buff);
+	TEST_ASSERT_EQUAL_STRING("", hsm.log_buff); // No string is expected since this event is deferred.
+
+	e = hsm.super.event_q_st.get(&(hsm.super.event_q_st));
+	TEST_ASSERT_EQUAL(&event_l, e);
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, e);
+	TEST_ASSERT_EQUAL_STRING("", hsm.log_buff); // No string is expected since this event is deferred.
+
+	e = hsm.super.event_q_st.get(&(hsm.super.event_q_st));
+	TEST_ASSERT_EQUAL(&event_j, e);
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, e);
+	TEST_ASSERT_EQUAL_STRING("s11_guard k_guard s1_guard j_guard s11_exit s1_exit ", hsm.log_buff);
+
+	e = hsm.super.event_q_st.get(&(hsm.super.event_q_st));
+	TEST_ASSERT_EQUAL(&event_k, e);
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, e);
+	TEST_ASSERT_EQUAL_STRING("s3_k_func ", hsm.log_buff);
+
+	e = hsm.super.event_q_st.get(&(hsm.super.event_q_st));
+	TEST_ASSERT_EQUAL(&event_l, e);
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, e);
+	TEST_ASSERT_EQUAL_STRING("s3_l_func ", hsm.log_buff);
 }
 
 TEST_GROUP_RUNNER(hsm)
@@ -694,6 +736,7 @@ TEST_GROUP_RUNNER(hsm)
 	RUN_TEST_CASE(hsm, sm4_s211_h);
 	RUN_TEST_CASE(hsm, init_event_queue);
 	RUN_TEST_CASE(hsm, defer_1);
+	RUN_TEST_CASE(hsm, defer_2);
 	//RUN_TEST_CASE(hsm, test0);
 	//RUN_TEST_CASE(hsm, test0);
 	//RUN_TEST_CASE(hsm, test0);

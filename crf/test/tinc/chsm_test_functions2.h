@@ -1,7 +1,7 @@
 #ifndef CHSM_TEST_FUNCTIONS2_H
 #define CHSM_TEST_FUNCTIONS2_H
 
-/*Generated with CHSM v0.0.0 at 2020.09.24 21.01.08*/
+/*Generated with CHSM v0.0.0 at 2020.09.25 05.47.46*/
 
 #include "chsm_test_machine.h"
 #include "chsm.h"
@@ -30,8 +30,8 @@ void s21_init(chsm_tst *self, const cevent_tst *e_pst);
 void s2_entry(chsm_tst *self, const cevent_tst *e_pst);
 void s2_exit(chsm_tst *self, const cevent_tst *e_pst);
 void s2_init(chsm_tst *self, const cevent_tst *e_pst);
-void s3_id(chsm_tst *self, const cevent_tst *e_pst);
 void s3_k_func(chsm_tst *self, const cevent_tst *e_pst);
+void s3_l_func(chsm_tst *self, const cevent_tst *e_pst);
 void s_entry(chsm_tst *self, const cevent_tst *e_pst);
 void s_exit(chsm_tst *self, const cevent_tst *e_pst);
 void s_init(chsm_tst *self, const cevent_tst *e_pst);

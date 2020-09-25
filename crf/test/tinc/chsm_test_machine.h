@@ -22,7 +22,9 @@ enum test_events_en
     TEST_SIG_H,
     TEST_SIG_ID,
     TEST_SIG_J,
-    TEST_SIG_K
+    TEST_SIG_K,
+    TEST_SIG_L,
+    TEST_SIG_M
 };
 
 typedef struct
