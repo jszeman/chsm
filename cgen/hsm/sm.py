@@ -169,7 +169,7 @@ class StateMachine:
                 signal, guard, func = self.decode_line(line)
                 if signal:
                     state['events'][signal] = Event(signal, guard, func)
-                else:
+                elif guard:
                     state['guards'][guard] = Event(signal, guard, func)
 
             states[s_id] = state
