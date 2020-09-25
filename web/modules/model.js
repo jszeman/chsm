@@ -21,6 +21,21 @@ export class Model {
 
 		this.ack_changes();
 		this.save_state();
+
+		this.selection = new Set();
+	}
+
+	select_state(state_id)
+	{
+		if (!this.selection.delete(state_id))
+		{
+			this.selection.add(state_id);
+		}
+	}
+
+	drop_selection()
+	{
+		this.selection.clear();
 	}
 
 	save_state()

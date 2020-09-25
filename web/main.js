@@ -326,6 +326,7 @@ class App {
 			case 'TR_CLICK':
 				data.event.stopPropagation();
 				this.dim_object();
+				this.drop_selection();
 				this.cache_text_changes();
 				this.prop_editor.obj_id = data.id;
 				this.prop_editor.obj_type = 'transition';
@@ -336,11 +337,18 @@ class App {
 			case 'STATE_HEADER_CLICK':
 				data.event.stopPropagation();
 				this.dim_object();
+				this.drop_selection();
 				this.cache_text_changes();
 				this.prop_editor.obj_id = data.id;
 				this.prop_editor.obj_type = 'state';
 				this.highlight_object();
 				this.show_obj_text();
+				break;
+
+			case 'STATE_HEADER_CTRL_CLICK':
+				data.event.stopPropagation();
+				this.dim_object();
+				this.select_state(data.id);
 				break;
 
 			case 'TR_CTRL_CLICK':
@@ -356,6 +364,7 @@ class App {
 
 			case 'CLICK':
 				this.dim_object();
+				this.drop_selection();
 				this.cache_text_changes();
 				break;
 
@@ -467,6 +476,39 @@ class App {
 		}
 	}
 
+	highlight_state(state_id)
+	{
+		this.gui.states[state_id].add_border_class('state_border_highlight');
+	}
+
+	dim_state(state_id)
+	{
+		this.gui.states[state_id].remove_border_class('state_border_highlight');
+	}
+
+	drop_selection()
+	{
+		for (let state_id of this.model.selection)
+		{
+			this.dim_state(state_id);
+		}
+		this.model.drop_selection();
+	}
+
+	select_state(state_id)
+	{
+		for (let state_id of this.model.selection)
+		{
+			this.dim_state(state_id);
+		}
+
+		this.model.select_state(state_id);
+
+		for (let state_id of this.model.selection)
+		{
+			this.highlight_state(state_id);
+		}
+	}
 
 	highlight_object()
 	{
@@ -474,7 +516,7 @@ class App {
 
 		if (obj_type === 'state')
 		{
-			this.gui.states[obj_id].add_border_class('state_border_highlight');
+			this.highlight_state(obj_id);
 			this.sidebar.style.background = 'rgba(23, 197, 67, 0.1)';
 		}
 		else if (obj_type === 'transition')
@@ -490,7 +532,7 @@ class App {
 
 		if ((obj_type === 'state') && (obj_id in this.gui.states))
 		{
-			this.gui.states[obj_id].remove_border_class('state_border_highlight');
+			this.dim_state(obj_id);
 		}
 		else if ((obj_type === 'transition') && (obj_id in this.gui.paths))
 		{
@@ -901,7 +943,16 @@ class App {
 			type:					state.type,
 			text_height:			this.model.options.text_height,
 			on_header_mouse_down:	evt => this.dispatch('STATE_HEADER_M_DOWN', {event: evt, id: state_id}),
-			on_header_click:		evt => this.dispatch('STATE_HEADER_CLICK', {event: evt, id: state_id}),
+			on_header_click:		evt => {
+				if (evt.ctrlKey)
+				{
+					this.dispatch('STATE_HEADER_CTRL_CLICK', {event: evt, id: state_id})
+				}
+				else
+				{
+					this.dispatch('STATE_HEADER_CLICK', {event: evt, id: state_id})
+				}
+			},
 			on_corner_mouse_down:	evt => this.dispatch('STATE_RESIZE', {event: evt, id: state_id}),
 			on_border_click:		evt => this.dispatch('STATE_BORDER_CLICK', {event: evt, id: state_id}),
 			on_header_mouse_over:	evt => this.dispatch('STATE_HEADER_M_OVER', {event: evt, id: state_id}),
