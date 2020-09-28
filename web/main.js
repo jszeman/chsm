@@ -352,7 +352,7 @@ class App {
 				this.select_state(data.id);
 				break;
 
-			case 'TR_CTRL_CLICK':
+			case 'TR_SHIFT_CLICK':
 				{
 					const p = this.gui.get_absolute_pos(data.event);
 					this.model.transition_restart_from_pos(data.id, p);
@@ -1039,9 +1039,9 @@ class App {
 			evt => this.dispatch('TR_M_DOWN', {event: evt, id: trans_id}),
 			evt => this.dispatch('TR_DBLCLICK', {event: evt, id: trans_id}),
 			evt => {
-				if (evt.ctrlKey)
+				if (evt.shiftKey)
 				{
-					this.dispatch('TR_CTRL_CLICK', {event: evt, id: trans_id});
+					this.dispatch('TR_SHIFT_CLICK', {event: evt, id: trans_id});
 				}
 				else
 				{
