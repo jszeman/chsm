@@ -455,8 +455,6 @@ export class Model {
 		const v = this.attach_connector_to_state(t.end, state_id, rel_pos);
 		if (v.length == 2)
 		{
-			/*console.log('-----------');
-			t.vertices.map(v => console.log(v));*/
 			this.changes.trans_redraw.push([trans_id, t]);
 			return true;
 		}
@@ -683,6 +681,18 @@ export class Model {
 		return substates;
 	}
 
+	get_selection_substates()
+	{
+		const substates = new Set();
+
+		for (const state_id of this.selection)
+		{
+			this.get_substates(state_id).map(e => substates.add(e));
+		}
+
+		return substates;
+	}
+
 	/* Return all connectors in the state and in its substates */
 	get_state_connectors(state_id)
 	{
@@ -700,6 +710,26 @@ export class Model {
 	get_state_transitions(state_id)
 	{
 		const conns = this.get_state_connectors(state_id);
+		const trs = new Set(conns.map(c => this.data.connectors[c].transition));
+		const internal = [...trs].filter(
+			(t) => {
+				const tr = this.data.transitions[t];
+				return conns.includes(tr.start) && conns.includes(tr.end);
+			}) 
+		const external = [...trs].filter(t => !internal.includes(t))
+
+		return [internal, external];
+	}
+
+	get_selection_transitions()
+	{
+		const conns = [];
+		for (const state_id of this.selection)
+		{
+			const cns = this.get_state_connectors(state_id);
+			conns.push(...cns);
+		}
+
 		const trs = new Set(conns.map(c => this.data.connectors[c].transition));
 		const internal = [...trs].filter(
 			(t) => {
@@ -740,14 +770,42 @@ export class Model {
 		external.map(this.update_transition_path, this);
 	}
 
+	move_selection(dx, dy)
+	{
+		const states = this.get_selection_substates();
+		for (const state_id of this.selection)
+		{
+			states.add(state_id);
+		}
+		const [internal, external] = this.get_selection_transitions();
+
+		for (const id of states)
+		{
+			const sub = this.data.states[id]; 
+			const old_pos = sub.pos;
+			sub.pos = [old_pos[0] + dx, old_pos[1] + dy];
+			this.changes.state_move.push([id, sub]);
+		}
+
+		internal.map(t => this.move_transition(t, [dx, dy]));
+		external.map(this.update_transition_path, this);
+	}
+
 	move_state(state_id, pos)
 	{
 		const s = this.data.states[state_id];
 		const [dx, dy] = [pos[0] - s.pos[0], pos[1] - s.pos[1]];
-		s.pos = pos;
 
-		this.move_substates(state_id, dx, dy);
-		this.changes.state_move.push([state_id, s]);
+		if (this.selection.has(state_id))
+		{
+			this.move_selection(dx, dy);
+		}
+		else
+		{
+			s.pos = pos;
+			this.move_substates(state_id, dx, dy);
+			this.changes.state_move.push([state_id, s]);
+		}
 	}
 
 	remove_child(parent_id, child_id)

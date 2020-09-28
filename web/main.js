@@ -113,8 +113,6 @@ class App {
 		});
 
 		this.state = this.idle_state;
-
-		//const data = eel.open_state_machine(); // This will cause the python code to call this.load_model
 	}
 
 	load_model(data, fname, fpath)
@@ -336,7 +334,10 @@ class App {
 
 			case 'STATE_HEADER_CLICK':
 				data.event.stopPropagation();
-				this.dim_object();
+				if (!this.model.selection.has(data.id))
+				{
+					this.dim_object();
+				}
 				this.drop_selection();
 				this.cache_text_changes();
 				this.prop_editor.obj_id = data.id;
