@@ -28,7 +28,7 @@ svg {
 
 #sidebar {
     padding: 0.2em;
-    flex: 0 0 200px;
+    flex: 0 0 250px;
     margin-left: 5px;
 }
 
@@ -113,9 +113,23 @@ svg {
     border-radius: 0.2em;
     width: fit-content;
     margin: 0.2em;
+    font: 0.9em arial,helvetica,sans-serif;
 }
 
 .button-inline:hover {
     background-color: rgb(44, 118, 179);
     cursor: default;
 }
+
+table {
+    font: 0.9em arial,helvetica,sans-serif;
+    border-collapse: collapse;
+}
+
+th, td {
+    border-bottom: 1px solid #ddd;
+}
+
+tr th:first-child {padding-left:0px;}
+tr td:first-child {padding-left:0px;}
+td, th {padding-left:1em;}
