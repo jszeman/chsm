@@ -636,8 +636,9 @@ export class Model {
 		const s = this.data.states[state_id];
 		const [x1, y1] = s.pos;
 		const [w, h] = s.size;
+		const txt_offset = this.options.text_height * (1 + s.text.length);
 
-		return new Rect(x1, y1, x1 + w, y1 + h);
+		return new Rect(x1, y1 + txt_offset, x1 + w, y1 + h);
 	}
 
 	is_in_state_body(state_id, point)
@@ -846,6 +847,14 @@ export class Model {
 		}
 		
 		return null;
+	}
+
+	update_parents()
+	{
+		for (const id of Object.keys(this.data.states))
+		{
+			this.update_parent(id);
+		}
 	}
 
 	update_parent(state_id)

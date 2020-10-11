@@ -928,7 +928,7 @@ class App {
 	state_drag_end(evt)
 	{
 		evt.preventDefault();
-		this.model.update_parent(this.drag_data.state_id);
+		this.model.update_parents();
 	}
 
 	render_state(state_id, state_data=null)
