@@ -225,7 +225,9 @@ class Project:
         return self._load_config_from_file(user_cfg_path)
 
     def _open_header_dialog(self):
-        tk.Tk().withdraw()
+        root = tk.Tk()
+        root.attributes("-topmost", True)
+        root.withdraw()
         filepath = askopenfilename(title='Open state mechine declaration', filetypes=(('C header file', '.h'), ('State chart', '.html')))
         logging.info(f'User selected path: {filepath}')
         return Path(filepath)
@@ -254,7 +256,9 @@ def save_state_machine(drawing: str, json_data: str, filepath: str):
     elif filepath:
         save_html(Path(filepath), drawing, json_data)
     else:
-        tk.Tk().withdraw()
+        root = tk.Tk()
+        root.attributes("-topmost", True)
+        root.withdraw()
         filepath = asksaveasfilename(title='Save state mechine drawing', filetypes=(('State chart', '.html'),))
         logging.info(f'User selected path: {filepath}')
         save_html(Path(filepath), drawing, json_data)
@@ -262,7 +266,9 @@ def save_state_machine(drawing: str, json_data: str, filepath: str):
 
 @eel.expose
 def open_file():
-    tk.Tk().withdraw()
+    root = tk.Tk()
+    root.attributes("-topmost", True)
+    root.withdraw()
     filepath = askopenfilename(title='Open state mechine declaration', filetypes=(('C header file', '.h'), ('State chart', '.html')))
     logging.info(f'User selected path: {filepath}')
 
@@ -289,3 +295,4 @@ if __name__ == '__main__':
 
     eel.init((Path(__file__).parent / '../web').absolute().resolve())
     eel.start('main.html', mode=None)
+    #eel.start('main.html')
