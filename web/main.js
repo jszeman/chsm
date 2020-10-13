@@ -138,7 +138,7 @@ class App {
 				this.gui.redraw_path_with_arrow(tr_id, tr.vertices, tr.label, tr.label_pos);
 			}, this);
 
-		this.model.changes.trans_set_label.map(d => this.gui.paths[d[0]].set_label(d[1].label), this);
+		this.model.changes.trans_set_label.map(d => this.gui.paths[d[0]].set_label(this.model.chop_text(d[1].label)), this);
 
 		this.model.changes.trans_del.map(d => this.gui.delete_transition(d[0]), this);
 
@@ -1034,7 +1034,7 @@ class App {
 		this.gui.render_transition(
 			trans_id,
 			tr.vertices,
-			tr.label,
+			this.model.chop_text(tr.label),
 			tr.label_pos,
 			evt => this.dispatch('TR_M_DOWN', {event: evt, id: trans_id}),
 			evt => this.dispatch('TR_DBLCLICK', {event: evt, id: trans_id}),

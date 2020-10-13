@@ -133,6 +133,23 @@ export class Model {
 		this.changes.trans_set_label.push([tr_id, t]);
 	}
 
+	chop_text(text)
+	{
+		const parts = text.split(/(\w+\(\))|(\w+)/)
+
+		const result = []
+
+		for (let p of parts)
+		{
+			if ((p != undefined) && (p !== ''))
+			{
+				result.push([p, p.match(/\w+/) != null]);
+			}
+		}
+
+		return result;
+	}
+
 	get_state_text(state_id)
 	{
 		if (!(state_id in this.state_text_cache))

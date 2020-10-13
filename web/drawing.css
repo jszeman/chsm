@@ -107,6 +107,14 @@
     font: normal 0.07em arial,helvetica,sans-serif;
 }
 
+.function {
+    fill: black;
+}
+
+.function:hover {
+    fill: blue;
+}
+
 .transition_label:hover {
     cursor: grab;
 }

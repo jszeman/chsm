@@ -170,6 +170,25 @@ export class Gui {
 		delete this.states[id];
 	}
 
+	build_text(parent, label)
+	{
+		for (const [value, span] of label)
+		{
+			if (span)
+			{
+				const txt = this.make_svg_elem('tspan', {class: 'function'});
+				txt.textContent = value;
+				parent.appendChild(txt);
+				txt.addEventListener('click', evt => console.log(evt));
+			}
+			else
+			{
+				const txt = document.createTextNode(value);
+				parent.appendChild(txt);
+			}
+		}
+	}
+
 	render_transition(id, vertices, label, label_pos, on_mousedown, on_dblclick, on_click, on_label_mousedown)
 	{
 		if (id in this.paths) return;
@@ -184,8 +203,10 @@ export class Gui {
 			transform: arrow_transform,
 			class: 'transition_arrow',
 			display: 'block'});
+
 		const l = this.make_svg_elem('text', {x: label_pos[0], y: label_pos[1], class: 'transition_label'});
-		l.textContent = label;
+
+		this.build_text(l, label);
 
 		g.appendChild(p);
 		g.appendChild(a);
@@ -195,6 +216,8 @@ export class Gui {
 		this.paths[id] = {
 			obj: 	g,
 			mod_svg: this.modify_svg_elem,
+			make_svg_elem: this.make_svg_elem,
+			build_txt: this.build_text,
 			gpfv: this.get_path_from_vertices,
 			gatfv: this.get_arrow_transform_from_vertices,
 			redraw: function(vertices, label, label_pos)
@@ -210,7 +233,9 @@ export class Gui {
 			},
 			set_label(label)
 			{
-				l.textContent = label;
+				l.innerHTML = "";
+
+				this.build_txt(l, label);
 			},
 			set_label_pos(label_pos)
 			{
