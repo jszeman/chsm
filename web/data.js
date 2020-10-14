@@ -128,5 +128,11 @@ export const state_machine = {
 		},
 	},
 
+	notes: {
+		'sig_0': 'Signal 0',
+		'guard()': 'Guard function',
+		'func()': 'Event handler function',
+	},
+
 };
 

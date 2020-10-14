@@ -170,7 +170,7 @@ export class Gui {
 		delete this.states[id];
 	}
 
-	build_text(parent, label)
+	build_text(parent, label, on_txt_click)
 	{
 		for (const [value, span] of label)
 		{
@@ -179,7 +179,7 @@ export class Gui {
 				const txt = this.make_svg_elem('tspan', {class: 'function'});
 				txt.textContent = value;
 				parent.appendChild(txt);
-				txt.addEventListener('click', evt => console.log(evt));
+				txt.addEventListener('click', on_txt_click);
 			}
 			else
 			{
@@ -189,8 +189,10 @@ export class Gui {
 		}
 	}
 
-	render_transition(id, vertices, label, label_pos, on_mousedown, on_dblclick, on_click, on_label_mousedown)
+	render_transition(params)
 	{
+		const {id, vertices, label, label_pos, on_mousedown, on_dblclick, on_click, on_label_mousedown, on_txt_click} = params;
+
 		if (id in this.paths) return;
 		
 		const path = this.get_path_from_vertices(vertices);
@@ -206,7 +208,7 @@ export class Gui {
 
 		const l = this.make_svg_elem('text', {x: label_pos[0], y: label_pos[1], class: 'transition_label'});
 
-		this.build_text(l, label);
+		this.build_text(l, label, on_txt_click);
 
 		g.appendChild(p);
 		g.appendChild(a);
@@ -229,13 +231,14 @@ export class Gui {
 				this.mod_svg(p2, {d: npath});
 				this.mod_svg(a, {transform: narrow_transform});
 				this.mod_svg(l, {x: label_pos[0], y: label_pos[1]});
-				l.textContent = label;
+
+				//l.textContent = label;
 			},
 			set_label(label)
 			{
 				l.innerHTML = "";
 
-				this.build_txt(l, label);
+				this.build_txt(l, label, on_txt_click);
 			},
 			set_label_pos(label_pos)
 			{

@@ -15,6 +15,7 @@ export class Model {
 
 		this.state_text_cache = {};
 		this.tr_text_cache = {};
+		this.note_text_cache = {};
 
 		this.history = [];
 		this.history_idx = 1;
@@ -100,6 +101,17 @@ export class Model {
 			state_set_text:		[],
 			state_set_title:	[],
 		};
+	}
+
+	get_note_text(obj_id)
+	{
+		if (!(obj_id in this.note_text_cache))
+		{
+			const n = this.data.notes[obj_id];
+			this.note_text_cache[obj_id] = n ? n : ''; 
+		}
+
+		return this.note_text_cache[obj_id];
 	}
 
 	get_transition_text(tr_id)

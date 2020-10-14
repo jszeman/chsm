@@ -321,6 +321,15 @@ class App {
 				this.model.save_state();
 				break;
 
+			case 'TXT_CLICK':
+				console.log(data.event.target.textContent);
+				this.dim_object();
+				this.cache_text_changes();
+				this.prop_editor.obj_id = data.event.target.textContent;
+				this.prop_editor.obj_type = 'text';
+				this.show_obj_text();
+				break;
+
 			case 'TR_CLICK':
 				data.event.stopPropagation();
 				this.dim_object();
@@ -624,6 +633,13 @@ class App {
 		this.text_area.disabled = true;
 	}
 
+	show_note_text(obj_id)
+	{
+		this.title_input.value = obj_id;
+		this.text_area.disabled = false;
+		this.text_area.value = this.model.get_note_text(obj_id);
+	}
+
 	clear_text_inputs()
 	{
 		this.title_input.value = '';
@@ -635,13 +651,19 @@ class App {
 	{
 		const {obj_id, obj_type} = this.prop_editor;
 
-		if (obj_type === 'state')
+		switch (obj_type)
 		{
-			this.show_state_text(obj_id);
-		}
-		else if (obj_type === 'transition')
-		{
-			this.show_transition_text(obj_id);
+			case 'state':
+				this.show_state_text(obj_id);
+				break;
+
+			case 'transition':
+				this.show_transition_text(obj_id);
+				break;
+
+			case 'text':
+				this.show_note_text(obj_id);
+				break;
 		}
 	}
 
@@ -1031,24 +1053,29 @@ class App {
 	render_transiton(trans_id, tr_data=null)
 	{
 		const tr = tr_data !== null ? tr_data : this.model.get_transition(trans_id);
-		this.gui.render_transition(
-			trans_id,
-			tr.vertices,
-			this.model.chop_text(tr.label),
-			tr.label_pos,
-			evt => this.dispatch('TR_M_DOWN', {event: evt, id: trans_id}),
-			evt => this.dispatch('TR_DBLCLICK', {event: evt, id: trans_id}),
-			evt => {
-				if (evt.shiftKey)
-				{
-					this.dispatch('TR_SHIFT_CLICK', {event: evt, id: trans_id});
-				}
-				else
-				{
-					this.dispatch('TR_CLICK', {event: evt, id: trans_id});
-				}
-			},
-			evt => this.dispatch('TR_LABEL_M_DOWN', {event: evt, id: trans_id}),);
+
+		const params = {
+			id:			trans_id,
+			vertices:	tr.vertices,
+			label:		this.model.chop_text(tr.label),
+			label_pos:	tr.label_pos,
+			on_mousedown:	evt => this.dispatch('TR_M_DOWN', {event: evt, id: trans_id}),
+			on_dblclick:	evt => this.dispatch('TR_DBLCLICK', {event: evt, id: trans_id}),
+			on_click:		evt => {
+										if (evt.shiftKey)
+										{
+											this.dispatch('TR_SHIFT_CLICK', {event: evt, id: trans_id});
+										}
+										else
+										{
+											this.dispatch('TR_CLICK', {event: evt, id: trans_id});
+										}
+									},
+			on_label_mousedown: evt => this.dispatch('TR_LABEL_M_DOWN', {event: evt, id: trans_id}),
+			on_txt_click:		evt => this.dispatch('TXT_CLICK', {event: evt})
+		};
+
+		this.gui.render_transition(params);
 	}
 }
 
