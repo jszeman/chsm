@@ -571,13 +571,19 @@ class App {
 	{
 		const {obj_id, obj_type} = this.prop_editor;
 
-		if (obj_type === 'state')
+		switch (obj_type)
 		{
-			this.model.apply_state_title(obj_id, this.title_input.value);
-		}
-		else if (obj_type === 'transition')
-		{
-			this.model.apply_transition_label(obj_id, this.title_input.value);
+			case 'state':
+				this.model.apply_state_title(obj_id, this.title_input.value);
+				break;
+
+			case 'transition':
+				this.model.apply_transition_label(obj_id, this.title_input.value);
+				break;
+
+			case 'text':
+				this.model.apply_note_label(obj_id, this.title_input.value);
+				break;
 		}
 	}
 
@@ -596,9 +602,15 @@ class App {
 	{
 		const {obj_id, obj_type} = this.prop_editor;
 
-		if (obj_type === 'state')
+		switch (obj_type)
 		{
-			this.model.apply_state_text(obj_id, this.text_area.value);
+			case 'state':
+				this.model.apply_state_text(obj_id, this.text_area.value);
+				break;
+
+			case 'text':
+				this.model.apply_note_text(obj_id, this.text_area.value);
+				break;
 		}
 	}
 
@@ -609,8 +621,8 @@ class App {
 		switch (obj_type)
 		{
 			case 'state':
-				const text = {title: this.title_input.value, text: this.text_area.value};
-				this.model.cache_state_text(obj_id, text);
+				const state_text = {title: this.title_input.value, text: this.text_area.value};
+				this.model.cache_state_text(obj_id, state_text);
 				break;
 
 			case 'transition':
@@ -618,8 +630,8 @@ class App {
 				break;
 
 			case 'text':
-				const text = {title: this.title_input.value, text: this.text_area.value};
-				this.model.cache_note_text(obj_id, text);
+				const note_text = {title: this.title_input.value, text: this.text_area.value};
+				this.model.cache_note_text(obj_id, note_text);
 				break;
 		}
 	}
@@ -642,7 +654,7 @@ class App {
 
 	show_note_text(obj_id)
 	{
-		const text = this.model.get_note_text(state_id);
+		const text = this.model.get_note_text(obj_id);
 
 		this.title_input.value = text.title;
 		this.text_area.disabled = false;

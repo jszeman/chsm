@@ -146,6 +146,26 @@ export class Model {
 		this.changes.trans_set_label.push([tr_id, t]);
 	}
 
+	apply_note_label(obj_id, label)
+	{
+		const data = this.note_text_cache[obj_id]
+		const new_data = {title: label, text: data.text};
+
+		this.note_text_cache[label] = new_data;
+		delete this.note_text_cache[obj_id];
+
+		for (const [tr_id, tr] of Object.entries(this.data.transitions))
+		{
+			const new_label = tr.label.split(obj_id).join(label);
+			if (new_label != tr.label)
+			{
+				tr.label = new_label;
+				console.log(tr_id, tr.label);
+				this.changes.trans_set_label.push([tr_id, tr]);
+			}
+		}
+	}
+
 	chop_text(text)
 	{
 		const parts = text.split(/(\w+\(\))|(\w+)/)
@@ -189,6 +209,13 @@ export class Model {
 		this.state_text_cache[state_id].text = text;
 		const s = this.data.states[state_id];
 		this.set_state_text(state_id, text.split('\n'))
+	}
+
+	apply_note_text(obj_id, text)
+	{
+		const data = {'title': obj_id, 'text': text};
+		this.note_text_cache[obj_id] = data;
+		this.data.notes[obj_id] = text;
 	}
 
 	apply_state_title(state_id, title)
