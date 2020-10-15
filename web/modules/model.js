@@ -154,9 +154,19 @@ export class Model {
 		this.note_text_cache[label] = new_data;
 		delete this.note_text_cache[obj_id];
 
+		// This is not nice, but I could not find better way to only replace whole words
+		// So...
+		// Take a string, like 'func()'
+		// Escape the parens for the regexp with obj_id.replace('()', '\\(\\)')
+		// Add a word boundar in the front with '\\b
+		// Place all of the above in a group by encolsing them with parens
+		// Add a negative look-ahead '(?!\\w)' at the end to make sure the next char is not a word character
+		const rx = new RegExp('(\\b' + obj_id.replace('()', '\\(\\)') + ')(?!\\w)', 'g')
+
 		for (const [tr_id, tr] of Object.entries(this.data.transitions))
 		{
-			const new_label = tr.label.split(obj_id).join(label);
+			const new_label = tr.label.replace(rx, label);
+
 			if (new_label != tr.label)
 			{
 				tr.label = new_label;
