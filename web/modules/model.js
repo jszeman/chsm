@@ -108,7 +108,8 @@ export class Model {
 		if (!(obj_id in this.note_text_cache))
 		{
 			const n = this.data.notes[obj_id];
-			this.note_text_cache[obj_id] = n ? n : ''; 
+			const text = {title: obj_id, text: n ? n : ''};
+			this.note_text_cache[obj_id] = text; 
 		}
 
 		return this.note_text_cache[obj_id];
@@ -176,6 +177,11 @@ export class Model {
 	cache_state_text(state_id, text)
 	{
 		this.state_text_cache[state_id] = text;
+	}
+
+	cache_note_text(obj_id, text)
+	{
+		this.note_text_cache[obj_id] = text;
 	}
 
 	apply_state_text(state_id, text)

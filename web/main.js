@@ -606,14 +606,21 @@ class App {
 	{
 		const {obj_id, obj_type} = this.prop_editor;
 
-		if (obj_type === 'state')
+		switch (obj_type)
 		{
-			const text = {title: this.title_input.value, text: this.text_area.value};
-			this.model.cache_state_text(obj_id, text);
-		}
-		else if (obj_type === 'transition')
-		{
-			this.model.cache_transition_label(obj_id, this.title_input.value);
+			case 'state':
+				const text = {title: this.title_input.value, text: this.text_area.value};
+				this.model.cache_state_text(obj_id, text);
+				break;
+
+			case 'transition':
+				this.model.cache_transition_label(obj_id, this.title_input.value);
+				break;
+
+			case 'text':
+				const text = {title: this.title_input.value, text: this.text_area.value};
+				this.model.cache_note_text(obj_id, text);
+				break;
 		}
 	}
 
@@ -635,9 +642,11 @@ class App {
 
 	show_note_text(obj_id)
 	{
-		this.title_input.value = obj_id;
+		const text = this.model.get_note_text(state_id);
+
+		this.title_input.value = text.title;
 		this.text_area.disabled = false;
-		this.text_area.value = this.model.get_note_text(obj_id);
+		this.text_area.value = text.text;
 	}
 
 	clear_text_inputs()
