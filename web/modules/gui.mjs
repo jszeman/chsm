@@ -354,7 +354,8 @@ export class Gui {
 			on_corner_mouse_down,
 			on_border_click,
 			on_header_mouse_over,
-			on_header_mouse_leave} = params;
+			on_header_mouse_leave,
+			on_txt_click} = params;
 
 
 
@@ -377,7 +378,7 @@ export class Gui {
 		for (const s of strings)
 		{
 			const tspan = this.make_svg_elem('tspan', {x: th*0.3, dy: th});
-			tspan.textContent = s;
+			this.build_text(tspan, s, on_txt_click);
 			text.appendChild(tspan);
 		}
 
@@ -407,8 +408,8 @@ export class Gui {
 		g.appendChild(s2);
 		g.appendChild(m);
 		g.appendChild(t);
-		g.appendChild(text);
 		g.appendChild(header);
+		g.appendChild(text);
 		g.appendChild(border);
 		g.appendChild(resize_handle);
 
@@ -417,6 +418,8 @@ export class Gui {
 			mod_svg: this.modify_svg_elem,
 			make_svg: this.make_svg_elem,
 			get_evt_pos: this.get_obj_rel_pos,
+			make_svg_elem: this.make_svg_elem,
+			build_txt: this.build_text,
 			get_rel_pos: function(evt)
 			{
 				return this.get_evt_pos(evt, this.obj);
@@ -468,7 +471,8 @@ export class Gui {
 
 				for (const [i, s] of txt.entries())
 				{
-					text.children[i].textContent = s;
+					text.children[i].innerHTML = '';
+					this.build_txt(text.children[i], s, on_txt_click);
 				}
 			},
 			set_title(title)

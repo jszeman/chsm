@@ -202,6 +202,7 @@ export class Model {
 	cache_note_text(obj_id, text)
 	{
 		this.note_text_cache[obj_id] = text;
+		this.data.notes[obj_id] = text;
 	}
 
 	apply_state_text(state_id, text)
@@ -209,13 +210,6 @@ export class Model {
 		this.state_text_cache[state_id].text = text;
 		const s = this.data.states[state_id];
 		this.set_state_text(state_id, text.split('\n'))
-	}
-
-	apply_note_text(obj_id, text)
-	{
-		const data = {'title': obj_id, 'text': text};
-		this.note_text_cache[obj_id] = data;
-		this.data.notes[obj_id] = text;
 	}
 
 	apply_state_title(state_id, title)

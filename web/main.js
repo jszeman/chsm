@@ -151,7 +151,7 @@ class App {
 		this.model.changes.state_del.map(d => this.gui.delete_state(d[0]), this);
 		this.model.changes.state_move.map(d => this.gui.states[d[0]].move(d[1].pos), this);
 		this.model.changes.state_resize.map(d => this.gui.states[d[0]].resize(d[1].size), this);
-		this.model.changes.state_set_text.map(d => this.gui.states[d[0]].set_text(d[1].text), this);
+		this.model.changes.state_set_text.map(d => this.gui.states[d[0]].set_text(d[1].text.map(this.model.chop_text, this),), this);
 		this.model.changes.state_set_title.map(d => this.gui.states[d[0]].set_title(d[1].title), this);
 	}
 
@@ -607,10 +607,6 @@ class App {
 			case 'state':
 				this.model.apply_state_text(obj_id, this.text_area.value);
 				break;
-
-			case 'text':
-				this.model.apply_note_text(obj_id, this.text_area.value);
-				break;
 		}
 	}
 
@@ -983,7 +979,7 @@ class App {
 			title: 					state.title,
 			pos: 					state.pos,
 			size:					state.size,
-			strings:				state.text,
+			strings:				state.text.map(this.model.chop_text, this),
 			type:					state.type,
 			text_height:			this.model.options.text_height,
 			on_header_mouse_down:	evt => this.dispatch('STATE_HEADER_M_DOWN', {event: evt, id: state_id}),
@@ -1000,7 +996,8 @@ class App {
 			on_corner_mouse_down:	evt => this.dispatch('STATE_RESIZE', {event: evt, id: state_id}),
 			on_border_click:		evt => this.dispatch('STATE_BORDER_CLICK', {event: evt, id: state_id}),
 			on_header_mouse_over:	evt => this.dispatch('STATE_HEADER_M_OVER', {event: evt, id: state_id}),
-			on_header_mouse_leave:	evt => this.dispatch('STATE_HEADER_M_LEAVE', {event: evt, id: state_id})
+			on_header_mouse_leave:	evt => this.dispatch('STATE_HEADER_M_LEAVE', {event: evt, id: state_id}),
+			on_txt_click:			evt => this.dispatch('TXT_CLICK', {event: evt}),
 		};
 
 		this.gui.render_state(params);
