@@ -158,8 +158,8 @@ export class Model {
 		// So...
 		// Take a string, like 'func()'
 		// Escape the parens for the regexp with obj_id.replace('()', '\\(\\)')
-		// Add a word boundar in the front with '\\b
-		// Place all of the above in a group by encolsing them with parens
+		// Add a word boundary in the front with '\\b
+		// Place all of the above in a group by enclosing them with parens
 		// Add a negative look-ahead '(?!\\w)' at the end to make sure the next char is not a word character
 		const rx = new RegExp('(\\b' + obj_id.replace('()', '\\(\\)') + ')(?!\\w)', 'g')
 
@@ -172,6 +172,19 @@ export class Model {
 				tr.label = new_label;
 				console.log(tr_id, tr.label);
 				this.changes.trans_set_label.push([tr_id, tr]);
+			}
+		}
+
+		for (const [s_id, s] of Object.entries(this.data.states))
+		{
+			for (const [i, row] of s.text.entries())
+			{
+				const new_row = row.replace(rx, label);
+
+				if (row != new_row)
+				{
+					
+				}
 			}
 		}
 	}
