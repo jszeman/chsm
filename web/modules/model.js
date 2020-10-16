@@ -15,7 +15,6 @@ export class Model {
 
 		this.state_text_cache = {};
 		this.tr_text_cache = {};
-		this.note_text_cache = {};
 
 		this.history = [];
 		this.history_idx = 1;
@@ -24,6 +23,11 @@ export class Model {
 		this.save_state();
 
 		this.selection = new Set();
+
+		if (!('notes' in this.data))
+		{
+			this.data['notes'] = {};
+		}
 	}
 
 	select_state(state_id)
@@ -105,14 +109,12 @@ export class Model {
 
 	get_note_text(obj_id)
 	{
-		if (!(obj_id in this.note_text_cache))
+		if (!(obj_id in this.data.notes))
 		{
-			const n = this.data.notes[obj_id];
-			const text = {title: obj_id, text: n ? n : ''};
-			this.note_text_cache[obj_id] = text; 
+			this.data.notes[obj_id] = '';
 		}
 
-		return this.note_text_cache[obj_id];
+		return this.data.notes[obj_id];
 	}
 
 	get_transition_text(tr_id)
@@ -158,48 +160,6 @@ export class Model {
 		return true
 	}
 
-	apply_note_label(obj_id, label)
-	{
-		const data = this.note_text_cache[obj_id]
-		const new_data = {title: label, text: data.text};
-
-		this.note_text_cache[label] = new_data;
-		delete this.note_text_cache[obj_id];
-
-		// This is not nice, but I could not find better way to only replace whole words
-		// So...
-		// Take a string, like 'func()'
-		// Escape the parens for the regexp with obj_id.replace('()', '\\(\\)')
-		// Add a word boundary in the front with '\\b
-		// Place all of the above in a group by enclosing them with parens
-		// Add a negative look-ahead '(?!\\w)' at the end to make sure the next char is not a word character
-		const rx = new RegExp('(\\b' + obj_id.replace('()', '\\(\\)') + ')(?!\\w)', 'g')
-
-		for (const [tr_id, tr] of Object.entries(this.data.transitions))
-		{
-			const new_label = tr.label.replace(rx, label);
-
-			if (new_label != tr.label)
-			{
-				tr.label = new_label;
-				console.log(tr_id, tr.label);
-				this.changes.trans_set_label.push([tr_id, tr]);
-			}
-		}
-
-		for (const [s_id, s] of Object.entries(this.data.states))
-		{
-			const new_text = s.text.map(t => t.replace(rx, label));
-
-			if (this.compare_str_array(new_text, s.text) == false)
-			{
-				s.text = new_text;
-
-				this.changes.state_set_text.push([s_id, s]);
-			}
-		}
-	}
-
 	chop_text(text)
 	{
 		const parts = text.split(/(\w+\(\))|(\w+)/)
@@ -235,7 +195,6 @@ export class Model {
 
 	cache_note_text(obj_id, text)
 	{
-		this.note_text_cache[obj_id] = text;
 		this.data.notes[obj_id] = text;
 	}
 

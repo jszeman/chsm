@@ -322,7 +322,6 @@ class App {
 				break;
 
 			case 'TXT_CLICK':
-				console.log(data.event.target.textContent);
 				this.dim_object();
 				this.cache_text_changes();
 				this.prop_editor.obj_id = data.event.target.textContent;
@@ -580,10 +579,6 @@ class App {
 			case 'transition':
 				this.model.apply_transition_label(obj_id, this.title_input.value);
 				break;
-
-			case 'text':
-				this.model.apply_note_label(obj_id, this.title_input.value);
-				break;
 		}
 	}
 
@@ -626,8 +621,7 @@ class App {
 				break;
 
 			case 'text':
-				const note_text = {title: this.title_input.value, text: this.text_area.value};
-				this.model.cache_note_text(obj_id, note_text);
+				this.model.cache_note_text(obj_id, this.text_area.value);
 				break;
 		}
 	}
@@ -636,6 +630,7 @@ class App {
 	{
 		const text = this.model.get_state_text(state_id);
 
+		this.title_input.disabled = false;
 		this.title_input.value = text.title;
 		this.text_area.disabled = false;
 		this.text_area.value = text.text;
@@ -643,6 +638,7 @@ class App {
 
 	show_transition_text(tr_id)
 	{
+		this.title_input.disabled = false;
 		this.title_input.value = this.model.get_transition_text(tr_id);
 		this.text_area.value = '';
 		this.text_area.disabled = true;
@@ -650,15 +646,15 @@ class App {
 
 	show_note_text(obj_id)
 	{
-		const text = this.model.get_note_text(obj_id);
-
-		this.title_input.value = text.title;
+		this.title_input.disabled = true;
+		this.title_input.value = obj_id;
 		this.text_area.disabled = false;
-		this.text_area.value = text.text;
+		this.text_area.value = this.model.get_note_text(obj_id);
 	}
 
 	clear_text_inputs()
 	{
+		this.title_input.disabled = false;
 		this.title_input.value = '';
 		this.text_area.disabled = false;
 		this.text_area.value = '';
