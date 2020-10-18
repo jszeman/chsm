@@ -1,5 +1,4 @@
-/*Generated with CHSM v0.0.0 at 2020.09.25 05.55.09*/
-
+/*Generated with CHSM v0.0.0 at 2020.10.18 06.06.15*/
 #include "cevent.h"
 #include "chsm.h"
 #include "chsm_test_machine.h"

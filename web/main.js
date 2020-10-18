@@ -126,6 +126,11 @@ class App {
 		this.file_name = fname;
 		this.filepath = fpath;
 		this.title.textContent = this.file_name;
+
+		this.prop_editor = {
+			obj_id: null,
+			obj_type: null
+		};
 	}
 
 	push_transition_changes_to_gui()

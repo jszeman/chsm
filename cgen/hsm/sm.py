@@ -44,6 +44,7 @@ class StateMachine:
         self.states = self.get_states(data)
         self.add_transitions_to_states(self.states, data)
         self.process_transitions(self.states)
+        self.notes = data['notes']
 
         #pprint(self.states, indent=4)
 
@@ -98,6 +99,7 @@ class StateMachine:
 
         ast.nodes.append(Comment(f'Generated with CHSM v0.0.0 at {datetime.strftime(datetime.now(), "%Y.%m.%d %H.%M.%S")}'))
         ast.nodes.append(Blank())
+        ast.nodes.append(Blank())
 
         ast.nodes.append(Include(self.machine_h))
 
@@ -105,11 +107,21 @@ class StateMachine:
             ast.nodes.append(Include(i))
 
         for f in sorted(funcs):
+            ast.nodes.append(Blank())
+            comment = self.notes.get(f'{f}()', '')
+            if comment:
+                ast.nodes.append(Blank())
+                ast.nodes.append(Comment(comment))
             ast.nodes.append(FuncDeclaration(f, 'void', self.templates['user_func_params']))
 
         ast.nodes.append(Blank())
 
         for g in sorted(guards):
+            ast.nodes.append(Blank())
+            comment = self.notes.get(f'{g}()', '')
+            if comment:
+                ast.nodes.append(Blank())
+                ast.nodes.append(Comment(comment))
             ast.nodes.append(FuncDeclaration(g, self.templates['guard_return_type'], self.templates['user_func_params']))
 
         ast.nodes.append(Blank())
