@@ -13,22 +13,27 @@ from .ast import Func, If, Switch, Case, Call, Break, Return, Blank, Expr, Ast, 
 #   event [guard()]
 #   [guard()] / func()
 #   [guard()]
-EVENT_PATTERN = r'^(\s*(?P<signal>\w+)\s*)*(\[(?P<guard>\w+)\(\)\])*(\s*/\s*(?P<function>\w+)\(\)\s*)*'
-EVENT_PATTERN = r'^(\s*(?P<signal>\w+)\s*)*(\[(?P<guard>\w+)\(\)\])*(\s*/\s*(?P<function>\w+)(?P<parens>\(\))*\s*)*'
+EVENT_PATTERN = r'^(\s*(?P<signal>\w+)\s*)*(\[(?P<guard>\w+)\((?P<gparams>[\w,\s]*)\)\])*(\s*/\s*(?P<function>\w+)(?P<parens>\((?P<fparams>[\w,\s]*)\))*\s*)*'
 
 class Event:
-    def __init__(self, signal, guard=None, func=None, target=None):
+    def __init__(self, signal, guard=None, func=None, fparams=None, gparams=None, target=None):
         self.signal = signal
         self.func = func
         self.guard = guard
         self.target = target
+        self.fparams = fparams
+        self.gparams = gparams
         self.target_title = None
         self.trans_guard = None
         self.trans_func = None
         self.trans_funcs = None
+        self.trans_fparams = None
+        self.trans_gparams = None
 
     def __repr__(self):
-        return f'Event({self.signal}, guard={self.guard}, func={self.func}, target={self.target}, tguard={self.trans_guard}, tfunc={self.trans_func}, {self.trans_funcs})'
+        fargs = f'({self.fparams})' if self.fparams else ''
+        gargs = f'({self.gparams})' if self.fparams else ''
+        return f'Event({self.signal}, guard={self.guard}{gargs}, func={self.func}{fargs}, target={self.target}, tguard={self.trans_guard}, tfunc={self.trans_func}, {self.trans_funcs})'
 
 class StateMachine:
     def __init__(self, data, h_file, funcs_h_file, templates, file_config):
@@ -154,6 +159,8 @@ class StateMachine:
             guard = m.group('guard')
             func = m.group('function')
             parens = m.group('parens')
+            fparams = m.group('fparams')
+            gparams = m.group('gparams')
 
             if func and parens:
                 self.user_funcs.add(func)
@@ -161,9 +168,9 @@ class StateMachine:
             if guard:
                 self.user_guards.add(guard)
 
-            return signal, guard, func
+            return signal, guard, func, fparams, gparams
         
-        return None, None, None
+        return None, None, None, None, None
 
     def get_states(self, data):
         """Extract state info from drawing data"""
@@ -178,11 +185,11 @@ class StateMachine:
                 'type': s['type']}
 
             for line in s['text']:
-                signal, guard, func = self.decode_line(line)
+                signal, guard, func, fparams, gparams = self.decode_line(line)
                 if signal:
-                    state['events'][signal] = Event(signal, guard, func)
+                    state['events'][signal] = Event(signal, guard, func, fparams, gparams)
                 elif guard:
-                    state['guards'][guard] = Event(signal, guard, func)
+                    state['guards'][guard] = Event(signal, guard, func, fparams, gparams)
 
             states[s_id] = state
 
@@ -211,7 +218,7 @@ class StateMachine:
         for tr in data['transitions'].values():
             start, target, label = self.resolve_transition(tr, data)
 
-            signal, guard, func = self.decode_line(label)
+            signal, guard, func, fparams, gparams = self.decode_line(label)
 
             if states[start]['type'] == 'initial':
                 start = states[start]['parent']
@@ -234,6 +241,8 @@ class StateMachine:
             e.target_title = states[target]['title']
             e.trans_guard = guard
             e.trans_func = func
+            e.trans_fparams = fparams
+            e.trans_gparams = gparams
 
 
     def build_case_from_event(self, event):
@@ -245,9 +254,11 @@ class StateMachine:
 
         c = Case(signal)
         if event.func:
-            f = Call(event.func, self.templates['user_func_args'])
+            fparams = f', {event.fparams}' if event.fparams else ''
+            f = Call(event.func, self.templates['user_func_args'] + fparams)
             if event.guard:
-                i = If(Call(event.guard, self.templates['user_func_args'], False))
+                gparams = f', {event.gparams}' if event.gparams else ''
+                i = If(Call(event.guard, self.templates['user_func_args'] + gparams, False))
                 i.add_true(f)
                 c.add(i)
             else:
@@ -256,7 +267,8 @@ class StateMachine:
         if event.target:
             add = c.add
             if event.trans_guard:
-                i = If(Call(event.trans_guard, self.templates['user_func_args'], False))
+                gparams = f', {event.trans_gparams}' if event.trans_gparams else ''
+                i = If(Call(event.trans_guard, self.templates['user_func_args'] + gparams, False))
                 c.add(i)
                 add = i.add_true
 
@@ -264,11 +276,13 @@ class StateMachine:
             add(f)
 
             if event.trans_func:
-                f = Call(event.trans_func, self.templates['user_func_args'])
+                fparams = f', {event.trans_fparams}' if event.trans_fparams else ''
+                f = Call(event.trans_func, self.templates['user_func_args'] + fparams)
                 add(f)
 
             for f in event.trans_funcs:
-                add(Call(f, self.templates['user_func_args']))
+                fparams = f', {f.fparams}' if f.fparams else ''
+                add(Call(f.func, self.templates['user_func_args'] + fparams))
 
             add(Return(self.templates['trans_result'].format(target=event.target_title)))
         
@@ -278,16 +292,19 @@ class StateMachine:
         return c
 
     def build_if_from_guard(self, guard, g):
-        i = If(Call(guard, self.templates['user_func_args'], False))
+        gparams = f', {g.gparams}' if g.gparams else ''
+        i = If(Call(guard, self.templates['user_func_args'] + gparams, False))
         if g.func:
-            i.add_true(Call(g.func, self.templates['user_func_args']))
+            fparams = f', {g.fparams}' if g.fparams else ''
+            i.add_true(Call(g.func, self.templates['user_func_args'] + fparams))
 
         if g.trans_funcs:
             f = Call(self.templates['exit_children'], self.templates['func_args'])
             i.add_true(f)
 
             for f in g.trans_funcs:
-                i.add_true(Call(f, self.templates['user_func_args']))
+                fparams = f', {f.fparams}' if f.fparams else ''
+                i.add_true(Call(f, self.templates['user_func_args'] + fparams))
                 
         if g.target:
             i.add_true(Return(self.templates['trans_result'].format(target=g.target_title)))
@@ -453,7 +470,7 @@ class StateMachine:
         for step in path:
             state_id, event_id = step
             try:
-                func = self.states[state_id]['events'][event_id].func
+                func = self.states[state_id]['events'][event_id]
             except KeyError:
                 func = None # The requested event was not implemented in the actual state
             

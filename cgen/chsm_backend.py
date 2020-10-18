@@ -290,9 +290,9 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(filename)-20s:%(lineno)-4s %(message)s')
     args = docopt(__doc__)
 
-    #project = Project('/home/pi/projects/chsm/crf/test/tinc/chsm_test_machine.h')
-    #project.generate_code()
+    project = Project('/home/pi/projects/chsm/crf/test/tinc/chsm_test_machine.h')
+    project.generate_code()
 
-    eel.init((Path(__file__).parent / '../web').absolute().resolve())
+    #eel.init((Path(__file__).parent / '../web').absolute().resolve())
     #eel.start('main.html', mode=None)
-    eel.start('main.html')
+    #eel.start('main.html')

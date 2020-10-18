@@ -1,4 +1,4 @@
-/*Generated with CHSM v0.0.0 at 2020.10.18 06.06.15*/
+/*Generated with CHSM v0.0.0 at 2020.10.18 21.33.58*/
 #include "cevent.h"
 #include "chsm.h"
 #include "chsm_test_machine.h"
@@ -84,13 +84,13 @@ static chsm_result_ten s1(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx
     if(j_guard(self, e_pst))
     {
         chsm_exit_children(self, e_pst, ctx_pst);
-        s1_exit(self, e_pst);
-        s2_entry(self, e_pst);
-        s2_init(self, e_pst);
-        s21_entry(self, e_pst);
-        s21_init(self, e_pst);
-        s211_entry(self, e_pst);
-        s211_init(self, e_pst);
+        Event(exit, guard=None, func=s1_exit, target=None, tguard=None, tfunc=None, None)(self, e_pst);
+        Event(entry, guard=None, func=s2_entry, target=None, tguard=None, tfunc=None, None)(self, e_pst);
+        Event(init, guard=None, func=s2_init, target=state_5, tguard=None, tfunc=None, (Event(entry, guard=None, func=s21_entry, target=None, tguard=None, tfunc=None, None), Event(init, guard=None, func=s21_init, target=state_5, tguard=None, tfunc=None, (Event(entry, guard=None, func=s211_entry, target=None, tguard=None, tfunc=None, None), Event(init, guard=None, func=s211_init, target=None, tguard=None, tfunc=None, None))), Event(entry, guard=None, func=s211_entry, target=None, tguard=None, tfunc=None, None), Event(init, guard=None, func=s211_init, target=None, tguard=None, tfunc=None, None)))(self, e_pst);
+        Event(entry, guard=None, func=s21_entry, target=None, tguard=None, tfunc=None, None)(self, e_pst);
+        Event(init, guard=None, func=s21_init, target=state_5, tguard=None, tfunc=None, (Event(entry, guard=None, func=s211_entry, target=None, tguard=None, tfunc=None, None), Event(init, guard=None, func=s211_init, target=None, tguard=None, tfunc=None, None)))(self, e_pst);
+        Event(entry, guard=None, func=s211_entry, target=None, tguard=None, tfunc=None, None)(self, e_pst);
+        Event(init, guard=None, func=s211_init, target=None, tguard=None, tfunc=None, None)(self, e_pst);
         return chsm_transition(self, s211);
     }
 
@@ -102,18 +102,18 @@ static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ct
     switch(e_pst->sig)
     {
         case TEST_SIG_ID:
-            s11_id(self, e_pst);
+            s11_id(self, e_pst, 8);
             return chsm_handled(self);
 
         case TEST_SIG_G:
-            if(s11_g_guard1(self, e_pst))
+            if(s11_g_guard1(self, e_pst, 1))
             {
-                s11_g1(self, e_pst);
+                s11_g1(self, e_pst, 2);
             }
-            if(s11_g_guard2(self, e_pst))
+            if(s11_g_guard2(self, e_pst, 4))
             {
                 chsm_exit_children(self, e_pst, ctx_pst);
-                s11_g2(self, e_pst);
+                s11_g2(self, e_pst, 3);
                 s11_exit(self, e_pst);
                 s1_exit(self, e_pst);
                 s2_entry(self, e_pst);
@@ -158,23 +158,23 @@ static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ct
 
     }
 
-    if(s11_guard(self, e_pst))
+    if(s11_guard(self, e_pst, 6))
     {
-        s11_func(self, e_pst);
+        s11_func(self, e_pst, 7);
         return chsm_handled(self);
     }
 
     if(k_guard(self, e_pst))
     {
         chsm_exit_children(self, e_pst, ctx_pst);
-        s11_exit(self, e_pst);
-        s1_exit(self, e_pst);
-        s2_entry(self, e_pst);
-        s2_init(self, e_pst);
-        s21_entry(self, e_pst);
-        s21_init(self, e_pst);
-        s211_entry(self, e_pst);
-        s211_init(self, e_pst);
+        Event(exit, guard=None, func=s11_exit, target=None, tguard=None, tfunc=None, None)(self, e_pst);
+        Event(exit, guard=None, func=s1_exit, target=None, tguard=None, tfunc=None, None)(self, e_pst);
+        Event(entry, guard=None, func=s2_entry, target=None, tguard=None, tfunc=None, None)(self, e_pst);
+        Event(init, guard=None, func=s2_init, target=state_5, tguard=None, tfunc=None, (Event(entry, guard=None, func=s21_entry, target=None, tguard=None, tfunc=None, None), Event(init, guard=None, func=s21_init, target=state_5, tguard=None, tfunc=None, (Event(entry, guard=None, func=s211_entry, target=None, tguard=None, tfunc=None, None), Event(init, guard=None, func=s211_init, target=None, tguard=None, tfunc=None, None))), Event(entry, guard=None, func=s211_entry, target=None, tguard=None, tfunc=None, None), Event(init, guard=None, func=s211_init, target=None, tguard=None, tfunc=None, None)))(self, e_pst);
+        Event(entry, guard=None, func=s21_entry, target=None, tguard=None, tfunc=None, None)(self, e_pst);
+        Event(init, guard=None, func=s21_init, target=state_5, tguard=None, tfunc=None, (Event(entry, guard=None, func=s211_entry, target=None, tguard=None, tfunc=None, None), Event(init, guard=None, func=s211_init, target=None, tguard=None, tfunc=None, None)))(self, e_pst);
+        Event(entry, guard=None, func=s211_entry, target=None, tguard=None, tfunc=None, None)(self, e_pst);
+        Event(init, guard=None, func=s211_init, target=None, tguard=None, tfunc=None, None)(self, e_pst);
         return chsm_transition(self, s211);
     }
 
@@ -288,6 +288,7 @@ static chsm_result_ten s3(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx
 
         case TEST_SIG_J:
             chsm_exit_children(self, e_pst, ctx_pst);
+            None(self, e_pst);
             s_init(self, e_pst);
             s1_entry(self, e_pst);
             s1_init(self, e_pst);
