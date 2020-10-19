@@ -162,10 +162,11 @@ class StateMachine:
             fparams = m.group('fparams')
             gparams = m.group('gparams')
 
-            if func and parens:
+            if func and parens and not fparams:
+
                 self.user_funcs.add(func)
 
-            if guard:
+            if guard and not gparams:
                 self.user_guards.add(guard)
 
             return signal, guard, func, fparams, gparams
@@ -281,8 +282,9 @@ class StateMachine:
                 add(f)
 
             for f in event.trans_funcs:
-                fparams = f', {f.fparams}' if f.fparams else ''
-                add(Call(f.func, self.templates['user_func_args'] + fparams))
+                if f.func:
+                    fparams = f', {f.fparams}' if f.fparams else ''
+                    add(Call(f.func, self.templates['user_func_args'] + fparams))
 
             add(Return(self.templates['trans_result'].format(target=event.target_title)))
         
@@ -292,7 +294,11 @@ class StateMachine:
         return c
 
     def build_if_from_guard(self, guard, g):
-        gparams = f', {g.gparams}' if g.gparams else ''
+        if g.target:
+            gparams = f', {g.trans_gparams}' if g.trans_gparams else ''
+        else:
+            gparams = f', {g.gparams}' if g.gparams else ''
+            
         i = If(Call(guard, self.templates['user_func_args'] + gparams, False))
         if g.func:
             fparams = f', {g.fparams}' if g.fparams else ''
@@ -303,8 +309,9 @@ class StateMachine:
             i.add_true(f)
 
             for f in g.trans_funcs:
-                fparams = f', {f.fparams}' if f.fparams else ''
-                i.add_true(Call(f, self.templates['user_func_args'] + fparams))
+                if f.func:
+                    fparams = f', {f.fparams}' if f.fparams else ''
+                    i.add_true(Call(f.func, self.templates['user_func_args'] + fparams))
                 
         if g.target:
             i.add_true(Return(self.templates['trans_result'].format(target=g.target_title)))
