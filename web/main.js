@@ -29,7 +29,7 @@ class App {
 		this.body = document.querySelector('body');
 		this.main = document.querySelector('main');
 
-		this.title = document.querySelector('title');
+		this.title = document.querySelector('#title');
 		
 		this.body.addEventListener("keydown", event => {
 			if (!this.enable_keys) return;
