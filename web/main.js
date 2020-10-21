@@ -419,7 +419,7 @@ class App {
 				break;
 
 			case 'DRAWING_CTRL_MDOWN':
-				this.state_drag_start(data, '__top__');
+				this.state_drag_start(data, '__top__', true);
 				this.state = this.state_dragging_state;
 				break;
 
@@ -1063,8 +1063,9 @@ class App {
 	{
 		evt.preventDefault();
 
-		const p = this.gui.get_absolute_pos(evt);
-
+		const [ex, ey] = this.gui.get_absolute_pos(evt);
+		const [sx, sy] = this.model.get_transition(trans_id).label_pos;
+		this.drag_data.offset = [ex-sx, ey-sy];
 		this.drag_data.trans_id = trans_id;
 		this.gui.set_cursor('grab');
 	}
@@ -1072,10 +1073,12 @@ class App {
 	trans_label_drag(evt)
 	{
 		evt.preventDefault();
+		const [ex, ey] = this.gui.get_absolute_pos(evt);
+		const [ox, oy] = this.drag_data.offset;
+		const pos = [ex-ox, ey-oy];
 
-		const p = this.gui.get_absolute_pos(evt);
 		const trans_id = this.drag_data.trans_id;
-		this.model.transition_label_drag(trans_id, p);
+		this.model.transition_label_drag(trans_id, pos);
 	}
 
 	trans_label_drag_end(evt)
