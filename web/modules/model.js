@@ -422,8 +422,6 @@ export class Model {
 				return [];
 			}
 		}
-
-
 		
 		conn.parent = state_id;
 		s.connectors.push(conn_id);

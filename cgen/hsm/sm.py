@@ -45,6 +45,8 @@ class StateMachine:
         
         self.user_funcs = set()
         self.user_guards = set()
+        self.user_signals = set()
+        self.user_inc_funcs = set()
 
         self.states = self.get_states(data)
         self.add_transitions_to_states(self.states, data)
@@ -130,6 +132,31 @@ class StateMachine:
             ast.nodes.append(FuncDeclaration(g, self.templates['guard_return_type'], self.templates['user_func_params']))
 
         ast.nodes.append(Blank())
+        ast.nodes.append(Blank())
+
+        signal_str = f'\nSignals:\n'
+
+        max_sig_len = max([len(s) for s in self.user_signals])
+
+        for s in sorted(self.user_signals):
+            if s not in ['entry', 'exit', 'init']:
+                signal_str += f'    {s:{max_sig_len}} {self.notes.get(s, "")}\n'
+
+        ast.nodes.append(Comment(signal_str))
+
+        ast.nodes.append(Blank())
+        ast.nodes.append(Blank())
+
+        notes_str = f'\nOther function notes:\n'
+
+        for f in sorted(self.user_inc_funcs):
+                notes_str += f'\n{f}:\n'
+                note = self.notes.get(f, '').strip()
+                if note:
+                    note = note.replace('\n', '\n    ')
+                    notes_str += f"    {note}\n"
+
+        ast.nodes.append(Comment(notes_str))
 
         ast.nodes.append(Blank())
         ast.nodes.append(Endif())
@@ -162,12 +189,20 @@ class StateMachine:
             fparams = m.group('fparams')
             gparams = m.group('gparams')
 
-            if func and parens and not fparams:
+            if func and parens:
+                if fparams:
+                    self.user_inc_funcs.add(func)
+                else:
+                    self.user_funcs.add(func)
 
-                self.user_funcs.add(func)
+            if guard:
+                if gparams:
+                    self.user_inc_funcs.add(guard)
+                else:
+                    self.user_guards.add(guard)
 
-            if guard and not gparams:
-                self.user_guards.add(guard)
+            if signal:
+                self.user_signals.add(signal)
 
             return signal, guard, func, fparams, gparams
         
