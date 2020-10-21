@@ -302,7 +302,12 @@ class App {
 				break;
 
 			case 'STATE_HEADER_M_DOWN':
-				this.state_drag_start(data.event, data.id);
+				this.state_drag_start(data.event, data.id, true);
+				this.state = this.state_dragging_state;
+				break;
+
+			case 'STATE_HEADER_SHIFT_M_DOWN':
+				this.state_drag_start(data.event, data.id, false);
 				this.state = this.state_dragging_state;
 				break;
 
@@ -925,13 +930,14 @@ class App {
 		this.model.make_new_initial_state(pos);
 	}
 
-	state_drag_start(evt, state_id)
+	state_drag_start(evt, state_id, drag_substates)
 	{
 		evt.preventDefault();
 		const [ex, ey] = this.gui.get_absolute_pos(evt);
 		const [sx, sy] = this.model.get_state(state_id).pos;
 		this.drag_data.offset = [ex-sx, ey-sy];
 		this.drag_data.state_id = state_id;
+		this.drag_data.drag_substates = drag_substates;
 	}
 	
 	state_resize_start(evt, state_id)
@@ -962,7 +968,7 @@ class App {
 		const [ox, oy] = this.drag_data.offset;
 		const pos = [ex-ox, ey-oy];
 		const state_id = this.drag_data.state_id;
-		this.model.move_state(state_id, pos);
+		this.model.move_state(state_id, pos, this.drag_data.drag_substates);
 	}
 
 	state_drag_end(evt)
@@ -983,7 +989,16 @@ class App {
 			strings:				state.text.map(this.model.chop_text, this),
 			type:					state.type,
 			text_height:			this.model.options.text_height,
-			on_header_mouse_down:	evt => this.dispatch('STATE_HEADER_M_DOWN', {event: evt, id: state_id}),
+			on_header_mouse_down:	evt => {
+				if (evt.shiftKey)
+				{
+					this.dispatch('STATE_HEADER_SHIFT_M_DOWN', {event: evt, id: state_id});
+				}
+				else
+				{
+					this.dispatch('STATE_HEADER_M_DOWN', {event: evt, id: state_id});
+				}
+			},
 			on_header_click:		evt => {
 				if (evt.ctrlKey)
 				{

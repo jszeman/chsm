@@ -771,6 +771,22 @@ export class Model {
 		return [internal, external];
 	}
 
+	get_single_state_transitions(state_id)
+	{
+		const s = this.data.states[state_id];
+		const conns = [...s.connectors];
+
+		const trs = new Set(conns.map(c => this.data.connectors[c].transition));
+		const internal = [...trs].filter(
+			(t) => {
+				const tr = this.data.transitions[t];
+				return conns.includes(tr.start) && conns.includes(tr.end);
+			}) 
+		const external = [...trs].filter(t => !internal.includes(t))
+
+		return [internal, external];
+	}
+
 	get_selection_transitions()
 	{
 		const conns = [];
@@ -841,20 +857,33 @@ export class Model {
 		external.map(this.update_transition_path, this);
 	}
 
-	move_state(state_id, pos)
+	move_state(state_id, pos, move_substates)
 	{
 		const s = this.data.states[state_id];
 		const [dx, dy] = [pos[0] - s.pos[0], pos[1] - s.pos[1]];
 
-		if (this.selection.has(state_id))
+		if (move_substates)
 		{
-			this.move_selection(dx, dy);
+			if (this.selection.has(state_id))
+			{
+				this.move_selection(dx, dy);
+			}
+			else
+			{
+				s.pos = pos;
+				this.move_substates(state_id, dx, dy);
+				this.changes.state_move.push([state_id, s]);
+			}
 		}
 		else
 		{
 			s.pos = pos;
-			this.move_substates(state_id, dx, dy);
 			this.changes.state_move.push([state_id, s]);
+
+			const [internal, external] = this.get_single_state_transitions(state_id);
+
+			internal.map(t => this.move_transition(t, [dx, dy]));
+			external.map(this.update_transition_path, this);
 		}
 	}
 
