@@ -156,7 +156,7 @@ class App {
 		this.model.changes.state_del.map(d => this.gui.delete_state(d[0]), this);
 		this.model.changes.state_move.map(d => this.gui.states[d[0]].move(d[1].pos), this);
 		this.model.changes.state_resize.map(d => this.gui.states[d[0]].resize(d[1].size), this);
-		this.model.changes.state_set_text.map(d => this.gui.states[d[0]].set_text(d[1].text.map(this.model.chop_text, this),), this);
+		this.model.changes.state_set_text.map(d => this.gui.states[d[0]].set_text(d[1].text.map(this.model.chop_text, this.model),), this);
 		this.model.changes.state_set_title.map(d => this.gui.states[d[0]].set_title(d[1].title), this);
 	}
 
@@ -334,7 +334,7 @@ class App {
 			case 'TXT_CLICK':
 				this.dim_object();
 				this.cache_text_changes();
-				this.prop_editor.obj_id = data.event.target.textContent;
+				this.prop_editor.obj_id = data.event.target.firstChild.textContent;
 				this.prop_editor.obj_type = 'text';
 				this.show_obj_text();
 				break;
@@ -986,7 +986,7 @@ class App {
 			title: 					state.title,
 			pos: 					state.pos,
 			size:					state.size,
-			strings:				state.text.map(this.model.chop_text, this),
+			strings:				state.text.map(this.model.chop_text, this.model),
 			type:					state.type,
 			text_height:			this.model.options.text_height,
 			on_header_mouse_down:	evt => {

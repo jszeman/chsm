@@ -172,14 +172,20 @@ export class Gui {
 
 	build_text(parent, label, on_txt_click)
 	{
-		for (const [value, span] of label)
+		for (const [value, span, note] of label)
 		{
 			if (span)
 			{
-				const txt = this.make_svg_elem('tspan', {class: 'function'});
-				txt.textContent = value;
-				parent.appendChild(txt);
-				txt.addEventListener('click', on_txt_click);
+				const tspan = this.make_svg_elem('tspan', {class: 'function'});
+				tspan.appendChild(document.createTextNode(value));
+				if (note)
+				{
+					const title = this.make_svg_elem('title');
+					title.textContent = note;
+					tspan.appendChild(title);
+				}
+				parent.appendChild(tspan);
+				tspan.addEventListener('click', on_txt_click);
 			}
 			else
 			{

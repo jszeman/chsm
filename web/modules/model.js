@@ -170,7 +170,8 @@ export class Model {
 		{
 			if ((p != undefined) && (p !== ''))
 			{
-				result.push([p, p.match(/\w+/) != null]);
+				const note = this.data.notes[p] ? this.data.notes[p] : '';
+				result.push([p, p.match(/\w+/) != null, note]);
 			}
 		}
 
@@ -196,6 +197,26 @@ export class Model {
 	cache_note_text(obj_id, text)
 	{
 		this.data.notes[obj_id] = text;
+
+		for (const [tr_id, tr] of Object.entries(this.data.transitions))
+		{
+			if (tr.label.includes(obj_id))
+			{
+				this.changes.trans_set_label.push([tr_id, tr]);
+			}
+		}
+
+		for (const [s_id, s] of Object.entries(this.data.states))
+		{
+			for (const t of s.text)
+			{
+				if (t.includes(obj_id))
+				{
+					this.changes.state_set_text.push([s_id, s]);
+					break;
+				}
+			}
+		}
 	}
 
 	apply_state_text(state_id, text)
