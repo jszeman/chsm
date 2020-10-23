@@ -14,6 +14,7 @@ export class Gui {
 		this.translate = [10, 10];
 		this.scale = 10;
 		this.zoom_speed = 0.5;
+		this.pan_speed = 20;
 	}
 
 	clear()
@@ -38,6 +39,30 @@ export class Gui {
 		const [tx, ty] = this.translate;
 		const s = this.scale; 
 		this.drawing.attributes.transform.value = `translate(${tx}, ${ty}) scale(${s}, ${s})`;
+	}
+
+	pan_up()
+	{
+		this.translate[1] += this.pan_speed;
+		this.set_transform();
+	}
+
+	pan_down()
+	{
+		this.translate[1] -= this.pan_speed;
+		this.set_transform();
+	}
+
+	pan_right()
+	{
+		this.translate[0] += this.pan_speed;
+		this.set_transform();
+	}
+
+	pan_left()
+	{
+		this.translate[0] -= this.pan_speed;
+		this.set_transform();
 	}
 
 	zoom_in(pos)

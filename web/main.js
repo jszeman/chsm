@@ -95,6 +95,10 @@ class App {
 			{
 				this.dispatch('DRAWING_CTRL_WHEEL', event);
 			}
+			else if (event.shiftKey)
+			{
+				this.dispatch('DRAWING_SHIFT_WHEEL', event);
+			}
 			else
 			{
 				this.dispatch('DRAWING_WHEEL', event);
@@ -414,6 +418,37 @@ class App {
 					else
 					{
 						this.gui.zoom_out(p);
+					}
+				}
+				break;
+
+			case 'DRAWING_WHEEL':
+				{
+					data.stopPropagation();
+					data.preventDefault();
+					if (data.deltaY < 0)
+					{
+						this.gui.pan_up();
+					}
+					else
+					{
+						this.gui.pan_down();
+					}
+				}
+				break;
+
+			case 'DRAWING_SHIFT_WHEEL':
+				{
+					console.log('pan');
+					data.stopPropagation();
+					data.preventDefault();
+					if (data.deltaY < 0)
+					{
+						this.gui.pan_right();
+					}
+					else
+					{
+						this.gui.pan_left();
 					}
 				}
 				break;

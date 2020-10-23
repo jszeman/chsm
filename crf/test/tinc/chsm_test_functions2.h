@@ -1,7 +1,7 @@
 #ifndef CHSM_TEST_FUNCTIONS2_H
 #define CHSM_TEST_FUNCTIONS2_H
 
-/*Generated with CHSM v0.0.0 at 2020.10.21 22.05.40*/
+/*Generated with CHSM v0.0.0 at 2020.10.23 18.22.34*/
 
 #include "chsm_test_machine.h"
 #include "chsm.h"
