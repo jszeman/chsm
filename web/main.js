@@ -188,8 +188,13 @@ class App {
 
 	undo()
 	{
-		this.model.undo();
+		const view = this.model.undo();
 		this.gui.clear();
+		
+		if (view !== null)
+		{
+			this.gui.set_view(view);
+		}
 
 		this.model.states().map(s => this.render_state(s), this);
 		this.model.transitions().map(t => this.render_transiton(t), this);
@@ -197,8 +202,13 @@ class App {
 
 	redo()
 	{
-		this.model.redo();
+		const view = this.model.redo();
 		this.gui.clear();
+
+		if (view !== null)
+		{
+			this.gui.set_view(view);
+		}
 
 		this.model.states().map(s => this.render_state(s), this);
 		this.model.transitions().map(t => this.render_transiton(t), this);
@@ -206,7 +216,7 @@ class App {
 
 	save_state()
 	{
-		if (this.model.save_state())
+		if (this.model.save_state(this.gui.get_view()))
 		{
 			this.title.textContent = '*' + this.file_name;
 		}
@@ -286,12 +296,12 @@ class App {
 
 			case 'APPLY_TITLE':
 				this.apply_title();
-				this.model.save_state();
+				this.save_state();
 				break;
 
 			case 'APPLY_TEXT':
 				this.apply_text();
-				this.model.save_state();
+				this.save_state();
 				break;
 
 			case 'LABEL_FOCUS':
@@ -332,7 +342,7 @@ class App {
 
 			case 'TR_DBLCLICK':
 				this.trans_split(data.event, data.id);
-				this.model.save_state();
+				this.save_state();
 				break;
 
 			case 'TXT_CLICK':
@@ -439,7 +449,6 @@ class App {
 
 			case 'DRAWING_SHIFT_WHEEL':
 				{
-					console.log('pan');
 					data.stopPropagation();
 					data.preventDefault();
 					if (data.deltaY < 0)

@@ -20,7 +20,7 @@ export class Model {
 		this.history_idx = 1;
 
 		this.ack_changes();
-		this.save_state();
+		this.save_state(null);
 
 		this.selection = new Set();
 
@@ -43,9 +43,9 @@ export class Model {
 		this.selection.clear();
 	}
 
-	save_state()
+	save_state(view)
 	{
-		const state = JSON.stringify(this.data);
+		const state = [JSON.stringify(this.data), view];
 
 		if (this.history_idx > 1)
 		{
@@ -58,7 +58,7 @@ export class Model {
 			this.history.push(state);
 			return true;
 		}
-		else if (this.history[this.history.length - 1] !== state)
+		else if (this.history[this.history.length - 1][0] !== state[0])
 		{
 			this.history.push(state);
 			return true;
@@ -72,8 +72,13 @@ export class Model {
 		if (this.history_idx < this.history.length)
 		{
 			this.history_idx++;
-			this.data = JSON.parse(this.history[this.history.length - this.history_idx]);
+			const [data_str, view] = this.history[this.history.length - this.history_idx];
+			this.data = JSON.parse(data_str);
+
+			return view;
 		}
+
+		return null;
 	}
 
 	redo()
@@ -81,8 +86,13 @@ export class Model {
 		if (this.history_idx > 1)
 		{
 			this.history_idx--;
-			this.data = JSON.parse(this.history[this.history.length - this.history_idx]);
+			const [data_str, view] = this.history[this.history.length - this.history_idx];
+			this.data = JSON.parse(data_str);
+
+			return view;
 		}
+
+		return null;
 	}
 
 	get_data_string()

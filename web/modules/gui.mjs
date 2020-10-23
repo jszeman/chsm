@@ -41,6 +41,21 @@ export class Gui {
 		this.drawing.attributes.transform.value = `translate(${tx}, ${ty}) scale(${s}, ${s})`;
 	}
 
+	get_view()
+	{
+		return {
+			translate: [...this.translate],
+			scale: this.scale
+		};
+	}
+
+	set_view(view)
+	{
+		this.translate = view.translate;
+		this.scale = view.scale;
+		this.set_transform();
+	}
+
 	pan_up()
 	{
 		this.translate[1] += this.pan_speed;
