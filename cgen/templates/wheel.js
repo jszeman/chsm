@@ -1,9 +1,11 @@
-let translate = [10, 10];
-let scale = 10;
+
 const zoom_speed = 0.5;
 const pan_speed = 20;
 const drawing = document.querySelector('#drawing');
 const svg = document.querySelector('svg');
+
+let translate = [drawing.transform.baseVal[0].matrix.e, drawing.transform.baseVal[0].matrix.f];
+let scale = drawing.transform.baseVal[1].matrix.a;
 
 let drag_start_pos = [0, 0];
 
@@ -48,6 +50,8 @@ function get_absolute_pos(evt)
 
     return [x, y];
 }
+
+
 
 svg.addEventListener('wheel', event => {
     if (event.ctrlKey)

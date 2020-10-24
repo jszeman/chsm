@@ -127,6 +127,8 @@ class App {
 		this.model.states().map(s => this.render_state(s), this);
 		this.model.transitions().map(t => this.render_transiton(t), this);
 
+		this.gui.set_view(this.model.get_view());
+
 		this.file_name = fname;
 		this.filepath = fpath;
 		this.title.textContent = this.file_name;
@@ -468,6 +470,7 @@ class App {
 				break;
 
 			case 'SAVE':
+				this.model.set_view(this.gui.get_view());
 				eel.save_state_machine(this.main.innerHTML, this.model.get_data_string(), this.filepath);
 				break;
 
@@ -476,6 +479,7 @@ class App {
 				break;
 
 			case 'CODE_GEN':
+				this.model.set_view(this.gui.get_view());
 				eel.save_state_machine(this.main.innerHTML, this.model.get_data_string(), this.filepath);
 				eel.genereate_code();
 				break;

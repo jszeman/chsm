@@ -4,6 +4,7 @@ export class Model {
 	constructor(data)
 	{
 		this.data = 			data;
+
 		this.options = {
 			state_min_width: 	5,
 			state_min_height: 	3,
@@ -27,6 +28,14 @@ export class Model {
 		if (!('notes' in this.data))
 		{
 			this.data['notes'] = {};
+		}
+
+		if (!('view' in this.data))
+		{
+			this.data['view'] = {
+				translate: [10, 10],
+				scale: 10
+			};
 		}
 	}
 
@@ -65,6 +74,16 @@ export class Model {
 		}
 
 		return false;
+	}
+
+	get_view()
+	{
+		return this.data.view;
+	}
+
+	set_view(view)
+	{
+		this.data.view = view;
 	}
 
 	undo()

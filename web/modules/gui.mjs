@@ -1,6 +1,6 @@
 
 export class Gui {
-	constructor()
+	constructor(view)
 	{
 		this.drawing = document.querySelector('#drawing');
 		this.svg = document.querySelector('svg');
@@ -11,8 +11,11 @@ export class Gui {
 			state_min_size: [5,5]
 		};
 
-		this.translate = [10, 10];
-		this.scale = 10;
+		this.view = {
+			translate: [10, 10],
+			scale: 10
+		};
+
 		this.zoom_speed = 0.5;
 		this.pan_speed = 20;
 	}
@@ -27,8 +30,8 @@ export class Gui {
 
 	reset_view()
 	{
-		this.translate = [10, 10];
-		this.scale = 10;
+		this.view.translate = [10, 10];
+		this.view.scale = 10;
 		this.zoom_speed = 0.5;
 
 		this.set_transform();
@@ -36,47 +39,47 @@ export class Gui {
 
 	set_transform()
 	{
-		const [tx, ty] = this.translate;
-		const s = this.scale; 
+		const [tx, ty] = this.view.translate;
+		const s = this.view.scale; 
 		this.drawing.attributes.transform.value = `translate(${tx}, ${ty}) scale(${s}, ${s})`;
 	}
 
 	get_view()
 	{
 		return {
-			translate: [...this.translate],
-			scale: this.scale
+			translate: [...this.view.translate],
+			scale: this.view.scale
 		};
 	}
 
 	set_view(view)
 	{
-		this.translate = view.translate;
-		this.scale = view.scale;
+		this.view.translate = view.translate;
+		this.view.scale = view.scale;
 		this.set_transform();
 	}
 
 	pan_up()
 	{
-		this.translate[1] += this.pan_speed;
+		this.view.translate[1] += this.pan_speed;
 		this.set_transform();
 	}
 
 	pan_down()
 	{
-		this.translate[1] -= this.pan_speed;
+		this.view.translate[1] -= this.pan_speed;
 		this.set_transform();
 	}
 
 	pan_right()
 	{
-		this.translate[0] += this.pan_speed;
+		this.view.translate[0] += this.pan_speed;
 		this.set_transform();
 	}
 
 	pan_left()
 	{
-		this.translate[0] -= this.pan_speed;
+		this.view.translate[0] -= this.pan_speed;
 		this.set_transform();
 	}
 
@@ -85,24 +88,24 @@ export class Gui {
 		const zs = this.zoom_speed;
 		const [x, y] = pos;
 		const [dtx, dty] = [-zs * x, -zs * y];
-		const [tx, ty] = this.translate;
-		this.translate = [tx + dtx, ty + dty];
-		this.scale += zs;
+		const [tx, ty] = this.view.translate;
+		this.view.translate = [tx + dtx, ty + dty];
+		this.view.scale += zs;
 		this.set_transform();
 	}
 
 	zoom_out(pos)
 	{
-		if (this.scale < 2)
+		if (this.view.scale < 2)
 		{
 			return;
 		}
 		const zs = -this.zoom_speed;
 		const [x, y] = pos;
 		const [dtx, dty] = [-zs * x, -zs * y];
-		const [tx, ty] = this.translate;
-		this.translate = [tx + dtx, ty + dty];
-		this.scale += zs;
+		const [tx, ty] = this.view.translate;
+		this.view.translate = [tx + dtx, ty + dty];
+		this.view.scale += zs;
 		this.set_transform();
 	}
 

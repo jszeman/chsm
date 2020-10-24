@@ -134,5 +134,10 @@ export const state_machine = {
 		'func()': 'Event handler function',
 	},
 
+	view: {
+		translate: [10, 10],
+		scale: 10
+	}
+
 };
 
