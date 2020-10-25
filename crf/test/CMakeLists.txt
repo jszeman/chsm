@@ -34,4 +34,6 @@ include_directories(tinc
 
 add_executable(crf_test ${test_files})
 
+add_compile_options(-Wall -Wextra -pedantic -Werror)
+
 add_compile_definitions(NDEBUG)

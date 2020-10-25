@@ -29,7 +29,7 @@ class App {
 		this.body = document.querySelector('body');
 		this.main = document.querySelector('main');
 
-		this.title = document.querySelector('title');
+		this.title = document.querySelector('#title');
 		
 		this.body.addEventListener("keydown", event => {
 			if (!this.enable_keys) return;
@@ -95,6 +95,10 @@ class App {
 			{
 				this.dispatch('DRAWING_CTRL_WHEEL', event);
 			}
+			else if (event.shiftKey)
+			{
+				this.dispatch('DRAWING_SHIFT_WHEEL', event);
+			}
 			else
 			{
 				this.dispatch('DRAWING_WHEEL', event);
@@ -113,8 +117,6 @@ class App {
 		});
 
 		this.state = this.idle_state;
-
-		//const data = eel.open_state_machine(); // This will cause the python code to call this.load_model
 	}
 
 	load_model(data, fname, fpath)
@@ -125,9 +127,16 @@ class App {
 		this.model.states().map(s => this.render_state(s), this);
 		this.model.transitions().map(t => this.render_transiton(t), this);
 
+		this.gui.set_view(this.model.get_view());
+
 		this.file_name = fname;
 		this.filepath = fpath;
 		this.title.textContent = this.file_name;
+
+		this.prop_editor = {
+			obj_id: null,
+			obj_type: null
+		};
 	}
 
 	push_transition_changes_to_gui()
@@ -140,7 +149,7 @@ class App {
 				this.gui.redraw_path_with_arrow(tr_id, tr.vertices, tr.label, tr.label_pos);
 			}, this);
 
-		this.model.changes.trans_set_label.map(d => this.gui.paths[d[0]].set_label(d[1].label), this);
+		this.model.changes.trans_set_label.map(d => this.gui.paths[d[0]].set_label(this.model.chop_text(d[1].label)), this);
 
 		this.model.changes.trans_del.map(d => this.gui.delete_transition(d[0]), this);
 
@@ -153,7 +162,7 @@ class App {
 		this.model.changes.state_del.map(d => this.gui.delete_state(d[0]), this);
 		this.model.changes.state_move.map(d => this.gui.states[d[0]].move(d[1].pos), this);
 		this.model.changes.state_resize.map(d => this.gui.states[d[0]].resize(d[1].size), this);
-		this.model.changes.state_set_text.map(d => this.gui.states[d[0]].set_text(d[1].text), this);
+		this.model.changes.state_set_text.map(d => this.gui.states[d[0]].set_text(d[1].text.map(this.model.chop_text, this.model),), this);
 		this.model.changes.state_set_title.map(d => this.gui.states[d[0]].set_title(d[1].title), this);
 	}
 
@@ -181,8 +190,13 @@ class App {
 
 	undo()
 	{
-		this.model.undo();
+		const view = this.model.undo();
 		this.gui.clear();
+		
+		if (view !== null)
+		{
+			this.gui.set_view(view);
+		}
 
 		this.model.states().map(s => this.render_state(s), this);
 		this.model.transitions().map(t => this.render_transiton(t), this);
@@ -190,8 +204,13 @@ class App {
 
 	redo()
 	{
-		this.model.redo();
+		const view = this.model.redo();
 		this.gui.clear();
+
+		if (view !== null)
+		{
+			this.gui.set_view(view);
+		}
 
 		this.model.states().map(s => this.render_state(s), this);
 		this.model.transitions().map(t => this.render_transiton(t), this);
@@ -199,7 +218,7 @@ class App {
 
 	save_state()
 	{
-		if (this.model.save_state())
+		if (this.model.save_state(this.gui.get_view()))
 		{
 			this.title.textContent = '*' + this.file_name;
 		}
@@ -279,12 +298,12 @@ class App {
 
 			case 'APPLY_TITLE':
 				this.apply_title();
-				this.model.save_state();
+				this.save_state();
 				break;
 
 			case 'APPLY_TEXT':
 				this.apply_text();
-				this.model.save_state();
+				this.save_state();
 				break;
 
 			case 'LABEL_FOCUS':
@@ -299,7 +318,12 @@ class App {
 				break;
 
 			case 'STATE_HEADER_M_DOWN':
-				this.state_drag_start(data.event, data.id);
+				this.state_drag_start(data.event, data.id, true);
+				this.state = this.state_dragging_state;
+				break;
+
+			case 'STATE_HEADER_SHIFT_M_DOWN':
+				this.state_drag_start(data.event, data.id, false);
 				this.state = this.state_dragging_state;
 				break;
 
@@ -320,12 +344,21 @@ class App {
 
 			case 'TR_DBLCLICK':
 				this.trans_split(data.event, data.id);
-				this.model.save_state();
+				this.save_state();
+				break;
+
+			case 'TXT_CLICK':
+				this.dim_object();
+				this.cache_text_changes();
+				this.prop_editor.obj_id = data.event.target.firstChild.textContent;
+				this.prop_editor.obj_type = 'text';
+				this.show_obj_text();
 				break;
 
 			case 'TR_CLICK':
 				data.event.stopPropagation();
 				this.dim_object();
+				this.drop_selection();
 				this.cache_text_changes();
 				this.prop_editor.obj_id = data.id;
 				this.prop_editor.obj_type = 'transition';
@@ -335,7 +368,11 @@ class App {
 
 			case 'STATE_HEADER_CLICK':
 				data.event.stopPropagation();
-				this.dim_object();
+				if (!this.model.selection.has(data.id))
+				{
+					this.dim_object();
+				}
+				this.drop_selection();
 				this.cache_text_changes();
 				this.prop_editor.obj_id = data.id;
 				this.prop_editor.obj_type = 'state';
@@ -343,7 +380,13 @@ class App {
 				this.show_obj_text();
 				break;
 
-			case 'TR_CTRL_CLICK':
+			case 'STATE_HEADER_CTRL_CLICK':
+				data.event.stopPropagation();
+				this.dim_object();
+				this.select_state(data.id);
+				break;
+
+			case 'TR_SHIFT_CLICK':
 				{
 					const p = this.gui.get_absolute_pos(data.event);
 					this.model.transition_restart_from_pos(data.id, p);
@@ -356,6 +399,7 @@ class App {
 
 			case 'CLICK':
 				this.dim_object();
+				this.drop_selection();
 				this.cache_text_changes();
 				break;
 
@@ -390,12 +434,43 @@ class App {
 				}
 				break;
 
+			case 'DRAWING_WHEEL':
+				{
+					data.stopPropagation();
+					data.preventDefault();
+					if (data.deltaY < 0)
+					{
+						this.gui.pan_up();
+					}
+					else
+					{
+						this.gui.pan_down();
+					}
+				}
+				break;
+
+			case 'DRAWING_SHIFT_WHEEL':
+				{
+					data.stopPropagation();
+					data.preventDefault();
+					if (data.deltaY < 0)
+					{
+						this.gui.pan_right();
+					}
+					else
+					{
+						this.gui.pan_left();
+					}
+				}
+				break;
+
 			case 'DRAWING_CTRL_MDOWN':
-				this.state_drag_start(data, '__top__');
+				this.state_drag_start(data, '__top__', true);
 				this.state = this.state_dragging_state;
 				break;
 
 			case 'SAVE':
+				this.model.set_view(this.gui.get_view());
 				eel.save_state_machine(this.main.innerHTML, this.model.get_data_string(), this.filepath);
 				break;
 
@@ -404,6 +479,7 @@ class App {
 				break;
 
 			case 'CODE_GEN':
+				this.model.set_view(this.gui.get_view());
 				eel.save_state_machine(this.main.innerHTML, this.model.get_data_string(), this.filepath);
 				eel.genereate_code();
 				break;
@@ -467,6 +543,39 @@ class App {
 		}
 	}
 
+	highlight_state(state_id)
+	{
+		this.gui.states[state_id].add_border_class('state_border_highlight');
+	}
+
+	dim_state(state_id)
+	{
+		this.gui.states[state_id].remove_border_class('state_border_highlight');
+	}
+
+	drop_selection()
+	{
+		for (let state_id of this.model.selection)
+		{
+			this.dim_state(state_id);
+		}
+		this.model.drop_selection();
+	}
+
+	select_state(state_id)
+	{
+		for (let state_id of this.model.selection)
+		{
+			this.dim_state(state_id);
+		}
+
+		this.model.select_state(state_id);
+
+		for (let state_id of this.model.selection)
+		{
+			this.highlight_state(state_id);
+		}
+	}
 
 	highlight_object()
 	{
@@ -474,7 +583,7 @@ class App {
 
 		if (obj_type === 'state')
 		{
-			this.gui.states[obj_id].add_border_class('state_border_highlight');
+			this.highlight_state(obj_id);
 			this.sidebar.style.background = 'rgba(23, 197, 67, 0.1)';
 		}
 		else if (obj_type === 'transition')
@@ -490,7 +599,7 @@ class App {
 
 		if ((obj_type === 'state') && (obj_id in this.gui.states))
 		{
-			this.gui.states[obj_id].remove_border_class('state_border_highlight');
+			this.dim_state(obj_id);
 		}
 		else if ((obj_type === 'transition') && (obj_id in this.gui.paths))
 		{
@@ -519,13 +628,15 @@ class App {
 	{
 		const {obj_id, obj_type} = this.prop_editor;
 
-		if (obj_type === 'state')
+		switch (obj_type)
 		{
-			this.model.apply_state_title(obj_id, this.title_input.value);
-		}
-		else if (obj_type === 'transition')
-		{
-			this.model.apply_transition_label(obj_id, this.title_input.value);
+			case 'state':
+				this.model.apply_state_title(obj_id, this.title_input.value);
+				break;
+
+			case 'transition':
+				this.model.apply_transition_label(obj_id, this.title_input.value);
+				break;
 		}
 	}
 
@@ -544,9 +655,11 @@ class App {
 	{
 		const {obj_id, obj_type} = this.prop_editor;
 
-		if (obj_type === 'state')
+		switch (obj_type)
 		{
-			this.model.apply_state_text(obj_id, this.text_area.value);
+			case 'state':
+				this.model.apply_state_text(obj_id, this.text_area.value);
+				break;
 		}
 	}
 
@@ -554,14 +667,20 @@ class App {
 	{
 		const {obj_id, obj_type} = this.prop_editor;
 
-		if (obj_type === 'state')
+		switch (obj_type)
 		{
-			const text = {title: this.title_input.value, text: this.text_area.value};
-			this.model.cache_state_text(obj_id, text);
-		}
-		else if (obj_type === 'transition')
-		{
-			this.model.cache_transition_label(obj_id, this.title_input.value);
+			case 'state':
+				const state_text = {title: this.title_input.value, text: this.text_area.value};
+				this.model.cache_state_text(obj_id, state_text);
+				break;
+
+			case 'transition':
+				this.model.cache_transition_label(obj_id, this.title_input.value);
+				break;
+
+			case 'text':
+				this.model.cache_note_text(obj_id, this.text_area.value);
+				break;
 		}
 	}
 
@@ -569,6 +688,7 @@ class App {
 	{
 		const text = this.model.get_state_text(state_id);
 
+		this.title_input.disabled = false;
 		this.title_input.value = text.title;
 		this.text_area.disabled = false;
 		this.text_area.value = text.text;
@@ -576,13 +696,23 @@ class App {
 
 	show_transition_text(tr_id)
 	{
+		this.title_input.disabled = false;
 		this.title_input.value = this.model.get_transition_text(tr_id);
 		this.text_area.value = '';
 		this.text_area.disabled = true;
 	}
 
+	show_note_text(obj_id)
+	{
+		this.title_input.disabled = true;
+		this.title_input.value = obj_id;
+		this.text_area.disabled = false;
+		this.text_area.value = this.model.get_note_text(obj_id);
+	}
+
 	clear_text_inputs()
 	{
+		this.title_input.disabled = false;
 		this.title_input.value = '';
 		this.text_area.disabled = false;
 		this.text_area.value = '';
@@ -592,13 +722,19 @@ class App {
 	{
 		const {obj_id, obj_type} = this.prop_editor;
 
-		if (obj_type === 'state')
+		switch (obj_type)
 		{
-			this.show_state_text(obj_id);
-		}
-		else if (obj_type === 'transition')
-		{
-			this.show_transition_text(obj_id);
+			case 'state':
+				this.show_state_text(obj_id);
+				break;
+
+			case 'transition':
+				this.show_transition_text(obj_id);
+				break;
+
+			case 'text':
+				this.show_note_text(obj_id);
+				break;
 		}
 	}
 
@@ -842,13 +978,14 @@ class App {
 		this.model.make_new_initial_state(pos);
 	}
 
-	state_drag_start(evt, state_id)
+	state_drag_start(evt, state_id, drag_substates)
 	{
 		evt.preventDefault();
 		const [ex, ey] = this.gui.get_absolute_pos(evt);
 		const [sx, sy] = this.model.get_state(state_id).pos;
 		this.drag_data.offset = [ex-sx, ey-sy];
 		this.drag_data.state_id = state_id;
+		this.drag_data.drag_substates = drag_substates;
 	}
 	
 	state_resize_start(evt, state_id)
@@ -879,13 +1016,13 @@ class App {
 		const [ox, oy] = this.drag_data.offset;
 		const pos = [ex-ox, ey-oy];
 		const state_id = this.drag_data.state_id;
-		this.model.move_state(state_id, pos);
+		this.model.move_state(state_id, pos, this.drag_data.drag_substates);
 	}
 
 	state_drag_end(evt)
 	{
 		evt.preventDefault();
-		this.model.update_parent(this.drag_data.state_id);
+		this.model.update_parents();
 	}
 
 	render_state(state_id, state_data=null)
@@ -897,15 +1034,34 @@ class App {
 			title: 					state.title,
 			pos: 					state.pos,
 			size:					state.size,
-			strings:				state.text,
+			strings:				state.text.map(this.model.chop_text, this.model),
 			type:					state.type,
 			text_height:			this.model.options.text_height,
-			on_header_mouse_down:	evt => this.dispatch('STATE_HEADER_M_DOWN', {event: evt, id: state_id}),
-			on_header_click:		evt => this.dispatch('STATE_HEADER_CLICK', {event: evt, id: state_id}),
+			on_header_mouse_down:	evt => {
+				if (evt.shiftKey)
+				{
+					this.dispatch('STATE_HEADER_SHIFT_M_DOWN', {event: evt, id: state_id});
+				}
+				else
+				{
+					this.dispatch('STATE_HEADER_M_DOWN', {event: evt, id: state_id});
+				}
+			},
+			on_header_click:		evt => {
+				if (evt.ctrlKey)
+				{
+					this.dispatch('STATE_HEADER_CTRL_CLICK', {event: evt, id: state_id})
+				}
+				else
+				{
+					this.dispatch('STATE_HEADER_CLICK', {event: evt, id: state_id})
+				}
+			},
 			on_corner_mouse_down:	evt => this.dispatch('STATE_RESIZE', {event: evt, id: state_id}),
 			on_border_click:		evt => this.dispatch('STATE_BORDER_CLICK', {event: evt, id: state_id}),
 			on_header_mouse_over:	evt => this.dispatch('STATE_HEADER_M_OVER', {event: evt, id: state_id}),
-			on_header_mouse_leave:	evt => this.dispatch('STATE_HEADER_M_LEAVE', {event: evt, id: state_id})
+			on_header_mouse_leave:	evt => this.dispatch('STATE_HEADER_M_LEAVE', {event: evt, id: state_id}),
+			on_txt_click:			evt => this.dispatch('TXT_CLICK', {event: evt}),
 		};
 
 		this.gui.render_state(params);
@@ -955,8 +1111,9 @@ class App {
 	{
 		evt.preventDefault();
 
-		const p = this.gui.get_absolute_pos(evt);
-
+		const [ex, ey] = this.gui.get_absolute_pos(evt);
+		const [sx, sy] = this.model.get_transition(trans_id).label_pos;
+		this.drag_data.offset = [ex-sx, ey-sy];
 		this.drag_data.trans_id = trans_id;
 		this.gui.set_cursor('grab');
 	}
@@ -964,10 +1121,12 @@ class App {
 	trans_label_drag(evt)
 	{
 		evt.preventDefault();
+		const [ex, ey] = this.gui.get_absolute_pos(evt);
+		const [ox, oy] = this.drag_data.offset;
+		const pos = [ex-ox, ey-oy];
 
-		const p = this.gui.get_absolute_pos(evt);
 		const trans_id = this.drag_data.trans_id;
-		this.model.transition_label_drag(trans_id, p);
+		this.model.transition_label_drag(trans_id, pos);
 	}
 
 	trans_label_drag_end(evt)
@@ -979,24 +1138,29 @@ class App {
 	render_transiton(trans_id, tr_data=null)
 	{
 		const tr = tr_data !== null ? tr_data : this.model.get_transition(trans_id);
-		this.gui.render_transition(
-			trans_id,
-			tr.vertices,
-			tr.label,
-			tr.label_pos,
-			evt => this.dispatch('TR_M_DOWN', {event: evt, id: trans_id}),
-			evt => this.dispatch('TR_DBLCLICK', {event: evt, id: trans_id}),
-			evt => {
-				if (evt.ctrlKey)
-				{
-					this.dispatch('TR_CTRL_CLICK', {event: evt, id: trans_id});
-				}
-				else
-				{
-					this.dispatch('TR_CLICK', {event: evt, id: trans_id});
-				}
-			},
-			evt => this.dispatch('TR_LABEL_M_DOWN', {event: evt, id: trans_id}),);
+
+		const params = {
+			id:			trans_id,
+			vertices:	tr.vertices,
+			label:		this.model.chop_text(tr.label),
+			label_pos:	tr.label_pos,
+			on_mousedown:	evt => this.dispatch('TR_M_DOWN', {event: evt, id: trans_id}),
+			on_dblclick:	evt => this.dispatch('TR_DBLCLICK', {event: evt, id: trans_id}),
+			on_click:		evt => {
+										if (evt.shiftKey)
+										{
+											this.dispatch('TR_SHIFT_CLICK', {event: evt, id: trans_id});
+										}
+										else
+										{
+											this.dispatch('TR_CLICK', {event: evt, id: trans_id});
+										}
+									},
+			on_label_mousedown: evt => this.dispatch('TR_LABEL_M_DOWN', {event: evt, id: trans_id}),
+			on_txt_click:		evt => this.dispatch('TXT_CLICK', {event: evt})
+		};
+
+		this.gui.render_transition(params);
 	}
 }
 

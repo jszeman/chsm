@@ -4,6 +4,7 @@ export class Model {
 	constructor(data)
 	{
 		this.data = 			data;
+
 		this.options = {
 			state_min_width: 	5,
 			state_min_height: 	3,
@@ -20,12 +21,40 @@ export class Model {
 		this.history_idx = 1;
 
 		this.ack_changes();
-		this.save_state();
+		this.save_state(null);
+
+		this.selection = new Set();
+
+		if (!('notes' in this.data))
+		{
+			this.data['notes'] = {};
+		}
+
+		if (!('view' in this.data))
+		{
+			this.data['view'] = {
+				translate: [10, 10],
+				scale: 10
+			};
+		}
 	}
 
-	save_state()
+	select_state(state_id)
 	{
-		const state = JSON.stringify(this.data);
+		if (!this.selection.delete(state_id))
+		{
+			this.selection.add(state_id);
+		}
+	}
+
+	drop_selection()
+	{
+		this.selection.clear();
+	}
+
+	save_state(view)
+	{
+		const state = [JSON.stringify(this.data), view];
 
 		if (this.history_idx > 1)
 		{
@@ -38,7 +67,7 @@ export class Model {
 			this.history.push(state);
 			return true;
 		}
-		else if (this.history[this.history.length - 1] !== state)
+		else if (this.history[this.history.length - 1][0] !== state[0])
 		{
 			this.history.push(state);
 			return true;
@@ -47,13 +76,28 @@ export class Model {
 		return false;
 	}
 
+	get_view()
+	{
+		return this.data.view;
+	}
+
+	set_view(view)
+	{
+		this.data.view = view;
+	}
+
 	undo()
 	{
 		if (this.history_idx < this.history.length)
 		{
 			this.history_idx++;
-			this.data = JSON.parse(this.history[this.history.length - this.history_idx]);
+			const [data_str, view] = this.history[this.history.length - this.history_idx];
+			this.data = JSON.parse(data_str);
+
+			return view;
 		}
+
+		return null;
 	}
 
 	redo()
@@ -61,8 +105,13 @@ export class Model {
 		if (this.history_idx > 1)
 		{
 			this.history_idx--;
-			this.data = JSON.parse(this.history[this.history.length - this.history_idx]);
+			const [data_str, view] = this.history[this.history.length - this.history_idx];
+			this.data = JSON.parse(data_str);
+
+			return view;
 		}
+
+		return null;
 	}
 
 	get_data_string()
@@ -85,6 +134,16 @@ export class Model {
 			state_set_text:		[],
 			state_set_title:	[],
 		};
+	}
+
+	get_note_text(obj_id)
+	{
+		if (!(obj_id in this.data.notes))
+		{
+			this.data.notes[obj_id] = '';
+		}
+
+		return this.data.notes[obj_id];
 	}
 
 	get_transition_text(tr_id)
@@ -118,6 +177,36 @@ export class Model {
 		this.changes.trans_set_label.push([tr_id, t]);
 	}
 
+	compare_str_array(a, b)
+	{
+		var i = a.length;
+
+		while (i--)
+		{
+			if (a[i] !== b[i]) return false;
+		}
+
+		return true
+	}
+
+	chop_text(text)
+	{
+		const parts = text.split(/(\w+\(\))|(\w+)/)
+
+		const result = []
+
+		for (let p of parts)
+		{
+			if ((p != undefined) && (p !== ''))
+			{
+				const note = this.data.notes[p] ? this.data.notes[p] : '';
+				result.push([p, p.match(/\w+/) != null, note]);
+			}
+		}
+
+		return result;
+	}
+
 	get_state_text(state_id)
 	{
 		if (!(state_id in this.state_text_cache))
@@ -132,6 +221,31 @@ export class Model {
 	cache_state_text(state_id, text)
 	{
 		this.state_text_cache[state_id] = text;
+	}
+
+	cache_note_text(obj_id, text)
+	{
+		this.data.notes[obj_id] = text;
+
+		for (const [tr_id, tr] of Object.entries(this.data.transitions))
+		{
+			if (tr.label.includes(obj_id))
+			{
+				this.changes.trans_set_label.push([tr_id, tr]);
+			}
+		}
+
+		for (const [s_id, s] of Object.entries(this.data.states))
+		{
+			for (const t of s.text)
+			{
+				if (t.includes(obj_id))
+				{
+					this.changes.state_set_text.push([s_id, s]);
+					break;
+				}
+			}
+		}
 	}
 
 	apply_state_text(state_id, text)
@@ -358,8 +472,6 @@ export class Model {
 				return [];
 			}
 		}
-
-
 		
 		conn.parent = state_id;
 		s.connectors.push(conn_id);
@@ -440,8 +552,6 @@ export class Model {
 		const v = this.attach_connector_to_state(t.end, state_id, rel_pos);
 		if (v.length == 2)
 		{
-			/*console.log('-----------');
-			t.vertices.map(v => console.log(v));*/
 			this.changes.trans_redraw.push([trans_id, t]);
 			return true;
 		}
@@ -623,8 +733,9 @@ export class Model {
 		const s = this.data.states[state_id];
 		const [x1, y1] = s.pos;
 		const [w, h] = s.size;
+		const txt_offset = this.options.text_height * (1 + s.text.length);
 
-		return new Rect(x1, y1, x1 + w, y1 + h);
+		return new Rect(x1, y1 + txt_offset, x1 + w, y1 + h);
 	}
 
 	is_in_state_body(state_id, point)
@@ -668,6 +779,18 @@ export class Model {
 		return substates;
 	}
 
+	get_selection_substates()
+	{
+		const substates = new Set();
+
+		for (const state_id of this.selection)
+		{
+			this.get_substates(state_id).map(e => substates.add(e));
+		}
+
+		return substates;
+	}
+
 	/* Return all connectors in the state and in its substates */
 	get_state_connectors(state_id)
 	{
@@ -685,6 +808,42 @@ export class Model {
 	get_state_transitions(state_id)
 	{
 		const conns = this.get_state_connectors(state_id);
+		const trs = new Set(conns.map(c => this.data.connectors[c].transition));
+		const internal = [...trs].filter(
+			(t) => {
+				const tr = this.data.transitions[t];
+				return conns.includes(tr.start) && conns.includes(tr.end);
+			}) 
+		const external = [...trs].filter(t => !internal.includes(t))
+
+		return [internal, external];
+	}
+
+	get_single_state_transitions(state_id)
+	{
+		const s = this.data.states[state_id];
+		const conns = [...s.connectors];
+
+		const trs = new Set(conns.map(c => this.data.connectors[c].transition));
+		const internal = [...trs].filter(
+			(t) => {
+				const tr = this.data.transitions[t];
+				return conns.includes(tr.start) && conns.includes(tr.end);
+			}) 
+		const external = [...trs].filter(t => !internal.includes(t))
+
+		return [internal, external];
+	}
+
+	get_selection_transitions()
+	{
+		const conns = [];
+		for (const state_id of this.selection)
+		{
+			const cns = this.get_state_connectors(state_id);
+			conns.push(...cns);
+		}
+
 		const trs = new Set(conns.map(c => this.data.connectors[c].transition));
 		const internal = [...trs].filter(
 			(t) => {
@@ -725,14 +884,55 @@ export class Model {
 		external.map(this.update_transition_path, this);
 	}
 
-	move_state(state_id, pos)
+	move_selection(dx, dy)
+	{
+		const states = this.get_selection_substates();
+		for (const state_id of this.selection)
+		{
+			states.add(state_id);
+		}
+		const [internal, external] = this.get_selection_transitions();
+
+		for (const id of states)
+		{
+			const sub = this.data.states[id]; 
+			const old_pos = sub.pos;
+			sub.pos = [old_pos[0] + dx, old_pos[1] + dy];
+			this.changes.state_move.push([id, sub]);
+		}
+
+		internal.map(t => this.move_transition(t, [dx, dy]));
+		external.map(this.update_transition_path, this);
+	}
+
+	move_state(state_id, pos, move_substates)
 	{
 		const s = this.data.states[state_id];
 		const [dx, dy] = [pos[0] - s.pos[0], pos[1] - s.pos[1]];
-		s.pos = pos;
 
-		this.move_substates(state_id, dx, dy);
-		this.changes.state_move.push([state_id, s]);
+		if (move_substates)
+		{
+			if (this.selection.has(state_id))
+			{
+				this.move_selection(dx, dy);
+			}
+			else
+			{
+				s.pos = pos;
+				this.move_substates(state_id, dx, dy);
+				this.changes.state_move.push([state_id, s]);
+			}
+		}
+		else
+		{
+			s.pos = pos;
+			this.changes.state_move.push([state_id, s]);
+
+			const [internal, external] = this.get_single_state_transitions(state_id);
+
+			internal.map(t => this.move_transition(t, [dx, dy]));
+			external.map(this.update_transition_path, this);
+		}
 	}
 
 	remove_child(parent_id, child_id)
@@ -773,6 +973,14 @@ export class Model {
 		}
 		
 		return null;
+	}
+
+	update_parents()
+	{
+		for (const id of Object.keys(this.data.states))
+		{
+			this.update_parent(id);
+		}
 	}
 
 	update_parent(state_id)

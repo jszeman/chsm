@@ -2,8 +2,8 @@
 export const state_machine = {
 	states: {
 		__top__: {
-			pos: [-100000000, -100000000],
-			size: [200000000, 200000000],
+			pos: [-1000000, -1000000],
+			size: [2000000, 2000000],
 			title: '__top__',
 			text: [],
 			connectors: [],
@@ -103,7 +103,7 @@ export const state_machine = {
 			start: 'conn_0',
 			end: 'conn_1',
 			vertices: [[17, 7], [22, 7], [22, 45], [17, 45]],
-			label: 'trans_0',
+			label: 'sig_0 [guard()]/ func()',
 			label_offset: [0.5, -0.4],
 			label_anchor: 0,
 			label_pos: [17.5, 6.6],
@@ -112,7 +112,7 @@ export const state_machine = {
 			start: 'conn_2',
 			end: 'conn_3',
 			vertices: [[7, 22], [7, 30], [7, 30], [7, 35]],
-			label: 'trans_1',
+			label: 'sig_1',
 			label_offset: [0.5, -0.4],
 			label_anchor: 1,
 			label_pos: [7.5, 29.6],
@@ -121,12 +121,23 @@ export const state_machine = {
 			start: 'conn_4',
 			end: 'conn_5',
 			vertices: [[15, 11], [16, 11], [16, 14], [15, 14]],
-			label: 'trans_2',
+			label: 'sig_2',
 			label_offset: [0.5, -0.4],
 			label_anchor: 0,
 			label_pos: [15.5, 10.6],
 		},
 	},
+
+	notes: {
+		'sig_0': 'Signal 0',
+		'guard()': 'Guard function',
+		'func()': 'Event handler function',
+	},
+
+	view: {
+		translate: [10, 10],
+		scale: 10
+	}
 
 };
 

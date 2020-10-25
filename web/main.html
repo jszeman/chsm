@@ -11,7 +11,7 @@
 	<div class='wrapper'>
 		<nav id='sidebar'>
 			<ul class='props'>
-				<li><h3 contenteditable="true" id='title'>CHSM</h3></li>
+				<li><h4 contenteditable="true" id='title'>CHSM</h4></li>
 				<li><div id='btn-open' class='button' alt='Open a .h file.'>Open</div></li>
 				<li><div id='btn-codegen' class='button' alt='Generate code files.'>Code gen</div></li>
 				<li><div id='btn-save' class='button' alt='Save the state machine in html format.'>Save</div></li>
@@ -32,21 +32,73 @@
 				</li>
 				<li><textarea id='obj-text'></textarea></li>
 				<li>&nbsp</li>
-				<li><strong>commands</strong></li>
 				<li>
-					<ul>
-						<li>s: create a state</li>
-						<li>i: create an initial state</li>
-						<li>t: draw transition</li>
-						<li>d: delete object</li>
-						<li>tab: toggle sidebar</li>
-						<li>ctrl+wheel: zoom in/out</li>
-						<li>ctrl+drag: pan drawing</li>
-						<li>ctrl+Z, u: undo</li>
-						<li>ctrl+Y, r: redo</li>
-						<li>ctrl+click: redraw transition</li>
-						<li>doubleclick: split transition segment</li>
-					</ul>
+					<table>
+						<tr>
+							<th>Command</th>
+							<th>Action</th>
+						</tr>
+						<tr>
+							<td>s</td>
+							<td>Create state</td>
+						</tr>
+						<tr>
+							<td>i</td>
+							<td>Create initial state</td>
+						</tr>
+						<tr>
+							<td>t</td>
+							<td>Draw a transition</td>
+						</tr>
+						<tr>
+							<td>space</td>
+							<td>Switch transition corner</td>
+						</tr>
+						<tr>
+							<td>backspace</td>
+							<td>Delete last transition vertex</td>
+						</tr>
+						<tr>
+							<td>d</td>
+							<td>Delete object</td>
+						</tr>
+						<tr>
+							<td>tab</td>
+							<td>Toggle sidebar</td>
+						</tr>
+						<tr>
+							<td>ctrl+wheel</td>
+							<td>Zoom in/out</td>
+						</tr>
+						<tr>
+							<td>ctrl+drag</td>
+							<td>Pan drawing</td>
+						</tr>
+						<tr>
+							<td>u, ctrl+Z</td>
+							<td>Undo</td>
+						</tr>
+						<tr>
+							<td>r, ctrl+Y</td>
+							<td>Redo</td>
+						</tr>
+						<tr>
+							<td>shift+click</td>
+							<td>Redraw transition</td>
+						</tr>
+						<tr>
+							<td>doubleclick</td>
+							<td>Split transition segment</td>
+						</tr>
+						<tr>
+							<td>ctrl+click</td>
+							<td>Select multiple states</td>
+						</tr>
+						<tr>
+							<td>shift+drag state</td>
+							<td>Move state without substates</td>
+						</tr>
+					</table>
 				</li>
 			</ul>
 		</nav>

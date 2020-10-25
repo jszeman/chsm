@@ -1,45 +1,106 @@
 #ifndef CHSM_TEST_FUNCTIONS2_H
 #define CHSM_TEST_FUNCTIONS2_H
 
-/*Generated with CHSM v0.0.0 at 2020.06.27 21.53.25*/
+/*Generated with CHSM v0.0.0 at 2020.10.23 18.22.34*/
 
 #include "chsm_test_machine.h"
 #include "chsm.h"
 #include "cevent.h"
 #include <stdbool.h>
 
-void d_func(test_hsm_tst *self, const cevent_tst *e_pst);
-void s11_entry(test_hsm_tst *self, const cevent_tst *e_pst);
-void s11_exit(test_hsm_tst *self, const cevent_tst *e_pst);
-void s11_func(test_hsm_tst *self, const cevent_tst *e_pst);
-void s11_g1(test_hsm_tst *self, const cevent_tst *e_pst);
-void s11_g2(test_hsm_tst *self, const cevent_tst *e_pst);
-void s11_id(test_hsm_tst *self, const cevent_tst *e_pst);
-void s11_init(test_hsm_tst *self, const cevent_tst *e_pst);
-void s1_entry(test_hsm_tst *self, const cevent_tst *e_pst);
-void s1_exit(test_hsm_tst *self, const cevent_tst *e_pst);
-void s1_func(test_hsm_tst *self, const cevent_tst *e_pst);
-void s1_init(test_hsm_tst *self, const cevent_tst *e_pst);
-void s211_entry(test_hsm_tst *self, const cevent_tst *e_pst);
-void s211_exit(test_hsm_tst *self, const cevent_tst *e_pst);
-void s211_id(test_hsm_tst *self, const cevent_tst *e_pst);
-void s211_init(test_hsm_tst *self, const cevent_tst *e_pst);
-void s21_entry(test_hsm_tst *self, const cevent_tst *e_pst);
-void s21_exit(test_hsm_tst *self, const cevent_tst *e_pst);
-void s21_init(test_hsm_tst *self, const cevent_tst *e_pst);
-void s2_entry(test_hsm_tst *self, const cevent_tst *e_pst);
-void s2_exit(test_hsm_tst *self, const cevent_tst *e_pst);
-void s2_init(test_hsm_tst *self, const cevent_tst *e_pst);
-void s_entry(test_hsm_tst *self, const cevent_tst *e_pst);
-void s_exit(test_hsm_tst *self, const cevent_tst *e_pst);
-void s_init(test_hsm_tst *self, const cevent_tst *e_pst);
 
-bool cond(test_hsm_tst *self, const cevent_tst *e_pst);
-bool j_guard(test_hsm_tst *self, const cevent_tst *e_pst);
-bool k_guard(test_hsm_tst *self, const cevent_tst *e_pst);
-bool s11_g_guard1(test_hsm_tst *self, const cevent_tst *e_pst);
-bool s11_g_guard2(test_hsm_tst *self, const cevent_tst *e_pst);
-bool s11_guard(test_hsm_tst *self, const cevent_tst *e_pst);
-bool s1_guard(test_hsm_tst *self, const cevent_tst *e_pst);
+void d_func(chsm_tst *self, const cevent_tst *e_pst);
 
+/*S11 entry function comment*/
+void s11_entry(chsm_tst *self, const cevent_tst *e_pst);
+
+void s11_exit(chsm_tst *self, const cevent_tst *e_pst);
+
+void s11_init(chsm_tst *self, const cevent_tst *e_pst);
+
+/*S1 entry function comment.*/
+void s1_entry(chsm_tst *self, const cevent_tst *e_pst);
+
+void s1_exit(chsm_tst *self, const cevent_tst *e_pst);
+
+void s1_func(chsm_tst *self, const cevent_tst *e_pst);
+
+void s1_init(chsm_tst *self, const cevent_tst *e_pst);
+
+void s211_entry(chsm_tst *self, const cevent_tst *e_pst);
+
+void s211_exit(chsm_tst *self, const cevent_tst *e_pst);
+
+void s211_id(chsm_tst *self, const cevent_tst *e_pst);
+
+void s211_init(chsm_tst *self, const cevent_tst *e_pst);
+
+void s21_entry(chsm_tst *self, const cevent_tst *e_pst);
+
+void s21_exit(chsm_tst *self, const cevent_tst *e_pst);
+
+void s21_init(chsm_tst *self, const cevent_tst *e_pst);
+
+void s2_entry(chsm_tst *self, const cevent_tst *e_pst);
+
+void s2_exit(chsm_tst *self, const cevent_tst *e_pst);
+
+void s2_init(chsm_tst *self, const cevent_tst *e_pst);
+
+void s3_k_func(chsm_tst *self, const cevent_tst *e_pst);
+
+void s3_l_func(chsm_tst *self, const cevent_tst *e_pst);
+
+void s_entry(chsm_tst *self, const cevent_tst *e_pst);
+
+void s_exit(chsm_tst *self, const cevent_tst *e_pst);
+
+void s_init(chsm_tst *self, const cevent_tst *e_pst);
+
+
+bool cond(chsm_tst *self, const cevent_tst *e_pst);
+
+bool j_guard(chsm_tst *self, const cevent_tst *e_pst);
+
+bool s1_guard(chsm_tst *self, const cevent_tst *e_pst);
+
+/*
+Signals:
+    A     
+    B     
+    C     
+    D     
+    E     
+    F     Comment for F
+    G     Comment for G
+    H     
+    ID    
+    J     
+    K     
+    L     
+*/
+
+/*
+Other function notes:
+
+k_guard:
+    Parametric guard comment.
+
+s11_func:
+
+s11_g1:
+
+s11_g2:
+
+s11_g_guard1:
+    Comment for the s11_g_guard1 func.
+    
+    Multiple lines.
+
+s11_g_guard2:
+
+s11_guard:
+
+s11_id:
+*/
 #endif

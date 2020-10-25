@@ -1,6 +1,6 @@
 
 export class Gui {
-	constructor()
+	constructor(view)
 	{
 		this.drawing = document.querySelector('#drawing');
 		this.svg = document.querySelector('svg');
@@ -11,9 +11,13 @@ export class Gui {
 			state_min_size: [5,5]
 		};
 
-		this.translate = [10, 10];
-		this.scale = 10;
+		this.view = {
+			translate: [10, 10],
+			scale: 10
+		};
+
 		this.zoom_speed = 0.5;
+		this.pan_speed = 20;
 	}
 
 	clear()
@@ -26,8 +30,8 @@ export class Gui {
 
 	reset_view()
 	{
-		this.translate = [10, 10];
-		this.scale = 10;
+		this.view.translate = [10, 10];
+		this.view.scale = 10;
 		this.zoom_speed = 0.5;
 
 		this.set_transform();
@@ -35,9 +39,48 @@ export class Gui {
 
 	set_transform()
 	{
-		const [tx, ty] = this.translate;
-		const s = this.scale; 
+		const [tx, ty] = this.view.translate;
+		const s = this.view.scale; 
 		this.drawing.attributes.transform.value = `translate(${tx}, ${ty}) scale(${s}, ${s})`;
+	}
+
+	get_view()
+	{
+		return {
+			translate: [...this.view.translate],
+			scale: this.view.scale
+		};
+	}
+
+	set_view(view)
+	{
+		this.view.translate = view.translate;
+		this.view.scale = view.scale;
+		this.set_transform();
+	}
+
+	pan_up()
+	{
+		this.view.translate[1] += this.pan_speed;
+		this.set_transform();
+	}
+
+	pan_down()
+	{
+		this.view.translate[1] -= this.pan_speed;
+		this.set_transform();
+	}
+
+	pan_right()
+	{
+		this.view.translate[0] += this.pan_speed;
+		this.set_transform();
+	}
+
+	pan_left()
+	{
+		this.view.translate[0] -= this.pan_speed;
+		this.set_transform();
 	}
 
 	zoom_in(pos)
@@ -45,24 +88,24 @@ export class Gui {
 		const zs = this.zoom_speed;
 		const [x, y] = pos;
 		const [dtx, dty] = [-zs * x, -zs * y];
-		const [tx, ty] = this.translate;
-		this.translate = [tx + dtx, ty + dty];
-		this.scale += zs;
+		const [tx, ty] = this.view.translate;
+		this.view.translate = [tx + dtx, ty + dty];
+		this.view.scale += zs;
 		this.set_transform();
 	}
 
 	zoom_out(pos)
 	{
-		if (this.scale < 2)
+		if (this.view.scale < 2)
 		{
 			return;
 		}
 		const zs = -this.zoom_speed;
 		const [x, y] = pos;
 		const [dtx, dty] = [-zs * x, -zs * y];
-		const [tx, ty] = this.translate;
-		this.translate = [tx + dtx, ty + dty];
-		this.scale += zs;
+		const [tx, ty] = this.view.translate;
+		this.view.translate = [tx + dtx, ty + dty];
+		this.view.scale += zs;
 		this.set_transform();
 	}
 
@@ -170,8 +213,35 @@ export class Gui {
 		delete this.states[id];
 	}
 
-	render_transition(id, vertices, label, label_pos, on_mousedown, on_dblclick, on_click, on_label_mousedown)
+	build_text(parent, label, on_txt_click)
 	{
+		for (const [value, span, note] of label)
+		{
+			if (span)
+			{
+				const tspan = this.make_svg_elem('tspan', {class: 'function'});
+				tspan.appendChild(document.createTextNode(value));
+				if (note)
+				{
+					const title = this.make_svg_elem('title');
+					title.textContent = note;
+					tspan.appendChild(title);
+				}
+				parent.appendChild(tspan);
+				tspan.addEventListener('click', on_txt_click);
+			}
+			else
+			{
+				const txt = document.createTextNode(value);
+				parent.appendChild(txt);
+			}
+		}
+	}
+
+	render_transition(params)
+	{
+		const {id, vertices, label, label_pos, on_mousedown, on_dblclick, on_click, on_label_mousedown, on_txt_click} = params;
+
 		if (id in this.paths) return;
 		
 		const path = this.get_path_from_vertices(vertices);
@@ -184,8 +254,10 @@ export class Gui {
 			transform: arrow_transform,
 			class: 'transition_arrow',
 			display: 'block'});
+
 		const l = this.make_svg_elem('text', {x: label_pos[0], y: label_pos[1], class: 'transition_label'});
-		l.textContent = label;
+
+		this.build_text(l, label, on_txt_click);
 
 		g.appendChild(p);
 		g.appendChild(a);
@@ -195,6 +267,8 @@ export class Gui {
 		this.paths[id] = {
 			obj: 	g,
 			mod_svg: this.modify_svg_elem,
+			make_svg_elem: this.make_svg_elem,
+			build_txt: this.build_text,
 			gpfv: this.get_path_from_vertices,
 			gatfv: this.get_arrow_transform_from_vertices,
 			redraw: function(vertices, label, label_pos)
@@ -206,11 +280,14 @@ export class Gui {
 				this.mod_svg(p2, {d: npath});
 				this.mod_svg(a, {transform: narrow_transform});
 				this.mod_svg(l, {x: label_pos[0], y: label_pos[1]});
-				l.textContent = label;
+
+				//l.textContent = label;
 			},
 			set_label(label)
 			{
-				l.textContent = label;
+				l.innerHTML = "";
+
+				this.build_txt(l, label, on_txt_click);
 			},
 			set_label_pos(label_pos)
 			{
@@ -326,7 +403,8 @@ export class Gui {
 			on_corner_mouse_down,
 			on_border_click,
 			on_header_mouse_over,
-			on_header_mouse_leave} = params;
+			on_header_mouse_leave,
+			on_txt_click} = params;
 
 
 
@@ -349,7 +427,7 @@ export class Gui {
 		for (const s of strings)
 		{
 			const tspan = this.make_svg_elem('tspan', {x: th*0.3, dy: th});
-			tspan.textContent = s;
+			this.build_text(tspan, s, on_txt_click);
 			text.appendChild(tspan);
 		}
 
@@ -379,8 +457,8 @@ export class Gui {
 		g.appendChild(s2);
 		g.appendChild(m);
 		g.appendChild(t);
-		g.appendChild(text);
 		g.appendChild(header);
+		g.appendChild(text);
 		g.appendChild(border);
 		g.appendChild(resize_handle);
 
@@ -389,6 +467,8 @@ export class Gui {
 			mod_svg: this.modify_svg_elem,
 			make_svg: this.make_svg_elem,
 			get_evt_pos: this.get_obj_rel_pos,
+			make_svg_elem: this.make_svg_elem,
+			build_txt: this.build_text,
 			get_rel_pos: function(evt)
 			{
 				return this.get_evt_pos(evt, this.obj);
@@ -440,7 +520,8 @@ export class Gui {
 
 				for (const [i, s] of txt.entries())
 				{
-					text.children[i].textContent = s;
+					text.children[i].innerHTML = '';
+					this.build_txt(text.children[i], s, on_txt_click);
 				}
 			},
 			set_title(title)

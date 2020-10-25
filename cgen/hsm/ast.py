@@ -19,7 +19,7 @@ class Comment(Node):
         indent = ' ' * self.indent
         
         text = self.text.replace('\n', f'\n{indent}')
-        return f'/*{text}*/\n'
+        return f'/*{text}*/'
 
 
 class Include(Node):

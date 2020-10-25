@@ -20,7 +20,11 @@ enum test_events_en
     TEST_SIG_F,
     TEST_SIG_G,
     TEST_SIG_H,
-    TEST_SIG_ID
+    TEST_SIG_ID,
+    TEST_SIG_J,
+    TEST_SIG_K,
+    TEST_SIG_L,
+    TEST_SIG_M
 };
 
 typedef struct
@@ -47,5 +51,16 @@ chsm_result_ten __top__3(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx
 chsm_result_ten __top__4(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
 
 void clear_log(test_hsm_tst  *self);
+
+
+void s11_func(chsm_tst *self, const cevent_tst *e_pst, uint16_t param);
+void s11_g1(chsm_tst *self, const cevent_tst *e_pst, uint16_t param);
+void s11_g2(chsm_tst *self, const cevent_tst *e_pst, uint16_t param);
+bool k_guard(chsm_tst *self, const cevent_tst *e_pst, uint16_t param);
+bool s11_guard(chsm_tst *self, const cevent_tst *e_pst, uint16_t param);
+bool s11_g_guard1(chsm_tst *self, const cevent_tst *e_pst, uint16_t param);
+bool s11_g_guard2(chsm_tst *self, const cevent_tst *e_pst, uint16_t param);
+void s11_id(chsm_tst *self, const cevent_tst *e_pst, uint16_t param);
+
 
 #endif

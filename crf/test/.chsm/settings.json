@@ -7,8 +7,8 @@
 		"signal_prefix":		"TEST_SIG_",
 		"func_args":        	"self, e_pst, ctx_pst",
 		"func_params":      	"chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst",
-		"user_func_args_t":   	"({type} *)self, e_pst",
-		"user_func_params_t": 	"{type} *self, const cevent_tst *e_pst",
+		"user_func_args_t":   	"self, e_pst",
+		"user_func_params_t": 	"chsm_tst *self, const cevent_tst *e_pst",
 		"func_return_type": 	"chsm_result_ten",
 		"guard_return_type":	"bool",
 		"switch_variable":  	"e_pst->sig",
@@ -27,7 +27,6 @@
         "machine_c":    		"chsm_test_machine4.c",
         "machine_html": 		"chsm_test_machine4.html",
 		"top_func":     		"__top__4",
-		"-sm_type":				"chsm_test_tst",
         "func_h":       		"chsm_test_functions2.h"
 	}
 }

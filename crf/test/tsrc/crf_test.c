@@ -87,8 +87,8 @@ TEST_SETUP(crf)
 	cpool_init(pool_ast+0, buff1, 8, 4, 1);
 	cpool_init(pool_ast+1, buff2, 64, 4, 2);
 
-	chsm_ctor((chsm_tst *)&bus_driver, bus_driver_top, bus_events, EVENT_QUEUE_SIZE);
-	chsm_ctor((chsm_tst *)&dev_driver, dev_driver_top, dev_events, EVENT_QUEUE_SIZE);
+	chsm_ctor((chsm_tst *)&bus_driver, bus_driver_top, bus_events, EVENT_QUEUE_SIZE, 0);
+	chsm_ctor((chsm_tst *)&dev_driver, dev_driver_top, dev_events, EVENT_QUEUE_SIZE, 0);
 
 	bus_driver.sm.send = bus_send;
 
