@@ -573,6 +573,8 @@ export class Model {
 		t.vertices.push([x, y]);
 
 		this.changes.trans_redraw.push([trans_id, t]);
+
+		this.reset_transition_label_pos(trans_id);
 	}
 
 	switch_transition_elbow(trans_id, pos)
@@ -1167,6 +1169,47 @@ export class Model {
 
 		this.changes.trans_redraw.push([tr_id, tr]);
 	}
+
+	transition_midpoint(tr_id)
+	{
+		const tr = this.get_transition(tr_id);
+
+		const len = [];
+		for (let i=0; i<tr.vertices.length - 1; i++)
+		{
+			// Assuming horizontal and vertical lines
+			len.push(Math.abs(tr.vertices[i][0] - tr.vertices[i+1][0]) + Math.abs(tr.vertices[i][1] - tr.vertices[i+1][1]));
+		}
+
+		const half_len = len.reduce((a, b) => a + b) / 2;
+
+		let sum = 0;
+		for (let i=0; i<len.length; i++)
+		{
+			const diff = half_len - sum;
+			
+			if (diff < len[i])
+			{
+				const t = diff / len[i];
+				const dx = (tr.vertices[i+1][0] - tr.vertices[i][0]) * t;
+				const dy = (tr.vertices[i+1][1] - tr.vertices[i][1]) * t;
+				return [tr.vertices[i][0] + dx, tr.vertices[i][1] + dy];
+			}
+			else
+			{
+				sum += len[i];
+			}
+		}
+
+		// Should reach this point
+	}
+
+	reset_transition_label_pos(tr_id)
+	{
+		const p = this.transition_midpoint(tr_id);
+		this.transition_label_drag(tr_id, p);
+	}
+
 
 	transition_drag(tr_id, line_idx, p, label_width)
 	{
