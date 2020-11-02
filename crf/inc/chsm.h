@@ -61,12 +61,12 @@ typedef chsm_result_ten (*chsm_state_tpft)(chsm_tst *self, const cevent_tst *e_p
  * If the parent state handler executes a state transition, it should call the functions from
  * the exit_stack_apft array.
  */
-typedef struct chsm_call_ctx_st
+struct chsm_call_ctx_st
 {
 	chsm_user_func_tpft		exit_stack_apft[CHSM_MAX_NESTING_LEVEL];
 	chsm_user_func_tpft		*exit_ppft;
 	chsm_state_tpft			start_pft;
-} chsm_call_ctx_tst;
+};
 
 /*
  * State machine

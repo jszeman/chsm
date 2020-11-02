@@ -16,7 +16,7 @@ typedef struct cpool_tst cpool_tst;
 
 struct cpool_tst
 {
-	void			*pool;	// Pointer to a user allocated buffer
+	uint8_t			*pool;	// Pointer to a user allocated buffer
 	uint16_t		esize;	// Unit size of events in the pool
 	uint16_t		ecnt;	// Max number of events in the pool
 	uint16_t		free;	// Number of free events in the pool
@@ -26,6 +26,6 @@ struct cpool_tst
 	bool 	    	(*gc)(cpool_tst *self, cevent_tst *e);
 };
 
-void 		cpool_init(cpool_tst *self, void *buff, uint16_t event_size, uint16_t event_count, uint16_t id);
+void 		cpool_init(cpool_tst *self, uint8_t *buff, uint16_t event_size, uint16_t event_count, uint16_t id);
 
 #endif /* INC_CPOOL_H_ */

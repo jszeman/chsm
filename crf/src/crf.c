@@ -75,11 +75,6 @@ static void	step(crf_tst *self)
     }
 }
 
-static void	start(crf_tst *self)
-{
-
-}
-
 bool crf_init(crf_tst *self , chsm_tst **chsm_ap, cpool_tst *pool_ast, uint16_t pool_cnt)
 {
     if (NULL == self) return false;
