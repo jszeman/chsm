@@ -12,15 +12,26 @@
 #include <stdlib.h>
 #include "cevent.h"
 
+/*
+ * Thread safe multi-producer single consumer event queue
+ * 
+ * The application should only ever need to call the put method directly
+ * to place events into the queue. Calling this function from interrupts
+ * and other threads is safe.
+ * All the other methods sould only be called from the main thread.
+ */
+
 typedef struct cqueue_tst cqueue_tst;
 
 struct cqueue_tst
 {
 	const cevent_tst	**events;
 	uint16_t			max;
-	uint16_t			head;
-	uint16_t			tail;
-	uint16_t			free;
+	volatile uint16_t	head;
+	volatile uint16_t	tail;
+	volatile uint16_t	free;
+	uint16_t 			mask;
+	uint16_t			in_critical;
 	
 	int32_t 			(*put)(cqueue_tst *self, const cevent_tst *e_cpst);
 	int32_t 			(*put_left)(cqueue_tst *self, const cevent_tst *e_cpst);
