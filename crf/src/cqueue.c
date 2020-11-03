@@ -23,7 +23,6 @@
 		#include <stdatomic.h>
 		#define atomic_fetch_add_u16(obj, value) atomic_fetch_add(obj, value)
 		#define BUILTIN_ATOMICS
-        #error C11
 	#endif
 #endif
 
