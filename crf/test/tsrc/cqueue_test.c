@@ -252,7 +252,6 @@ TEST(eq, put_left_more_than_capacity)
 	for (uint16_t i=0; i<5; i++)
 	{
 		r = eq.put_left(&eq, &e1);
-		printf("%u - %u = %u\n", eq.head, eq.tail, (uint16_t)(eq.head - eq.tail));
 	}
 
 	TEST_ASSERT(-1 == r);
