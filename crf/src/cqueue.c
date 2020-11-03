@@ -11,22 +11,38 @@
 #include <cevent.h>
 #include <cqueue.h>
 
+/* 
+ * cqueue_put may be called from multiple threads (or from interrupt handlers)
+ * so it has to be thread safe. C11 provides the necessary atomic operation but
+ * to prepare for the cases when C11 is not available the application have to 
+ * provide the definition for the atomic functions.
+ */
+
+#if (__STDC_VERSION__ >= 201112L)
+	#ifndef __STDC_NO_ATOMICS__
+		#include <stdatomic.h>
+		#define atomic_fetch_add_u16(obj, value) atomic_fetch_add(obj, value)
+		#define CQUEUE_BUILTIN_ATOMICS
+	#endif
+#endif
+
+#ifndef CQUEUE_BUILTIN_ATOMICS
+uint16_t atomic_fetch_add_u16(volatile uint16_t *obj, uint16_t value);
+#endif
+
 static int32_t cqueue_put(cqueue_tst *self, const cevent_tst *e)
 {
+	uint16_t head;
+
 	assert(NULL != self);
 
-	if (0 == self->free)
+	if (self->head - self->tail >= self->max)
 	{
 		return -1;
 	}
 
-	self->events[self->head] = e;
+	self->events[self->head & self->mask] = e;
 	self->head++;
-	if (self->head >= self->max)
-	{
-		self->head = 0;
-	}
-	self->free--;
 
 	return 0;
 }
@@ -35,18 +51,13 @@ static int32_t cqueue_put_left(cqueue_tst *self, const cevent_tst *e_cpst)
 {
 	assert(NULL != self);
 
-	if (0 == self->free)
+	if ((uint16_t)(self->head - self->tail) >= self->max)
 	{
 		return -1;
 	}
 
 	self->tail--;
-	if (self->tail >= self->max)
-	{
-		self->tail = self->max-1;
-	}
-	self->events[self->tail] = e_cpst;
-	self->free--;
+	self->events[self->tail & self->mask] = e_cpst;
 
 	return 0;
 }
@@ -57,18 +68,14 @@ static const cevent_tst *cqueue_get(cqueue_tst *self)
 
 	assert(NULL != self);
 
-	if (self->free == self->max)
+	if (self->head == self->tail)
 	{
 		return NULL;
 	}
 
-	e = self->events[self->tail];
+	e = self->events[self->tail & self->mask];
 	self->tail++;
-	if (self->tail >= self->max)
-	{
-		self->tail = 0;
-	}
-	self->free++;
+
 	return e;
 }
 
@@ -78,20 +85,14 @@ static const cevent_tst *cqueue_get_right(cqueue_tst *self)
 
 	assert(NULL != self);
 
-	if (self->free == self->max)
+	if (self->head == self->tail)
 	{
 		return NULL;
 	}
 
 	self->head--;
-	if (self->head >= self->max)
-	{
-		self->head = self->max-1;
-	}
+	e = self->events[self->head & self->mask];
 
-	e = self->events[self->head];
-
-	self->free++;
 	return e;
 }
 
@@ -106,6 +107,7 @@ int32_t cqueue_init(cqueue_tst *self, const cevent_tst **events, uint16_t max_ev
 	self->head = 0;
 	self->tail = 0;
 	self->free = max_event_count;
+	self->mask = max_event_count-1;
 
 	self->put = cqueue_put;
 	self->put_left = cqueue_put_left;
