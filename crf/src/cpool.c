@@ -25,7 +25,7 @@
 //		the loop, but an interrupt have already allocated and sent the event.
 static void *cpool_new(cpool_tst *self)
 {
-	void *e;
+    uint8_t *e;
 
 	assert(NULL != self);
 
@@ -64,11 +64,10 @@ static bool cpool_gc(cpool_tst *self, cevent_tst *e)
 	return true;
 }
 
-void cpool_init(cpool_tst *self, void *buff, uint16_t event_size, uint16_t event_count, uint16_t id)
+void cpool_init(cpool_tst *self, uint8_t *buff, uint16_t event_size, uint16_t event_count, uint16_t id)
 {
 	assert(NULL != buff);
 	assert(NULL != self);
-	assert(0 != (id & CPOOL_ID_MASK));
 	assert(id < 16);
 
 	self->pool = buff;

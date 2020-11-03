@@ -30,8 +30,6 @@ void chsm_ctor(chsm_tst *self, chsm_state_tpft init_state_pft, const cevent_tst 
 
 void chsm_init(chsm_tst *self)
 {
-	uint16_t result_u16;
-
 	assert(NULL != self);
 
 	chsm_dispatch(self, &chsm_init_event_st);
