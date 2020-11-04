@@ -24,6 +24,8 @@ static void *cpool_new(cpool_tst *self)
 
 	self->head = *((uint8_t **)e);
 
+	((cevent_tst *)e)->gc_info = (gc_info_tst){.pool_id = self->id, .ref_cnt = 0};
+
 	return e;
 }
 
@@ -37,14 +39,9 @@ static bool cpool_gc(cpool_tst *self, cevent_tst *e)
 		return false;
 	}
 
-	if (e->gc_info.ref_cnt)
-	{
-		e->gc_info.ref_cnt--;
-	}
-	else
-	{
-		e->gc_info.pool_id = 0;
-	}
+	uint8_t **p = (uint8_t **)e;
+	*p = self->head;
+	self->head = (uint8_t *)e;
 
 	return true;
 }
