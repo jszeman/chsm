@@ -12,6 +12,8 @@
 #include <assert.h>
 #include "crf.h"
 
+#define CPOOL_TERMINATOR 0xffff
+
 #if (__STDC_VERSION__ >= 201112L)
     #ifndef __STDC_NO_ATOMICS__
         #include <stdatomic.h>
@@ -21,16 +23,18 @@
 #endif
 
 #ifndef BUILTIN_ATOMICS
-/* Atomically replaces the value pointed by obj with the result of addition of
- * value to the old value of obj, and returns the value obj held previously.
- * The operation is read-modify-write operation.
+/* Atomically compares the contents of memory pointed to by obj with the
+ * contents of memory pointed to by expected, and if those are bitwise equal,
+ * replaces the former with desired (performs read-modify-write operation).
+ * Otherwise, loads the actual contents of memory pointed to by obj into
+ * *expected (performs load operation).
  */
 bool atomic_compare_exchange_u16(volatile uint16_t *obj, uint16_t *expected, uint16_t desired);
 #endif
 
 
-/* Only cpool_new should be implemented to be thread safe
- *
+/* Only cpool_new should be called from interrupt context, so only
+ * this function is implemented to be threaf safe.
  */
 static void *cpool_new(cpool_tst *self)
 {
@@ -39,17 +43,19 @@ static void *cpool_new(cpool_tst *self)
 
 	assert(NULL != self);
 
-	while(0xffff != self->head)
+	// Using for loop to make sure it terminates at max after self->ecnt steps.
+	for (int i=0; i<self->ecnt; i++)
 	{
 	    head = self->head;
 
-	    if (0xffff == head) return NULL;
+	    if (CPOOL_TERMINATOR == head) return NULL;
 
 	    /* Try to change self->head to the value in the cell it points to
 	     * if self->head still holds the value we read previously.
-	     * */
+		 */
 	    if (atomic_compare_exchange_u16(&self->head, &head, *((uint16_t *)(self->pool + head))))
 	    {
+			// At this point the change was successful, so we own the piec of memory indexed by head
 	        e = (cevent_tst *)(self->pool + head);
 	        e->gc_info = (gc_info_tst){.pool_id = self->id, .ref_cnt = 0};
 	        return e;
@@ -107,5 +113,5 @@ void cpool_init(cpool_tst *self, uint8_t *buff, uint16_t event_size, uint16_t ev
 	}
 
     uint16_t *p = (uint16_t *)(buff + event_size * (event_count - 1));
-    *p = 0xffff;
+    *p = CPOOL_TERMINATOR;
 }
