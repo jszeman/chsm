@@ -26,6 +26,7 @@ static void* new_event(crf_tst *self, uint32_t size)
             void* e = pool->new(pool);
             if (NULL != e)
             {
+                ((cevent_tst *)e)->gc_info = (gc_info_tst){.pool_id = i+1, .ref_cnt = 0};
                 return e;
             }
         }
@@ -34,17 +35,13 @@ static void* new_event(crf_tst *self, uint32_t size)
     return NULL;
 }
 
-static void	gc(crf_tst *self, cevent_tst* e)
+static void	gc(crf_tst *self, cevent_tst* e_pst)
 {
     if (NULL == self->pool_ast) return;
 
-    for (int i=0; i<self->pool_cnt_u16; i++)
-    {
-        if (self->pool_ast[i].gc(self->pool_ast+i, e))
-        {
-            return;
-        }
-    }
+    if (0 == e_pst->gc_info.pool_id) return; // Constant (not dinamycally allocated) event.
+
+    self->pool_ast[e_pst->gc_info.pool_id - 1].gc(self->pool_ast+(e_pst->gc_info.pool_id - 1), e_pst);
 
     return;
 }
@@ -66,15 +63,22 @@ static void	post(crf_tst *self, cevent_tst* e, cqueue_tst *q)
 
 static void	step(crf_tst *self)
 {
-    const cevent_tst *e_pst = NULL;
+    cevent_tst *e_pst = NULL;
     chsm_tst **hsm_pst;
 
     for (hsm_pst = self->chsm_ap; *hsm_pst; hsm_pst++)
     {
-        e_pst = (*hsm_pst)->event_q_st.get(&((*hsm_pst)->event_q_st));
+        e_pst = (cevent_tst *)(*hsm_pst)->event_q_st.get(&((*hsm_pst)->event_q_st));
         if (e_pst)
         {
             chsm_dispatch(*hsm_pst, e_pst);
+
+            e_pst->gc_info.ref_cnt--;
+
+            if (0 == e_pst->gc_info.ref_cnt)
+            {
+                gc(self, e_pst);
+            }
         }
     }
 }

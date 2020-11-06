@@ -18,18 +18,20 @@
 
 #ifndef BUILTIN_ATOMICS
     typedef volatile uint16_t atomic_uint16_t;
-    /* Atomically compares the contents of memory pointed to by obj with the
-    * contents of memory pointed to by expected, and if those are bitwise equal,
-    * replaces the former with desired (performs read-modify-write operation).
-    * Otherwise, loads the actual contents of memory pointed to by obj into
-    * *expected (performs load operation).
-    */
+    /* atomic_compare_exchange_u16:
+     * Atomically compares the contents of memory pointed to by obj with the
+     * contents of memory pointed to by expected, and if those are bitwise equal,
+     * replaces the former with desired (performs read-modify-write operation).
+     * Otherwise, loads the actual contents of memory pointed to by obj into
+     * *expected (performs load operation).
+     */
     bool atomic_compare_exchange_u16(atomic_uint16_t *obj, uint16_t *expected, uint16_t desired);
 
-    /* Atomically replaces the value pointed by obj with the result of addition of
-    * value to the old value of obj, and returns the value obj held previously.
-    * The operation is read-modify-write operation.
-    */
+    /* atomic_fetch_add_u16:
+     * Atomically replaces the value pointed by obj with the result of addition of
+     * value to the old value of obj, and returns the value obj held previously.
+     * The operation is read-modify-write operation.
+     */
     uint16_t atomic_fetch_add_u16(atomic_uint16_t *obj, uint16_t value);
 #endif
 

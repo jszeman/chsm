@@ -34,49 +34,47 @@ static void *cpool_new(cpool_tst *self)
         head = self->head;
 
         if (CPOOL_TERMINATOR == head) return NULL;
+
         /* Try to change self->head to the value in the cell it points to
          * if self->head still holds the value we read previously.
+		 * If an interrupt here changes the value of self->head, the function call
+		 * will fail and return false so the code inside the if can't modeify the
+		 * content of memory indexed by head.
          */
         if (atomic_compare_exchange_u16(&self->head, &head, *((uint16_t *)(self->pool + head))))
         {
-            
-            // At this point the change was successful, so we own the piec of memory indexed by head
-            e = (cevent_tst *)(self->pool + head);
-            e->gc_info = (gc_info_tst){.pool_id = self->id, .ref_cnt = 0};
-            return e;
+            // At this point the change was successful, so we own the piece of memory indexed by head
+            return (cevent_tst *)(self->pool + head);
         }
     }
 
     return NULL;
 }
 
-static bool cpool_gc(cpool_tst *self, cevent_tst *e)
+static bool cpool_gc(cpool_tst *self, cevent_tst *e_pst)
 {
     assert(NULL != self);
-    assert(NULL != e);
+    assert(NULL != e_pst);
 
-    if (self->id != e->gc_info.pool_id)
-    {
-        return false;
-    }
+	uint8_t *e_pu8 = (uint8_t *)e_pst;
 
-    uint16_t *p = (uint16_t *)e;
+    if ((e_pu8 < self->pool) || (e_pu8 > (self->pool + self->esize * self->ecnt))) return false; // Constant (not dinamycally allocated) event.
+
+    uint16_t *p = (uint16_t *)e_pst;
     *p = self->head;
-    self->head = (uint8_t *)e - self->pool;
+    self->head = (uint8_t *)e_pst - self->pool;
 
     return true;
 }
 
-void cpool_init(cpool_tst *self, uint8_t *buff, uint16_t event_size, uint16_t event_count, uint16_t id)
+void cpool_init(cpool_tst *self, uint8_t *buff, uint16_t event_size, uint16_t event_count)
 {
     assert(NULL != buff);
     assert(NULL != self);
-    assert(id < 16);
 
     self->pool = buff;
     self->esize = event_size;
     self->ecnt = event_count;
-    self->id = id;
 
     self->new = cpool_new;
     self->gc = cpool_gc;

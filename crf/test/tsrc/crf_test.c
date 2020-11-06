@@ -27,8 +27,8 @@ static const cevent_tst event_none = {.sig=C_SIG_NONE, .gc_info=0};
 
 static const cevent_tst event_send_data = {.sig=TEST_SIG_SEND_DATA, .gc_info=0};
 
-#define BUFF1_SIZE 	64
-#define BUFF2_SIZE 	1024
+#define BUFF1_SIZE 	32
+#define BUFF2_SIZE 	256
 
 #define POOL_CNT	2
 
@@ -85,8 +85,8 @@ TEST_SETUP(crf)
 	memset(&buff1, 0, sizeof(buff1));
 	memset(&buff2, 0, sizeof(buff2));
 
-	cpool_init(pool_ast+0, buff1, 8, 4, 1);
-	cpool_init(pool_ast+1, buff2, 64, 4, 2);
+	cpool_init(pool_ast+0, buff1, 8, 4);
+	cpool_init(pool_ast+1, buff2, 64, 4);
 
 	chsm_ctor((chsm_tst *)&bus_driver, bus_driver_top, bus_events, EVENT_QUEUE_SIZE, 0);
 	chsm_ctor((chsm_tst *)&dev_driver, dev_driver_top, dev_events, EVENT_QUEUE_SIZE, 0);
@@ -274,6 +274,34 @@ TEST(crf, post)
 	TEST_ASSERT_EQUAL(0xcafe, bus_driver.tmp_u16);
 }
 
+/* gc_after_post: 
+ * Check that an event that was posted to a HSM is properly
+ * garbage collected after the first use
+ */
+TEST(crf, gc_after_post)
+{
+	event_small_tst *e[5];
+
+	// Allocate all events from the small pool
+	for (int i=0; i<4; i++)
+	{
+		e[i] = CRF_NEW_EVENT(event_small_tst);
+	}
+
+	e[0]->e.sig = TEST_SIG_SEND_DATA;
+
+	CRF_POST(e[0], &bus_driver);
+
+	CRF_STEP();
+
+	e[4] = CRF_NEW_EVENT(event_small_tst);
+
+	TEST_ASSERT_NOT_NULL(e[4]);
+	TEST_ASSERT_GREATER_OR_EQUAL(buff1, (uint8_t *)e[4]);
+	TEST_ASSERT_LESS_OR_EQUAL(buff1 + sizeof(buff1) - sizeof(event_small_tst),
+		(uint8_t *)e[4]);
+}
+
 /* emmit: 
  * Make one state machine send an event to another
  */
@@ -311,9 +339,9 @@ TEST_GROUP_RUNNER(crf)
 	RUN_TEST_CASE(crf, too_many_events);
 	RUN_TEST_CASE(crf, garbage_collect);
 	RUN_TEST_CASE(crf, post);
+	RUN_TEST_CASE(crf, gc_after_post);
 	RUN_TEST_CASE(crf, emmit);
 	
-	//RUN_TEST_CASE(crf, test0);
 	//RUN_TEST_CASE(crf, test0);
 	//RUN_TEST_CASE(crf, test0);
 	//RUN_TEST_CASE(crf, test0);
