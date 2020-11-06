@@ -13,6 +13,8 @@
 
 static void* new_event(crf_tst *self, uint32_t size)
 {
+    if (NULL == self->pool_ast) return NULL;
+
     for(uint32_t i=0; i<CRF_MAX_POOL_COUNT; i++)
     {
         cpool_tst *pool = self->pool_ast+i;
@@ -34,6 +36,8 @@ static void* new_event(crf_tst *self, uint32_t size)
 
 static void	gc(crf_tst *self, cevent_tst* e)
 {
+    if (NULL == self->pool_ast) return;
+
     for (int i=0; i<self->pool_cnt_u16; i++)
     {
         if (self->pool_ast[i].gc(self->pool_ast+i, e))
@@ -79,7 +83,6 @@ bool crf_init(crf_tst *self , chsm_tst **chsm_ap, cpool_tst *pool_ast, uint16_t 
 {
     if (NULL == self) return false;
     if (NULL == chsm_ap) return false;
-    if (NULL == pool_ast) return false;
 
     self->new_event = new_event;
     self->gc = gc;

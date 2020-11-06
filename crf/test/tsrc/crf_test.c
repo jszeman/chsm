@@ -124,9 +124,6 @@ TEST(crf, init_NULL)
 
 	res = crf_init(&crf, NULL, pool_ast, 2);
 	TEST_ASSERT_FALSE(res);
-
-	res = crf_init(&crf, hsm_ap, NULL, 2);
-	TEST_ASSERT_FALSE(res);
 }
 
 

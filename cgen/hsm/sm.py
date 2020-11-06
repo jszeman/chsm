@@ -55,17 +55,16 @@ class StateMachine:
 
         #pprint(self.states, indent=4)
 
-        user_type, top_func = self._get_user_symbols(h_file)
+        top_func = self._get_user_symbols(h_file)
 
-        logging.info(f'Extracted type = {user_type}, top_func = {top_func} from file {h_file}')
+        logging.info(f'Extracted top_func = {top_func} from file {h_file}')
 
-        user_type = self.file_config.get('sm_type', user_type)
         self.top_func = self.file_config.get('top_func', top_func)
 
-        logging.info(f'Final type = {user_type}, top_func = {self.top_func}')
+        logging.info(f'Final top_func = {self.top_func}')
 
-        self.templates['user_func_args'] = self.templates['user_func_args_t'].format(type = user_type)
-        self.templates['user_func_params'] = self.templates['user_func_params_t'].format(type = user_type)
+        self.templates['user_func_args'] = self.templates['user_func_args_t']
+        self.templates['user_func_params'] = self.templates['user_func_params_t']
 
         self.states['__top__']['title'] = self.top_func
         self.resolve_parent_titles(self.states)
@@ -76,16 +75,10 @@ class StateMachine:
         self.h_ast = self.build_user_declarations(self.user_funcs, self.user_guards)
 
     def _get_user_symbols(self, hpath):
-        sm_type, top_func = None, None
+        top_func = None, None
 
         with open(hpath, 'r') as h_file:
             h_data = h_file.read()
-
-            m = re.search(self.templates['state_machine_type'], h_data, re.DOTALL)
-            if m:
-                sm_type = m.group('type')
-            else:
-                logging.warning(f'Could not find a state machine declaration in file {hpath}')
 
             m = re.search(self.templates['top_state_name'], h_data)
             if m:
@@ -93,7 +86,7 @@ class StateMachine:
             else:
                 logging.warning(f'Could not find a state handler function declaration in file {hpath}')
 
-        return sm_type, top_func
+        return top_func
 
     def build_user_declarations(self, funcs, guards):
         ast = Ast()
