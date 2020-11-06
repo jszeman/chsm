@@ -27,8 +27,8 @@ static const cevent_tst event_none = {.sig=C_SIG_NONE, .gc_info=0};
 
 static const cevent_tst event_send_data = {.sig=TEST_SIG_SEND_DATA, .gc_info=0};
 
-#define BUFF1_SIZE 	32
-#define BUFF2_SIZE 	256
+#define BUFF1_SIZE 	64
+#define BUFF2_SIZE 	1024
 
 #define POOL_CNT	2
 
@@ -138,6 +138,10 @@ TEST(crf, init_NULL)
 TEST(crf, one_small_event)
 {
 	event_small_tst *e;
+	bool res;
+
+	res = crf_init(&crf, hsm_ap, pool_ast, 2);
+	TEST_ASSERT_TRUE(res);
 
 	e = CRF_NEW_EVENT(event_small_tst);
 
@@ -156,6 +160,10 @@ TEST(crf, two_small_event)
 {
 	event_small_tst *e1;
 	event_small_tst *e2;
+	bool res;
+
+	res = crf_init(&crf, hsm_ap, pool_ast, 2);
+	TEST_ASSERT_TRUE(res);
 
 	e1 = CRF_NEW_EVENT(event_small_tst);
 	e2 = CRF_NEW_EVENT(event_small_tst);
@@ -174,6 +182,10 @@ TEST(crf, two_small_event)
 TEST(crf, too_many_small_event)
 {
 	event_small_tst *e[5];
+	bool res;
+
+	res = crf_init(&crf, hsm_ap, pool_ast, 2);
+	TEST_ASSERT_TRUE(res);
 
 	for (int i=0; i<5; i++)
 	{
@@ -202,6 +214,10 @@ TEST(crf, too_many_small_event)
 TEST(crf, too_many_events)
 {
 	event_small_tst *e[9];
+	bool res;
+
+	res = crf_init(&crf, hsm_ap, pool_ast, 2);
+	TEST_ASSERT_TRUE(res);
 
 	for (int i=0; i<9; i++)
 	{
@@ -240,6 +256,10 @@ TEST(crf, garbage_collect)
 {
 	event_small_tst *e[5];
 	event_small_tst *e_new;
+	bool res;
+
+	res = crf_init(&crf, hsm_ap, pool_ast, 2);
+	TEST_ASSERT_TRUE(res);
 
 	for (int i=0; i<5; i++)
 	{
@@ -262,6 +282,10 @@ TEST(crf, garbage_collect)
 TEST(crf, post)
 {
 	event_small_tst *e;
+	bool res;
+
+	res = crf_init(&crf, hsm_ap, pool_ast, 2);
+	TEST_ASSERT_TRUE(res);
 
 	e = CRF_NEW_EVENT(event_small_tst);
 	e->e.sig = TEST_SIG_SEND_DATA;
@@ -279,6 +303,10 @@ TEST(crf, post)
 TEST(crf, emmit)
 {
 	event_small_tst *e;
+	bool res;
+
+	res = crf_init(&crf, hsm_ap, pool_ast, 2);
+	TEST_ASSERT_TRUE(res);
 
 	e = CRF_NEW_EVENT(event_small_tst);
 	e->e.sig = TEST_SIG_TICK_1MS;
@@ -311,6 +339,7 @@ TEST_GROUP_RUNNER(crf)
 	RUN_TEST_CASE(crf, garbage_collect);
 	RUN_TEST_CASE(crf, post);
 	RUN_TEST_CASE(crf, emmit);
+	
 	//RUN_TEST_CASE(crf, test0);
 	//RUN_TEST_CASE(crf, test0);
 	//RUN_TEST_CASE(crf, test0);
