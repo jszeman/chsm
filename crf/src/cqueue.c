@@ -10,29 +10,8 @@
 #include <assert.h>
 #include <cevent.h>
 #include <cqueue.h>
+#include "atomic_ops.h"
 
-/* 
- * cqueue_put may be called from multiple threads (or from interrupt handlers)
- * so it has to be thread safe. C11 provides the necessary atomic operation but
- * to prepare for the cases when C11 is not available the application have to 
- * provide the definition for the atomic functions.
- */
-
-#if (__STDC_VERSION__ >= 201112L)
-	#ifndef __STDC_NO_ATOMICS__
-		#include <stdatomic.h>
-		#define atomic_fetch_add_u16(obj, value) atomic_fetch_add(obj, value)
-		#define BUILTIN_ATOMICS
-	#endif
-#endif
-
-#ifndef BUILTIN_ATOMICS
-/* Atomically replaces the value pointed by obj with the result of addition of
- * value to the old value of obj, and returns the value obj held previously.
- * The operation is read-modify-write operation.
- */
-uint16_t atomic_fetch_add_u16(volatile uint16_t *obj, uint16_t value);
-#endif
 
 /* Thread safety analysis:
  *

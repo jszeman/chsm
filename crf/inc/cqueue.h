@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include "cevent.h"
+#include "atomic_ops.h"
 
 /*
  * Thread safe multi-producer single consumer event queue
@@ -27,9 +28,8 @@ struct cqueue_tst
 {
 	const cevent_tst	**events;
 	uint16_t			max;
-	volatile uint16_t	head;
-	volatile uint16_t	tail;
-	volatile uint16_t	free;
+	atomic_uint16_t	 	head;
+	atomic_uint16_t		tail;
 	uint16_t 			mask;
 	uint16_t			in_critical;
 	

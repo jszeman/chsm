@@ -12,26 +12,9 @@
 #include <assert.h>
 #include "crf.h"
 #include <stdio.h>
+#include "atomic_ops.h"
 
 #define CPOOL_TERMINATOR 0xffff
-
-#if (__STDC_VERSION__ >= 201112L)
-#ifndef __STDC_NO_ATOMICS__
-#include <stdatomic.h>
-#define atomic_compare_exchange_u16(obj, expected, desired) atomic_compare_exchange_weak(obj, expected, desired)
-#define BUILTIN_ATOMICS
-#endif
-#endif
-
-#ifndef BUILTIN_ATOMICS
-/* Atomically compares the contents of memory pointed to by obj with the
- * contents of memory pointed to by expected, and if those are bitwise equal,
- * replaces the former with desired (performs read-modify-write operation).
- * Otherwise, loads the actual contents of memory pointed to by obj into
- * *expected (performs load operation).
- */
-bool atomic_compare_exchange_u16(volatile uint16_t *obj, uint16_t *expected, uint16_t desired);
-#endif
 
 
 /* Only cpool_new should be called from interrupt context, so only
