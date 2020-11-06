@@ -11,6 +11,7 @@
 #include <string.h>
 #include <assert.h>
 #include "crf.h"
+#include <stdio.h>
 
 #define CPOOL_TERMINATOR 0xffff
 
@@ -43,18 +44,19 @@ static void *cpool_new(cpool_tst *self)
 
     assert(NULL != self);
 
+
     // Using for loop to make sure it terminates at max after self->ecnt steps.
     for (int i=0; i<self->ecnt; i++)
     {
         head = self->head;
 
         if (CPOOL_TERMINATOR == head) return NULL;
-
         /* Try to change self->head to the value in the cell it points to
          * if self->head still holds the value we read previously.
          */
         if (atomic_compare_exchange_u16(&self->head, &head, *((uint16_t *)(self->pool + head))))
         {
+            
             // At this point the change was successful, so we own the piec of memory indexed by head
             e = (cevent_tst *)(self->pool + head);
             e->gc_info = (gc_info_tst){.pool_id = self->id, .ref_cnt = 0};

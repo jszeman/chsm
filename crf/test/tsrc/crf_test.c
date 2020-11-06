@@ -27,8 +27,8 @@ static const cevent_tst event_none = {.sig=C_SIG_NONE, .gc_info=0};
 
 static const cevent_tst event_send_data = {.sig=TEST_SIG_SEND_DATA, .gc_info=0};
 
-#define BUFF1_SIZE 	32
-#define BUFF2_SIZE 	256
+#define BUFF1_SIZE 	64
+#define BUFF2_SIZE 	1024
 
 #define POOL_CNT	2
 
@@ -77,6 +77,7 @@ void bus_send(chsm_tst *self, const cevent_tst *e_pst)
 
 TEST_SETUP(crf)
 {
+	bool res;
 	memset(&bus_driver, 0, sizeof(bus_driver));
 	memset(&dev_driver, 0, sizeof(dev_driver));
 
@@ -94,6 +95,9 @@ TEST_SETUP(crf)
 
 	chsm_init((chsm_tst *)&bus_driver);
 	chsm_init((chsm_tst *)&dev_driver);
+
+	res = crf_init(&crf, hsm_ap, pool_ast, 2);
+	TEST_ASSERT_TRUE(res);
 }
 
 TEST_TEAR_DOWN(crf)
@@ -308,6 +312,7 @@ TEST_GROUP_RUNNER(crf)
 	RUN_TEST_CASE(crf, garbage_collect);
 	RUN_TEST_CASE(crf, post);
 	RUN_TEST_CASE(crf, emmit);
+	
 	//RUN_TEST_CASE(crf, test0);
 	//RUN_TEST_CASE(crf, test0);
 	//RUN_TEST_CASE(crf, test0);

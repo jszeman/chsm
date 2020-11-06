@@ -144,7 +144,6 @@ int32_t cqueue_init(cqueue_tst *self, const cevent_tst **events, uint16_t max_ev
 	self->max = max_event_count;
 	self->head = 0;
 	self->tail = 0;
-	self->free = max_event_count;
 	self->mask = max_event_count-1;
 
 	self->put = cqueue_put;

@@ -38,7 +38,8 @@ typedef struct chsm_call_ctx_st chsm_call_ctx_tst;
 typedef void (*chsm_user_func_tpft)(chsm_tst *self, const cevent_tst *e_pst);
 
 /*
- * This is the type for functions that implement state behaviour.
+ * This is the type for functions that implement state behaviour. Used only internally by
+ * the CRF library.
  * Return:
  * 		C_RES_HANDLED: The event was handled by the state or one of its ancestors
  *		C_RES_IGNORED: The event was ignored since there was no event hander defined for it
@@ -48,18 +49,18 @@ typedef void (*chsm_user_func_tpft)(chsm_tst *self, const cevent_tst *e_pst);
  * Params:
  * 		self: Pointer to the state machine.
  *		e_pst: Pointer to the event to be handled.
- *		funcs_apft: A NULL terminated array of function pointers, that store the pointers to the exit functions of
- *			children states which could not handle the event.
+ *		ctx_pst: Pointer to a call context that stores some information about the states involved
+ *			in the event processing.
  */
 typedef chsm_result_ten (*chsm_state_tpft)(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst);
 
 /*
  * Call context structure
  * A pointer to such a structure will be passed to state handler functions.
- * In case a state handler wants to defer event processing to its parent, it should write
+ * In case a state handler wants its parent to handle an event, it should write
  * the pointer to the exit function in *exit_pft, then increase it.
  * If the parent state handler executes a state transition, it should call the functions from
- * the exit_stack_apft array.
+ * the exit_stack_apft array to properly exit the currently active state.
  */
 struct chsm_call_ctx_st
 {
@@ -79,10 +80,19 @@ struct chsm_st
 	chsm_state_tpft		state_handler_pft;
 
 	/** send
+	 *		This function should be implemented by the application.
+	 *
+	 *		Params:
+	 *			self:	Pointer to the state machine instance
+	 *			e_pst:	Pointer to the event to be sent
+	 *		Expected operation:
+	 *			The function should post the event to all state machines 
+	 *			that need it for their operation.
+	 *
 	 * 		The state machine implementation shall call this function, when an
 	 *		event was created and need to be sent to the other parts of the system.
 	 *		This function should distribute the event to all queues in the application
-	 *		that may need it by calling theri put method.
+	 *		that may need it by calling their put method.
 	 */
 	void				(*send)(chsm_tst *self, const cevent_tst *e_pst);
 };
@@ -98,7 +108,8 @@ void chsm_exit_children(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_
 
 extern const cevent_tst chsm_init_event_st;
 
-static inline chsm_result_ten chsm_handle_in_parent(chsm_tst *self, chsm_call_ctx_tst *ctx_pst, chsm_state_tpft parent, void *exit_func)
+static inline chsm_result_ten chsm_handle_in_parent(chsm_tst *self, chsm_call_ctx_tst *ctx_pst,
+	chsm_state_tpft parent, void *exit_func)
 {
 	self->state_handler_pft = parent;
 	if (exit_func)
