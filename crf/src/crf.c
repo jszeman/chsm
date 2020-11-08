@@ -13,7 +13,9 @@
 
 static void* new_event(crf_tst *self, uint32_t size)
 {
-    for(uint32_t i=0; i<CRF_MAX_POOL_COUNT; i++)
+    if (NULL == self->pool_ast) return NULL;
+
+    for(uint32_t i=0; i<self->pool_cnt_u16; i++)
     {
         cpool_tst *pool = self->pool_ast+i;
 
@@ -24,6 +26,7 @@ static void* new_event(crf_tst *self, uint32_t size)
             void* e = pool->new(pool);
             if (NULL != e)
             {
+                ((cevent_tst *)e)->gc_info = (gc_info_tst){.pool_id = i+1, .ref_cnt = 0};
                 return e;
             }
         }
@@ -32,15 +35,13 @@ static void* new_event(crf_tst *self, uint32_t size)
     return NULL;
 }
 
-static void	gc(crf_tst *self, cevent_tst* e)
+static void	gc(crf_tst *self, cevent_tst* e_pst)
 {
-    for (int i=0; i<self->pool_cnt_u16; i++)
-    {
-        if (self->pool_ast[i].gc(self->pool_ast+i, e))
-        {
-            return;
-        }
-    }
+    if (NULL == self->pool_ast) return;
+
+    if (0 == e_pst->gc_info.pool_id) return; // Constant (not dinamycally allocated) event.
+
+    self->pool_ast[e_pst->gc_info.pool_id - 1].gc(self->pool_ast+(e_pst->gc_info.pool_id - 1), e_pst);
 
     return;
 }
@@ -56,21 +57,25 @@ static void	publish(crf_tst *self, const cevent_tst* e)
 
 static void	post(crf_tst *self, cevent_tst* e, cqueue_tst *q)
 {
-    e->gc_info.ref_cnt++;
     q->put(q, e);
 }
 
 static void	step(crf_tst *self)
 {
-    const cevent_tst *e_pst = NULL;
+    cevent_tst *e_pst = NULL;
     chsm_tst **hsm_pst;
 
     for (hsm_pst = self->chsm_ap; *hsm_pst; hsm_pst++)
     {
-        e_pst = (*hsm_pst)->event_q_st.get(&((*hsm_pst)->event_q_st));
+        e_pst = (cevent_tst *)(*hsm_pst)->event_q_st.get(&((*hsm_pst)->event_q_st));
         if (e_pst)
         {
             chsm_dispatch(*hsm_pst, e_pst);
+
+            if (0 == e_pst->gc_info.ref_cnt)
+            {
+                gc(self, e_pst);
+            }
         }
     }
 }
@@ -78,14 +83,14 @@ static void	step(crf_tst *self)
 bool crf_init(crf_tst *self , chsm_tst **chsm_ap, cpool_tst *pool_ast, uint16_t pool_cnt)
 {
     if (NULL == self) return false;
-    if (NULL == chsm_ap) return false;
-    if (NULL == pool_ast) return false;
 
     self->new_event = new_event;
-    self->gc = gc;
     self->publish = publish;
     self->post = post;
     self->step = step;
+
+    if (NULL == chsm_ap) return false;
+
     self->chsm_ap = chsm_ap;
     self->pool_ast = pool_ast;
     self->pool_cnt_u16 = pool_cnt;

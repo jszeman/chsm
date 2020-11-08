@@ -10,29 +10,8 @@
 #include <assert.h>
 #include <cevent.h>
 #include <cqueue.h>
+#include "atomic_ops.h"
 
-/* 
- * cqueue_put may be called from multiple threads (or from interrupt handlers)
- * so it has to be thread safe. C11 provides the necessary atomic operation but
- * to prepare for the cases when C11 is not available the application have to 
- * provide the definition for the atomic functions.
- */
-
-#if (__STDC_VERSION__ >= 201112L)
-	#ifndef __STDC_NO_ATOMICS__
-		#include <stdatomic.h>
-		#define atomic_fetch_add_u16(obj, value) atomic_fetch_add(obj, value)
-		#define BUILTIN_ATOMICS
-	#endif
-#endif
-
-#ifndef BUILTIN_ATOMICS
-/* Atomically replaces the value pointed by obj with the result of addition of
- * value to the old value of obj, and returns the value obj held previously.
- * The operation is read-modify-write operation.
- */
-uint16_t atomic_fetch_add_u16(volatile uint16_t *obj, uint16_t value);
-#endif
 
 /* Thread safety analysis:
  *
@@ -79,13 +58,15 @@ static int32_t cqueue_put(cqueue_tst *self, const cevent_tst *e)
 		return -1;
 	}
 
+	cevent_ref_cnt_inc(e);
+
 	// 5.
 	self->events[head & self->mask] = e;
 
 	return 0;
 }
 
-static int32_t cqueue_put_left(cqueue_tst *self, const cevent_tst *e_cpst)
+static int32_t cqueue_put_left(cqueue_tst *self, const cevent_tst *e_pst)
 {
 	assert(NULL != self);
 
@@ -95,7 +76,10 @@ static int32_t cqueue_put_left(cqueue_tst *self, const cevent_tst *e_cpst)
 	}
 
 	self->tail--;
-	self->events[self->tail & self->mask] = e_cpst;
+
+	cevent_ref_cnt_inc(e_pst);
+
+	self->events[self->tail & self->mask] = e_pst;
 
 	return 0;
 }
@@ -114,6 +98,7 @@ static const cevent_tst *cqueue_get(cqueue_tst *self)
 	e = self->events[self->tail & self->mask];
 	self->tail++;
 
+	cevent_ref_cnt_dec(e);
 	return e;
 }
 
@@ -131,6 +116,7 @@ static const cevent_tst *cqueue_get_right(cqueue_tst *self)
 	self->head--;
 	e = self->events[self->head & self->mask];
 
+	cevent_ref_cnt_dec(e);
 	return e;
 }
 
@@ -144,7 +130,6 @@ int32_t cqueue_init(cqueue_tst *self, const cevent_tst **events, uint16_t max_ev
 	self->max = max_event_count;
 	self->head = 0;
 	self->tail = 0;
-	self->free = max_event_count;
 	self->mask = max_event_count-1;
 
 	self->put = cqueue_put;

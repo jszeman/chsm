@@ -33,7 +33,6 @@ class HtmlException(Exception):
 #        ...
 #    } type_name;
 
-STATE_MACHINE_TYPE = r'typedef\s+struct.*\{\W+chsm_tst\s+.+\}\s*(?P<type>\w+)\s*;'
 TOP_STATE_NAME = r'chsm_result_ten\s+(?P<top_func>\w+)\(chsm_tst\s+\*self,\s+const\s+cevent_tst\s+\*e_pst,\s+chsm_call_ctx_tst\s+\*ctx_pst\)\s*;'
 
 class ChsmException(Exception):
@@ -159,11 +158,6 @@ class Project:
     def _new_model(self):
         with open(self.h_file_path, 'r') as h:
             h_content = h.read()
-            m = re.search(self.c_templates['state_machine_type'], h_content, re.DOTALL)
-            if not m:
-                logging.error(f'Could not find a valid state machine definition in file {self.h_file_path}')
-                return self.model
-            self.model['info']['user_type'] = m.group('type')
 
             m = re.search(TOP_STATE_NAME, h_content)
             if m:
@@ -203,16 +197,12 @@ class Project:
             return json.load(cfg_file)
 
     def _find_user_config_file(self, h_dir):
-        actual_dir = h_dir
-
-        root = Path(actual_dir.root)
-        while actual_dir != root:
-            p = actual_dir / '.chsm/settings.json'
+        for parent in h_dir.parents:
+            p = parent / '.chsm/settings.json'
+            print(f'Searching settings in {p}')
             if p.exists():
                 self.cfg_file_path = p
                 return p
-            
-            actual_dir = actual_dir.parent
 
         return None
 

@@ -27,7 +27,9 @@ enum test_events_en
     TEST_SIG_M
 };
 
-typedef struct
+typedef struct test_hsm_tst test_hsm_tst;
+
+struct test_hsm_tst
 {
     chsm_tst    super;
 
@@ -43,7 +45,7 @@ typedef struct
     bool        s21_entry_guard;
     bool        s11_g_guard1;
     bool        s11_g_guard2;
-} test_hsm_tst;
+};
 
 chsm_result_ten __top__1(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
 chsm_result_ten __top__2(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);

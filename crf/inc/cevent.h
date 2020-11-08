@@ -23,6 +23,8 @@ typedef struct gc_info_tst
 	uint16_t		pool_id: 4;
 } gc_info_tst;
 
+#define CEVENT_INVALID_POOL 0
+
 typedef struct cevent_st
 {
 	uint16_t		sig;
@@ -32,5 +34,20 @@ typedef struct cevent_st
 #define CRF_SIGNAL_CLASS_START 1
 #define CRF_SIGNAL_CLASS_SIZE 256
 
+static inline void cevent_ref_cnt_inc(const cevent_tst *e_pst)
+{
+	if (CEVENT_INVALID_POOL != e_pst->gc_info.pool_id)
+	{
+		((cevent_tst *)e_pst)->gc_info.ref_cnt++;
+	}
+}
+
+static inline void cevent_ref_cnt_dec(const cevent_tst *e_pst)
+{
+	if (CEVENT_INVALID_POOL != e_pst->gc_info.pool_id)
+	{
+		((cevent_tst *)e_pst)->gc_info.ref_cnt--;
+	}
+}
 
 #endif /* INC_CEVENT_H_ */

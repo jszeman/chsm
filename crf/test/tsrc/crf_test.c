@@ -77,6 +77,7 @@ void bus_send(chsm_tst *self, const cevent_tst *e_pst)
 
 TEST_SETUP(crf)
 {
+	bool res;
 	memset(&bus_driver, 0, sizeof(bus_driver));
 	memset(&dev_driver, 0, sizeof(dev_driver));
 
@@ -84,8 +85,8 @@ TEST_SETUP(crf)
 	memset(&buff1, 0, sizeof(buff1));
 	memset(&buff2, 0, sizeof(buff2));
 
-	cpool_init(pool_ast+0, buff1, 8, 4, 1);
-	cpool_init(pool_ast+1, buff2, 64, 4, 2);
+	cpool_init(pool_ast+0, buff1, 8, 4);
+	cpool_init(pool_ast+1, buff2, 64, 4);
 
 	chsm_ctor((chsm_tst *)&bus_driver, bus_driver_top, bus_events, EVENT_QUEUE_SIZE, 0);
 	chsm_ctor((chsm_tst *)&dev_driver, dev_driver_top, dev_events, EVENT_QUEUE_SIZE, 0);
@@ -94,6 +95,9 @@ TEST_SETUP(crf)
 
 	chsm_init((chsm_tst *)&bus_driver);
 	chsm_init((chsm_tst *)&dev_driver);
+
+	res = crf_init(&crf, hsm_ap, pool_ast, 2);
+	TEST_ASSERT_TRUE(res);
 }
 
 TEST_TEAR_DOWN(crf)
@@ -123,9 +127,6 @@ TEST(crf, init_NULL)
 	TEST_ASSERT_FALSE(res);
 
 	res = crf_init(&crf, NULL, pool_ast, 2);
-	TEST_ASSERT_FALSE(res);
-
-	res = crf_init(&crf, hsm_ap, NULL, 2);
 	TEST_ASSERT_FALSE(res);
 }
 
@@ -229,33 +230,6 @@ TEST(crf, too_many_events)
 	TEST_ASSERT_NULL(e[8]);
 }
 
-
-
-/* garbage_collect: 
- * Create so many events that not all of them will fit in the small pool, then call the
- * GC on an event in the small pool and check that the next new event will be allocated
- * in the slot that the GC freed up.
- */
-TEST(crf, garbage_collect)
-{
-	event_small_tst *e[5];
-	event_small_tst *e_new;
-
-	for (int i=0; i<5; i++)
-	{
-		e[i] = CRF_NEW_EVENT(event_small_tst);
-	}
-
-	CRF_GC(e[2]);
-
-	e_new = CRF_NEW_EVENT(event_small_tst);
-
-	TEST_ASSERT_NOT_NULL(e);
-	TEST_ASSERT_GREATER_OR_EQUAL(buff1, (uint8_t *)e_new);
-	TEST_ASSERT_LESS_OR_EQUAL(buff1 + sizeof(buff1) - sizeof(event_small_tst),
-		(uint8_t *)e_new);
-}
-
 /* post: 
  * Allocate a small event and send it to a state machine.
  */
@@ -271,6 +245,40 @@ TEST(crf, post)
 	CRF_STEP();
 
 	TEST_ASSERT_EQUAL(0xcafe, bus_driver.tmp_u16);
+}
+
+/* gc_after_post: 
+ * Check that an event that was posted to a HSM is properly
+ * garbage collected after the first use
+ */
+TEST(crf, gc_after_post)
+{
+	event_small_tst *e[9];
+
+	// Allocate all events from the small pool
+	for (int i=0; i<8; i++)
+	{
+		e[i] = CRF_NEW_EVENT(event_small_tst);
+	}
+
+	e[0]->e.sig = TEST_SIG_SEND_DATA;
+
+	CRF_POST(e[0], &bus_driver);
+
+	/* Check, that pools are empty and we can not allocate
+	 * new events.
+	 */
+	e[8] = CRF_NEW_EVENT(event_small_tst);
+	TEST_ASSERT_NULL(e[8]);
+
+	CRF_STEP();
+
+	e[8] = CRF_NEW_EVENT(event_small_tst);
+
+	TEST_ASSERT_NOT_NULL(e[8]);
+	TEST_ASSERT_GREATER_OR_EQUAL(buff1, (uint8_t *)e[8]);
+	TEST_ASSERT_LESS_OR_EQUAL(buff1 + sizeof(buff1) - sizeof(event_small_tst),
+		(uint8_t *)e[8]);
 }
 
 /* emmit: 
@@ -308,10 +316,10 @@ TEST_GROUP_RUNNER(crf)
 	RUN_TEST_CASE(crf, two_small_event);
 	RUN_TEST_CASE(crf, too_many_small_event);
 	RUN_TEST_CASE(crf, too_many_events);
-	RUN_TEST_CASE(crf, garbage_collect);
 	RUN_TEST_CASE(crf, post);
+	RUN_TEST_CASE(crf, gc_after_post);
 	RUN_TEST_CASE(crf, emmit);
-	//RUN_TEST_CASE(crf, test0);
+	
 	//RUN_TEST_CASE(crf, test0);
 	//RUN_TEST_CASE(crf, test0);
 	//RUN_TEST_CASE(crf, test0);

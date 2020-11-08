@@ -11,72 +11,90 @@
 #include <string.h>
 #include <assert.h>
 #include "crf.h"
+#include <stdio.h>
+#include "atomic_ops.h"
+
+#define CPOOL_TERMINATOR 0xffff
 
 
-
-// TODO: Make this thread safe. Basic idea:
-//		1. Set pool_id
-//		2. Increment gc_info atomically
-//		3. Read ref_cnt:
-//			if 1: Success, return the event
-//			else: decrease ref_cnt and continue search
-//
-//		The second case can only happen if the main thread is in the if inside
-//		the loop, but an interrupt have already allocated and sent the event.
+/* Only cpool_new should be called from interrupt context, so only
+ * this function is implemented to be threaf safe.
+ */
 static void *cpool_new(cpool_tst *self)
 {
-    uint8_t *e;
+    uint16_t head;
+    cevent_tst *e;
 
-	assert(NULL != self);
+    assert(NULL != self);
 
-	for (e = self->pool; e<self->pool + self->ecnt * self->esize; e+=self->esize)
-	{
-		if (0 == ((cevent_tst *)e)->gc_info.pool_id)
-		{
-			((cevent_tst *)e)->gc_info.pool_id = self->id;
-			((cevent_tst *)e)->gc_info.ref_cnt = 0;
-			return e;
-		}
-	}
 
-	return NULL;
+    // Using for loop to make sure it terminates at max after self->ecnt steps.
+    for (int i=0; i<self->ecnt; i++)
+    {
+        head = self->head;
+
+        if (CPOOL_TERMINATOR == head) return NULL;
+
+        /* Try to change self->head to the value in the cell it points to
+         * if self->head still holds the value we read previously.
+		 * If an interrupt here changes the value of self->head, the function call
+		 * will fail and return false so the code inside the if can't modeify the
+		 * content of memory indexed by head.
+         */
+        if (atomic_compare_exchange_u16(&self->head, &head, *((uint16_t *)(self->pool + head))))
+        {
+            // At this point the change was successful, so we own the piece of memory indexed by head
+            return (cevent_tst *)(self->pool + head);
+        }
+    }
+
+    return NULL;
 }
 
-static bool cpool_gc(cpool_tst *self, cevent_tst *e)
+static bool cpool_gc(cpool_tst *self, const cevent_tst *e_pst)
 {
-	assert(NULL != self);
-	assert(NULL != e);
-	
-	if (self->id != e->gc_info.pool_id)
-	{
-		return false;
-	}
+    assert(NULL != self);
+    assert(NULL != e_pst);
 
-	if (e->gc_info.ref_cnt)
-	{
-		e->gc_info.ref_cnt--;
-	}
-	else
-	{
-		e->gc_info.pool_id = 0;
-	}
+	uint8_t *e_pu8 = (uint8_t *)e_pst;
 
-	return true;
+    if ((e_pu8 < self->pool) || (e_pu8 > (self->pool + self->esize * self->ecnt))) return false; // Constant (not dinamycally allocated) event.
+
+    uint16_t *p = (uint16_t *)e_pst;
+    *p = self->head;
+    self->head = (uint8_t *)e_pst - self->pool;
+
+    return true;
 }
 
-void cpool_init(cpool_tst *self, uint8_t *buff, uint16_t event_size, uint16_t event_count, uint16_t id)
+void cpool_init(cpool_tst *self, uint8_t *buff, uint16_t event_size, uint16_t event_count)
 {
-	assert(NULL != buff);
-	assert(NULL != self);
-	assert(id < 16);
+    assert(NULL != buff);
+    assert(NULL != self);
 
-	self->pool = buff;
-	self->esize = event_size;
-	self->ecnt = event_count;
-	self->id = id;
+    self->pool = buff;
+    self->esize = event_size;
+    self->ecnt = event_count;
 
-	self->new = cpool_new;
-	self->gc = cpool_gc;
+    self->new = cpool_new;
+    self->gc = cpool_gc;
 
-	memset(self->pool, 0, (size_t)(self->esize * self->ecnt));
+    memset(self->pool, 0, (size_t)(self->esize * self->ecnt));
+
+    self->head = 0;
+
+    /* Every block starts with the offset of the next free block, like
+     * a linked list with indices. Pointers are not used here because
+     * C11 is a bit fuzzy about the handling of atomic pointer types.
+     * They work with GCC as of now but best not to press it. C17 modified
+     * the wording for compare_exchange but let's make sure it works.
+     */
+    for (int i=0; i<event_count; i++)
+    {
+        uint16_t *p = (uint16_t *)(buff + event_size * i);
+        *p = event_size * (i + 1);
+    }
+
+    uint16_t *p = (uint16_t *)(buff + event_size * (event_count - 1));
+    *p = CPOOL_TERMINATOR;
 }

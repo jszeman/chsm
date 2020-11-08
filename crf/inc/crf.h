@@ -33,7 +33,6 @@ typedef struct crf_st crf_tst;
 struct crf_st
 {
 	void*				(*new_event)(crf_tst *self, uint32_t size);		//< Create a new event
-	void				(*gc)(crf_tst *self, cevent_tst* e);			//< Garbage collect an event
 	void				(*publish)(crf_tst *self, const cevent_tst* e);			//< Publish an event
 	void				(*post)(crf_tst *self, cevent_tst* e, cqueue_tst *q); //< Put an event into an event queue
 	void				(*step)(crf_tst *self); //< Dispatch one event
@@ -46,7 +45,6 @@ struct crf_st
 bool crf_init(crf_tst *self , chsm_tst **chsm_ap, cpool_tst *pool_ast, uint16_t pool_cnt);
 
 #define CRF_NEW_EVENT(event_type) 		(crf.new_event(&crf, sizeof(event_type)))
-#define CRF_GC(event_ptr) 				crf.gc(&crf, (cevent_tst *)(event_ptr))
 #define CRF_POST(event_ptr, hsm_ptr) 	crf.post(&crf, (cevent_tst *)event_ptr, (cqueue_tst *)(hsm_ptr))
 #define CRF_STEP()						crf.step(&crf)
 #endif /* INC_CRF_H_ */
