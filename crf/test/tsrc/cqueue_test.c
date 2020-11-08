@@ -14,18 +14,23 @@
 TEST_GROUP(eq);
 
 cqueue_tst 	eq;
-cevent_tst  	*events[8];
+cevent_tst  *events[8];
 
 TEST_SETUP(eq)
 {
 	for (int i=0; i<8; i++)
 	{
-		events[i] = NULL;
+		events[i] = (cevent_tst *)0xcafebabe;
 	}
 }
 
 TEST_TEAR_DOWN(eq)
 {
+	// Make sure the no out-of-bounds access happens
+	for (int i=4; i<8; i++)
+	{
+		TEST_ASSERT(events[i] == (cevent_tst *)0xcafebabe);
+	}
 }
 
 /**
@@ -156,7 +161,30 @@ TEST(eq, test_put_roll)
 		eq.get(&eq);
 	}
 
-	TEST_ASSERT(NULL == events[4]);
+	TEST_ASSERT((cevent_tst *)0xcafebabe == events[4]);
+}
+
+/**
+ * Check that put/get will work with many operations. (The implementation
+ * uses uint16_t indices so it may fail on rollover.)
+ */
+TEST(eq, test_put_a_lot)
+{
+	cevent_tst  e1;
+	cevent_tst  e2;
+	cevent_tst  e3;
+
+	cqueue_init(&eq, (const cevent_tst  **)events, 4);
+
+	for (uint32_t i=0; i<500000; i++)
+	{
+		TEST_ASSERT(0 == eq.put(&eq, &e1));
+		TEST_ASSERT(0 == eq.put(&eq, &e2));
+		TEST_ASSERT(0 == eq.put(&eq, &e3));
+		TEST_ASSERT(&e1 == eq.get(&eq));
+		TEST_ASSERT(&e2 == eq.get(&eq));
+		TEST_ASSERT(&e3 == eq.get(&eq));
+	}
 }
 
 /**
@@ -293,7 +321,7 @@ TEST_GROUP_RUNNER(eq)
 	RUN_TEST_CASE(eq, put_left_more_than_capacity);
 	RUN_TEST_CASE(eq, get_all);
 	RUN_TEST_CASE(eq, put_2_get_right_1);
-//	RUN_TEST_CASE(eq, new_1);
+	RUN_TEST_CASE(eq, test_put_a_lot);
 //	RUN_TEST_CASE(eq, new_1);
 //	RUN_TEST_CASE(eq, new_1);
 //	RUN_TEST_CASE(eq, new_1);
