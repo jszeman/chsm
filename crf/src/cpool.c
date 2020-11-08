@@ -51,7 +51,7 @@ static void *cpool_new(cpool_tst *self)
     return NULL;
 }
 
-static bool cpool_gc(cpool_tst *self, cevent_tst *e_pst)
+static bool cpool_gc(cpool_tst *self, const cevent_tst *e_pst)
 {
     assert(NULL != self);
     assert(NULL != e_pst);

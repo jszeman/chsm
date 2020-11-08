@@ -38,7 +38,7 @@ void chsm_init(chsm_tst *self)
 
 void chsm_defer(chsm_tst *self, const cevent_tst *e_pst)
 {
-	self->defer_q_st.put(&self->defer_q_st, e_pst);
+	self->defer_q_st.put(&self->defer_q_st, (cevent_tst *)e_pst);
 }
 
 void chsm_recall(chsm_tst *self, const cevent_tst *e_pst)
@@ -47,7 +47,7 @@ void chsm_recall(chsm_tst *self, const cevent_tst *e_pst)
 
 	while(ev_pst = self->defer_q_st.get_right(&self->defer_q_st))
 	{
-		self->event_q_st.put_left(&self->event_q_st, ev_pst);
+		self->event_q_st.put_left(&self->event_q_st, (cevent_tst *)ev_pst);
 	}
 }
 

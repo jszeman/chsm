@@ -230,33 +230,6 @@ TEST(crf, too_many_events)
 	TEST_ASSERT_NULL(e[8]);
 }
 
-
-
-/* garbage_collect: 
- * Create so many events that not all of them will fit in the small pool, then call the
- * GC on an event in the small pool and check that the next new event will be allocated
- * in the slot that the GC freed up.
- */
-TEST(crf, garbage_collect)
-{
-	event_small_tst *e[5];
-	event_small_tst *e_new;
-
-	for (int i=0; i<5; i++)
-	{
-		e[i] = CRF_NEW_EVENT(event_small_tst);
-	}
-
-	CRF_GC(e[2]);
-
-	e_new = CRF_NEW_EVENT(event_small_tst);
-
-	TEST_ASSERT_NOT_NULL(e);
-	TEST_ASSERT_GREATER_OR_EQUAL(buff1, (uint8_t *)e_new);
-	TEST_ASSERT_LESS_OR_EQUAL(buff1 + sizeof(buff1) - sizeof(event_small_tst),
-		(uint8_t *)e_new);
-}
-
 /* post: 
  * Allocate a small event and send it to a state machine.
  */
@@ -280,10 +253,10 @@ TEST(crf, post)
  */
 TEST(crf, gc_after_post)
 {
-	event_small_tst *e[5];
+	event_small_tst *e[9];
 
 	// Allocate all events from the small pool
-	for (int i=0; i<4; i++)
+	for (int i=0; i<8; i++)
 	{
 		e[i] = CRF_NEW_EVENT(event_small_tst);
 	}
@@ -292,14 +265,20 @@ TEST(crf, gc_after_post)
 
 	CRF_POST(e[0], &bus_driver);
 
+	/* Check, that pools are empty and we can not allocate
+	 * new events.
+	 */
+	e[8] = CRF_NEW_EVENT(event_small_tst);
+	TEST_ASSERT_NULL(e[8]);
+
 	CRF_STEP();
 
-	e[4] = CRF_NEW_EVENT(event_small_tst);
+	e[8] = CRF_NEW_EVENT(event_small_tst);
 
-	TEST_ASSERT_NOT_NULL(e[4]);
-	TEST_ASSERT_GREATER_OR_EQUAL(buff1, (uint8_t *)e[4]);
+	TEST_ASSERT_NOT_NULL(e[8]);
+	TEST_ASSERT_GREATER_OR_EQUAL(buff1, (uint8_t *)e[8]);
 	TEST_ASSERT_LESS_OR_EQUAL(buff1 + sizeof(buff1) - sizeof(event_small_tst),
-		(uint8_t *)e[4]);
+		(uint8_t *)e[8]);
 }
 
 /* emmit: 
@@ -337,7 +316,6 @@ TEST_GROUP_RUNNER(crf)
 	RUN_TEST_CASE(crf, two_small_event);
 	RUN_TEST_CASE(crf, too_many_small_event);
 	RUN_TEST_CASE(crf, too_many_events);
-	RUN_TEST_CASE(crf, garbage_collect);
 	RUN_TEST_CASE(crf, post);
 	RUN_TEST_CASE(crf, gc_after_post);
 	RUN_TEST_CASE(crf, emmit);

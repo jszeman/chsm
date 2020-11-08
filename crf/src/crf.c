@@ -57,7 +57,6 @@ static void	publish(crf_tst *self, const cevent_tst* e)
 
 static void	post(crf_tst *self, cevent_tst* e, cqueue_tst *q)
 {
-    e->gc_info.ref_cnt++;
     q->put(q, e);
 }
 
@@ -73,8 +72,6 @@ static void	step(crf_tst *self)
         {
             chsm_dispatch(*hsm_pst, e_pst);
 
-            e_pst->gc_info.ref_cnt--;
-
             if (0 == e_pst->gc_info.ref_cnt)
             {
                 gc(self, e_pst);
@@ -88,7 +85,6 @@ bool crf_init(crf_tst *self , chsm_tst **chsm_ap, cpool_tst *pool_ast, uint16_t 
     if (NULL == self) return false;
 
     self->new_event = new_event;
-    self->gc = gc;
     self->publish = publish;
     self->post = post;
     self->step = step;

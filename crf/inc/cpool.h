@@ -24,7 +24,7 @@ struct cpool_tst
 	atomic_uint16_t 	head;	// Offset of the first free block
 
 	void*				(*new)(cpool_tst *self);
-	bool 	    		(*gc)(cpool_tst *self, cevent_tst *e);
+	bool 	    		(*gc)(cpool_tst *self, const cevent_tst *e);
 };
 
 void 		cpool_init(cpool_tst *self, uint8_t *buff, uint16_t event_size, uint16_t event_count);

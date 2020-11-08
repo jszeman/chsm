@@ -58,13 +58,15 @@ static int32_t cqueue_put(cqueue_tst *self, const cevent_tst *e)
 		return -1;
 	}
 
+	cevent_ref_cnt_inc(e);
+
 	// 5.
 	self->events[head & self->mask] = e;
 
 	return 0;
 }
 
-static int32_t cqueue_put_left(cqueue_tst *self, const cevent_tst *e_cpst)
+static int32_t cqueue_put_left(cqueue_tst *self, const cevent_tst *e_pst)
 {
 	assert(NULL != self);
 
@@ -74,7 +76,10 @@ static int32_t cqueue_put_left(cqueue_tst *self, const cevent_tst *e_cpst)
 	}
 
 	self->tail--;
-	self->events[self->tail & self->mask] = e_cpst;
+
+	cevent_ref_cnt_inc(e_pst);
+
+	self->events[self->tail & self->mask] = e_pst;
 
 	return 0;
 }
@@ -93,6 +98,7 @@ static const cevent_tst *cqueue_get(cqueue_tst *self)
 	e = self->events[self->tail & self->mask];
 	self->tail++;
 
+	cevent_ref_cnt_dec(e);
 	return e;
 }
 
@@ -110,6 +116,7 @@ static const cevent_tst *cqueue_get_right(cqueue_tst *self)
 	self->head--;
 	e = self->events[self->head & self->mask];
 
+	cevent_ref_cnt_dec(e);
 	return e;
 }
 
