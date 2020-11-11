@@ -260,6 +260,10 @@ def open_file():
     root.attributes("-topmost", True)
     root.withdraw()
     filepath = askopenfilename(title='Open state mechine declaration', filetypes=(('C header file', '.h'), ('State chart', '.html')))
+    if not filepath:
+        logging.info(f'File open canceled by user')
+        return
+
     logging.info(f'User selected path: {filepath}')
 
     if filepath.endswith('.h'):
