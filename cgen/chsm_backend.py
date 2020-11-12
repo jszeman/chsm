@@ -1,13 +1,11 @@
 """
-Cgen.
+chsm_backend
 
 Usage:
     chsm_backend.py [options]
 
 Options:
-    -f, --file PATH     Open file at PATH. There must be a valid state machine decl in the file.
-
-
+    -s, --server-only     Do not open the application with Chrome app mode just wait for clients at http://127.0.0.1:8000/main.html
 """
 import re
 import eel
@@ -25,13 +23,6 @@ from hsm import StateMachine
 
 class HtmlException(Exception):
     pass
-
-# Matches state machine type definitions of the following pattern:
-#    typedef struct
-#    {
-#        chsm_tst    ...
-#        ...
-#    } type_name;
 
 TOP_STATE_NAME = r'chsm_result_ten\s+(?P<top_func>\w+)\(chsm_tst\s+\*self,\s+const\s+cevent_tst\s+\*e_pst,\s+chsm_call_ctx_tst\s+\*ctx_pst\)\s*;'
 
@@ -288,5 +279,7 @@ if __name__ == '__main__':
     #project.generate_code()
 
     eel.init((Path(__file__).parent / '../web').absolute().resolve())
-    eel.start('main.html', mode=None)
-    #eel.start('main.html')
+    if args['--server-only']:
+        eel.start('main.html', mode=None)
+    else:
+        eel.start('main.html')
