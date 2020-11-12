@@ -28,6 +28,7 @@ struct cvalue_tst
     uint32_t            low_cnt_u32;
     uint32_t            in_cnt_u32;
     uint32_t            high_cnt_u32;
+    const cevent_tst    *last_pst;
 
     void                (*set_value)(cvalue_tst *self, int32_t data);
 };
