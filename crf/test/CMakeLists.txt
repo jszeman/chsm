@@ -7,6 +7,7 @@ set(test_files  tsrc/main.c
                 tsrc/cqueue_test.c
                 tsrc/chsm_test.c
                 tsrc/crf_test.c
+                tsrc/cbits_test.c
                 tsrc/cvalue_test.c
                 tsrc/chsm_test_functions.c
                 tsrc/chsm_test_machine.c
@@ -22,6 +23,7 @@ set(test_files  tsrc/main.c
                 ../src/cpool.c
                 ../src/cqueue.c
                 ../src/crf.c
+                ../src/cbits.c
                 ../../../unity/extras/fixture/src/unity_fixture.c
                 ../../../unity/extras/memory/src/unity_memory.c
                 ../../../unity/src/unity.c

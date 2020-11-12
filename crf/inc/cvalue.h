@@ -25,13 +25,14 @@ struct cvalue_cfg_tst
 struct cvalue_tst
 {
     cvalue_cfg_tst      config;
-    uint32_t            counter_u32;
-    bool                in_range_b;
+    uint32_t            low_cnt_u32;
+    uint32_t            in_cnt_u32;
+    uint32_t            high_cnt_u32;
 
     void                (*set_value)(cvalue_tst *self, int32_t data);
 };
 
-bool c_value_init(cvalue_tst *self);
+bool cvalue_init(cvalue_tst *self);
 
 
 #endif /* INC_CVALUE_H_ */

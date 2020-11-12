@@ -17,6 +17,12 @@
  * 					handles the physical memory used by the event.
  */
 
+#ifndef SIGNAL_T
+#define SIGNAL_T uint16_t
+#endif
+
+typedef SIGNAL_T	signal_t;
+
 typedef struct gc_info_tst
 {
 	uint16_t		ref_cnt: 12;
@@ -25,9 +31,9 @@ typedef struct gc_info_tst
 
 #define CEVENT_INVALID_POOL 0
 
-typedef struct cevent_st
+typedef struct cevent_tst
 {
-	uint16_t		sig;
+	signal_t		sig;
 	gc_info_tst		gc_info;
 } cevent_tst;
 

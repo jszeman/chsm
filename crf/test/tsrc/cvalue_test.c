@@ -49,19 +49,517 @@ TEST_SETUP(cv)
                 .send = send,
             }
         };
+
+        bool res = cvalue_init(&cv_st);
+
+        TEST_ASSERT(res);
+        TEST_ASSERT(cv_st.set_value);
+
+        low_cnt_u32 = 0;
+        in_cnt_u32 = 0;
+        high_cnt_u32 = 0;
 }
 
 TEST_TEAR_DOWN(cv)
 {
 }
 
-TEST(cv, init)
+/* Check that setting a value in range less times than the filter count
+ * does not trigger any events.
+ */
+TEST(cv, set_less_than_filter_count_values_in_range)
 {
-	TEST_ASSERT(0);
+    for (int i=0; i<cv_st.config.filter_count_u32 - 1; i++)
+    {
+        cv_st.set_value(&cv_st, 15);
+    }
+
+    TEST_ASSERT_EQUAL(0, low_cnt_u32);
+    TEST_ASSERT_EQUAL(0, in_cnt_u32);
+    TEST_ASSERT_EQUAL(0, high_cnt_u32);
+}
+
+/* Check that setting a low value less times than the filter count
+ * does not trigger any events.
+ */
+TEST(cv, set_less_than_filter_count_values_low)
+{
+    for (int i=0; i<cv_st.config.filter_count_u32 - 1; i++)
+    {
+        cv_st.set_value(&cv_st, 5);
+    }
+
+    TEST_ASSERT_EQUAL(0, low_cnt_u32);
+    TEST_ASSERT_EQUAL(0, in_cnt_u32);
+    TEST_ASSERT_EQUAL(0, high_cnt_u32);
+}
+
+/* Check that setting a high value less times than the filter count
+ * does not trigger any events.
+ */
+TEST(cv, set_less_than_filter_count_values_high)
+{
+    for (int i=0; i<cv_st.config.filter_count_u32 - 1; i++)
+    {
+        cv_st.set_value(&cv_st, 25);
+    }
+
+    TEST_ASSERT_EQUAL(0, low_cnt_u32);
+    TEST_ASSERT_EQUAL(0, in_cnt_u32);
+    TEST_ASSERT_EQUAL(0, high_cnt_u32);
+}
+
+/* Check that calling set_value with a value in range will trigger
+ * the in_range event once.
+ */
+TEST(cv, set_filter_count_values_in_range)
+{
+    for (int i=0; i<cv_st.config.filter_count_u32; i++)
+    {
+        cv_st.set_value(&cv_st, 15);
+    }
+
+    TEST_ASSERT_EQUAL(0, low_cnt_u32);
+    TEST_ASSERT_EQUAL(1, in_cnt_u32);
+    TEST_ASSERT_EQUAL(0, high_cnt_u32);
+}
+
+/* Check that calling set_value with a low value in range will trigger
+ * the low event once.
+ */
+TEST(cv, set_filter_count_values_low)
+{
+    for (int i=0; i<cv_st.config.filter_count_u32; i++)
+    {
+        cv_st.set_value(&cv_st, 5);
+    }
+
+    TEST_ASSERT_EQUAL(1, low_cnt_u32);
+    TEST_ASSERT_EQUAL(0, in_cnt_u32);
+    TEST_ASSERT_EQUAL(0, high_cnt_u32);
+}
+
+/* Check that calling set_value with a high value in range will trigger
+ * the low event once.
+ */
+TEST(cv, set_filter_count_values_high)
+{
+    for (int i=0; i<cv_st.config.filter_count_u32; i++)
+    {
+        cv_st.set_value(&cv_st, 25);
+    }
+
+    TEST_ASSERT_EQUAL(0, low_cnt_u32);
+    TEST_ASSERT_EQUAL(0, in_cnt_u32);
+    TEST_ASSERT_EQUAL(1, high_cnt_u32);
+}
+
+/* Check that calling set_value with an in range value more than the filter_count
+ * will trigger the low event only once.
+ */
+TEST(cv, set_more_than_filter_count_values_in_range)
+{
+    for (int i=0; i<cv_st.config.filter_count_u32*5; i++)
+    {
+        cv_st.set_value(&cv_st, 15);
+    }
+
+    TEST_ASSERT_EQUAL(0, low_cnt_u32);
+    TEST_ASSERT_EQUAL(1, in_cnt_u32);
+    TEST_ASSERT_EQUAL(0, high_cnt_u32);
+}
+
+/* Check that calling set_value with a low value more than the filter_count
+ * will trigger the low event only once.
+ */
+TEST(cv, set_more_than_filter_count_values_low)
+{
+    for (int i=0; i<cv_st.config.filter_count_u32*5; i++)
+    {
+        cv_st.set_value(&cv_st, 5);
+    }
+
+    TEST_ASSERT_EQUAL(1, low_cnt_u32);
+    TEST_ASSERT_EQUAL(0, in_cnt_u32);
+    TEST_ASSERT_EQUAL(0, high_cnt_u32);
+}
+
+/* Check that calling set_value with a high value more than the filter_count
+ * will trigger the low event only once.
+ */
+TEST(cv, set_more_than_filter_count_values_high)
+{
+    for (int i=0; i<cv_st.config.filter_count_u32*5; i++)
+    {
+        cv_st.set_value(&cv_st, 25);
+    }
+
+    TEST_ASSERT_EQUAL(0, low_cnt_u32);
+    TEST_ASSERT_EQUAL(0, in_cnt_u32);
+    TEST_ASSERT_EQUAL(1, high_cnt_u32);
+}
+
+/* Check that in_range event is only triggered if filter_count consecutive
+ * in range values were set.
+ */
+TEST(cv, filter_count_in_range_values_with_low_noise)
+{
+    for (int i=0; i<cv_st.config.filter_count_u32-1; i++)
+    {
+        cv_st.set_value(&cv_st, 15);
+    }
+
+    cv_st.set_value(&cv_st, 5);
+    cv_st.set_value(&cv_st, 15);
+
+    TEST_ASSERT_EQUAL(0, low_cnt_u32);
+    TEST_ASSERT_EQUAL(0, in_cnt_u32);
+    TEST_ASSERT_EQUAL(0, high_cnt_u32);
+}
+
+/* Check that in_range event is only triggered if filter_count consecutive
+ * in range values were set.
+ */
+TEST(cv, filter_count_in_range_values_with_high_noise)
+{
+    for (int i=0; i<cv_st.config.filter_count_u32-1; i++)
+    {
+        cv_st.set_value(&cv_st, 15);
+    }
+
+    cv_st.set_value(&cv_st, 25);
+    cv_st.set_value(&cv_st, 15);
+
+    TEST_ASSERT_EQUAL(0, low_cnt_u32);
+    TEST_ASSERT_EQUAL(0, in_cnt_u32);
+    TEST_ASSERT_EQUAL(0, high_cnt_u32);
+}
+
+/* Check that low_limit event is only triggered if filter_count consecutive
+ * low values were set.
+ */
+TEST(cv, filter_count_low_values_with_high_noise)
+{
+    for (int i=0; i<cv_st.config.filter_count_u32-1; i++)
+    {
+        cv_st.set_value(&cv_st, 5);
+    }
+
+    cv_st.set_value(&cv_st, 15);
+    cv_st.set_value(&cv_st, 5);
+
+    TEST_ASSERT_EQUAL(0, low_cnt_u32);
+    TEST_ASSERT_EQUAL(0, in_cnt_u32);
+    TEST_ASSERT_EQUAL(0, high_cnt_u32);
+}
+
+/* Check that hi_limit event is only triggered if filter_count consecutive
+ * high values were set.
+ */
+TEST(cv, filter_count_hig_values_with_high_noise)
+{
+    for (int i=0; i<cv_st.config.filter_count_u32-1; i++)
+    {
+        cv_st.set_value(&cv_st, 25);
+    }
+
+    cv_st.set_value(&cv_st, 15);
+    cv_st.set_value(&cv_st, 25);
+
+    TEST_ASSERT_EQUAL(0, low_cnt_u32);
+    TEST_ASSERT_EQUAL(0, in_cnt_u32);
+    TEST_ASSERT_EQUAL(0, high_cnt_u32);
+}
+
+/* Check that in_range event is not triggered again, if there
+ * are a few values out of range
+ */
+TEST(cv, no_multiple_in_range_event_after_few_low_values)
+{
+    // set a number of in range values to trigger in_range event
+    for (int i=0; i<cv_st.config.filter_count_u32*2; i++)
+    {
+        cv_st.set_value(&cv_st, 15);
+    }
+    
+    TEST_ASSERT_EQUAL(0, low_cnt_u32);
+    TEST_ASSERT_EQUAL(1, in_cnt_u32);
+    TEST_ASSERT_EQUAL(0, high_cnt_u32);
+
+    // set a few low values
+    for (int i=0; i<cv_st.config.filter_count_u32-1; i++)
+    {
+        cv_st.set_value(&cv_st, 5);
+    }
+
+    TEST_ASSERT_EQUAL(0, low_cnt_u32);
+    TEST_ASSERT_EQUAL(1, in_cnt_u32);
+    TEST_ASSERT_EQUAL(0, high_cnt_u32);
+
+    for (int i=0; i<cv_st.config.filter_count_u32*2; i++)
+    {
+        cv_st.set_value(&cv_st, 15);
+    }
+
+    TEST_ASSERT_EQUAL(0, low_cnt_u32);
+    TEST_ASSERT_EQUAL(1, in_cnt_u32);
+    TEST_ASSERT_EQUAL(0, high_cnt_u32);
+}
+
+/* Check that in_range event is not triggered again, if there
+ * are a few values out of range
+ */
+TEST(cv, no_multiple_in_range_event_after_few_high_values)
+{
+    // set a number of in range values to trigger in_range event
+    for (int i=0; i<cv_st.config.filter_count_u32*2; i++)
+    {
+        cv_st.set_value(&cv_st, 15);
+    }
+    
+    TEST_ASSERT_EQUAL(0, low_cnt_u32);
+    TEST_ASSERT_EQUAL(1, in_cnt_u32);
+    TEST_ASSERT_EQUAL(0, high_cnt_u32);
+
+    for (int i=0; i<cv_st.config.filter_count_u32-1; i++)
+    {
+        cv_st.set_value(&cv_st, 25);
+    }
+
+    TEST_ASSERT_EQUAL(0, low_cnt_u32);
+    TEST_ASSERT_EQUAL(1, in_cnt_u32);
+    TEST_ASSERT_EQUAL(0, high_cnt_u32);
+
+    for (int i=0; i<cv_st.config.filter_count_u32*2; i++)
+    {
+        cv_st.set_value(&cv_st, 15);
+    }
+
+    TEST_ASSERT_EQUAL(0, low_cnt_u32);
+    TEST_ASSERT_EQUAL(1, in_cnt_u32);
+    TEST_ASSERT_EQUAL(0, high_cnt_u32);
+}
+
+/* Check that low_limit event is not triggered again, if there
+ * are a few values out of range
+ */
+TEST(cv, no_multiple_low_limit_event_after_few_high_values)
+{
+    // set a number of in range values to trigger in_range event
+    for (int i=0; i<cv_st.config.filter_count_u32*2; i++)
+    {
+        cv_st.set_value(&cv_st, 5);
+    }
+    
+    TEST_ASSERT_EQUAL(1, low_cnt_u32);
+    TEST_ASSERT_EQUAL(0, in_cnt_u32);
+    TEST_ASSERT_EQUAL(0, high_cnt_u32);
+
+
+    for (int i=0; i<cv_st.config.filter_count_u32-1; i++)
+    {
+        cv_st.set_value(&cv_st, 25);
+    }
+
+    TEST_ASSERT_EQUAL(1, low_cnt_u32);
+    TEST_ASSERT_EQUAL(0, in_cnt_u32);
+    TEST_ASSERT_EQUAL(0, high_cnt_u32);
+
+    for (int i=0; i<cv_st.config.filter_count_u32*2; i++)
+    {
+        cv_st.set_value(&cv_st, 5);
+    }
+
+    TEST_ASSERT_EQUAL(1, low_cnt_u32);
+    TEST_ASSERT_EQUAL(0, in_cnt_u32);
+    TEST_ASSERT_EQUAL(0, high_cnt_u32);
+}
+
+/* Check that low_limit event is not triggered again, if there
+ * are a few values out of range
+ */
+TEST(cv, no_multiple_low_limit_event_after_few_in_range_values)
+{
+    // set a number of in range values to trigger in_range event
+    for (int i=0; i<cv_st.config.filter_count_u32*2; i++)
+    {
+        cv_st.set_value(&cv_st, 5);
+    }
+    
+    TEST_ASSERT_EQUAL(1, low_cnt_u32);
+    TEST_ASSERT_EQUAL(0, in_cnt_u32);
+    TEST_ASSERT_EQUAL(0, high_cnt_u32);
+
+
+    for (int i=0; i<cv_st.config.filter_count_u32-1; i++)
+    {
+        cv_st.set_value(&cv_st, 15);
+    }
+
+    TEST_ASSERT_EQUAL(1, low_cnt_u32);
+    TEST_ASSERT_EQUAL(0, in_cnt_u32);
+    TEST_ASSERT_EQUAL(0, high_cnt_u32);
+
+    for (int i=0; i<cv_st.config.filter_count_u32*2; i++)
+    {
+        cv_st.set_value(&cv_st, 5);
+    }
+
+    TEST_ASSERT_EQUAL(1, low_cnt_u32);
+    TEST_ASSERT_EQUAL(0, in_cnt_u32);
+    TEST_ASSERT_EQUAL(0, high_cnt_u32);
+}
+
+/* Check that high_limit event is not triggered again, if there
+ * are a few values out of range
+ */
+TEST(cv, no_multiple_high_limit_event_after_few_in_range_values)
+{
+    // set a number of in range values to trigger in_range event
+    for (int i=0; i<cv_st.config.filter_count_u32*2; i++)
+    {
+        cv_st.set_value(&cv_st, 25);
+    }
+    
+    TEST_ASSERT_EQUAL(0, low_cnt_u32);
+    TEST_ASSERT_EQUAL(0, in_cnt_u32);
+    TEST_ASSERT_EQUAL(1, high_cnt_u32);
+
+
+    for (int i=0; i<cv_st.config.filter_count_u32-1; i++)
+    {
+        cv_st.set_value(&cv_st, 15);
+    }
+    
+    TEST_ASSERT_EQUAL(0, low_cnt_u32);
+    TEST_ASSERT_EQUAL(0, in_cnt_u32);
+    TEST_ASSERT_EQUAL(1, high_cnt_u32);
+
+    for (int i=0; i<cv_st.config.filter_count_u32*2; i++)
+    {
+        cv_st.set_value(&cv_st, 25);
+    }
+    
+    TEST_ASSERT_EQUAL(0, low_cnt_u32);
+    TEST_ASSERT_EQUAL(0, in_cnt_u32);
+    TEST_ASSERT_EQUAL(1, high_cnt_u32);
+}
+
+/* Check that high_limit event is not triggered again, if there
+ * are a few values out of range
+ */
+TEST(cv, no_multiple_high_limit_event_after_few_low_values)
+{
+    // set a number of in range values to trigger in_range event
+    for (int i=0; i<cv_st.config.filter_count_u32*2; i++)
+    {
+        cv_st.set_value(&cv_st, 25);
+    }
+    
+    TEST_ASSERT_EQUAL(0, low_cnt_u32);
+    TEST_ASSERT_EQUAL(0, in_cnt_u32);
+    TEST_ASSERT_EQUAL(1, high_cnt_u32);
+
+
+    for (int i=0; i<cv_st.config.filter_count_u32-1; i++)
+    {
+        cv_st.set_value(&cv_st, 5);
+    }
+    
+    TEST_ASSERT_EQUAL(0, low_cnt_u32);
+    TEST_ASSERT_EQUAL(0, in_cnt_u32);
+    TEST_ASSERT_EQUAL(1, high_cnt_u32);
+
+    for (int i=0; i<cv_st.config.filter_count_u32*2; i++)
+    {
+        cv_st.set_value(&cv_st, 25);
+    }
+    
+    TEST_ASSERT_EQUAL(0, low_cnt_u32);
+    TEST_ASSERT_EQUAL(0, in_cnt_u32);
+    TEST_ASSERT_EQUAL(1, high_cnt_u32);
+}
+
+/* Check low to in_range transition
+ */
+TEST(cv, low_to_in_range)
+{
+    // set a number of in range values to trigger in_range event
+    for (int i=0; i<cv_st.config.filter_count_u32*2; i++)
+    {
+        cv_st.set_value(&cv_st, 5);
+    }
+    
+    TEST_ASSERT_EQUAL(1, low_cnt_u32);
+    TEST_ASSERT_EQUAL(0, in_cnt_u32);
+    TEST_ASSERT_EQUAL(0, high_cnt_u32);
+
+
+    for (int i=0; i<cv_st.config.filter_count_u32; i++)
+    {
+        cv_st.set_value(&cv_st, 15);
+    }
+    
+    TEST_ASSERT_EQUAL(1, low_cnt_u32);
+    TEST_ASSERT_EQUAL(1, in_cnt_u32);
+    TEST_ASSERT_EQUAL(0, high_cnt_u32);
+}
+
+/* Check low to in_range transition
+ */
+TEST(cv, low_to_high)
+{
+    // set a number of in range values to trigger in_range event
+    for (int i=0; i<cv_st.config.filter_count_u32*2; i++)
+    {
+        cv_st.set_value(&cv_st, 5);
+    }
+    
+    TEST_ASSERT_EQUAL(1, low_cnt_u32);
+    TEST_ASSERT_EQUAL(0, in_cnt_u32);
+    TEST_ASSERT_EQUAL(0, high_cnt_u32);
+
+
+    for (int i=0; i<cv_st.config.filter_count_u32; i++)
+    {
+        cv_st.set_value(&cv_st, 25);
+    }
+    
+    TEST_ASSERT_EQUAL(1, low_cnt_u32);
+    TEST_ASSERT_EQUAL(0, in_cnt_u32);
+    TEST_ASSERT_EQUAL(1, high_cnt_u32);
 }
 
 TEST_GROUP_RUNNER(cv)
 {
-	RUN_TEST_CASE(cv, init);
-
+	RUN_TEST_CASE(cv, set_less_than_filter_count_values_in_range);
+	RUN_TEST_CASE(cv, set_less_than_filter_count_values_low);
+	RUN_TEST_CASE(cv, set_less_than_filter_count_values_high);
+	RUN_TEST_CASE(cv, set_filter_count_values_in_range);
+	RUN_TEST_CASE(cv, set_filter_count_values_low);
+	RUN_TEST_CASE(cv, set_filter_count_values_high);
+	RUN_TEST_CASE(cv, set_more_than_filter_count_values_in_range);
+	RUN_TEST_CASE(cv, set_more_than_filter_count_values_low);
+	RUN_TEST_CASE(cv, set_more_than_filter_count_values_high);
+	RUN_TEST_CASE(cv, filter_count_in_range_values_with_low_noise);
+	RUN_TEST_CASE(cv, filter_count_in_range_values_with_high_noise);
+	RUN_TEST_CASE(cv, filter_count_low_values_with_high_noise);
+	RUN_TEST_CASE(cv, filter_count_hig_values_with_high_noise);
+	RUN_TEST_CASE(cv, no_multiple_in_range_event_after_few_low_values);
+	RUN_TEST_CASE(cv, no_multiple_in_range_event_after_few_high_values);
+	RUN_TEST_CASE(cv, no_multiple_low_limit_event_after_few_high_values);
+	RUN_TEST_CASE(cv, no_multiple_low_limit_event_after_few_in_range_values);
+	RUN_TEST_CASE(cv, no_multiple_high_limit_event_after_few_in_range_values);
+	RUN_TEST_CASE(cv, no_multiple_high_limit_event_after_few_low_values);
+	RUN_TEST_CASE(cv, low_to_in_range);
+	RUN_TEST_CASE(cv, low_to_high);
+	//RUN_TEST_CASE(cv, init);
+	//RUN_TEST_CASE(cv, init);
+	//RUN_TEST_CASE(cv, init);
+	//RUN_TEST_CASE(cv, init);
+	//RUN_TEST_CASE(cv, init);
+	//RUN_TEST_CASE(cv, init);
+	//RUN_TEST_CASE(cv, init);
+	//RUN_TEST_CASE(cv, init);
+	//RUN_TEST_CASE(cv, init);
 }

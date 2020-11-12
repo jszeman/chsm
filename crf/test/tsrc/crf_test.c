@@ -27,8 +27,8 @@ static const cevent_tst event_none = {.sig=C_SIG_NONE, .gc_info=0};
 
 static const cevent_tst event_send_data = {.sig=TEST_SIG_SEND_DATA, .gc_info=0};
 
-#define BUFF1_SIZE 	32
-#define BUFF2_SIZE 	256
+#define BUFF1_SIZE 	64
+#define BUFF2_SIZE 	512
 
 #define POOL_CNT	2
 
@@ -85,7 +85,7 @@ TEST_SETUP(crf)
 	memset(&buff1, 0, sizeof(buff1));
 	memset(&buff2, 0, sizeof(buff2));
 
-	cpool_init(pool_ast+0, buff1, 8, 4);
+	cpool_init(pool_ast+0, buff1, 16, 4);
 	cpool_init(pool_ast+1, buff2, 64, 4);
 
 	chsm_ctor((chsm_tst *)&bus_driver, bus_driver_top, bus_events, EVENT_QUEUE_SIZE, 0);

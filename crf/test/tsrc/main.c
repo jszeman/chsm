@@ -25,6 +25,7 @@ void run_hsm_tests(void)
 	RUN_TEST_GROUP(eq);
 	RUN_TEST_GROUP(hsm);
 	RUN_TEST_GROUP(crf);
+	RUN_TEST_GROUP(cb);
 	RUN_TEST_GROUP(cv);
 }
 
