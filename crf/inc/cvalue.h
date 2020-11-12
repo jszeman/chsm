@@ -1,0 +1,37 @@
+#ifndef INC_CVALUE_H_
+#define INC_CVALUE_H_
+
+#include <stdint.h>
+#include <stdbool.h>
+#include "cevent.h"
+
+
+typedef struct cvalue_tst cvalue_tst;
+typedef struct cvalue_cfg_tst cvalue_cfg_tst;
+
+struct cvalue_cfg_tst
+{
+    const cevent_tst    *low_limit_event_pst;
+    const cevent_tst    *in_range_event_pst;
+    const cevent_tst    *high_limit_event_pst;
+
+    int32_t             low_limit_i32;
+    int32_t             high_limit_i32;
+    uint32_t            filter_count_u32;
+
+    void                (*send)(cvalue_tst *self, const cevent_tst *e_pst);
+};
+
+struct cvalue_tst
+{
+    cvalue_cfg_tst      config;
+    uint32_t            counter_u32;
+    bool                in_range_b;
+
+    void                (*set_value)(cvalue_tst *self, int32_t data);
+};
+
+bool c_value_init(cvalue_tst *self);
+
+
+#endif /* INC_CVALUE_H_ */
