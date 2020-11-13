@@ -45,6 +45,8 @@ static int32_t cqueue_put(cqueue_tst *self, const cevent_tst *e)
 
 	assert(NULL != self);
 
+	if (0 == self->max) return -1;
+
 	head = atomic_fetch_add_u16(&self->head, 1);
 
 	// 1.
@@ -70,6 +72,8 @@ static int32_t cqueue_put_left(cqueue_tst *self, const cevent_tst *e_pst)
 {
 	assert(NULL != self);
 
+	if (0 == self->max) return -1;
+
 	if ((uint16_t)(self->head - self->tail) >= self->max)
 	{
 		return -1;
@@ -90,6 +94,8 @@ static const cevent_tst *cqueue_get(cqueue_tst *self)
 
 	assert(NULL != self);
 
+	if (0 == self->max) return NULL;
+
 	if (self->head == self->tail)
 	{
 		return NULL;
@@ -108,6 +114,8 @@ static const cevent_tst *cqueue_get_right(cqueue_tst *self)
 
 	assert(NULL != self);
 
+	if (0 == self->max) return NULL;
+
 	if (self->head == self->tail)
 	{
 		return NULL;
@@ -124,7 +132,6 @@ int32_t cqueue_init(cqueue_tst *self, const cevent_tst **events, uint16_t max_ev
 {
 	assert(NULL != self);
 	assert(NULL != events);
-	assert(max_event_count > 0);
 
 	self->events = events;
 	self->max = max_event_count;

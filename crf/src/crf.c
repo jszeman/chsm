@@ -60,16 +60,18 @@ static void	post(crf_tst *self, cevent_tst* e, cqueue_tst *q)
     q->put(q, e);
 }
 
-static void	step(crf_tst *self)
+static bool	step(crf_tst *self)
 {
     cevent_tst *e_pst = NULL;
     chsm_tst **hsm_pst;
+    bool event_found_b = false;
 
     for (hsm_pst = self->chsm_ap; *hsm_pst; hsm_pst++)
     {
         e_pst = (cevent_tst *)(*hsm_pst)->event_q_st.get(&((*hsm_pst)->event_q_st));
         if (e_pst)
         {
+            event_found_b = true;
             chsm_dispatch(*hsm_pst, e_pst);
 
             if (0 == e_pst->gc_info.ref_cnt)
@@ -78,6 +80,8 @@ static void	step(crf_tst *self)
             }
         }
     }
+
+    return event_found_b;
 }
 
 bool crf_init(crf_tst *self , chsm_tst **chsm_ap, cpool_tst *pool_ast, uint16_t pool_cnt)
