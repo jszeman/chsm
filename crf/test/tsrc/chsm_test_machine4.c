@@ -1,4 +1,4 @@
-/*Generated with CHSM v0.0.0 at 2020.11.05 09.13.59*/
+/*Generated with CHSM v0.0.0 at 2020.11.16 11.13.10*/
 #include "cevent.h"
 #include "chsm.h"
 #include "chsm_test_machine.h"
@@ -78,7 +78,6 @@ static chsm_result_ten s1(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx
     if(s1_guard(self, e_pst))
     {
         s1_func(self, e_pst);
-        return chsm_handled(self);
     }
 
     if(j_guard(self, e_pst))
@@ -103,7 +102,7 @@ static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ct
     {
         case TEST_SIG_ID:
             s11_id(self, e_pst, 8);
-            return chsm_handled(self);
+            break;
 
         case TEST_SIG_G:
             if(s11_g_guard1(self, e_pst, 1))
@@ -122,15 +121,15 @@ static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ct
                 s211_init(self, e_pst);
                 return chsm_transition(self, s211);
             }
-            return chsm_handled(self);
+            break;
 
         case TEST_SIG_K:
             chsm_defer(self, e_pst);
-            return chsm_handled(self);
+            break;
 
         case TEST_SIG_L:
             chsm_defer(self, e_pst);
-            return chsm_handled(self);
+            break;
 
         case TEST_SIG_D:
             if(cond(self, e_pst))
@@ -143,7 +142,7 @@ static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ct
                 s11_init(self, e_pst);
                 return chsm_transition(self, s11);
             }
-            return chsm_handled(self);
+            break;
 
         case TEST_SIG_H:
             chsm_exit_children(self, e_pst, ctx_pst);
@@ -161,7 +160,6 @@ static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ct
     if(s11_guard(self, e_pst, 6))
     {
         s11_func(self, e_pst, 7);
-        return chsm_handled(self);
     }
 
     if(k_guard(self, e_pst, 5))
@@ -247,7 +245,7 @@ static chsm_result_ten s211(chsm_tst *self, const cevent_tst *e_pst, chsm_call_c
     {
         case TEST_SIG_ID:
             s211_id(self, e_pst);
-            return chsm_handled(self);
+            break;
 
         case TEST_SIG_H:
             chsm_exit_children(self, e_pst, ctx_pst);
@@ -280,11 +278,11 @@ static chsm_result_ten s3(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx
     {
         case TEST_SIG_K:
             s3_k_func(self, e_pst);
-            return chsm_handled(self);
+            break;
 
         case TEST_SIG_L:
             s3_l_func(self, e_pst);
-            return chsm_handled(self);
+            break;
 
         case TEST_SIG_J:
             chsm_exit_children(self, e_pst, ctx_pst);

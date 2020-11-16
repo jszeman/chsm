@@ -21,11 +21,16 @@ cevent_tst inactive_events_ast[32];
 
 uint32_t active_bits_u32;
 uint32_t inactive_bits_u32;
+void *last_user_param_pv;
 
 cbits_tst cb_st;
 
-void send(cbits_tst *self, const cevent_tst *e_pst)
+#define TEST_POINTER (void *)0x12345678
+
+void send(void *user_param_pv, const cevent_tst *e_pst)
 {
+    last_user_param_pv = user_param_pv;
+
     if (e_pst->sig & 0x100)
     {
         active_bits_u32 |= (1UL << e_pst->sig);
@@ -42,6 +47,7 @@ TEST_SETUP(cb)
 
     active_bits_u32 = 0;
     inactive_bits_u32 = 0;
+    last_user_param_pv = NULL;
 
     for (int i=0; i<32; i++)
     {
@@ -53,6 +59,7 @@ TEST_SETUP(cb)
         .config = {
             .active_events_pst = active_events_ast,
             .inactive_events_pst = inactive_events_ast,
+            .user_param_pv = TEST_POINTER,
             .send_pft = send
         }
     };
@@ -89,6 +96,7 @@ TEST(cb, set_bit_0)
     cb_st.set_data(&cb_st, 1);
 
     TEST_ASSERT_EQUAL_HEX32(1, active_bits_u32);
+    TEST_ASSERT_EQUAL_HEX32(TEST_POINTER, last_user_param_pv);
 }
 
 /**

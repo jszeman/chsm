@@ -16,7 +16,8 @@ struct cbits_cfg_tst
 {
     const cevent_tst          *active_events_pst;     // Pointer to a constant array of cevents.
     const cevent_tst          *inactive_events_pst;   // Pointer to a constant array of cevents.
-    void                      (*send_pft)(cbits_tst *self, const cevent_tst *e_pst);
+    void                      *user_param_pv; 
+    void                      (*send_pft)(void *user_param_pv, const cevent_tst *e_pst);
 };
 
 struct cbits_tst

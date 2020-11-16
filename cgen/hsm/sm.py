@@ -317,7 +317,8 @@ class StateMachine:
             add(Return(self.templates['trans_result'].format(target=event.target_title)))
         
         if c.nodes[-1].node_type != 'return':
-            c.add(Return(self.templates['handled_result']))
+            c.add(Break())
+            #c.add(Return(self.templates['handled_result']))
 
         return c
 
@@ -344,7 +345,8 @@ class StateMachine:
         if g.target:
             i.add_true(Return(self.templates['trans_result'].format(target=g.target_title)))
         else:
-            i.add_true(Return(self.templates['handled_result']))
+            pass
+            #i.add_true(Return(self.templates['handled_result']))
             
         return i
 

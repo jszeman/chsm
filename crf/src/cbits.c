@@ -22,11 +22,11 @@ static void set_data(cbits_tst *self, uint32_t data_u32)
 
         if ((data_u32 & b_u32) && self->config.active_events_pst && self->config.active_events_pst[i].sig)
         {
-            self->config.send_pft(self, self->config.active_events_pst + i);
+            self->config.send_pft(self->config.user_param_pv, self->config.active_events_pst + i);
         }
         else if (self->config.inactive_events_pst && self->config.inactive_events_pst[i].sig)
         {
-            self->config.send_pft(self, self->config.inactive_events_pst + i);
+            self->config.send_pft(self->config.user_param_pv, self->config.inactive_events_pst + i);
         }
     }
 
