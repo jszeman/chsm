@@ -167,7 +167,7 @@ TEST(hsm, sm4_init)
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_id);
 
-	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
+	TEST_ASSERT_EQUAL_STRING("s11_id s11_guard k_guard s1_guard j_guard ", hsm.log_buff);
 }
 
 /* sm4_s11_g_guard1:
@@ -182,12 +182,12 @@ TEST(hsm, sm4_s11_g_guard1)
 
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_g);
-	TEST_ASSERT_EQUAL_STRING("s11_g_guard1 s11_g_guard2 ", hsm.log_buff);
+	TEST_ASSERT_EQUAL_STRING("s11_g_guard1 s11_g_guard2 s11_guard k_guard s1_guard j_guard ", hsm.log_buff);
 
 	clear_log(&hsm);
 	hsm.s11_g_guard1 = true;
 	chsm_dispatch(&hsm.super, &event_g);
-	TEST_ASSERT_EQUAL_STRING("s11_g_guard1 s11_g1 s11_g_guard2 ", hsm.log_buff);
+	TEST_ASSERT_EQUAL_STRING("s11_g_guard1 s11_g1 s11_g_guard2 s11_guard k_guard s1_guard j_guard ", hsm.log_buff);
 }
 
 /* sm4_s11_g_guard1:
@@ -242,11 +242,11 @@ TEST(hsm, sm4_s11_d_false_guard)
 
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_d);
-	TEST_ASSERT_EQUAL_STRING("cond ", hsm.log_buff);
+	TEST_ASSERT_EQUAL_STRING("cond s11_guard k_guard s1_guard j_guard ", hsm.log_buff);
 
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_id);
-	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
+	TEST_ASSERT_EQUAL_STRING("s11_id s11_guard k_guard s1_guard j_guard ", hsm.log_buff);
 }
 
 /* sm4_s11_d_false_guard_no_parent:
@@ -262,11 +262,11 @@ TEST(hsm, sm4_s11_d_false_guard_no_parent)
 	clear_log(&hsm);
 	hsm.s1_guard = true;
 	chsm_dispatch(&hsm.super, &event_d);
-	TEST_ASSERT_EQUAL_STRING("cond ", hsm.log_buff);
+	TEST_ASSERT_EQUAL_STRING("cond s11_guard k_guard s1_guard s1_func j_guard ", hsm.log_buff);
 
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_id);
-	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
+	TEST_ASSERT_EQUAL_STRING("s11_id s11_guard k_guard s1_guard s1_func j_guard ", hsm.log_buff);
 }
 
 /* sm4_s11_evaluate_guards:
@@ -284,7 +284,7 @@ TEST(hsm, sm4_s11_evaluate_guards)
 
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_id);
-	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
+	TEST_ASSERT_EQUAL_STRING("s11_id s11_guard k_guard s1_guard j_guard ", hsm.log_buff);
 }
 
 /* sm4_s11_execute_sa_guarded_it:
@@ -301,11 +301,11 @@ TEST(hsm, sm4_s11_execute_sa_guarded_it)
 	clear_log(&hsm);
 	hsm.s11_guard = true;
 	chsm_dispatch(&hsm.super, &event_none);
-	TEST_ASSERT_EQUAL_STRING("s11_guard s11_func ", hsm.log_buff);
+	TEST_ASSERT_EQUAL_STRING("s11_guard s11_func k_guard s1_guard j_guard ", hsm.log_buff);
 
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_id);
-	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
+	TEST_ASSERT_EQUAL_STRING("s11_id s11_guard s11_func k_guard s1_guard j_guard ", hsm.log_buff);
 }
 
 /* sm4_s11_execute_sa_guarded_et:
@@ -343,11 +343,11 @@ TEST(hsm, sm4_s11_execute_parent_guarded_it)
 	clear_log(&hsm);
 	hsm.s1_guard = true;
 	chsm_dispatch(&hsm.super, &event_none);
-	TEST_ASSERT_EQUAL_STRING("s11_guard k_guard s1_guard s1_func ", hsm.log_buff);
+	TEST_ASSERT_EQUAL_STRING("s11_guard k_guard s1_guard s1_func j_guard ", hsm.log_buff);
 
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_id);
-	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
+	TEST_ASSERT_EQUAL_STRING("s11_id s11_guard k_guard s1_guard s1_func j_guard ", hsm.log_buff);
 }
 
 /* sm4_s11_a:
@@ -366,7 +366,7 @@ TEST(hsm, sm4_s11_a)
 
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_id);
-	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
+	TEST_ASSERT_EQUAL_STRING("s11_id s11_guard k_guard s1_guard j_guard ", hsm.log_buff);
 }
 
 /* sm4_s11_parent_sa_guard_et:
@@ -405,7 +405,7 @@ TEST(hsm, sm4_s11_h)
 
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_id);
-	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
+	TEST_ASSERT_EQUAL_STRING("s11_id s11_guard k_guard s1_guard j_guard ", hsm.log_buff);
 }
 
 /* sm4_s11_b:
@@ -425,7 +425,7 @@ TEST(hsm, sm4_s11_b)
 
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_id);
-	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
+	TEST_ASSERT_EQUAL_STRING("s11_id s11_guard k_guard s1_guard j_guard ", hsm.log_buff);
 }
 
 /* sm4_s11_e:
@@ -445,7 +445,7 @@ TEST(hsm, sm4_s11_e)
 
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_id);
-	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
+	TEST_ASSERT_EQUAL_STRING("s11_id s11_guard k_guard s1_guard j_guard ", hsm.log_buff);
 }
 
 /* sm4_s11_d_guard_true:
@@ -464,7 +464,7 @@ TEST(hsm, sm4_s11_d_guard_true)
 
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_id);
-	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
+	TEST_ASSERT_EQUAL_STRING("s11_id s11_guard k_guard s1_guard j_guard ", hsm.log_buff);
 }
 
 /* sm4_s11_f:
@@ -562,7 +562,7 @@ TEST(hsm, sm4_s211_c)
 
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_id);
-	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
+	TEST_ASSERT_EQUAL_STRING("s11_id s11_guard k_guard s1_guard j_guard ", hsm.log_buff);
 }
 
 /* sm4_s211_f:
@@ -582,7 +582,7 @@ TEST(hsm, sm4_s211_f)
 
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_id);
-	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
+	TEST_ASSERT_EQUAL_STRING("s11_id s11_guard k_guard s1_guard j_guard ", hsm.log_buff);
 }
 
 /* sm4_s211_h:
@@ -602,7 +602,7 @@ TEST(hsm, sm4_s211_h)
 
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_id);
-	TEST_ASSERT_EQUAL_STRING("s11_id ", hsm.log_buff);
+	TEST_ASSERT_EQUAL_STRING("s11_id s11_guard k_guard s1_guard j_guard ", hsm.log_buff);
 }
 
 /* init_event_queue:
@@ -642,7 +642,7 @@ TEST(hsm, defer_1)
 	TEST_ASSERT_EQUAL(&event_k, e);
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, e);
-	TEST_ASSERT_EQUAL_STRING("", hsm.log_buff); // No string is expected since this event is deferred.
+	TEST_ASSERT_EQUAL_STRING("s11_guard k_guard s1_guard j_guard ", hsm.log_buff); // No string is expected since this event is deferred.
 
 	e = hsm.super.event_q_st.get(&(hsm.super.event_q_st));
 	TEST_ASSERT_EQUAL(&event_j, e);
@@ -677,13 +677,13 @@ TEST(hsm, defer_2)
 	TEST_ASSERT_EQUAL(&event_k, e);
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, e);
-	TEST_ASSERT_EQUAL_STRING("", hsm.log_buff); // No string is expected since this event is deferred.
+	TEST_ASSERT_EQUAL_STRING("s11_guard k_guard s1_guard j_guard ", hsm.log_buff); // No string is expected since this event is deferred.
 
 	e = hsm.super.event_q_st.get(&(hsm.super.event_q_st));
 	TEST_ASSERT_EQUAL(&event_l, e);
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, e);
-	TEST_ASSERT_EQUAL_STRING("", hsm.log_buff); // No string is expected since this event is deferred.
+	TEST_ASSERT_EQUAL_STRING("s11_guard k_guard s1_guard j_guard ", hsm.log_buff); // No string is expected since this event is deferred.
 
 	e = hsm.super.event_q_st.get(&(hsm.super.event_q_st));
 	TEST_ASSERT_EQUAL(&event_j, e);
