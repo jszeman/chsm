@@ -4,7 +4,7 @@ import re
 import logging
 from datetime import datetime
 from pprint import pprint
-from .ast import Func, If, Switch, Case, Call, Break, Return, Blank, Expr, Ast, FuncDeclaration, Include, Ifndef, Define, Endif, Comment
+from .ast import Func, If, Switch, Case, Call, Break, Return, Blank, Expr, Ast, FuncDeclaration, Include, Ifndef, Define, Endif, Comment, Decl, Assignment
 
 # Match the following patterns:
 #   event
@@ -352,6 +352,7 @@ class StateMachine:
 
     def build_func_from_state(self, state_id, state, insert_init=False, spec=''):
         f = Func(name=state['title'], ftype=self.templates['func_return_type'], params=self.templates['func_params'], spec=spec)
+        f.add(Decl('bool', self.templates['guards_only_variable'], 'true'))
         s = Switch(self.templates['switch_variable'])
         f.add(s)
 
@@ -364,6 +365,8 @@ class StateMachine:
             c = self.build_case_from_event(e)
             if c:
                 s.add_case(c)
+
+        s.add_default(Assignment(self.templates['guards_only_variable'], 'false'))
 
         for guard, g in state['guards'].items():
             f.add(Blank())
