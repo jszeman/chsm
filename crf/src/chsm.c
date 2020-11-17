@@ -11,6 +11,7 @@
 
 
 const cevent_tst chsm_init_event_st = {.sig=C_SIG_INIT, .gc_info=0};
+const cevent_tst chsm_none_event_st = {.sig=C_SIG_NONE, .gc_info=0};
 
 static void send(chsm_tst *self, const cevent_tst *e_pst)
 {
@@ -106,6 +107,10 @@ void chsm_dispatch(chsm_tst *self, const cevent_tst  *e_pst)
 				 * state pointer to its parent. This means that we need to call
 				 * the new state handler with the same event.
 				 */
+				break;
+
+			case C_RES_GUARDS:
+				e_pst = &chsm_none_event_st;
 				break;
 		}
 	}

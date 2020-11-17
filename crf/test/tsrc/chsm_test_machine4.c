@@ -1,4 +1,4 @@
-/*Generated with CHSM v0.0.0 at 2020.11.16 11.13.10*/
+/*Generated with CHSM v0.0.0 at 2020.11.17 22.28.18*/
 #include "cevent.h"
 #include "chsm.h"
 #include "chsm_test_machine.h"
@@ -15,6 +15,7 @@ static chsm_result_ten s(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_
 
 static chsm_result_ten s(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst)
 {
+    bool guards_only_b=true;
     switch(e_pst->sig)
     {
         case TEST_SIG_E:
@@ -29,15 +30,22 @@ static chsm_result_ten s(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_
             chsm_recall(self, e_pst);
             return chsm_transition(self, s3);
 
+        default:
+        guards_only_b=false;
     }
 
-    return chsm_handle_in_parent(self, ctx_pst, __top__4, s_exit);
+    return chsm_handle_in_parent(self, ctx_pst, __top__4, s_exit, guards_only_b);
 }
 
 static chsm_result_ten s1(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst)
 {
+    bool guards_only_b=true;
     switch(e_pst->sig)
     {
+        case TEST_SIG_ID:
+            s1_func(self, e_pst);
+            break;
+
         case TEST_SIG_C:
             chsm_exit_children(self, e_pst, ctx_pst);
             s1_exit(self, e_pst);
@@ -73,6 +81,8 @@ static chsm_result_ten s1(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx
             s11_init(self, e_pst);
             return chsm_transition(self, s11);
 
+        default:
+        guards_only_b=false;
     }
 
     if(s1_guard(self, e_pst))
@@ -93,11 +103,12 @@ static chsm_result_ten s1(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx
         return chsm_transition(self, s211);
     }
 
-    return chsm_handle_in_parent(self, ctx_pst, s, s1_exit);
+    return chsm_handle_in_parent(self, ctx_pst, s, s1_exit, guards_only_b);
 }
 
 static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst)
 {
+    bool guards_only_b=true;
     switch(e_pst->sig)
     {
         case TEST_SIG_ID:
@@ -155,6 +166,8 @@ static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ct
             s11_init(self, e_pst);
             return chsm_transition(self, s11);
 
+        default:
+        guards_only_b=false;
     }
 
     if(s11_guard(self, e_pst, 6))
@@ -176,11 +189,12 @@ static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ct
         return chsm_transition(self, s211);
     }
 
-    return chsm_handle_in_parent(self, ctx_pst, s1, s11_exit);
+    return chsm_handle_in_parent(self, ctx_pst, s1, s11_exit, guards_only_b);
 }
 
 static chsm_result_ten s2(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst)
 {
+    bool guards_only_b=true;
     switch(e_pst->sig)
     {
         case TEST_SIG_C:
@@ -200,13 +214,16 @@ static chsm_result_ten s2(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx
             s11_init(self, e_pst);
             return chsm_transition(self, s11);
 
+        default:
+        guards_only_b=false;
     }
 
-    return chsm_handle_in_parent(self, ctx_pst, s, s2_exit);
+    return chsm_handle_in_parent(self, ctx_pst, s, s2_exit, guards_only_b);
 }
 
 static chsm_result_ten s21(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst)
 {
+    bool guards_only_b=true;
     switch(e_pst->sig)
     {
         case TEST_SIG_G:
@@ -234,13 +251,16 @@ static chsm_result_ten s21(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ct
             s211_init(self, e_pst);
             return chsm_transition(self, s211);
 
+        default:
+        guards_only_b=false;
     }
 
-    return chsm_handle_in_parent(self, ctx_pst, s2, s21_exit);
+    return chsm_handle_in_parent(self, ctx_pst, s2, s21_exit, guards_only_b);
 }
 
 static chsm_result_ten s211(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst)
 {
+    bool guards_only_b=true;
     switch(e_pst->sig)
     {
         case TEST_SIG_ID:
@@ -267,13 +287,16 @@ static chsm_result_ten s211(chsm_tst *self, const cevent_tst *e_pst, chsm_call_c
             s211_init(self, e_pst);
             return chsm_transition(self, s211);
 
+        default:
+        guards_only_b=false;
     }
 
-    return chsm_handle_in_parent(self, ctx_pst, s21, s211_exit);
+    return chsm_handle_in_parent(self, ctx_pst, s21, s211_exit, guards_only_b);
 }
 
 static chsm_result_ten s3(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst)
 {
+    bool guards_only_b=true;
     switch(e_pst->sig)
     {
         case TEST_SIG_K:
@@ -293,13 +316,16 @@ static chsm_result_ten s3(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx
             s11_init(self, e_pst);
             return chsm_transition(self, s11);
 
+        default:
+        guards_only_b=false;
     }
 
-    return chsm_handle_in_parent(self, ctx_pst, s, NULL);
+    return chsm_handle_in_parent(self, ctx_pst, s, NULL, guards_only_b);
 }
 
 chsm_result_ten __top__4(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst)
 {
+    bool guards_only_b=true;
     switch(e_pst->sig)
     {
         case C_SIG_INIT:
@@ -312,6 +338,8 @@ chsm_result_ten __top__4(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_
             s11_init(self, e_pst);
             return chsm_transition(self, s11);
 
+        default:
+        guards_only_b=false;
     }
 
     return chsm_ignored(self);

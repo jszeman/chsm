@@ -12,14 +12,14 @@
 		"func_return_type": 	"chsm_result_ten",
 		"guard_return_type":	"bool",
 		"switch_variable":  	"e_pst->sig",
+		"guards_only_variable": "guards_only_b",
 		"handled_result":   	"chsm_handled(self)",
 		"trans_result":     	"chsm_transition(self, {target})",
-		"parent_result":    	"chsm_handle_in_parent(self, ctx_pst, {parent}, {exit_func})",
+		"parent_result":    	"chsm_handle_in_parent(self, ctx_pst, {parent}, {exit_func}, guards_only_b)",
 		"ignored_result":   	"chsm_ignored(self)",
 		"exit_children":		"chsm_exit_children",
 		"c_include_list":		["chsm.h", "cevent.h"],
 		"h_include_list":		["chsm.h", "cevent.h", "<stdbool.h>"],
-		"state_machine_type": 	"typedef\\s+struct.*\\{\\W+chsm_tst\\s+.+\\}\\s*(?P<type>\\w+)\\s*;",
 		"top_state_name": 		"chsm_result_ten\\s+(?P<top_func>\\w+)\\(chsm_tst\\s+\\*self,\\s+const\\s+cevent_tst\\s+\\*e_pst,\\s+chsm_call_ctx_tst\\s+\\*ctx_pst\\)\\s*;"
 	},
 

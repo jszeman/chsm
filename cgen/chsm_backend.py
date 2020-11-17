@@ -6,6 +6,7 @@ Usage:
 
 Options:
     -s, --server-only     Do not open the application with Chrome app mode just wait for clients at http://127.0.0.1:8000/main.html
+    -f, --file FILE       Open file, than generate code without starting the GUI
 """
 import re
 import eel
@@ -277,6 +278,13 @@ if __name__ == '__main__':
 
     #project = Project('/home/pi/projects/chsm/crf/test/tinc/chsm_test_machine.h')
     #project.generate_code()
+
+    if args['--file']:
+        p = Path(args['--file'])
+        if p.exists():
+            project = Project(p)
+            project.generate_code()
+            quit()
 
     eel.init((Path(__file__).parent / '../web').absolute().resolve())
     if args['--server-only']:

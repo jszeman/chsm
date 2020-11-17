@@ -27,6 +27,7 @@ typedef enum
 	C_RES_TRANS,
 	C_RES_PARENT,
 	C_RES_IGNORED,
+	C_RES_GUARDS,
 } chsm_result_ten;
 
 typedef struct chsm_st chsm_tst;
@@ -109,7 +110,7 @@ void chsm_exit_children(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_
 extern const cevent_tst chsm_init_event_st;
 
 static inline chsm_result_ten chsm_handle_in_parent(chsm_tst *self, chsm_call_ctx_tst *ctx_pst,
-	chsm_state_tpft parent, void *exit_func)
+	chsm_state_tpft parent, void *exit_func, bool guards_only_b)
 {
 	self->state_handler_pft = parent;
 	if (exit_func)
@@ -117,6 +118,12 @@ static inline chsm_result_ten chsm_handle_in_parent(chsm_tst *self, chsm_call_ct
 		*(ctx_pst->exit_ppft) = (chsm_user_func_tpft)exit_func;
 		ctx_pst->exit_ppft++;
 	}
+
+	if (guards_only_b)
+	{
+		return C_RES_GUARDS;
+	}
+
     return C_RES_PARENT;
 }
 

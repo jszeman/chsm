@@ -139,6 +139,27 @@ class Break(Node):
         indent = ' ' * self.indent
         return f'{indent}break;\n'
 
+class Decl(Node):
+    def __init__(self, type_name, name, value, **kwargs): 
+        super().__init__('decl', **kwargs)
+        self.type_name = type_name
+        self.name = name
+        self.value = value
+
+    def __str__(self):
+        indent = ' ' * self.indent
+        return f'{indent}{self.type_name} {self.name}={self.value};\n'
+
+class Assignment(Node):
+    def __init__(self, name, value, **kwargs): 
+        super().__init__('decl', **kwargs)
+        self.name = name
+        self.value = value
+
+    def __str__(self):
+        indent = ' ' * self.indent
+        return f'{indent}{self.name}={self.value};\n'
+
 class Blank(Node):
     def __init__(self, **kwargs): 
         super().__init__('break', **kwargs)
