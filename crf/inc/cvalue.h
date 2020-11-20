@@ -18,8 +18,9 @@ struct cvalue_cfg_tst
     int32_t             low_limit_i32;
     int32_t             high_limit_i32;
     uint32_t            filter_count_u32;
+    void                *user_param_pv;
 
-    void                (*send)(cvalue_tst *self, const cevent_tst *e_pst);
+    void                (*send)(void *user_param_pv, const cevent_tst *e_pst);
 };
 
 struct cvalue_tst

@@ -27,19 +27,19 @@ static void set_value(cvalue_tst *self, int32_t data)
     if ((self->in_cnt_u32 == self->config.filter_count_u32) &&
         (self->last_pst != self->config.in_range_event_pst))
     {
-        self->config.send(self, self->config.in_range_event_pst);
+        self->config.send(self->config.user_param_pv, self->config.in_range_event_pst);
         self->last_pst = self->config.in_range_event_pst;
     }
     else if ((self->low_cnt_u32 == self->config.filter_count_u32) &&
         (self->last_pst != self->config.low_limit_event_pst))
     {
-        self->config.send(self, self->config.low_limit_event_pst);
+        self->config.send(self->config.user_param_pv, self->config.low_limit_event_pst);
         self->last_pst = self->config.low_limit_event_pst;
     }
     else if ((self->high_cnt_u32 == self->config.filter_count_u32) &&
         (self->last_pst != self->config.high_limit_event_pst))
     {
-        self->config.send(self, self->config.high_limit_event_pst);
+        self->config.send(self->config.user_param_pv, self->config.high_limit_event_pst);
         self->last_pst = self->config.high_limit_event_pst;
     }
 }

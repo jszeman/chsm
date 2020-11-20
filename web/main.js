@@ -117,6 +117,8 @@ class App {
 		});
 
 		this.state = this.idle_state;
+
+		eel.startup()
 	}
 
 	load_model(data, fname, fpath)

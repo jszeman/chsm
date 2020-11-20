@@ -13,7 +13,7 @@
 #include "cevent.h"
 #include "cqueue.h"
 
-#define CHSM_MAX_NESTING_LEVEL	4
+#define CHSM_MAX_NESTING_LEVEL	8
 
 typedef enum
 {

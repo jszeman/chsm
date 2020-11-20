@@ -24,8 +24,15 @@ uint32_t low_cnt_u32;
 uint32_t in_cnt_u32;
 uint32_t high_cnt_u32;
 
-static void send(cvalue_tst *self, const cevent_tst *e_pst)
+
+void *last_user_param_pv;
+
+#define TEST_POINTER (void *)0x12345678
+
+static void send(void *user_param_pv, const cevent_tst *e_pst)
 {
+    last_user_param_pv = user_param_pv;
+    
     switch(e_pst->sig)
     {
         case 0x100: low_cnt_u32++; break;
@@ -47,8 +54,11 @@ TEST_SETUP(cv)
                 .high_limit_i32 = 20,
                 .filter_count_u32 = 10,
                 .send = send,
+                .user_param_pv = TEST_POINTER,
             }
         };
+
+        last_user_param_pv = NULL;
 
         bool res = cvalue_init(&cv_st);
 
@@ -122,6 +132,8 @@ TEST(cv, set_filter_count_values_in_range)
     TEST_ASSERT_EQUAL(0, low_cnt_u32);
     TEST_ASSERT_EQUAL(1, in_cnt_u32);
     TEST_ASSERT_EQUAL(0, high_cnt_u32);
+
+    TEST_ASSERT_EQUAL_HEX32(TEST_POINTER, last_user_param_pv);
 }
 
 /* Check that calling set_value with a low value in range will trigger

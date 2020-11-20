@@ -2,11 +2,11 @@
 chsm_backend
 
 Usage:
-    chsm_backend.py [options]
+    chsm_backend.py [options] [FILE]
 
 Options:
     -s, --server-only     Do not open the application with Chrome app mode just wait for clients at http://127.0.0.1:8000/main.html
-    -f, --file FILE       Open file, than generate code without starting the GUI
+    -c, --code-gen        Generate code and quit. Don't start the GUI.
 """
 import re
 import eel
@@ -272,6 +272,11 @@ def open_file():
 def genereate_code():
     project.generate_code()
 
+@eel.expose
+def startup():
+    if project:
+        eel.load_json(json.dumps(project.model), Path(args['FILE']).name, args['FILE'])
+
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(filename)-20s:%(lineno)-4s %(message)s')
     args = docopt(__doc__)
@@ -279,15 +284,18 @@ if __name__ == '__main__':
     #project = Project('/home/pi/projects/chsm/crf/test/tinc/chsm_test_machine.h')
     #project.generate_code()
 
-    if args['--file']:
-        p = Path(args['--file'])
+    if args['FILE']:
+        p = Path(args['FILE'])
         if p.exists():
             project = Project(p)
-            project.generate_code()
-            quit()
+            if args['--code-gen']:
+                project.generate_code()
+                quit()
 
     eel.init((Path(__file__).parent / '../web').absolute().resolve())
+
     if args['--server-only']:
         eel.start('main.html', mode=None)
     else:
         eel.start('main.html')
+
