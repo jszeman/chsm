@@ -262,9 +262,10 @@ class StateMachine:
                     states[start]['events'][signal] = Event(signal)
                 e = states[start]['events'][signal]
             elif guard:
-                if guard not in states[start]['guards']:
-                    states[start]['guards'][guard] = Event(None)
-                e = states[start]['guards'][guard]
+                while guard in states[start]['guards']:
+                    guard = guard + ' '
+                e = Event(None)
+                states[start]['guards'][guard] = e
 
             e.target = target
             e.target_title = states[target]['title']
@@ -328,7 +329,7 @@ class StateMachine:
         else:
             gparams = f', {g.gparams}' if g.gparams else ''
             
-        i = If(Call(guard, self.templates['user_func_args'] + gparams, False))
+        i = If(Call(guard.strip(), self.templates['user_func_args'] + gparams, False))
         if g.func:
             fparams = f', {g.fparams}' if g.fparams else ''
             i.add_true(Call(g.func, self.templates['user_func_args'] + fparams))
