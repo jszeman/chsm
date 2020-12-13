@@ -1,7 +1,14 @@
 #include <stdint.h>
 #include <stddef.h>
+#include <stdbool.h>
 #include "cevent.h"
 #include "cvalue.h"
+
+
+bool cvalue_is_ok(cvalue_tst *self)
+{
+	return  self->last_pst == self->config.in_range_event_pst;
+}
 
 static void set_value(cvalue_tst *self, int32_t data)
 {

@@ -35,6 +35,7 @@ struct cvalue_tst
 };
 
 bool cvalue_init(cvalue_tst *self);
+bool cvalue_is_ok(cvalue_tst *self);
 
 
 #endif /* INC_CVALUE_H_ */

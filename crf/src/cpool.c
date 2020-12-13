@@ -23,7 +23,6 @@
 static void *cpool_new(cpool_tst *self)
 {
     uint16_t head;
-    cevent_tst *e;
 
     assert(NULL != self);
 
