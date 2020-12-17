@@ -334,20 +334,23 @@ class StateMachine:
             fparams = f', {g.fparams}' if g.fparams else ''
             i.add_true(Call(g.func, self.templates['user_func_args'] + fparams))
 
-        if g.trans_funcs:
+        if g.target:
             f = Call(self.templates['exit_children'], self.templates['func_args'])
             i.add_true(f)
 
-            for f in g.trans_funcs:
-                if f.func:
-                    fparams = f', {f.fparams}' if f.fparams else ''
-                    i.add_true(Call(f.func, self.templates['user_func_args'] + fparams))
-                
-        if g.target:
+            if g.trans_func:
+                fparams = f', {g.trans_fparams}' if g.trans_fparams else ''
+                f = Call(g.trans_func, self.templates['user_func_args'] + fparams)
+                i.add_true(f)
+
+            if g.trans_funcs:
+                for f in g.trans_funcs:
+                    if f.func:
+                        fparams = f', {f.fparams}' if f.fparams else ''
+                        i.add_true(Call(f.func, self.templates['user_func_args'] + fparams))
+            
             i.add_true(Return(self.templates['trans_result'].format(target=g.target_title)))
-        else:
-            pass
-            #i.add_true(Return(self.templates['handled_result']))
+
             
         return i
 
