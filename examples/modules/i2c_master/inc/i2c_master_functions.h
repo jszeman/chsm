@@ -1,0 +1,39 @@
+#ifndef I2C_MASTER_FUNCTIONS_H
+#define I2C_MASTER_FUNCTIONS_H
+
+/*Generated with CHSM v0.0.0 at 2020.12.25 13.36.58*/
+
+#include "i2c_master.h"
+#include "chsm.h"
+#include "cevent.h"
+#include <stdbool.h>
+
+
+void i2c_master_send_r_response(chsm_tst *self, const cevent_tst *e_pst);
+
+void i2c_master_send_rw_response(chsm_tst *self, const cevent_tst *e_pst);
+
+void i2c_master_send_w_response(chsm_tst *self, const cevent_tst *e_pst);
+
+void i2c_master_start_rx(chsm_tst *self, const cevent_tst *e_pst);
+
+void i2c_master_start_tx(chsm_tst *self, const cevent_tst *e_pst);
+
+void i2c_master_stop(chsm_tst *self, const cevent_tst *e_pst);
+
+
+/*
+Signals:
+    SIG_I2C_READ_FAIL      
+    SIG_I2C_READ_SUCCESS   
+    SIG_I2C_R_TRANSACTION  
+    SIG_I2C_WRITE_FAIL     
+    SIG_I2C_WRITE_SUCCESS  
+    SIG_I2C_WR_TRANSACTION 
+    SIG_I2C_W_TRANSACTION  
+*/
+
+/*
+Other function notes:
+*/
+#endif
