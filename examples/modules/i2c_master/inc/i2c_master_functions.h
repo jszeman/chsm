@@ -1,13 +1,15 @@
 #ifndef I2C_MASTER_FUNCTIONS_H
 #define I2C_MASTER_FUNCTIONS_H
 
-/*Generated with CHSM v0.0.0 at 2020.12.25 13.36.58*/
+/*Generated with CHSM v0.0.0 at 2020.12.27 13.29.26*/
 
 #include "i2c_master.h"
 #include "chsm.h"
 #include "cevent.h"
 #include <stdbool.h>
 
+
+void i2c_master_init(chsm_tst *self, const cevent_tst *e_pst);
 
 void i2c_master_send_r_response(chsm_tst *self, const cevent_tst *e_pst);
 
