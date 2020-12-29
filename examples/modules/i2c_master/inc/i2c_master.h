@@ -18,27 +18,11 @@ typedef struct i2c_transaction_tst
     cqueue_tst*         target_q_pst;       // Target queue. After the master
                                             // has finished the transaction it
                                             // will put the results here
-    uint8_t             write_data_au8[];   // Data for the write operation
+    uint8_t*            write_data_pu8;     // Pointer to the data buffer for the write operation
+    uint8_t*            read_data_pu8;      // Pointer to the data buffer for the read operation
 } i2c_transaction_tst;
 
-
-typedef enum i2c_status_ten
-{
-    I2C_SUCCESS,
-    I2C_ADDR_NACK,
-    I2C_DATA_NACK,
-} i2c_status_ten;
-
-typedef struct i2c_result_tst
-{
-    cevent_tst          super;
-    i2c_status_ten      status_en;
-    uint8_t             len_u8;
-    uint8_t             data_au8[];
-} i2c_result_tst;
-
 #define SIG_I2C_TRANSACTION_TYPE    i2c_transaction_tst
-#define SIG_I2C_RESULT_TYPE         i2c_result_tst
 
 /*
  * ACTIVE OBJECT
@@ -55,6 +39,10 @@ struct i2c_master_tst
 {
     chsm_tst            super;
     i2c_master_cfg_tst  config_st;
+
+    // This is used to store transaction data
+    // while waiting for an operation to finish.
+    i2c_transaction_tst cached_tr_st;
 };
 
 chsm_result_ten i2c_master_top(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);

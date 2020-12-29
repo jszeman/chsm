@@ -1,4 +1,4 @@
-/*Generated with CHSM v0.0.0 at 2020.12.27 13.29.26*/
+/*Generated with CHSM v0.0.0 at 2020.12.29 08.44.03*/
 #include "cevent.h"
 #include "chsm.h"
 #include "i2c_master.h"
@@ -21,16 +21,19 @@ static chsm_result_ten s_idle(chsm_tst *self, const cevent_tst  *e_pst, chsm_cal
     {
         case SIG_I2C_W_TRANSACTION:
             chsm_exit_children(self, e_pst, ctx_pst);
+            store_transaction_info(self, e_pst);
             i2c_master_start_tx(self, e_pst);
             return chsm_transition(self, s_write);
 
         case SIG_I2C_R_TRANSACTION:
             chsm_exit_children(self, e_pst, ctx_pst);
+            store_transaction_info(self, e_pst);
             i2c_master_start_rx(self, e_pst);
             return chsm_transition(self, s_read);
 
         case SIG_I2C_WR_TRANSACTION:
             chsm_exit_children(self, e_pst, ctx_pst);
+            store_transaction_info(self, e_pst);
             i2c_master_start_tx(self, e_pst);
             return chsm_transition(self, s_wr_write);
 
@@ -60,14 +63,18 @@ static chsm_result_ten s_busy(chsm_tst *self, const cevent_tst  *e_pst, chsm_cal
 
         case SIG_I2C_WRITE_FAIL:
             chsm_exit_children(self, e_pst, ctx_pst);
+            i2c_master_send_fail_response(self, e_pst);
             i2c_master_stop(self, e_pst);
             chsm_recall(self, e_pst);
+            clear_transaction_info(self, e_pst);
             return chsm_transition(self, s_idle);
 
         case SIG_I2C_READ_FAIL:
             chsm_exit_children(self, e_pst, ctx_pst);
+            i2c_master_send_fail_response(self, e_pst);
             i2c_master_stop(self, e_pst);
             chsm_recall(self, e_pst);
+            clear_transaction_info(self, e_pst);
             return chsm_transition(self, s_idle);
 
         default:
@@ -84,16 +91,17 @@ static chsm_result_ten s_write(chsm_tst *self, const cevent_tst  *e_pst, chsm_ca
     {
         case SIG_I2C_WRITE_SUCCESS:
             chsm_exit_children(self, e_pst, ctx_pst);
-            i2c_master_send_w_response(self, e_pst);
+            i2c_master_send_success_response(self, e_pst);
             i2c_master_stop(self, e_pst);
             chsm_recall(self, e_pst);
+            clear_transaction_info(self, e_pst);
             return chsm_transition(self, s_idle);
 
         default:
         guards_only_b=false;
     }
 
-    return chsm_handle_in_parent(self, ctx_pst, s_busy, i2c_master_send_w_response, guards_only_b);
+    return chsm_handle_in_parent(self, ctx_pst, s_busy, NULL, guards_only_b);
 }
 
 static chsm_result_ten s_read(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst)
@@ -103,16 +111,17 @@ static chsm_result_ten s_read(chsm_tst *self, const cevent_tst  *e_pst, chsm_cal
     {
         case SIG_I2C_READ_SUCCESS:
             chsm_exit_children(self, e_pst, ctx_pst);
-            i2c_master_send_r_response(self, e_pst);
+            i2c_master_send_success_response(self, e_pst);
             i2c_master_stop(self, e_pst);
             chsm_recall(self, e_pst);
+            clear_transaction_info(self, e_pst);
             return chsm_transition(self, s_idle);
 
         default:
         guards_only_b=false;
     }
 
-    return chsm_handle_in_parent(self, ctx_pst, s_busy, i2c_master_send_r_response, guards_only_b);
+    return chsm_handle_in_parent(self, ctx_pst, s_busy, NULL, guards_only_b);
 }
 
 static chsm_result_ten s_write_read(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst)
@@ -125,7 +134,7 @@ static chsm_result_ten s_write_read(chsm_tst *self, const cevent_tst  *e_pst, ch
         guards_only_b=false;
     }
 
-    return chsm_handle_in_parent(self, ctx_pst, s_busy, i2c_master_send_rw_response, guards_only_b);
+    return chsm_handle_in_parent(self, ctx_pst, s_busy, NULL, guards_only_b);
 }
 
 static chsm_result_ten s_wr_write(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst)
@@ -152,9 +161,10 @@ static chsm_result_ten s_wr_read(chsm_tst *self, const cevent_tst  *e_pst, chsm_
     {
         case SIG_I2C_READ_SUCCESS:
             chsm_exit_children(self, e_pst, ctx_pst);
-            i2c_master_send_rw_response(self, e_pst);
+            i2c_master_send_success_response(self, e_pst);
             i2c_master_stop(self, e_pst);
             chsm_recall(self, e_pst);
+            clear_transaction_info(self, e_pst);
             return chsm_transition(self, s_idle);
 
         default:
@@ -186,6 +196,7 @@ chsm_result_ten i2c_master_top(chsm_tst *self, const cevent_tst  *e_pst, chsm_ca
             chsm_exit_children(self, e_pst, ctx_pst);
             i2c_master_init(self, e_pst);
             chsm_recall(self, e_pst);
+            clear_transaction_info(self, e_pst);
             return chsm_transition(self, s_idle);
 
         default:
