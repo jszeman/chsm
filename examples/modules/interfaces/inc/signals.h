@@ -36,5 +36,15 @@ typedef enum i2c_signals_ten
     SIG_I2C_READ_FAIL
 } i2c_signals_ten;
 
+/*
+ * LM73 SIGNALS
+ */
+
+typedef enum lm73_signals_ten
+{
+    /* External signals */
+    SIG_LM73_TEMP = SIGNAL_CLASS(SIG_LM73),
+    SIG_LM73_READ
+} lm73_signals_ten;
 
 #endif
