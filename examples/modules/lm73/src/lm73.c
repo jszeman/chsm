@@ -1,4 +1,4 @@
-/*Generated with CHSM v0.0.0 at 2020.12.31 13.25.48*/
+/*Generated with CHSM v0.0.0 at 2020.12.31 21.56.05*/
 #include "cevent.h"
 #include "chsm.h"
 #include "lm73.h"
@@ -33,6 +33,10 @@ static chsm_result_ten s_idle(chsm_tst *self, const cevent_tst  *e_pst, chsm_cal
     bool guards_only_b=true;
     switch(e_pst->sig)
     {
+        case SIG_LM73_READ:
+            chsm_exit_children(self, e_pst, ctx_pst);
+            lm73_start_read(self, e_pst);
+            return chsm_transition(self, s_reading);
 
         default:
         guards_only_b=false;

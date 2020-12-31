@@ -1,7 +1,7 @@
 #ifndef LM73_FUNCTIONS_H
 #define LM73_FUNCTIONS_H
 
-/*Generated with CHSM v0.0.0 at 2020.12.31 13.25.48*/
+/*Generated with CHSM v0.0.0 at 2020.12.31 21.56.05*/
 
 #include "lm73.h"
 #include "chsm.h"
@@ -47,6 +47,7 @@ Signals:
     SIG_I2C_RESULT_ADDR_NACK 
     SIG_I2C_RESULT_DATA_NACK 
     SIG_I2C_RESULT_SUCCESS   
+    SIG_LM73_READ            
     SIG_SYS_TICK_1ms         
 */
 
