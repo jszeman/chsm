@@ -4,6 +4,8 @@ project(example_lm73_test)
 
 set(test_files  src/main.c
                 src/ut_lm73_test.c
+                ../src/lm73.c
+                ../src/lm73_functions.c
                 ../../i2c_master/src/i2c_master.c
                 ../../i2c_master/src/i2c_master_functions.c
                 ../../interfaces/test/src/ut_i2c_driver_mock.c

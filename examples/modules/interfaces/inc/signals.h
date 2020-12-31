@@ -13,6 +13,18 @@ typedef enum sig_class_ten {
 #define SIGNAL_CLASS(class) (class * CRF_SIGNAL_CLASS_SIZE)
 
 /*
+ * SYSTEM SIGNALS
+ */
+
+typedef enum sys_signals_ten
+{
+    SIG_SYS_TICK_1ms = SIGNAL_CLASS(SIG_SYS),
+    SIG_SYS_TICK_10ms,
+    SIG_SYS_TICK_100ms,
+    SIG_SYS_TICK_1s,
+} sys_signals_ten;
+
+/*
  * I2C_SIGNALS
  */
 
@@ -44,6 +56,8 @@ typedef enum lm73_signals_ten
 {
     /* External signals */
     SIG_LM73_TEMP = SIGNAL_CLASS(SIG_LM73),
+    SIG_LM73_ONLINE,
+    SIG_LM73_OFFLINE,
     SIG_LM73_READ
 } lm73_signals_ten;
 

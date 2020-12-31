@@ -6,6 +6,22 @@
 #include "signals.h"
 
 /*
+I2C master
+==========
+
+Motivation
+----------
+
+Requirements for the I2C master module:
+    * Shall be able to handle multiple parallel transaction requests
+    * Transaction request shall 
+    * Shall be able handle one I2C driver via the I2C driver interface
+    * 
+
+*/
+
+
+/*
  * EVENT DEFINITIONS
  */
 
