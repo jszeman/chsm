@@ -9,15 +9,28 @@
 I2C master
 ==========
 
+The I2C master module is responsible for managing access to a single I2C
+peripheral driver by providing an event driven interface that supports
+read, write and write-read access to the I2C bus.
+
 Motivation
 ----------
 
+It is very difficult to make unit tests for embedded hardware drivers. Not
+impossible, but extremly unconvenient compared to a module that only has
+software interfaces and therefore can be tested on a PC.
+A simple workaround for this problem is to keep the actual HW drivers as simple
+as possible and move all complexity into modules that can be tested on the 
+host and reused with different driver implementations. Like this module, for
+example.
+
 Requirements for the I2C master module:
     * Shall be able to handle multiple parallel transaction requests
-    * Transaction request shall 
+    * Shall send a reply to each request after it was finished
     * Shall be able handle one I2C driver via the I2C driver interface
-    * 
-
+    * Shall support simple write operations
+    * Shall support simple read operations
+    * Shall support write-than-read operations
 */
 
 

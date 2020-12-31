@@ -7,6 +7,23 @@
 #include "signals.h"
 
 /*
+LM73 driver
+==========
+
+This module implements a high level driver for the LM73 temperature sensor.
+
+Requirements for the LM73 module:
+    * Read out the ID register to test the communication
+    * Retry the ID register reading after a timeout if the previous read failed
+    * Send an online event, when the link is established
+    * Send an offline event if the temperature read operation fails for a number of times
+    * Send periodic temperature events
+    * Allow triggered temperature reads
+    * Add a user defined ID into the events (so the application can differentiate between
+      the different LM73 events)
+*/
+
+/*
  * EVENT DEFINITIONS
  */
 
