@@ -7,7 +7,8 @@ typedef enum sig_class_ten {
     SIG_SYS = CRF_SIGNAL_CLASS_START,
     SIG_I2C,
     SIG_UART,
-    SIG_LM73
+    SIG_LM73,
+    SIG_MEM,
 } event_class_ten;
 
 #define SIGNAL_CLASS(class) (class * CRF_SIGNAL_CLASS_SIZE)
@@ -61,4 +62,18 @@ typedef enum lm73_signals_ten
     SIG_LM73_READ
 } lm73_signals_ten;
 
+/*
+ * MEMORY INTERFACE SIGNALS
+ */
+
+typedef enum data_signals_ten
+{
+    /* External signals */
+    SIG_MEM_READ = SIGNAL_CLASS(SIG_MEM),
+    SIG_MEM_WRITE,
+    SIG_MEM_WRITE_SUCCESS,
+    SIG_MEM_WRITE_FAIL,
+    SIG_MEM_READ_SUCCESS,
+    SIG_MEM_READ_FAIL
+} data_signals_ten;
 #endif
