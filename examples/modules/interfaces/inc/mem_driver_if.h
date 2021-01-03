@@ -20,6 +20,7 @@ struct mem_driver_if_tst
 
 typedef enum mem_error_ten
 {
+    MEM_EC_NONE,
     MEM_EC_INVALID_ADDRESS, // The whole or part of the address range is not accessible, not implemented, etc.
     MEM_EC_HW_ACCESS_ERROR, // The memory access failed due to some HW problem (I2C address NACK, for example)
     MEM_EC_READ_ONLY,       // The write operation was targeted at a read only address

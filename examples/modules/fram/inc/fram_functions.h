@@ -1,7 +1,7 @@
 #ifndef FRAM_FUNCTIONS_H
 #define FRAM_FUNCTIONS_H
 
-/*Generated with CHSM v0.0.0 at 2021.01.02 21.06.03*/
+/*Generated with CHSM v0.0.0 at 2021.01.03 22.41.08*/
 
 #include "fram.h"
 #include "chsm.h"
@@ -9,14 +9,13 @@
 #include <stdbool.h>
 
 
+void clear_op_info(chsm_tst *self, const cevent_tst *e_pst);
+
 /*Initialize private fields.*/
 void fram_init(chsm_tst *self, const cevent_tst *e_pst);
 
 /*Prepare and send a transaction to the I2C master to read a chunk of data from the FRAM.*/
-void read_first_chunk(chsm_tst *self, const cevent_tst *e_pst);
-
-/*If there is more data to be read then prepare and send a transaction to the I2C master to read a chunk of data from the FRAM.*/
-void read_next_chunk(chsm_tst *self, const cevent_tst *e_pst);
+void read_a_chunk(chsm_tst *self, const cevent_tst *e_pst);
 
 /*Send a read fail event to the queue designated by the read event.*/
 void send_read_fail_response(chsm_tst *self, const cevent_tst *e_pst);
@@ -34,17 +33,10 @@ void send_write_success_response(chsm_tst *self, const cevent_tst *e_pst);
 void store_op_info(chsm_tst *self, const cevent_tst *e_pst);
 
 /*Prepare and send a transaction to the I2C master to write a chunk of data to the FRAM.*/
-void write_first_chunk(chsm_tst *self, const cevent_tst *e_pst);
-
-/*If there is more data to be sent then prepare and send a transaction to the I2C master to write a chunk of data to the FRAM.*/
-void write_next_chunk(chsm_tst *self, const cevent_tst *e_pst);
+void write_a_chunk(chsm_tst *self, const cevent_tst *e_pst);
 
 
-/*Returns true, if we don't need to read more data from the FRAM.*/
-bool all_data_read(chsm_tst *self, const cevent_tst *e_pst);
-
-/*Returns true, if we don't need to write more data to the FRAM.*/
-bool all_data_written(chsm_tst *self, const cevent_tst *e_pst);
+bool last_transaction(chsm_tst *self, const cevent_tst *e_pst);
 
 /*
 Signals:

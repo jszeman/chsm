@@ -48,6 +48,8 @@ typedef struct fram_tst
     uint8_t             rx_buff_au8[4];
 
     mem_op_tst          op_st;
+
+    uint32_t            bytes_remaining_u32;
 } fram_tst;
 
 chsm_result_ten fram_top(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
