@@ -10,8 +10,8 @@
 #include <stdlib.h>
 
 
-const cevent_tst chsm_init_event_st = {.sig=C_SIG_INIT, .gc_info=0};
-const cevent_tst chsm_none_event_st = {.sig=C_SIG_NONE, .gc_info=0};
+const cevent_tst chsm_init_event_st = {.sig=C_SIG_INIT, .gc_info={0}};
+const cevent_tst chsm_none_event_st = {.sig=C_SIG_NONE, .gc_info={0}};
 
 static void send(chsm_tst *self, const cevent_tst *e_pst)
 {

@@ -280,6 +280,7 @@ def startup():
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(filename)-20s:%(lineno)-4s %(message)s')
     args = docopt(__doc__)
+    print(args)
 
     #project = Project('/home/pi/projects/chsm/crf/test/tinc/chsm_test_machine.h')
     #project.generate_code()
