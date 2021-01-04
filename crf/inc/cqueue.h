@@ -31,7 +31,6 @@ struct cqueue_tst
 	atomic_uint16_t	 	head;
 	atomic_uint16_t		tail;
 	uint16_t 			mask;
-	uint16_t			in_critical;
 	
 	int32_t 			(*put)(cqueue_tst *self, const cevent_tst *e_cpst);
 	int32_t 			(*put_left)(cqueue_tst *self, const cevent_tst *e_cpst);

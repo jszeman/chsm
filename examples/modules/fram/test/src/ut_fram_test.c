@@ -26,7 +26,7 @@ i2c_driver_if_tst*      drv_pst = (i2c_driver_if_tst *)&drv_mock_st;
 const cevent_tst*		i2c_master_events_apst[8];
 i2c_master_tst			i2c_master_st;
 
-const cevent_tst*		fram_events_apst[8];
+const cevent_tst*		fram_events_apst[12];
 fram_tst				fram_st;
 
 
@@ -85,7 +85,7 @@ TEST_SETUP(fram)
 
 	i2c_master_st.config_st.driver_pst = drv_pst;
 	chsm_ctor(&i2c_master_st.super, i2c_master_top, i2c_master_events_apst, 4, 4);
-	chsm_ctor(&fram_st.super, fram_top, fram_events_apst, 8, 0);
+	chsm_ctor(&fram_st.super, fram_top, fram_events_apst, 8, 4);
 	
 	fram_st.config_st = (fram_cfg_tst){
 		.address_u8 = 			0x12,
@@ -820,6 +820,78 @@ TEST(fram, read_33b)
 	TEST_ASSERT_EQUAL(SIG_MEM_READ_SUCCESS, ms_pst->super.sig);
 }
 
+/* parallel_read_33b:
+ * Trigger a two 33 byte reads from page 0 and check that both operations finish successfu.
+ */
+TEST(fram, parallel_read_33b)
+{
+	i2c_mock_slave_device_tst dev_st = {
+        .address_u8 = 0x12,
+        .nack_idx_u16 = 100,
+		.tx_data_au8 = {0},
+		.rx_data_au8 = {0},
+    };
+
+	for (int i=0; i<66; i++)
+	{
+		dev_st.tx_data_au8[i] = i;
+	}
+
+	uint8_t expected1_au8[64] = {0};
+	uint8_t expected2_au8[64] = {0};
+
+	uint8_t buff1_au8[64] = {0};
+	uint8_t buff2_au8[64] = {0};
+
+	for (int i=0; i<33; i++)
+	{
+		expected1_au8[i] = i;
+		expected2_au8[i] = i + 33;
+	}
+
+	mem_op_tst mem_op1_st = {
+		.super.sig = SIG_MEM_READ,
+		.address_u32 = 0xf002,
+		.buff_pu8 = buff1_au8,
+		.len_u32 = 33,
+		.q_pst = &q_st,
+	};
+
+	mem_op_tst mem_op2_st = {
+		.super.sig = SIG_MEM_READ,
+		.address_u32 = 0xc1ca,
+		.buff_pu8 = buff2_au8,
+		.len_u32 = 33,
+		.q_pst = &q_st,
+	};
+
+    drv_mock_st.slave_pst = &dev_st;
+
+	CRF_POST(&mem_op1_st, &fram_st);
+	CRF_POST(&mem_op2_st, &fram_st);
+
+	crf_run();
+
+	uint8_t expected_rx_data_au8[32] = {0xf0, 0x02, 0xf0, 0x12, 0xf0, 0x22, 0xc1, 0xca, 0xc1, 0xda, 0xca, 0xea};
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(expected_rx_data_au8, dev_st.rx_data_au8, 32);
+
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(expected1_au8, buff1_au8, 64);
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(expected2_au8, buff2_au8, 64);
+
+	TEST_ASSERT_EQUAL(12, dev_st.rx_idx_u16);
+	TEST_ASSERT_EQUAL(66, dev_st.tx_idx_u16);
+
+	const mem_status_tst* ms_pst;
+
+	ms_pst = (const mem_status_tst*)q_st.get(&q_st);
+	TEST_ASSERT_NOT_NULL(ms_pst);
+	TEST_ASSERT_EQUAL(SIG_MEM_READ_SUCCESS, ms_pst->super.sig);
+
+	ms_pst = (const mem_status_tst*)q_st.get(&q_st);
+	TEST_ASSERT_NOT_NULL(ms_pst);
+	TEST_ASSERT_EQUAL(SIG_MEM_READ_SUCCESS, ms_pst->super.sig);
+}
+
 TEST_GROUP_RUNNER(fram)
 {
 	RUN_TEST_CASE(fram, init);
@@ -839,7 +911,7 @@ TEST_GROUP_RUNNER(fram)
 	RUN_TEST_CASE(fram, write_33b_to_page_0);
 	RUN_TEST_CASE(fram, read_17b);
 	RUN_TEST_CASE(fram, read_33b);
-	//RUN_TEST_CASE(fram, init);
+	RUN_TEST_CASE(fram, parallel_read_33b);
 	//RUN_TEST_CASE(fram, init);
 	//RUN_TEST_CASE(fram, init);
 	//RUN_TEST_CASE(fram, init);
