@@ -16,7 +16,7 @@ void fram_init(chsm_tst *_self, const cevent_tst *e_pst)
 /*Prepare and send a transaction to the I2C master to write a chunk of data to the FRAM.*/
 void write_a_chunk(chsm_tst *_self, const cevent_tst *e_pst)
 {
-    printf("\n%s ", __FUNCTION__);
+    //printf("\n%s ", __FUNCTION__);
 
     fram_tst*   self = (fram_tst *)_self;
 
@@ -70,11 +70,13 @@ void write_a_chunk(chsm_tst *_self, const cevent_tst *e_pst)
 /*Prepare and send a transaction to the I2C master to read a chunk of data from the FRAM.*/
 void read_a_chunk(chsm_tst *_self, const cevent_tst *e_pst)
 {
-    printf("\n%s ", __FUNCTION__);
+    //printf("\n%s ", __FUNCTION__);
 
     fram_tst*   self = (fram_tst *)_self;
 
     self->bytes_remaining_u32 -= self->t_st.read_cnt_u16;
+
+    //printf("%d %x ", self->bytes_remaining_u32, self->op_st.address_u32);
 
     if (0 == self->bytes_remaining_u32) return;
 
@@ -99,6 +101,8 @@ void read_a_chunk(chsm_tst *_self, const cevent_tst *e_pst)
 
     self->super.send(_self, (const cevent_tst *)(&self->t_st));
 
+    
+
     /*
      * Prepare for the next chunk.
      */
@@ -110,11 +114,9 @@ void read_a_chunk(chsm_tst *_self, const cevent_tst *e_pst)
 /*Send a read fail event to the queue designated by the read event.*/
 void send_read_fail_response(chsm_tst *_self, const cevent_tst *e_pst)
 {
-    printf("\n%s ", __FUNCTION__);
+    //printf("\n%s ", __FUNCTION__);
 
     fram_tst*   self = (fram_tst *)_self;
-
-    
 
     mem_status_tst* status_pst = CRF_NEW_EVENT(mem_status_tst);
 
@@ -145,7 +147,7 @@ mem_status_tst write_success_event_st = {.super.sig = SIG_MEM_WRITE_SUCCESS};
 /*Send a read success event to the queue designated by the read event.*/
 void send_read_success_response(chsm_tst *_self, const cevent_tst *e_pst)
 {
-    printf("\n%s ", __FUNCTION__);
+    //printf("\n%s ", __FUNCTION__);
     
     fram_tst*   self = (fram_tst *)_self;
 
@@ -155,7 +157,7 @@ void send_read_success_response(chsm_tst *_self, const cevent_tst *e_pst)
 /*Make a local copy of the operation event so fields can be used later. */
 void store_op_info(chsm_tst *_self, const cevent_tst *e_pst)
 {
-    printf("\n%s ", __FUNCTION__);
+    //printf("\n%s ", __FUNCTION__);
     
     fram_tst*   self = (fram_tst *)_self;
 
@@ -164,22 +166,27 @@ void store_op_info(chsm_tst *_self, const cevent_tst *e_pst)
     self->op_st = *op_st;
 
     self->bytes_remaining_u32 = self->op_st.len_u32;
-}
+    self->t_st.read_cnt_u16 = 0;
+    self->t_st.write_cnt_u16 = 0;
 
+    //printf(" %d ", self->op_st.len_u32);
+}
 
 void clear_op_info(chsm_tst *_self, const cevent_tst *e_pst)
 {
-    printf("\n%s ", __FUNCTION__);
+    //printf("\n%s ", __FUNCTION__);
     
     fram_tst*   self = (fram_tst *)_self;
 
     self->op_st = (mem_op_tst){0};
+    self->bytes_remaining_u32 = 0;
+    
 }
 
 /*Send a write fail event to the queue designated by the read event.*/
 void send_write_fail_response(chsm_tst *_self, const cevent_tst *e_pst)
 {
-    printf("\n%s ", __FUNCTION__);
+    //printf("\n%s ", __FUNCTION__);
     
     fram_tst*   self = (fram_tst *)_self;
 
@@ -208,7 +215,7 @@ void send_write_fail_response(chsm_tst *_self, const cevent_tst *e_pst)
 /*Send a write success event to the queue designated by the read event.*/
 void send_write_success_response(chsm_tst *_self, const cevent_tst *e_pst)
 {
-    printf("\n%s ", __FUNCTION__);
+    //printf("\n%s ", __FUNCTION__);
     
     fram_tst*   self = (fram_tst *)_self;
 
@@ -218,7 +225,7 @@ void send_write_success_response(chsm_tst *_self, const cevent_tst *e_pst)
 /*Returns true, if we don't need to read more data from the FRAM.*/
 bool all_data_read(chsm_tst *_self, const cevent_tst *e_pst)
 {
-    printf("\n%s ", __FUNCTION__);
+    //printf("\n%s ", __FUNCTION__);
     
     fram_tst*   self = (fram_tst *)_self;
 
@@ -228,7 +235,7 @@ bool all_data_read(chsm_tst *_self, const cevent_tst *e_pst)
 /*Returns true, if we don't need to write more data to the FRAM.*/
 bool all_data_written(chsm_tst *_self, const cevent_tst *e_pst)
 {
-    printf("\n%s ", __FUNCTION__);
+    //printf("\n%s ", __FUNCTION__);
     
     fram_tst*   self = (fram_tst *)_self;
 
@@ -238,7 +245,7 @@ bool all_data_written(chsm_tst *_self, const cevent_tst *e_pst)
 
 bool last_transaction(chsm_tst *_self, const cevent_tst *e_pst)
 {
-    printf("\n%s ", __FUNCTION__);
+    //printf("\n%s ", __FUNCTION__);
     
     fram_tst*   self = (fram_tst *)_self;
 

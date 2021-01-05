@@ -7,7 +7,7 @@ static lm73_status_tst lm73_offline_event = {.super.sig = SIG_LM73_OFFLINE};
 
 void lm73_init(chsm_tst *_self, const cevent_tst *e_pst)
 {
-    printf("\n%s\n", __FUNCTION__);
+    //printf("\n%s\n", __FUNCTION__);
 
     lm73_tst*   self =          (lm73_tst *)_self;
 
@@ -40,7 +40,7 @@ void lm73_inc_error_counter(chsm_tst *_self, const cevent_tst *e_pst)
 /*Try to read the ID register from the LM73 by sending a write-read transaction to the I2C master.*/
 void lm73_read_id(chsm_tst *_self, const cevent_tst *e_pst)
 {
-    printf("\n%s\n", __FUNCTION__);
+    //printf("\n%s\n", __FUNCTION__);
 
     lm73_tst*   self = (lm73_tst *)_self;
 
@@ -56,7 +56,7 @@ void lm73_read_id(chsm_tst *_self, const cevent_tst *e_pst)
 
 void lm73_reset_pointer(chsm_tst *_self, const cevent_tst *e_pst)
 {
-    printf("\n%s\n", __FUNCTION__);
+    //printf("\n%s\n", __FUNCTION__);
 
     lm73_tst*   self = (lm73_tst *)_self;
 
@@ -93,7 +93,7 @@ void send_online_event(chsm_tst *_self, const cevent_tst *e_pst)
 /*Reset the timer counter.*/
 void lm73_reset_timer(chsm_tst *_self, const cevent_tst *e_pst)
 {
-    printf("\n%s\n", __FUNCTION__);
+    //printf("\n%s\n", __FUNCTION__);
     
     lm73_tst*   self = (lm73_tst *)_self;
 
@@ -103,7 +103,7 @@ void lm73_reset_timer(chsm_tst *_self, const cevent_tst *e_pst)
 /*Send a read transaction to the LM73.*/
 void lm73_start_read(chsm_tst *_self, const cevent_tst *e_pst)
 {    
-    printf("\n%s\n", __FUNCTION__);
+    //printf("\n%s\n", __FUNCTION__);
     
     lm73_tst*   self = (lm73_tst *)_self;
 
@@ -119,7 +119,7 @@ void lm73_start_read(chsm_tst *_self, const cevent_tst *e_pst)
 /*Update the temperature display and send an event with the new value.*/
 void lm73_update_temp(chsm_tst *_self, const cevent_tst *e_pst)
 {
-    printf("\n%s ", __FUNCTION__);
+    //printf("\n%s ", __FUNCTION__);
     
     lm73_tst*   self = (lm73_tst *)_self;
 
@@ -139,7 +139,7 @@ void lm73_update_temp(chsm_tst *_self, const cevent_tst *e_pst)
     int16_t temp_c_i16 = tdr_reg_u16 >> 7;
     temp_c_i16 |= (tdr_reg_u16 & 0x8000) ? 0xfe00 : 0;
 
-    printf("%x --> %d\n", tdr_reg_u16, temp_c_i16);
+    //printf("%x --> %d\n", tdr_reg_u16, temp_c_i16);
 
     temp_pst->super.sig = SIG_LM73_TEMP;
     temp_pst->temp_C_i16 = temp_c_i16;
@@ -153,7 +153,7 @@ void lm73_update_temp(chsm_tst *_self, const cevent_tst *e_pst)
 /*True, if the response data is equal to 0x190. See LM73 datasheet section: 7.5.1.7 Identification Register*/
 bool lm73_id_match(chsm_tst *_self, const cevent_tst *e_pst)
 {
-    printf("\n%s ", __FUNCTION__);
+    //printf("\n%s ", __FUNCTION__);
     
     lm73_tst*   self = (lm73_tst *)_self;
 
@@ -162,7 +162,7 @@ bool lm73_id_match(chsm_tst *_self, const cevent_tst *e_pst)
     idr_reg_u16 <<= 8;
     idr_reg_u16 |= self->rx_buff_au8[1];
 
-    printf("%x\n", idr_reg_u16);
+    //printf("%x\n", idr_reg_u16);
 
     return LM73_ID_REG_VALUE == idr_reg_u16;
 }
