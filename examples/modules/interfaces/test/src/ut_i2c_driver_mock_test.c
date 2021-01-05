@@ -74,7 +74,7 @@ TEST(i2c_drv_mock, write_one_byte)
     TEST_ASSERT_EQUAL(0, drv_pst->status_un.bit_st.busy_u16);
 
     const cevent_tst* e_pst = q_st.get(&q_st);
-    TEST_ASSERT(e_pst);
+    TEST_ASSERT_NOT_NULL(e_pst);
     TEST_ASSERT_EQUAL(SIG_I2C_WRITE_SUCCESS, e_pst->sig);
 
     drv_pst->stop(drv_pst);

@@ -34,7 +34,7 @@ typedef struct ut_i2c_driver_mock_tst
     i2c_driver_if_tst           intf_st;
 
     i2c_mock_slave_device_tst*  slave_pst;
-
+    uint16_t                    slave_count_u16;
 } ut_i2c_driver_mock_tst;
 
 void ut_i2c_driver_mock_init(ut_i2c_driver_mock_tst *self);
