@@ -56,14 +56,23 @@ void fram_send(chsm_tst *self, const cevent_tst *e_pst)
 	}
 }
 
-static void crf_run()
+static void drv_tick(uint32_t tick_cnt_u32)
 {
-	while(CRF_STEP())
-	{
-		printf("|");
-	}
+    for (uint32_t i=0; i<tick_cnt_u32; i++)
+    {
+        drv_mock_st.tick(&drv_mock_st);
+
+		while(CRF_STEP())
+		{
+			printf("|");
+		}
+    }
 }
 
+static void crf_run()
+{
+	drv_tick(1000);
+}
 
 TEST_SETUP(fram)
 {
@@ -531,10 +540,10 @@ TEST(fram, read_1b_data_nack)
 	uint8_t expected_buff_au8[4] = {0, 0, 0, 0};
     TEST_ASSERT_EQUAL_HEX8_ARRAY(expected_buff_au8, buff_au8, 4);
 
-	uint8_t expected_rx_data_au8[4] = {0xf0, 0, 0, 0};
+	uint8_t expected_rx_data_au8[4] = {0xf0, 0x02, 0, 0};
     TEST_ASSERT_EQUAL_HEX8_ARRAY(expected_rx_data_au8, dev_st.rx_data_au8, 4);
 
-	TEST_ASSERT_EQUAL(1, dev_st.rx_idx_u16);
+	TEST_ASSERT_EQUAL(2, dev_st.rx_idx_u16);
 	TEST_ASSERT_EQUAL(0, dev_st.tx_idx_u16);
 
 	const mem_status_tst* ms_pst;
@@ -617,10 +626,10 @@ TEST(fram, write_1b_data_nack)
 
 	crf_run();
 
-	uint8_t expected_rx_data_au8[4] = {0xf0, 0, 0, 0};
+	uint8_t expected_rx_data_au8[4] = {0xf0, 0x02, 0, 0};
     TEST_ASSERT_EQUAL_HEX8_ARRAY(expected_rx_data_au8, dev_st.rx_data_au8, 4);
 
-	TEST_ASSERT_EQUAL(1, dev_st.rx_idx_u16);
+	TEST_ASSERT_EQUAL(2, dev_st.rx_idx_u16);
 	TEST_ASSERT_EQUAL(0, dev_st.tx_idx_u16);
 
 	const mem_status_tst* ms_pst;
