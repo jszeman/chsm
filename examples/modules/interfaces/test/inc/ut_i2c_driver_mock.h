@@ -29,13 +29,22 @@ typedef struct i2c_mock_slave_device_tst
     uint16_t    rx_idx_u16;
 } i2c_mock_slave_device_tst;
 
-typedef struct ut_i2c_driver_mock_tst
+typedef struct ut_i2c_driver_mock_tst ut_i2c_driver_mock_tst;
+
+struct ut_i2c_driver_mock_tst
 {
     i2c_driver_if_tst           intf_st;
 
     i2c_mock_slave_device_tst*  slave_pst;
     uint16_t                    slave_count_u16;
-} ut_i2c_driver_mock_tst;
+
+    void                        (*tick)(ut_i2c_driver_mock_tst* self);
+
+    i2c_mock_slave_device_tst*  actual_slave_pst;
+    uint8_t                     *buff_pu8;
+    uint16_t                    len_u16;
+    bool                        reading_b;
+};
 
 void ut_i2c_driver_mock_init(ut_i2c_driver_mock_tst *self);
 

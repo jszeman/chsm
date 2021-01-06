@@ -23,6 +23,13 @@ i2c_driver_if_tst*      drv_pst = (i2c_driver_if_tst *)&drv_mock_st;
 const cevent_tst*       events_apst[4];
 cqueue_tst              q_st;
 
+static void drv_tick(uint32_t tick_cnt_u32)
+{
+    for (uint32_t i=0; i<tick_cnt_u32; i++)
+    {
+        drv_mock_st.tick(&drv_mock_st);
+    }
+}
 
 TEST_SETUP(i2c_drv_mock)
 {
@@ -68,6 +75,9 @@ TEST(i2c_drv_mock, write_one_byte)
     drv_mock_st.slave_pst = &dev_st;
 
     drv_pst->start_tx(drv_pst, 0x12, data_au8, 1);
+
+    drv_tick(5);
+
     TEST_ASSERT(dev_st.busy_b);
     TEST_ASSERT_EQUAL(0, drv_pst->status_un.bit_st.addr_nack_u16);
     TEST_ASSERT_EQUAL(0, drv_pst->status_un.bit_st.data_nack_u16);
@@ -99,6 +109,9 @@ TEST(i2c_drv_mock, write_two_bytes)
     drv_mock_st.slave_pst = &dev_st;
 
     drv_pst->start_tx(drv_pst, 0x12, data_au8, 2);
+
+    drv_tick(5);
+
     TEST_ASSERT(dev_st.busy_b);
     TEST_ASSERT_EQUAL(0, drv_pst->status_un.bit_st.addr_nack_u16);
     TEST_ASSERT_EQUAL(0, drv_pst->status_un.bit_st.data_nack_u16);
@@ -130,6 +143,7 @@ TEST(i2c_drv_mock, write_two_bytes_addr_nack)
     drv_mock_st.slave_pst = &dev_st;
 
     drv_pst->start_tx(drv_pst, 0x13, data_au8, 2);
+    drv_tick(5);
     TEST_ASSERT_FALSE(dev_st.busy_b);
     TEST_ASSERT_EQUAL(1, drv_pst->status_un.bit_st.addr_nack_u16);
     TEST_ASSERT_EQUAL(0, drv_pst->status_un.bit_st.data_nack_u16);
@@ -164,6 +178,7 @@ TEST(i2c_drv_mock, write_two_bytes_byte0_nack)
     drv_mock_st.slave_pst = &dev_st;
 
     drv_pst->start_tx(drv_pst, 0x12, data_au8, 2);
+    drv_tick(5);
     TEST_ASSERT(dev_st.busy_b);
     TEST_ASSERT_EQUAL(0, drv_pst->status_un.bit_st.addr_nack_u16);
     TEST_ASSERT_EQUAL(1, drv_pst->status_un.bit_st.data_nack_u16);
@@ -176,7 +191,7 @@ TEST(i2c_drv_mock, write_two_bytes_byte0_nack)
     drv_pst->stop(drv_pst);
     TEST_ASSERT_FALSE(dev_st.busy_b);
 
-    data_au8[0] = 0;
+    data_au8[0] = 0x5a;
     data_au8[1] = 0;
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(data_au8, dev_st.rx_data_au8, 2);
@@ -198,6 +213,7 @@ TEST(i2c_drv_mock, write_two_bytes_byte1_nack)
     drv_mock_st.slave_pst = &dev_st;
 
     drv_pst->start_tx(drv_pst, 0x12, data_au8, 2);
+    drv_tick(5);
     TEST_ASSERT(dev_st.busy_b);
     TEST_ASSERT_EQUAL(0, drv_pst->status_un.bit_st.addr_nack_u16);
     TEST_ASSERT_EQUAL(1, drv_pst->status_un.bit_st.data_nack_u16);
@@ -209,8 +225,6 @@ TEST(i2c_drv_mock, write_two_bytes_byte1_nack)
 
     drv_pst->stop(drv_pst);
     TEST_ASSERT_FALSE(dev_st.busy_b);
-
-    data_au8[1] = 0;
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(data_au8, dev_st.rx_data_au8, 2);
 }
@@ -232,6 +246,7 @@ TEST(i2c_drv_mock, read_one_byte)
     drv_mock_st.slave_pst = &dev_st;
 
     drv_pst->start_rx(drv_pst, 0x12, data_au8, 1);
+    drv_tick(5);
     TEST_ASSERT(dev_st.busy_b);
     TEST_ASSERT_EQUAL(0, drv_pst->status_un.bit_st.addr_nack_u16);
     TEST_ASSERT_EQUAL(0, drv_pst->status_un.bit_st.data_nack_u16);
@@ -264,6 +279,7 @@ TEST(i2c_drv_mock, read_two_bytes)
     drv_mock_st.slave_pst = &dev_st;
 
     drv_pst->start_rx(drv_pst, 0x12, data_au8, 2);
+    drv_tick(5);
     TEST_ASSERT(dev_st.busy_b);
     TEST_ASSERT_EQUAL(0, drv_pst->status_un.bit_st.addr_nack_u16);
     TEST_ASSERT_EQUAL(0, drv_pst->status_un.bit_st.data_nack_u16);
@@ -296,6 +312,7 @@ TEST(i2c_drv_mock, read_two_bytes_addr_nack)
     drv_mock_st.slave_pst = &dev_st;
 
     drv_pst->start_rx(drv_pst, 0x13, data_au8, 2);
+    drv_tick(5);
     TEST_ASSERT_FALSE(dev_st.busy_b);
     TEST_ASSERT_EQUAL(1, drv_pst->status_un.bit_st.addr_nack_u16);
     TEST_ASSERT_EQUAL(0, drv_pst->status_un.bit_st.data_nack_u16);
@@ -330,6 +347,7 @@ TEST(i2c_drv_mock, write_2b_read_2b)
     drv_mock_st.slave_pst = &dev_st;
 
     drv_pst->start_tx(drv_pst, 0x12, tx_data_au8, 2);
+    drv_tick(5);
     TEST_ASSERT(dev_st.busy_b);
     TEST_ASSERT_EQUAL(0, drv_pst->status_un.bit_st.addr_nack_u16);
     TEST_ASSERT_EQUAL(0, drv_pst->status_un.bit_st.data_nack_u16);
@@ -340,6 +358,7 @@ TEST(i2c_drv_mock, write_2b_read_2b)
     TEST_ASSERT_EQUAL(SIG_I2C_WRITE_SUCCESS, e_pst->sig);
 
     drv_pst->start_rx(drv_pst, 0x12, rx_data_au8, 2);
+    drv_tick(5);
     TEST_ASSERT(dev_st.busy_b);
     TEST_ASSERT_EQUAL(0, drv_pst->status_un.bit_st.addr_nack_u16);
     TEST_ASSERT_EQUAL(0, drv_pst->status_un.bit_st.data_nack_u16);
