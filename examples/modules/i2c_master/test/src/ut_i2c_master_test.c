@@ -34,8 +34,18 @@ crf_tst					crf;
 const cevent_tst*       events_apst[4];
 cqueue_tst              q_st;
 
+static void drv_tick(uint32_t tick_cnt_u32)
+{
+    for (uint32_t i=0; i<tick_cnt_u32; i++)
+    {
+        drv_mock_st.tick(&drv_mock_st);
 
-
+		while(CRF_STEP())
+		{
+			printf("|");
+		}
+    }
+}
 
 TEST_SETUP(i2c_master)
 {
@@ -104,10 +114,7 @@ TEST(i2c_master, send_1b)
 
 	CRF_POST(t_pst, &i2c_master_st);
 
-	while(CRF_STEP())
-	{
-		printf("|");
-	}
+	drv_tick(5);
 
 	TEST_ASSERT_FALSE(dev_st.busy_b);
 
@@ -151,10 +158,7 @@ TEST(i2c_master, send_2b)
 
 	CRF_POST(t_pst, &i2c_master_st);
 
-	while(CRF_STEP())
-	{
-		printf("|");
-	}
+	drv_tick(5);
 
 	TEST_ASSERT_FALSE(dev_st.busy_b);
 
@@ -247,14 +251,11 @@ TEST(i2c_master, send_1b_data_nack)
 
 	CRF_POST(t_pst, &i2c_master_st);
 
-	while(CRF_STEP())
-	{
-		printf("|");
-	}
+	drv_tick(5);
 
 	TEST_ASSERT_FALSE(dev_st.busy_b);
 
-	uint8_t expected_au8[4] = {0, 0, 0, 0};
+	uint8_t expected_au8[4] = {0x5a, 0, 0, 0};
     TEST_ASSERT_EQUAL_HEX8_ARRAY(expected_au8, dev_st.rx_data_au8, 2);
 
 	const cevent_tst* e_pst = q_st.get(&q_st);
@@ -310,10 +311,7 @@ TEST(i2c_master, send_2x_1b)
 	CRF_POST(t1_pst, &i2c_master_st);
 	CRF_POST(t2_pst, &i2c_master_st);
 
-	while(CRF_STEP())
-	{
-		printf("|");
-	}
+	drv_tick(10);
 
 	TEST_ASSERT_FALSE(dev_st.busy_b);
 
@@ -363,10 +361,7 @@ TEST(i2c_master, read_1b)
 
 	CRF_POST(t1_pst, &i2c_master_st);
 
-	while(CRF_STEP())
-	{
-		printf("|");
-	}
+	drv_tick(5);
 
 	TEST_ASSERT_FALSE(dev_st.busy_b);
 
@@ -412,10 +407,7 @@ TEST(i2c_master, read_2b)
 
 	CRF_POST(t1_pst, &i2c_master_st);
 
-	while(CRF_STEP())
-	{
-		printf("|");
-	}
+	drv_tick(5);
 
 	TEST_ASSERT_FALSE(dev_st.busy_b);
 
@@ -461,10 +453,7 @@ TEST(i2c_master, read_1b_addr_nack)
 
 	CRF_POST(t1_pst, &i2c_master_st);
 
-	while(CRF_STEP())
-	{
-		printf("|");
-	}
+	drv_tick(5);
 
 	TEST_ASSERT_FALSE(dev_st.busy_b);
 
@@ -513,10 +502,7 @@ TEST(i2c_master, write_2b_read_2b)
 
 	CRF_POST(t1_pst, &i2c_master_st);
 
-	while(CRF_STEP())
-	{
-		printf("|");
-	}
+	drv_tick(10);
 
 	TEST_ASSERT_FALSE(dev_st.busy_b);
 
@@ -535,13 +521,13 @@ TEST_GROUP_RUNNER(i2c_master)
 {
 	RUN_TEST_CASE(i2c_master, init);
 	RUN_TEST_CASE(i2c_master, send_1b);
+	RUN_TEST_CASE(i2c_master, send_2b);
 	RUN_TEST_CASE(i2c_master, send_1b_addr_nack);
 	RUN_TEST_CASE(i2c_master, send_1b_data_nack);
 	RUN_TEST_CASE(i2c_master, send_2x_1b);
 	RUN_TEST_CASE(i2c_master, read_1b);
 	RUN_TEST_CASE(i2c_master, read_2b);
 	RUN_TEST_CASE(i2c_master, read_1b_addr_nack);
-	RUN_TEST_CASE(i2c_master, send_2b);
 	RUN_TEST_CASE(i2c_master, write_2b_read_2b);
 	//RUN_TEST_CASE(i2c_master, init);
 	//RUN_TEST_CASE(i2c_master, init);

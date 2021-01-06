@@ -108,8 +108,6 @@ static void start_rx(i2c_driver_if_tst *_self, uint8_t slave_addr_u8, uint8_t *d
         self->intf_st.status_un.bit_st.addr_nack_u16 = 1;
         self->intf_st.q_pst->put(self->intf_st.q_pst, &i2c_rx_fail_st);
     }
-
-    self->intf_st.q_pst->put(self->intf_st.q_pst, &i2c_rx_success_st);
 }
 
 static void stop(i2c_driver_if_tst *_self)
