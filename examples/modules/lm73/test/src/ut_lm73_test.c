@@ -51,6 +51,8 @@ static void tick_ms(uint32_t tick_cnt_u32)
 {
 	while(tick_cnt_u32--)
 	{
+		drv_mock_st.tick(&drv_mock_st);
+
 		CRF_POST(&tick_1ms_st, &lm73_st);
 
 		while(CRF_STEP())
@@ -142,7 +144,7 @@ TEST(lm73, read_temp_twice)
 
     drv_mock_st.slave_pst = &dev_st;
 
-	tick_ms(1);
+	tick_ms(100);
 
 	s_pst = (lm73_status_tst*)q_st.get(&q_st);
 	TEST_ASSERT(s_pst);
@@ -181,19 +183,19 @@ TEST(lm73, read_id_retry)
 
     drv_mock_st.slave_pst = &dev_st;
 
-	tick_ms(1);
+	tick_ms(10);
 
 	s_pst = (lm73_status_tst*)q_st.get(&q_st);
 	TEST_ASSERT_NULL(s_pst);
 
 	dev_st.address_u8 = 0x12;
 	
-	tick_ms(LM73_RETRY_TIMEOUT-1);
+	tick_ms(LM73_RETRY_TIMEOUT-10);
 	
 	s_pst = (lm73_status_tst*)q_st.get(&q_st);
 	TEST_ASSERT_NULL(s_pst);
 	
-	tick_ms(1);
+	tick_ms(10);
 	
 	s_pst = (lm73_status_tst*)q_st.get(&q_st);
 	TEST_ASSERT_NOT_NULL(s_pst);
@@ -216,17 +218,17 @@ TEST(lm73, read_id_retry_bad_id)
 
     drv_mock_st.slave_pst = &dev_st;
 
-	tick_ms(1);
+	tick_ms(10);
 
 	s_pst = (lm73_status_tst*)q_st.get(&q_st);
 	TEST_ASSERT_NULL(s_pst);
 	
-	tick_ms(LM73_RETRY_TIMEOUT-1);
+	tick_ms(LM73_RETRY_TIMEOUT-10);
 	
 	s_pst = (lm73_status_tst*)q_st.get(&q_st);
 	TEST_ASSERT_NULL(s_pst);
 	
-	tick_ms(1);
+	tick_ms(10);
 	
 	s_pst = (lm73_status_tst*)q_st.get(&q_st);
 	TEST_ASSERT_NOT_NULL(s_pst);
@@ -250,7 +252,7 @@ TEST(lm73, go_offline)
 
     drv_mock_st.slave_pst = &dev_st;
 
-	tick_ms(1);
+	tick_ms(10);
 
 	s_pst = (lm73_status_tst*)q_st.get(&q_st);
 	TEST_ASSERT(s_pst);
@@ -300,7 +302,7 @@ TEST(lm73, triggered_read)
 
     drv_mock_st.slave_pst = &dev_st;
 
-	tick_ms(1);
+	tick_ms(10);
 
 	s_pst = (lm73_status_tst*)q_st.get(&q_st);
 	TEST_ASSERT(s_pst);
@@ -315,7 +317,7 @@ TEST(lm73, triggered_read)
 
 	CRF_POST(&read_event, &lm73_st);
 
-	tick_ms(1);
+	tick_ms(10);
 
 	uint8_t expected_au8[4] = {7, 0, 0, 0};
     TEST_ASSERT_EQUAL_HEX8_ARRAY(expected_au8, dev_st.rx_data_au8, 4);
