@@ -118,11 +118,9 @@ void send_read_fail_response(chsm_tst *_self, const cevent_tst *e_pst)
 
     fram_tst*   self = (fram_tst *)_self;
 
-    mem_status_tst* status_pst = CRF_NEW_EVENT(mem_status_tst);
+    mem_status_tst* status_pst = CRF_NEW(SIG_MEM_READ_FAIL);
 
     if (NULL == status_pst) return;
-
-    status_pst->super.sig = SIG_MEM_READ_FAIL;
 
     switch(e_pst->sig)
     {
@@ -190,11 +188,9 @@ void send_write_fail_response(chsm_tst *_self, const cevent_tst *e_pst)
     
     fram_tst*   self = (fram_tst *)_self;
 
-    mem_status_tst* status_pst = CRF_NEW_EVENT(mem_status_tst);
+    mem_status_tst* status_pst = CRF_NEW(SIG_MEM_WRITE_FAIL);
 
     if (NULL == status_pst) return;
-
-    status_pst->super.sig = SIG_MEM_WRITE_FAIL;
 
     switch(e_pst->sig)
     {

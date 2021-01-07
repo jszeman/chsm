@@ -11,7 +11,7 @@
 
 #define CRF_POOL_CNT_MAX 4
 
-static void* new_event(crf_tst *self, uint32_t size)
+static void* new_event(crf_tst *self, uint32_t size, signal_t sig)
 {
     if (NULL == self->pool_ast) return NULL;
 
@@ -23,10 +23,11 @@ static void* new_event(crf_tst *self, uint32_t size)
 
         if (pool->esize >= size)
         {
-            void* e = pool->new(pool);
+            cevent_tst* e = pool->new(pool);
             if (NULL != e)
             {
-                ((cevent_tst *)e)->gc_info = (gc_info_tst){.pool_id = i+1, .ref_cnt = 0};
+                e->gc_info = (gc_info_tst){.pool_id = i+1, .ref_cnt = 0};
+                e->sig = sig;
                 return e;
             }
         }

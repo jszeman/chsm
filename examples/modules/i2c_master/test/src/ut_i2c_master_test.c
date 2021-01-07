@@ -99,7 +99,7 @@ TEST(i2c_master, send_1b)
 
 	uint8_t data_au8[4] = {0x5a, 0x6b, 0, 0};
 
-	i2c_transaction_tst*	t_pst = CRF_NEW_EVENT(SIG_I2C_TRANSACTION_TYPE);
+	i2c_transaction_tst*	t_pst = CRF_NEW(SIG_I2C_W_TRANSACTION);
 
 	TEST_ASSERT(t_pst);
 
@@ -111,6 +111,8 @@ TEST(i2c_master, send_1b)
 		.slave_addr_u16 = 0x12,
 		.write_data_pu8 = data_au8
 	};
+
+	TEST_ASSERT_EQUAL(SIG_I2C_W_TRANSACTION, t_pst->super.sig);
 
 	CRF_POST(t_pst, &i2c_master_st);
 
@@ -143,7 +145,7 @@ TEST(i2c_master, send_2b)
 
 	uint8_t data_au8[4] = {0x5a, 0x6b, 0x7c, 0};
 
-	i2c_transaction_tst*	t_pst = CRF_NEW_EVENT(SIG_I2C_TRANSACTION_TYPE);
+	i2c_transaction_tst*	t_pst = CRF_NEW(SIG_I2C_W_TRANSACTION);
 
 	TEST_ASSERT(t_pst);
 
@@ -188,7 +190,7 @@ TEST(i2c_master, send_1b_addr_nack)
 
 	uint8_t data_au8[4] = {0x5a, 0x6b, 0, 0};
 
-	i2c_transaction_tst*	t_pst = CRF_NEW_EVENT(SIG_I2C_TRANSACTION_TYPE);
+	i2c_transaction_tst*	t_pst = CRF_NEW(SIG_I2C_W_TRANSACTION);
 
 	TEST_ASSERT(t_pst);
 
@@ -236,7 +238,7 @@ TEST(i2c_master, send_1b_data_nack)
 
 	uint8_t data_au8[4] = {0x5a, 0x6b, 0, 0};
 
-	i2c_transaction_tst*	t_pst = CRF_NEW_EVENT(SIG_I2C_TRANSACTION_TYPE);
+	i2c_transaction_tst*	t_pst = CRF_NEW(SIG_I2C_W_TRANSACTION);
 
 	TEST_ASSERT(t_pst);
 
@@ -282,7 +284,7 @@ TEST(i2c_master, send_2x_1b)
 	uint8_t data1_au8[4] = {0x5a, 0x6b, 0, 0};
 	uint8_t data2_au8[4] = {0x7c, 0x8d, 0, 0};
 
-	i2c_transaction_tst*	t1_pst = CRF_NEW_EVENT(SIG_I2C_TRANSACTION_TYPE);
+	i2c_transaction_tst*	t1_pst = CRF_NEW(SIG_I2C_W_TRANSACTION);
 
 	TEST_ASSERT(t1_pst);
 
@@ -295,7 +297,7 @@ TEST(i2c_master, send_2x_1b)
 		.write_data_pu8 = data1_au8,
 	};
 
-	i2c_transaction_tst*	t2_pst = CRF_NEW_EVENT(SIG_I2C_TRANSACTION_TYPE);
+	i2c_transaction_tst*	t2_pst = CRF_NEW(SIG_I2C_W_TRANSACTION);
 
 	TEST_ASSERT(t2_pst);
 
@@ -345,7 +347,7 @@ TEST(i2c_master, read_1b)
 
 	uint8_t data1_au8[4] = {0};
 
-	i2c_transaction_tst*	t1_pst = CRF_NEW_EVENT(SIG_I2C_TRANSACTION_TYPE);
+	i2c_transaction_tst*	t1_pst = CRF_NEW(SIG_I2C_R_TRANSACTION);
 
 	TEST_ASSERT(t1_pst);
 
@@ -391,7 +393,7 @@ TEST(i2c_master, read_2b)
 
 	uint8_t data1_au8[4] = {0};
 
-	i2c_transaction_tst*	t1_pst = CRF_NEW_EVENT(SIG_I2C_TRANSACTION_TYPE);
+	i2c_transaction_tst*	t1_pst = CRF_NEW(SIG_I2C_R_TRANSACTION);
 
 	TEST_ASSERT(t1_pst);
 
@@ -437,7 +439,7 @@ TEST(i2c_master, read_1b_addr_nack)
 
 	uint8_t data1_au8[4] = {0};
 
-	i2c_transaction_tst*	t1_pst = CRF_NEW_EVENT(SIG_I2C_TRANSACTION_TYPE);
+	i2c_transaction_tst*	t1_pst = CRF_NEW(SIG_I2C_R_TRANSACTION);
 
 	TEST_ASSERT(t1_pst);
 
@@ -486,7 +488,7 @@ TEST(i2c_master, write_2b_read_2b)
 	uint8_t wr_data1_au8[4] = {0x8d, 0x9e, 0xaf, 0};
 	uint8_t rd_data1_au8[4] = {0};
 
-	i2c_transaction_tst*	t1_pst = CRF_NEW_EVENT(SIG_I2C_TRANSACTION_TYPE);
+	i2c_transaction_tst*	t1_pst = CRF_NEW(SIG_I2C_WR_TRANSACTION);
 
 	TEST_ASSERT(t1_pst);
 

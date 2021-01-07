@@ -51,7 +51,9 @@ typedef struct i2c_transaction_tst
     uint8_t*            read_data_pu8;      // Pointer to the data buffer for the read operation
 } i2c_transaction_tst;
 
-#define SIG_I2C_TRANSACTION_TYPE    i2c_transaction_tst
+#define SIG_I2C_W_TRANSACTION_TYPE    i2c_transaction_tst
+#define SIG_I2C_R_TRANSACTION_TYPE     i2c_transaction_tst
+#define SIG_I2C_WR_TRANSACTION_TYPE    i2c_transaction_tst
 
 /*
  * ACTIVE OBJECT

@@ -63,8 +63,7 @@ void emit_event(bus_driver_tst *self, const cevent_tst *e_pst)
 {
 	event_bus_data_tst *e;
 
-	e = crf.new_event(&crf, sizeof(event_bus_data_tst));
-	e->e.sig = TEST_SIG_READ;
+	e = CRF_NEW(TEST_SIG_READ);
 
 	self->sm.send((chsm_tst *)self, (const cevent_tst *)e);
 }
@@ -140,7 +139,7 @@ TEST(crf, one_small_event)
 {
 	event_small_tst *e;
 
-	e = CRF_NEW_EVENT(event_small_tst);
+	e = CRF_NEW(TEST_SIG_RECEIVE);
 
 	TEST_ASSERT_NOT_NULL(e);
 	TEST_ASSERT_GREATER_OR_EQUAL(buff1, (uint8_t *)e);
@@ -158,8 +157,8 @@ TEST(crf, two_small_event)
 	event_small_tst *e1;
 	event_small_tst *e2;
 
-	e1 = CRF_NEW_EVENT(event_small_tst);
-	e2 = CRF_NEW_EVENT(event_small_tst);
+	e1 = CRF_NEW(TEST_SIG_RECEIVE);
+	e2 = CRF_NEW(TEST_SIG_RECEIVE);
 
 	TEST_ASSERT_NOT_EQUAL(e1, e2);
 	TEST_ASSERT_NOT_NULL(e2);
@@ -178,7 +177,7 @@ TEST(crf, too_many_small_event)
 
 	for (int i=0; i<5; i++)
 	{
-		e[i] = CRF_NEW_EVENT(event_small_tst);
+		e[i] = CRF_NEW(TEST_SIG_RECEIVE);
 	}
 
 	for (int i=0; i<4; i++)
@@ -206,7 +205,7 @@ TEST(crf, too_many_events)
 
 	for (int i=0; i<9; i++)
 	{
-		e[i] = CRF_NEW_EVENT(event_small_tst);
+		e[i] = CRF_NEW(TEST_SIG_RECEIVE);
 	}
 
 	for (int i=0; i<4; i++)
@@ -237,7 +236,7 @@ TEST(crf, post)
 {
 	event_small_tst *e;
 
-	e = CRF_NEW_EVENT(event_small_tst);
+	e = CRF_NEW(TEST_SIG_RECEIVE);
 	e->e.sig = TEST_SIG_SEND_DATA;
 
 	CRF_POST(e, &bus_driver);
@@ -258,7 +257,7 @@ TEST(crf, gc_after_post)
 	// Allocate all events from the small pool
 	for (int i=0; i<8; i++)
 	{
-		e[i] = CRF_NEW_EVENT(event_small_tst);
+		e[i] = CRF_NEW(TEST_SIG_RECEIVE);
 	}
 
 	e[0]->e.sig = TEST_SIG_SEND_DATA;
@@ -268,12 +267,12 @@ TEST(crf, gc_after_post)
 	/* Check, that pools are empty and we can not allocate
 	 * new events.
 	 */
-	e[8] = CRF_NEW_EVENT(event_small_tst);
+	e[8] = CRF_NEW(TEST_SIG_RECEIVE);
 	TEST_ASSERT_NULL(e[8]);
 
 	CRF_STEP();
 
-	e[8] = CRF_NEW_EVENT(event_small_tst);
+	e[8] = CRF_NEW(TEST_SIG_RECEIVE);
 
 	TEST_ASSERT_NOT_NULL(e[8]);
 	TEST_ASSERT_GREATER_OR_EQUAL(buff1, (uint8_t *)e[8]);
@@ -288,7 +287,7 @@ TEST(crf, emmit)
 {
 	event_small_tst *e;
 
-	e = CRF_NEW_EVENT(event_small_tst);
+	e = CRF_NEW(TEST_SIG_RECEIVE);
 	e->e.sig = TEST_SIG_TICK_1MS;
 
 	CRF_POST(e, &bus_driver);

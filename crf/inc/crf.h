@@ -28,11 +28,11 @@ struct route_tst
 	cqueue_tst			**targets;	// NULL terminated list of pointers to target queues
 };
 
-typedef struct crf_st crf_tst;
+typedef struct crf_tst crf_tst;
 
-struct crf_st
+struct crf_tst
 {
-	void*				(*new_event)(crf_tst *self, uint32_t size);		//< Create a new event
+	void*				(*new_event)(crf_tst *self, uint32_t size, signal_t sig);		//< Create a new event
 	void				(*publish)(crf_tst *self, const cevent_tst* e);			//< Publish an event
 	void				(*post)(crf_tst *self, cevent_tst* e, cqueue_tst *q); //< Put an event into an event queue
 	bool				(*step)(crf_tst *self); //< Dispatch one event
@@ -44,7 +44,10 @@ struct crf_st
 
 bool crf_init(crf_tst *self , chsm_tst **chsm_ap, cpool_tst *pool_ast, uint16_t pool_cnt);
 
-#define CRF_NEW_EVENT(event_type) 		(crf.new_event(&crf, sizeof(event_type)))
+#define TYPEOF(SIGNAL) SIGNAL##_TYPE
+
+#define CRF_NEW_EVENT(event_type, sig)  crf.new_event(&crf, sizeof(event_type), sig)
+#define CRF_NEW(SIGNAL)					CRF_NEW_EVENT(TYPEOF(SIGNAL), SIGNAL)
 #define CRF_POST(event_ptr, hsm_ptr) 	crf.post(&crf, (cevent_tst *)event_ptr, (cqueue_tst *)(hsm_ptr))
 #define CRF_STEP()						crf.step(&crf)
 

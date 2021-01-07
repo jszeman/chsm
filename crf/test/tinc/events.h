@@ -25,6 +25,10 @@ enum test_events_en
     TEST_SIG_CANCEL,
 };
 
+#define TEST_SIG_READ_TYPE event_bus_data_tst
+#define TEST_SIG_WRITE_TYPE event_bus_data_tst
+#define TEST_SIG_RECEIVE_TYPE event_small_tst
+
 typedef struct event_bus_data_st
 {
     cevent_tst      e;

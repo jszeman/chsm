@@ -32,6 +32,11 @@ struct i2c_driver_if_tst
     i2c_driver_status_tun   status_un;
 };
 
+#define SIG_I2C_WRITE_SUCCESS_TYPE  cevent_tst
+#define SIG_I2C_READ_SUCCESS_TYPE   cevent_tst
+#define SIG_I2C_WRITE_FAIL_TYPE     cevent_tst
+#define SIG_I2C_READ_FAIL_TYPE      cevent_tst
+
 /*
 Motivation
 ==========

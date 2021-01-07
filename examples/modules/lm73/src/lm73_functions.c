@@ -123,7 +123,7 @@ void lm73_update_temp(chsm_tst *_self, const cevent_tst *e_pst)
     
     lm73_tst*   self = (lm73_tst *)_self;
 
-    lm73_temp_tst* temp_pst = CRF_NEW_EVENT(lm73_temp_tst);
+    lm73_temp_tst* temp_pst = CRF_NEW(SIG_LM73_TEMP); //lm73_temp_tst
 
     if (NULL == temp_pst) return;
 

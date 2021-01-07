@@ -17,7 +17,6 @@ struct mem_driver_if_tst
     uint32_t    (*write)(mem_driver_if_tst* self, uint8_t* buff_pu8, uint32_t address_u32, uint32_t len_u32, cqueue_tst* q_pst);
 };
 
-
 typedef enum mem_error_ten
 {
     MEM_EC_NONE,
@@ -42,6 +41,12 @@ typedef struct mem_status_tst
     uint32_t        address_u32;
 } mem_status_tst;
 
+#define SIG_MEM_READ_TYPE           mem_op_tst
+#define SIG_MEM_WRITE_TYPE          mem_op_tst
+#define SIG_MEM_WRITE_SUCCESS_TYPE  mem_status_tst
+#define SIG_MEM_WRITE_FAIL_TYPE     mem_status_tst
+#define SIG_MEM_READ_SUCCESS_TYPE   mem_status_tst
+#define SIG_MEM_READ_FAIL_TYPE      mem_status_tst
 
 /*
 Motivation

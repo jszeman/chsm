@@ -34,14 +34,16 @@ typedef struct lm73_temp_tst
     uint16_t            id_u16;             // Sensor ID
 } lm73_temp_tst;
 
-#define SIG_LM73_TEMP_TYPE    lm73_temp_tst
-
-
 typedef struct lm73_status_tst
 {
     cevent_tst          super;              // Signal and GC stuff
     uint16_t            id_u16;             // Sensor ID
 } lm73_status_tst;
+
+#define SIG_LM73_TEMP_TYPE      lm73_temp_tst
+#define SIG_LM73_ONLINE_TYPE    lm73_status_tst
+#define SIG_LM73_OFFLINE_TYPE   lm73_status_tst
+#define SIG_LM73_READ_TYPE      cevent_tst
 
 /*
  * ACTIVE OBJECT
