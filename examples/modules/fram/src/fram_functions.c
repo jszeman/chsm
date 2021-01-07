@@ -2,6 +2,10 @@
 #include "fram.h"
 #include <stdio.h>
 
+
+const mem_status_tst read_success_event_st = {.super.sig = SIG_MEM_READ_SUCCESS};
+const mem_status_tst write_success_event_st = {.super.sig = SIG_MEM_WRITE_SUCCESS};
+
 void fram_init(chsm_tst *_self, const cevent_tst *e_pst)
 {
     fram_tst*   self = (fram_tst *)_self;
@@ -118,7 +122,7 @@ void send_read_fail_response(chsm_tst *_self, const cevent_tst *e_pst)
 
     fram_tst*   self = (fram_tst *)_self;
 
-    mem_status_tst* status_pst = CRF_NEW(SIG_MEM_READ_FAIL);
+    TYPEOF(SIG_MEM_READ_FAIL)* status_pst = CRF_NEW(SIG_MEM_READ_FAIL);
 
     if (NULL == status_pst) return;
 
@@ -135,12 +139,8 @@ void send_read_fail_response(chsm_tst *_self, const cevent_tst *e_pst)
 
     status_pst->address_u32 = self->op_st.address_u32 - self->t_st.read_cnt_u16;
     
-    self->op_st.q_pst->put(self->op_st.q_pst, (const cevent_tst *)status_pst);
+    CRF_POST(status_pst, self->op_st.q_pst);
 }
-
-
-mem_status_tst read_success_event_st = {.super.sig = SIG_MEM_READ_SUCCESS};
-mem_status_tst write_success_event_st = {.super.sig = SIG_MEM_WRITE_SUCCESS};
 
 /*Send a read success event to the queue designated by the read event.*/
 void send_read_success_response(chsm_tst *_self, const cevent_tst *e_pst)
@@ -149,7 +149,7 @@ void send_read_success_response(chsm_tst *_self, const cevent_tst *e_pst)
     
     fram_tst*   self = (fram_tst *)_self;
 
-    self->op_st.q_pst->put(self->op_st.q_pst, (const cevent_tst *)&read_success_event_st);
+    CRF_POST(&read_success_event_st, self->op_st.q_pst);
 }
 
 /*Make a local copy of the operation event so fields can be used later. */
@@ -178,7 +178,6 @@ void clear_op_info(chsm_tst *_self, const cevent_tst *e_pst)
 
     self->op_st = (mem_op_tst){0};
     self->bytes_remaining_u32 = 0;
-    
 }
 
 /*Send a write fail event to the queue designated by the read event.*/
@@ -188,7 +187,7 @@ void send_write_fail_response(chsm_tst *_self, const cevent_tst *e_pst)
     
     fram_tst*   self = (fram_tst *)_self;
 
-    mem_status_tst* status_pst = CRF_NEW(SIG_MEM_WRITE_FAIL);
+    TYPEOF(SIG_MEM_WRITE_FAIL)* status_pst = CRF_NEW(SIG_MEM_WRITE_FAIL);
 
     if (NULL == status_pst) return;
 
@@ -205,7 +204,7 @@ void send_write_fail_response(chsm_tst *_self, const cevent_tst *e_pst)
 
     status_pst->address_u32 = self->op_st.address_u32 - (self->t_st.write_cnt_u16 - 2);
 
-    self->op_st.q_pst->put(self->op_st.q_pst, (const cevent_tst *)status_pst);
+    CRF_POST(status_pst, self->op_st.q_pst);
 }
 
 /*Send a write success event to the queue designated by the read event.*/
