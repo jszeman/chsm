@@ -149,6 +149,11 @@ void lm73_update_temp(chsm_tst *_self, const cevent_tst *e_pst)
     self->valid_b = true;
     
     self->super.send(_self, (const cevent_tst *)temp_pst);
+
+    if (self->error_counter_u32)
+    {
+        self->error_counter_u32--;
+    }
 }
 
 /*True, if the response data is equal to 0x190. See LM73 datasheet section: 7.5.1.7 Identification Register*/
