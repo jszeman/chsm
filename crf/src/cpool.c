@@ -18,7 +18,7 @@
 
 
 /* Only cpool_new should be called from interrupt context, so only
- * this function is implemented to be threaf safe.
+ * this function is implemented to be thread safe.
  */
 static void *cpool_new(cpool_tst *self)
 {
@@ -37,7 +37,7 @@ static void *cpool_new(cpool_tst *self)
         /* Try to change self->head to the value in the cell it points to
          * if self->head still holds the value we read previously.
 		 * If an interrupt here changes the value of self->head, the function call
-		 * will fail and return false so the code inside the if can't modeify the
+		 * will fail and return false so the code inside the if can't modify the
 		 * content of memory indexed by head.
          */
         if (atomic_compare_exchange_u16(&self->head, &head, *((uint16_t *)(self->pool + head))))
@@ -57,13 +57,22 @@ static bool cpool_gc(cpool_tst *self, const cevent_tst *e_pst)
 
 	uint8_t *e_pu8 = (uint8_t *)e_pst;
 
-    if ((e_pu8 < self->pool) || (e_pu8 > (self->pool + self->esize * self->ecnt))) return false; // Constant (not dinamycally allocated) event.
+    if ((e_pu8 < self->pool) || (e_pu8 >= (self->pool + self->esize * self->ecnt))) return false; // The event is not from this pool
 
     uint16_t *p = (uint16_t *)e_pst;
-    *p = self->head;
-    self->head = (uint8_t *)e_pst - self->pool;
 
-    return true;
+    for (int i=0; i<self->ecnt; i++)
+    {
+        *p = self->head;
+
+        if (atomic_compare_exchange_u16(&self->head, p, (uint8_t *)e_pst - self->pool))
+        {
+            return true;
+        }
+    }
+
+    // Something went sideways
+    return false;
 }
 
 void cpool_init(cpool_tst *self, uint8_t *buff, uint16_t event_size, uint16_t event_count)
