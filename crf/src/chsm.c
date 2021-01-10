@@ -110,6 +110,10 @@ void chsm_dispatch(chsm_tst *self, const cevent_tst  *e_pst)
 				break;
 
 			case C_RES_GUARDS:
+				/* The event was handled without transitioning into a new state,
+				 * so the original event shall not be handled in the parents, but
+				 * we still want to run all the guards.
+				 */
 				e_pst = &chsm_none_event_st;
 				break;
 		}

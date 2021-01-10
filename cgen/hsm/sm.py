@@ -4,7 +4,7 @@ import re
 import logging
 from datetime import datetime
 from pprint import pprint
-from .ast import Func, If, Switch, Case, Call, Break, Return, Blank, Expr, Ast, FuncDeclaration, Include, Ifndef, Define, Endif, Comment, Decl, Assignment
+from .ast import Func, If, Switch, Case, Call, Break, Return, Blank, Expr, Ast, FuncDeclaration, Include, Ifndef, Define, Endif, Comment, Decl, Assignment, Enum
 
 # Match the following patterns:
 #   event
@@ -36,12 +36,13 @@ class Event:
         return f'Event({self.signal}, guard={self.guard}{gargs}, func={self.func}{fargs}, target={self.target}, tguard={self.trans_guard}, tfunc={self.trans_func}, {self.trans_funcs})'
 
 class StateMachine:
-    def __init__(self, data, h_file, funcs_h_file, templates, file_config):
+    def __init__(self, data, h_file, funcs_h_file, templates, file_config,):
         #pprint(data, indent=4)
         self.templates = templates
         self.file_config = file_config
         self.machine_h = h_file.name
         self.funcs_h = funcs_h_file
+        self.prefix = h_file.stem
         
         self.user_funcs = set()
         self.user_guards = set()
@@ -72,7 +73,7 @@ class StateMachine:
         #pprint(self.states, indent=4)
         self.ast = self.build_ast(self.states)
 
-        self.h_ast = self.build_user_declarations(self.user_funcs, self.user_guards)
+        self.h_ast = self.build_user_declarations(self.user_funcs, self.user_guards, self.states)
 
     def _get_user_symbols(self, hpath):
         top_func = None, None
@@ -88,7 +89,7 @@ class StateMachine:
 
         return top_func
 
-    def build_user_declarations(self, funcs, guards):
+    def build_user_declarations(self, funcs, guards, states):
         ast = Ast()
 
         symbol = self.funcs_h.replace('.', '_').upper()
@@ -123,6 +124,12 @@ class StateMachine:
                 ast.nodes.append(Blank())
                 ast.nodes.append(Comment(comment))
             ast.nodes.append(FuncDeclaration(g, self.templates['guard_return_type'], self.templates['user_func_params']))
+
+        ast.nodes.append(Blank())
+        ast.nodes.append(Blank())
+
+        enum = Enum(f'{self.prefix}_state_id_ten', {s['title'].upper(): s['num'] for i, s in states.items() if 'num' in s})
+        ast.nodes.append(enum)
 
         ast.nodes.append(Blank())
         ast.nodes.append(Blank())
@@ -211,7 +218,11 @@ class StateMachine:
                 'parent': s['parent'],
                 'children': s['children'],
                 'title': s['title'],
-                'type': s['type']}
+                'type': s['type'],
+                }
+
+            if s_id.startswith('state_'):
+                state['num'] = int(re.findall(r'\d+', s_id)[0])
 
             for line in s['text']:
                 signal, guard, func, fparams, gparams = self.decode_line(line)
@@ -314,6 +325,8 @@ class StateMachine:
                 if f.func:
                     fparams = f', {f.fparams}' if f.fparams else ''
                     add(Call(f.func, self.templates['user_func_args'] + fparams))
+            
+            add(Call(self.templates['set_state_id'], self.templates['user_func_args'] + f', {event.target_title.upper()}'))
 
             add(Return(self.templates['trans_result'].format(target=event.target_title)))
         
@@ -349,6 +362,8 @@ class StateMachine:
                         fparams = f', {f.fparams}' if f.fparams else ''
                         i.add_true(Call(f.func, self.templates['user_func_args'] + fparams))
             
+            
+            i.add_true(Call(self.templates['set_state_id'], self.templates['user_func_args'] + f', {g.target_title.upper()}'))
             i.add_true(Return(self.templates['trans_result'].format(target=g.target_title)))
 
             

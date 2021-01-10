@@ -150,6 +150,23 @@ class Decl(Node):
         indent = ' ' * self.indent
         return f'{indent}{self.type_name} {self.name}={self.value};\n'
 
+class Enum(Node):
+    def __init__(self, name, items, **kwargs):
+        super().__init__('enum', **kwargs)
+        self.name = name
+        self.items = items
+
+    def __str__(self):
+        indent = ' ' * self.indent
+
+        enum = f'{indent}typedef enum {self.name}\n{indent}{{\n'
+        for name, value in self.items.items():
+            enum += f'{indent}    {name} = {value},\n'
+
+        enum += f'{indent}}} {self.name};\n'
+
+        return enum
+
 class Assignment(Node):
     def __init__(self, name, value, **kwargs): 
         super().__init__('decl', **kwargs)
@@ -158,7 +175,7 @@ class Assignment(Node):
 
     def __str__(self):
         indent = ' ' * self.indent
-        return f'{indent}{self.name}={self.value};\n'
+        return f'{indent}{self.name} = {self.value};\n'
 
 class Blank(Node):
     def __init__(self, **kwargs): 
