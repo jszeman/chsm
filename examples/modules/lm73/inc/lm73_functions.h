@@ -1,7 +1,7 @@
 #ifndef LM73_FUNCTIONS_H
 #define LM73_FUNCTIONS_H
 
-/*Generated with CHSM v0.0.0 at 2020.12.31 21.56.05*/
+/*Generated with CHSM v0.0.0 at 2021.01.08 20.11.18*/
 
 #include "lm73.h"
 #include "chsm.h"
@@ -29,7 +29,9 @@ void lm73_reset_timer(chsm_tst *self, const cevent_tst *e_pst);
 /*Send a read transaction to the LM73.*/
 void lm73_start_read(chsm_tst *self, const cevent_tst *e_pst);
 
-/*Update the temperature display and send an event with the new value.*/
+/*- Update the temperature display
+- Send an event with the new value
+- Decrease the error counter*/
 void lm73_update_temp(chsm_tst *self, const cevent_tst *e_pst);
 
 /*Send a SIG_LM73_OFFLINE event. This can be used to detect communication errors between the module and the I2C slave.*/

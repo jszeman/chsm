@@ -108,7 +108,8 @@ TEST_SETUP(lm73)
 		.period_ms_u16 = 		100,
 		.max_error_cnt_u16 = 	5
 		};
-	lm73_st.super.send = lm73_send;
+
+	CRF_SEND_FUNC(&lm73_st) = lm73_send;
 
 	crf_init(&crf, hsm_apst, pool_ast, 1);
 	chsm_init((chsm_tst *)&i2c_master_st);

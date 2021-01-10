@@ -1,4 +1,4 @@
-/*Generated with CHSM v0.0.0 at 2020.12.31 21.56.05*/
+/*Generated with CHSM v0.0.0 at 2021.01.08 20.11.18*/
 #include "cevent.h"
 #include "chsm.h"
 #include "lm73.h"
@@ -45,6 +45,7 @@ static chsm_result_ten s_idle(chsm_tst *self, const cevent_tst  *e_pst, chsm_cal
     if(lm73_timeout(self, e_pst, LM73_READ_PERIOD))
     {
         chsm_exit_children(self, e_pst, ctx_pst);
+        lm73_reset_timer(self, e_pst);
         lm73_start_read(self, e_pst);
         return chsm_transition(self, s_reading);
     }

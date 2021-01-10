@@ -2,9 +2,6 @@
 #include "lm73.h"
 #include <stdio.h>
 
-static lm73_status_tst lm73_online_event = {.super.sig = SIG_LM73_ONLINE};
-static lm73_status_tst lm73_offline_event = {.super.sig = SIG_LM73_OFFLINE};
-
 void lm73_init(chsm_tst *_self, const cevent_tst *e_pst)
 {
     //printf("\n%s\n", __FUNCTION__);
@@ -73,11 +70,13 @@ void send_offline_event(chsm_tst *_self, const cevent_tst *e_pst)
 {
     lm73_tst*   self = (lm73_tst *)_self;
 
-    lm73_offline_event.id_u16 = self->config_st.id_u16;
-
     self->valid_b = false;
 
-    self->super.send(_self, (const cevent_tst *)(&lm73_offline_event));
+    TYPEOF(SIG_LM73_OFFLINE)* offline_pst = CRF_NEW(SIG_LM73_OFFLINE);
+
+    offline_pst->id_u16 = self->config_st.id_u16;
+
+    CRF_EMIT(offline_pst);
 }
 
 /*Send a SIG_LM73_ONLINE event. This can be used to detect successful initialization.*/
@@ -85,9 +84,11 @@ void send_online_event(chsm_tst *_self, const cevent_tst *e_pst)
 {
     lm73_tst*   self = (lm73_tst *)_self;
 
-    lm73_online_event.id_u16 = self->config_st.id_u16;
+    TYPEOF(SIG_LM73_ONLINE)* online_pst = CRF_NEW(SIG_LM73_ONLINE);
 
-    self->super.send(_self, (const cevent_tst *)(&lm73_online_event));
+    online_pst->id_u16 = self->config_st.id_u16;
+
+    CRF_EMIT(online_pst);
 }
 
 /*Reset the timer counter.*/
@@ -148,6 +149,11 @@ void lm73_update_temp(chsm_tst *_self, const cevent_tst *e_pst)
     self->valid_b = true;
     
     self->super.send(_self, (const cevent_tst *)temp_pst);
+
+    if (self->error_counter_u32)
+    {
+        self->error_counter_u32--;
+    }
 }
 
 /*True, if the response data is equal to 0x190. See LM73 datasheet section: 7.5.1.7 Identification Register*/
