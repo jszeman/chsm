@@ -1,7 +1,7 @@
 #ifndef CHSM_TEST_FUNCTIONS2_H
 #define CHSM_TEST_FUNCTIONS2_H
 
-/*Generated with CHSM v0.0.0 at 2020.12.13 20.32.00*/
+/*Generated with CHSM v0.0.0 at 2021.01.15 20.49.17*/
 
 #include "chsm_test_machine.h"
 #include "chsm.h"
@@ -51,6 +51,8 @@ void s3_k_func(chsm_tst *self, const cevent_tst *e_pst);
 
 void s3_l_func(chsm_tst *self, const cevent_tst *e_pst);
 
+void s4_id(chsm_tst *self, const cevent_tst *e_pst);
+
 void s_entry(chsm_tst *self, const cevent_tst *e_pst);
 
 void s_exit(chsm_tst *self, const cevent_tst *e_pst);
@@ -63,6 +65,19 @@ bool cond(chsm_tst *self, const cevent_tst *e_pst);
 bool j_guard(chsm_tst *self, const cevent_tst *e_pst);
 
 bool s1_guard(chsm_tst *self, const cevent_tst *e_pst);
+
+typedef enum chsm_test_machine_state_id_ten
+{
+    S = 0,
+    S1 = 1,
+    S11 = 2,
+    S2 = 3,
+    S21 = 4,
+    S211 = 5,
+    S3 = 6,
+    S4 = 7,
+} chsm_test_machine_state_id_ten;
+
 
 /*
 Signals:

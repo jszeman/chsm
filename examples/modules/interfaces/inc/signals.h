@@ -9,6 +9,7 @@ typedef enum sig_class_ten {
     SIG_UART,
     SIG_LM73,
     SIG_MEM,
+    SIG_CAN
 } event_class_ten;
 
 #define SIGNAL_CLASS(class) (class * CRF_SIGNAL_CLASS_SIZE)
@@ -76,4 +77,15 @@ typedef enum data_signals_ten
     SIG_MEM_READ_SUCCESS,
     SIG_MEM_READ_FAIL
 } data_signals_ten;
+
+/*
+ * CAN INTERFACE SIGNALS
+ */
+
+typedef enum can_signals_ten
+{
+    /* External signals */
+    SIG_CAN_FRAME = SIGNAL_CLASS(SIG_CAN),
+} can_signals_ten;
+
 #endif

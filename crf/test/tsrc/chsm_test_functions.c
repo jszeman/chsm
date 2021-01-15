@@ -239,6 +239,15 @@ void s211_id(chsm_tst *_self, const cevent_tst *e_pst)
     load(self, " ");
 }
 
+
+void s4_id(chsm_tst *_self, const cevent_tst *e_pst)
+{
+    test_hsm_tst *self = (test_hsm_tst *)_self;
+    
+    load(self, __func__);
+    load(self, " ");
+}
+
 void s11_g1(chsm_tst *_self, const cevent_tst *e_pst, uint16_t param)
 {
     test_hsm_tst *self = (test_hsm_tst *)_self;
