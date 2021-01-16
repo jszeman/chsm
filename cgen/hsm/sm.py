@@ -5,6 +5,7 @@ import logging
 from datetime import datetime
 from pprint import pprint
 from .ast import Func, If, Switch, Case, Call, Break, Return, Blank, Expr, Ast, FuncDeclaration, Include, Ifndef, Define, Endif, Comment, Decl, Assignment, Enum
+from typing import List, Dict
 
 # Match the following patterns:
 #   event
@@ -34,7 +35,57 @@ class Event:
         fargs = f'({self.fparams})' if self.fparams else ''
         gargs = f'({self.gparams})' if self.fparams else ''
         return f'Event({self.signal}, guard={self.guard}{gargs}, func={self.func}{fargs}, target={self.target}, tguard={self.trans_guard}, tfunc={self.trans_func}, {self.trans_funcs})'
+"""
+class Function:
+    def __init__(self, name: str, params: str = None):
+        self.name: str = name
+        self.params: str = params
 
+    def __repr__(self):
+        return f'Function({self.name}, {self.params})'
+
+class Transition:
+    def __init__(self, target: str):
+        self.target: str = target
+        self.funcs: List[Function] = []
+
+    def add_func(self, func: Function):
+        self.funcs.append(func)
+
+    def __repr__(self):
+        return f'Transition({self.target}): ' + ' '.join([str(f) for f in self.funcs]) 
+
+class Guard:
+    def __init__(self, guard: Function, func: Function = None, target: str = None):
+        self.guard: Function = guard
+        self.func: Function = func
+        self.trans: Transition = Transition(target)
+        self.trans.add_func(func)
+
+    def __repr__(self):
+        return f'Guard({self.guard}, {self.func}): {self.trans}'
+
+class Signal:
+    def __init__(self, name: str, target: str = None, func: Function = None):
+        self.name: str = name
+        self.func: Function = func
+        self.guards: List[Guard] = {}
+        self.trans: Transition = Transition(target)
+        self.trans.add_func(func)
+
+    def __repr__(self):
+        return f'Signal({self.name}, {self.func}): {self.trans} ' + ' '.join([str(g) for g in self.guards]) 
+
+class State:
+    def __init__(self, title: str, num: int):
+        self.title: str = title
+        self.num: int = num
+        self.signals: Dict[Signal] = {}
+        self.guards: List[Guard] = []
+
+    def __repr__(self):
+        return f'State({self.title}, {self.num}): {self.trans} ' + ' '.join([str(g) for g in self.guards]) 
+"""
 class StateMachine:
     def __init__(self, data, h_file, funcs_h_file, templates, file_config,):
         #pprint(data, indent=4)
@@ -51,6 +102,9 @@ class StateMachine:
 
         self.states = self.get_states(data)
         self.add_transitions_to_states(self.states, data)
+        pprint(self.states, indent=4, width=150)
+
+        '''
         self.process_transitions(self.states)
         self.notes = data['notes']
 
@@ -74,6 +128,7 @@ class StateMachine:
         self.ast = self.build_ast(self.states)
 
         self.h_ast = self.build_user_declarations(self.user_funcs, self.user_guards, self.states)
+        '''
 
     def _get_user_symbols(self, hpath):
         top_func = None, None
@@ -179,7 +234,14 @@ class StateMachine:
                     g.trans_funcs, g.target = self.get_transition_funcs(s_id, g.target)
                     g.target_title = states[g.target]['title']
 
-    def decode_line(self, line):
+    def str_to_signal(self, line):
+        signal = None
+        guard = None
+        func = None
+        parens = None
+        fparams = None
+        gparams = None
+
         m = re.search(EVENT_PATTERN, line)
         if m:
             signal = m.group('signal')
@@ -204,17 +266,94 @@ class StateMachine:
             if signal:
                 self.user_signals.add(signal)
 
-            return signal, guard, func, fparams, gparams
-        
-        return None, None, None, None, None
+        g = {
+            'guard': (guard, gparams),
+            'funcs': [(func, fparams)],
+            'target': None
+        }
 
+        s = {
+            'name': signal,
+            'guards': {
+                g['guard']: g
+            }
+        }
+
+        return s
+
+    def add_signal_to_state(self, state, signal):
+        signal_name = signal['name']
+
+        if signal_name not in state['signals']:
+            state['signals'][signal_name] = signal
+        else:
+            orig_signal = state['signals'][signal_name]
+
+            for g_fn, g in signal['guards'].items():
+                if g_fn  in orig_signal['guards']:
+                    orig_guard = orig_signal['guards'][g_fn]
+
+                    # Add functions to the original guard
+                    orig_guard['funcs'].extend(g['funcs'])
+
+                    # Set the target
+                    if g['target']:
+                        if orig_guard['target'] and orig_guard['target'] != g['target']:
+                            # The old and the new guard has different targets. For now, keep the original, but drop a lin in the log
+                            logging.error(f"Guard target mismatch for {g_fn} in {state['title']}: {orig_guard['target']} != {g['target']}")
+                        else:
+                            orig_guard['target'] = g['target']
+
+                else:
+                    orig_signal['guards'][g_fn] = g
+    
     def get_states(self, data):
-        """Extract state info from drawing data"""
+        """Extract state info from drawing data into a dict like this:
+        {
+            'signals': {
+                None: {
+                    'name': None,
+                    'guards': {
+                        ('guard_fn1', '5, 8'): {
+                            'guard': ('guard_fn1', '5, 8'),
+                            'funcs': [('func1', None), ('func2', 'CONST_MACRO, 9')],
+                            'target': 'state_5'
+                        },
+                    },
+                },
+                'SIG_A': {
+                    'name': 'SIG_A',
+                    'guards': {
+                        ('guard_fn2', '5, 8'): {
+                            'guard': ('guard_fn1', '5, 8'),
+                            'funcs': [('func1', None), ('func2', 'CONST_MACRO, 9')],
+                            'target': 'state_5'
+                        },
+                        ('guard_fn3', '5, 8'): {
+                            'guard': ('guard_fn3', '5, 8'),
+                            'funcs': [('func5', None), ('func6', 'CONST_MACRO, 9')],
+                            'target': 'state_8'
+                        },
+                    },
+                },
+            },
+            'parent': 'state_2',
+            'children': ['state_13', 'state_14'],
+            'title': 's_idle',
+            'type': 'normal' / 'initial',
+            }
+        }
+        """
         states = {}
+
         for s_id, s in data['states'].items():
             state = {
-                'events': {},
-                'guards': {},
+                'signals': {
+                    None: {
+                        'name': None,
+                        'guards': {},
+                    }
+                },
                 'parent': s['parent'],
                 'children': s['children'],
                 'title': s['title'],
@@ -225,11 +364,8 @@ class StateMachine:
                 state['num'] = int(re.findall(r'\d+', s_id)[0])
 
             for line in s['text']:
-                signal, guard, func, fparams, gparams = self.decode_line(line)
-                if signal:
-                    state['events'][signal] = Event(signal, guard, func, fparams, gparams)
-                elif guard:
-                    state['guards'][guard] = Event(signal, guard, func, fparams, gparams)
+                s = self.str_to_signal(line)
+                self.add_signal_to_state(state, s)
 
             states[s_id] = state
 
