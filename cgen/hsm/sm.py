@@ -1,3 +1,55 @@
+"""
+        {
+            'signals': {
+                None: {
+                    'name': None,
+                    'guards': {
+                        ('guard_fn1', '5, 8'): {
+                            'guard': ('guard_fn1', '5, 8'),
+                            'funcs': [('func1', None), ('func2', 'CONST_MACRO, 9')],
+                            'target': 'state_5'
+                        },
+                    },
+                },
+                'SIG_A': {
+                    'name': 'SIG_A',
+                    'guards': {
+                        ('guard_fn2', '5, 8'): {
+                            'guard': ('guard_fn1', '5, 8'),
+                            'funcs': [('func1', None), ('func2', 'CONST_MACRO, 9')],
+                            'target': 'state_5'
+                        },
+                        ('guard_fn3', '5, 8'): {
+                            'guard': ('guard_fn3', '5, 8'),
+                            'funcs': [('func5', None), ('func6', 'CONST_MACRO, 9')],
+                            'target': 'state_8'
+                        },
+                    },
+                },
+                'SIG_A': {
+                    'name': 'SIG_A',
+                    'guards': {
+                        (None, None): {
+                            'guard': (None, None),
+                            'funcs': [('func1', None), ('func2', 'CONST_MACRO, 9')],
+                            'target': 'state_5'
+                        },
+                        ('guard_fn3', '5, 8'): {
+                            'guard': ('guard_fn3', '5, 8'),
+                            'funcs': [('func5', None), ('func6', 'CONST_MACRO, 9')],
+                            'target': None
+                        },
+                    },
+                },
+            },
+            'parent': 'state_2',
+            'children': ['state_13', 'state_14'],
+            'title': 's_idle',
+            'type': 'normal' / 'initial',
+            }
+        }
+"""
+
 
 import json
 import re
@@ -35,57 +87,7 @@ class Event:
         fargs = f'({self.fparams})' if self.fparams else ''
         gargs = f'({self.gparams})' if self.fparams else ''
         return f'Event({self.signal}, guard={self.guard}{gargs}, func={self.func}{fargs}, target={self.target}, tguard={self.trans_guard}, tfunc={self.trans_func}, {self.trans_funcs})'
-"""
-class Function:
-    def __init__(self, name: str, params: str = None):
-        self.name: str = name
-        self.params: str = params
 
-    def __repr__(self):
-        return f'Function({self.name}, {self.params})'
-
-class Transition:
-    def __init__(self, target: str):
-        self.target: str = target
-        self.funcs: List[Function] = []
-
-    def add_func(self, func: Function):
-        self.funcs.append(func)
-
-    def __repr__(self):
-        return f'Transition({self.target}): ' + ' '.join([str(f) for f in self.funcs]) 
-
-class Guard:
-    def __init__(self, guard: Function, func: Function = None, target: str = None):
-        self.guard: Function = guard
-        self.func: Function = func
-        self.trans: Transition = Transition(target)
-        self.trans.add_func(func)
-
-    def __repr__(self):
-        return f'Guard({self.guard}, {self.func}): {self.trans}'
-
-class Signal:
-    def __init__(self, name: str, target: str = None, func: Function = None):
-        self.name: str = name
-        self.func: Function = func
-        self.guards: List[Guard] = {}
-        self.trans: Transition = Transition(target)
-        self.trans.add_func(func)
-
-    def __repr__(self):
-        return f'Signal({self.name}, {self.func}): {self.trans} ' + ' '.join([str(g) for g in self.guards]) 
-
-class State:
-    def __init__(self, title: str, num: int):
-        self.title: str = title
-        self.num: int = num
-        self.signals: Dict[Signal] = {}
-        self.guards: List[Guard] = []
-
-    def __repr__(self):
-        return f'State({self.title}, {self.num}): {self.trans} ' + ' '.join([str(g) for g in self.guards]) 
-"""
 class StateMachine:
     def __init__(self, data, h_file, funcs_h_file, templates, file_config,):
         #pprint(data, indent=4)
@@ -102,11 +104,12 @@ class StateMachine:
 
         self.states = self.get_states(data)
         self.add_transitions_to_states(self.states, data)
+        self.process_transitions(self.states)
+        self.notes = data['notes']
+
         pprint(self.states, indent=4, width=150)
 
         '''
-        self.process_transitions(self.states)
-        self.notes = data['notes']
 
         #pprint(self.states, indent=4)
 
@@ -220,21 +223,23 @@ class StateMachine:
 
     def get_transition_funcs(self, start, end):
         path = self.get_transition_path(start, end)
-        return self.path_to_funcs(path), path[-1][0]
+        return self.path_to_funcs(path)
 
     def process_transitions(self, states):
+        # First pass: collect the functions called during a transition in a separate key
+        # The transition functions
         for s_id, s in states.items():
-            for e in s['events'].values():
-                if e.target:
-                    e.trans_funcs, e.target = self.get_transition_funcs(s_id, e.target)
-                    e.target_title = states[e.target]['title']
+            for sig_id, sig in s['signals'].items():
+                if sig_id == 'init':
+                    continue
+                for g in sig['guards'].values():
+                    if g['target']:
+                        tfuncs = self.get_transition_funcs(s_id, g['target'])
+                        #g['transition_funcs'] = tfuncs
+                        g['funcs'].extend(tfuncs)
 
-            for g in s['guards'].values():
-                if g.target:
-                    g.trans_funcs, g.target = self.get_transition_funcs(s_id, g.target)
-                    g.target_title = states[g.target]['title']
 
-    def str_to_signal(self, line):
+    def str_to_signal(self, line, target=None, target_title=None, initial=False):
         signal = None
         guard = None
         func = None
@@ -266,10 +271,16 @@ class StateMachine:
             if signal:
                 self.user_signals.add(signal)
 
+        if initial:
+            signal = 'init'
+            guard = None
+            gparams = None
+
         g = {
             'guard': (guard, gparams),
             'funcs': [(func, fparams)],
-            'target': None
+            'target': target,
+            'target_title': target_title
         }
 
         s = {
@@ -308,42 +319,7 @@ class StateMachine:
                     orig_signal['guards'][g_fn] = g
     
     def get_states(self, data):
-        """Extract state info from drawing data into a dict like this:
-        {
-            'signals': {
-                None: {
-                    'name': None,
-                    'guards': {
-                        ('guard_fn1', '5, 8'): {
-                            'guard': ('guard_fn1', '5, 8'),
-                            'funcs': [('func1', None), ('func2', 'CONST_MACRO, 9')],
-                            'target': 'state_5'
-                        },
-                    },
-                },
-                'SIG_A': {
-                    'name': 'SIG_A',
-                    'guards': {
-                        ('guard_fn2', '5, 8'): {
-                            'guard': ('guard_fn1', '5, 8'),
-                            'funcs': [('func1', None), ('func2', 'CONST_MACRO, 9')],
-                            'target': 'state_5'
-                        },
-                        ('guard_fn3', '5, 8'): {
-                            'guard': ('guard_fn3', '5, 8'),
-                            'funcs': [('func5', None), ('func6', 'CONST_MACRO, 9')],
-                            'target': 'state_8'
-                        },
-                    },
-                },
-            },
-            'parent': 'state_2',
-            'children': ['state_13', 'state_14'],
-            'title': 's_idle',
-            'type': 'normal' / 'initial',
-            }
-        }
-        """
+        """Extract state info from drawing data into a dict"""
         states = {}
 
         for s_id, s in data['states'].items():
@@ -394,33 +370,15 @@ class StateMachine:
         for tr in data['transitions'].values():
             start, target, label = self.resolve_transition(tr, data)
 
-            signal, guard, func, fparams, gparams = self.decode_line(label)
-
             if states[start]['type'] == 'initial':
                 start = states[start]['parent']
                 states[start]['initial'] = target
 
-                signal = 'init'
-                guard = None
-                func = None
+                signal = self.str_to_signal(label, target=target, target_title=states[target]['title'], initial=True)
+            else:
+                signal = self.str_to_signal(label, target, target_title=states[target]['title'], initial=False)
 
-            if signal:
-                if signal not in states[start]['events']:
-                    states[start]['events'][signal] = Event(signal)
-                e = states[start]['events'][signal]
-            elif guard:
-                while guard in states[start]['guards']:
-                    guard = guard + ' '
-                e = Event(None)
-                states[start]['guards'][guard] = e
-
-            e.target = target
-            e.target_title = states[target]['title']
-            e.trans_guard = guard
-            e.trans_func = func
-            e.trans_fparams = fparams
-            e.trans_gparams = gparams
-
+            self.add_signal_to_state(states[start], signal)
 
     def build_case_from_event(self, event):
         signal = event.signal
@@ -665,11 +623,8 @@ class StateMachine:
         for step in path:
             state_id, event_id = step
             try:
-                func = self.states[state_id]['events'][event_id]
+                funcs.extend(self.states[state_id]['signals'][event_id]['guards'][(None, None)]['funcs'])
             except KeyError:
-                func = None # The requested event was not implemented in the actual state
-            
-            if func:
-                funcs.append(func)
-        
+                pass
+
         return tuple(funcs)
