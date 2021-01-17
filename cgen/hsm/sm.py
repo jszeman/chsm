@@ -1,63 +1,11 @@
-"""
-        {
-            'signals': {
-                None: {
-                    'name': None,
-                    'guards': {
-                        ('guard_fn1', '5, 8'): {
-                            'guard': ('guard_fn1', '5, 8'),
-                            'funcs': [('func1', None), ('func2', 'CONST_MACRO, 9')],
-                            'target': 'state_5'
-                        },
-                    },
-                },
-                'SIG_A': {
-                    'name': 'SIG_A',
-                    'guards': {
-                        ('guard_fn2', '5, 8'): {
-                            'guard': ('guard_fn1', '5, 8'),
-                            'funcs': [('func1', None), ('func2', 'CONST_MACRO, 9')],
-                            'target': 'state_5'
-                        },
-                        ('guard_fn3', '5, 8'): {
-                            'guard': ('guard_fn3', '5, 8'),
-                            'funcs': [('func5', None), ('func6', 'CONST_MACRO, 9')],
-                            'target': 'state_8'
-                        },
-                    },
-                },
-                'SIG_A': {
-                    'name': 'SIG_A',
-                    'guards': {
-                        (None, None): {
-                            'guard': (None, None),
-                            'funcs': [('func1', None), ('func2', 'CONST_MACRO, 9')],
-                            'target': 'state_5'
-                        },
-                        ('guard_fn3', '5, 8'): {
-                            'guard': ('guard_fn3', '5, 8'),
-                            'funcs': [('func5', None), ('func6', 'CONST_MACRO, 9')],
-                            'target': None
-                        },
-                    },
-                },
-            },
-            'parent': 'state_2',
-            'children': ['state_13', 'state_14'],
-            'title': 's_idle',
-            'type': 'normal' / 'initial',
-            }
-        }
-"""
-
-
 import json
 import re
 import logging
 from datetime import datetime
-from pprint import pprint
 from .ast import Func, If, Switch, Case, Call, Break, Return, Blank, Expr, Ast, FuncDeclaration, Include, Ifndef, Define, Endif, Comment, Decl, Assignment, Enum
 from typing import List, Dict
+
+# TODO: make sure, that there is only one exit function and it has no parameters
 
 # Match the following patterns:
 #   event
@@ -68,29 +16,8 @@ from typing import List, Dict
 #   [guard()]
 EVENT_PATTERN = r'^(\s*(?P<signal>\w+)\s*)*(\[(?P<guard>\w+)\((?P<gparams>[\w,\s]*)\)\])*(\s*/\s*(?P<function>\w+)(?P<parens>\((?P<fparams>[\w,\s]*)\))*\s*)*'
 
-class Event:
-    def __init__(self, signal, guard=None, func=None, fparams=None, gparams=None, target=None):
-        self.signal = signal
-        self.func = func
-        self.guard = guard
-        self.target = target
-        self.fparams = fparams
-        self.gparams = gparams
-        self.target_title = None
-        self.trans_guard = None
-        self.trans_func = None
-        self.trans_funcs = None
-        self.trans_fparams = None
-        self.trans_gparams = None
-
-    def __repr__(self):
-        fargs = f'({self.fparams})' if self.fparams else ''
-        gargs = f'({self.gparams})' if self.fparams else ''
-        return f'Event({self.signal}, guard={self.guard}{gargs}, func={self.func}{fargs}, target={self.target}, tguard={self.trans_guard}, tfunc={self.trans_func}, {self.trans_funcs})'
-
 class StateMachine:
     def __init__(self, data, h_file, funcs_h_file, templates, file_config,):
-        #pprint(data, indent=4)
         self.templates = templates
         self.file_config = file_config
         self.machine_h = h_file.name
@@ -102,16 +29,10 @@ class StateMachine:
         self.user_signals = set()
         self.user_inc_funcs = set()
 
-        self.states = self.get_states(data)
-        self.add_transitions_to_states(self.states, data)
-        self.process_transitions(self.states)
+        self.states = self.get_states(data)                 # Extract states from the data
+        self.add_transitions_to_states(self.states, data)   # Extract transition info from the data and add it to the states
+        self.process_transitions(self.states)               # Calculate transition exit and entry paths and the exact end state
         self.notes = data['notes']
-
-        pprint(self.states, indent=4, width=150)
-
-        '''
-
-        #pprint(self.states, indent=4)
 
         top_func = self._get_user_symbols(h_file)
 
@@ -127,11 +48,9 @@ class StateMachine:
         self.states['__top__']['title'] = self.top_func
         self.resolve_parent_titles(self.states)
 
-        #pprint(self.states, indent=4)
         self.ast = self.build_ast(self.states)
 
         self.h_ast = self.build_user_declarations(self.user_funcs, self.user_guards, self.states)
-        '''
 
     def _get_user_symbols(self, hpath):
         top_func = None, None
@@ -223,20 +142,25 @@ class StateMachine:
 
     def get_transition_funcs(self, start, end):
         path = self.get_transition_path(start, end)
-        return self.path_to_funcs(path)
+        return self.path_to_funcs(path), path[-1][0]
 
     def process_transitions(self, states):
-        # First pass: collect the functions called during a transition in a separate key
-        # The transition functions
         for s_id, s in states.items():
             for sig_id, sig in s['signals'].items():
                 if sig_id == 'init':
                     continue
                 for g in sig['guards'].values():
                     if g['target']:
-                        tfuncs = self.get_transition_funcs(s_id, g['target'])
+                        tfuncs, target = self.get_transition_funcs(s_id, g['target'])
                         #g['transition_funcs'] = tfuncs
                         g['funcs'].extend(tfuncs)
+                        g['target_title'] = states[target]['title']
+        
+        #The only place where transition functions are needed for an init signal is the __top__
+        g = states['__top__']['signals']['init']['guards'][(None, None)]
+        tfuncs, target = self.get_transition_funcs('__top__', g['target'])
+        g['funcs'].extend(tfuncs)
+        g['target_title'] = states[target]['title']
 
 
     def str_to_signal(self, line, target=None, target_title=None, initial=False):
@@ -380,88 +304,55 @@ class StateMachine:
 
             self.add_signal_to_state(states[start], signal)
 
-    def build_case_from_event(self, event):
-        signal = event.signal
-        if signal == 'init':
-            signal = self.templates['init_signal']
+    def make_call(self, func, params, standalone=False):
+        fparams = f', {params}' if params else ''
+        return Call(func, self.templates['user_func_args'] + fparams, standalone)
+
+    def guard_to_ast(self, guard):
+        nodes = []
+        add = nodes.append
+
+        func, param = guard['guard']
+
+        if func:
+            i = If(self.make_call(func, param))
+            add(i)
+            add = i.add_true
+
+        if guard['target']:
+            add(Call(self.templates['exit_children'], self.templates['func_args']))
+        
+        for func, param in guard['funcs']:
+            if func:
+                add(self.make_call(func, param, True))
+
+        if guard['target']:
+            if self.templates['set_state_id'] != "":
+                add(self.make_call(self.templates['set_state_id'], guard['target_title'].upper(), True))
+            add(Return(self.templates['trans_result'].format(target=guard['target_title'])))
+
+        return nodes
+
+
+    def build_case_from_signal(self, signal):
+        name = signal['name']
+
+        if name == 'init':
+            name = self.templates['init_signal']
         else:
-            signal = f'{self.templates["signal_prefix"]}{signal}'
+            name = f'{self.templates["signal_prefix"]}{name}'
 
-        c = Case(signal)
-        if event.func:
-            fparams = f', {event.fparams}' if event.fparams else ''
-            f = Call(event.func, self.templates['user_func_args'] + fparams)
-            if event.guard:
-                gparams = f', {event.gparams}' if event.gparams else ''
-                i = If(Call(event.guard, self.templates['user_func_args'] + gparams, False))
-                i.add_true(f)
-                c.add(i)
-            else:
-                c.add(f)
+        c = Case(name)
 
-        if event.target:
-            add = c.add
-            if event.trans_guard:
-                gparams = f', {event.trans_gparams}' if event.trans_gparams else ''
-                i = If(Call(event.trans_guard, self.templates['user_func_args'] + gparams, False))
-                c.add(i)
-                add = i.add_true
-
-            f = Call(self.templates['exit_children'], self.templates['func_args'])
-            add(f)
-
-            if event.trans_func:
-                fparams = f', {event.trans_fparams}' if event.trans_fparams else ''
-                f = Call(event.trans_func, self.templates['user_func_args'] + fparams)
-                add(f)
-
-            for f in event.trans_funcs:
-                if f.func:
-                    fparams = f', {f.fparams}' if f.fparams else ''
-                    add(Call(f.func, self.templates['user_func_args'] + fparams))
-            
-            add(Call(self.templates['set_state_id'], self.templates['user_func_args'] + f', {event.target_title.upper()}'))
-
-            add(Return(self.templates['trans_result'].format(target=event.target_title)))
+        for guard in signal['guards'].values():
+            nodes = self.guard_to_ast(guard)
+            for n in nodes:
+                c.add(n)
         
         if c.nodes[-1].node_type != 'return':
             c.add(Break())
-            #c.add(Return(self.templates['handled_result']))
 
         return c
-
-    def build_if_from_guard(self, guard, g):
-        if g.target:
-            gparams = f', {g.trans_gparams}' if g.trans_gparams else ''
-        else:
-            gparams = f', {g.gparams}' if g.gparams else ''
-            
-        i = If(Call(guard.strip(), self.templates['user_func_args'] + gparams, False))
-        if g.func:
-            fparams = f', {g.fparams}' if g.fparams else ''
-            i.add_true(Call(g.func, self.templates['user_func_args'] + fparams))
-
-        if g.target:
-            f = Call(self.templates['exit_children'], self.templates['func_args'])
-            i.add_true(f)
-
-            if g.trans_func:
-                fparams = f', {g.trans_fparams}' if g.trans_fparams else ''
-                f = Call(g.trans_func, self.templates['user_func_args'] + fparams)
-                i.add_true(f)
-
-            if g.trans_funcs:
-                for f in g.trans_funcs:
-                    if f.func:
-                        fparams = f', {f.fparams}' if f.fparams else ''
-                        i.add_true(Call(f.func, self.templates['user_func_args'] + fparams))
-            
-            
-            i.add_true(Call(self.templates['set_state_id'], self.templates['user_func_args'] + f', {g.target_title.upper()}'))
-            i.add_true(Return(self.templates['trans_result'].format(target=g.target_title)))
-
-            
-        return i
 
     def build_func_from_state(self, state_id, state, insert_init=False, spec=''):
         f = Func(name=state['title'], ftype=self.templates['func_return_type'], params=self.templates['func_params'], spec=spec)
@@ -469,28 +360,29 @@ class StateMachine:
         s = Switch(self.templates['switch_variable'])
         f.add(s)
 
-        for signal, e in state['events'].items():
-            if signal in ['entry', 'exit']:
+        for signal, e in state['signals'].items():
+            if signal in ['entry', 'exit', None]:
                 continue
             elif signal == 'init' and not insert_init:
                 continue
 
-            c = self.build_case_from_event(e)
+            c = self.build_case_from_signal(e)
             if c:
                 s.add_case(c)
 
         s.add_default(Assignment(self.templates['guards_only_variable'], 'false'))
 
-        for guard, g in state['guards'].items():
+        for guard in state['signals'][None]['guards'].values():
             f.add(Blank())
-            i = self.build_if_from_guard(guard, g)
-            f.add(i)
+            nodes = self.guard_to_ast(guard)
+            for n in nodes:
+                f.add(n)
 
         f.add(Blank())
 
         exit_func = 'NULL'
         try:
-            exit_func = state['events']['exit'].func
+            exit_func = state['signals']['exit']['guards'][(None, None)]['funcs'][0][0]
         except KeyError:
             pass
 
@@ -612,10 +504,6 @@ class StateMachine:
             else:
                 start_state_id = target_state_id
                 target_state_id = init_state_id
-                
-    
-    def make_initial_func(self):
-        return self.get_init_path('__top__', self.states['__top__']['events']['init'].target)
     
     def path_to_funcs(self, path):
         funcs = []
@@ -628,3 +516,105 @@ class StateMachine:
                 pass
 
         return tuple(funcs)
+
+"""
+Example dictionary layout:
+
+{   '__top__': {   'children': ['state_0', 'istate_3'],
+                   'initial': 'state_0',
+                   'parent': None,
+                   'signals': {   None: {'guards': {}, 'name': None},
+                                  'init': {   'guards': {   (None, None): {   'funcs': [(None, None)],
+                                                                              'guard': (None, None),
+                                                                              'target': 'state_0',
+                                                                              'target_title': 's'}},
+                                              'name': 'init'}},
+                   'title': '__top__4',
+                   'type': 'top'},
+
+    'istate_0': {   'children': [],
+                    'parent': 'state_4',
+                    'signals': {   None: {'guards': {}, 'name': None},
+                                   'entry': {   'guards': {   (None, None): {   'funcs': [(None, None)],
+                                                                                'guard': (None, None),
+                                                                                'target': None,
+                                                                                'target_title': None}},
+                                                'name': 'entry'},
+                                   'exit': {   'guards': {   (None, None): {   'funcs': [(None, None)],
+                                                                               'guard': (None, None),
+                                                                               'target': None,
+                                                                               'target_title': None}},
+                                               'name': 'exit'}},
+                    'title': 'istate_0',
+                    'type': 'initial'},
+    
+    'state_0': {   'children': ['state_1', 'state_3', 'istate_2', 'state_6', 'state_7'],
+                   'initial': 'state_1',
+                   'num': 0,
+                   'parent': '__top__',
+                   'signals': {   None: {'guards': {}, 'name': None},
+                                  'E': {   'guards': {   (None, None): {   'funcs': [(None, None)],
+                                                                           'guard': (None, None),
+                                                                           'target': 'state_2',
+                                                                           'target_title': 's11'}},
+                                           'name': 'E'},
+                                  'J': {   'guards': {   (None, None): {   'funcs': [(None, None)],
+                                                                           'guard': (None, None),
+                                                                           'target': 'state_6',
+                                                                           'target_title': 's3'}},
+                                           'name': 'J'},
+                                  'entry': {   'guards': {   (None, None): {   'funcs': [('s_entry', '')],
+                                                                               'guard': (None, None),
+                                                                               'target': None,
+                                                                               'target_title': None}},
+                                               'name': 'entry'},
+                                  'exit': {   'guards': {   (None, None): {   'funcs': [('s_exit', '')],
+                                                                              'guard': (None, None),
+                                                                              'target': None,
+                                                                              'target_title': None}},
+                                              'name': 'exit'},
+                                  'init': {   'guards': {   (None, None): {   'funcs': [('s_init', ''), (None, None)],
+                                                                              'guard': (None, None),
+                                                                              'target': 'state_1',
+                                                                              'target_title': None}},
+                                              'name': 'init'}},
+                   'title': 's',
+                   'type': 'normal'},
+    'state_1': {   'children': ['state_2', 'istate_4'],
+                   'initial': 'state_2',
+                   'num': 1,
+                   'parent': 'state_0',
+                   'signals': {   None: {   'guards': {   ('j_guard', ''): {   'funcs': [(None, None)],
+                                                                               'guard': ('j_guard', ''),
+                                                                               'target': 'state_3',
+                                                                               'target_title': 's2'},
+                                                          ('s1_guard', ''): {   'funcs': [('s1_func', '')],
+                                                                                'guard': ('s1_guard', ''),
+                                                                                'target': None,
+                                                                                'target_title': None}},
+                                            'name': None},
+                                  'ID': {   'guards': {   (None, None): {   'funcs': [('s1_func', '')],
+                                                                            'guard': (None, None),
+                                                                            'target': None,
+                                                                            'target_title': None}},
+                                            'name': 'ID'},
+                                  'entry': {   'guards': {   (None, None): {   'funcs': [('s1_entry', '')],
+                                                                               'guard': (None, None),
+                                                                               'target': None,
+                                                                               'target_title': None}},
+                                               'name': 'entry'},
+                                  'exit': {   'guards': {   (None, None): {   'funcs': [('s1_exit', '')],
+                                                                              'guard': (None, None),
+                                                                              'target': None,
+                                                                              'target_title': None}},
+                                              'name': 'exit'},
+                                  'init': {   'guards': {   (None, None): {   'funcs': [('s1_init', ''), (None, None)],
+                                                                              'guard': (None, None),
+                                                                              'target': 'state_2',
+                                                                              'target_title': None}},
+                                              'name': 'init'}},
+                   'title': 's1',
+                   'type': 'normal'},
+    }
+
+"""

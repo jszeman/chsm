@@ -115,7 +115,7 @@ class Switch(Node):
         if self.default:
             default = []
             for d in self.default:
-                d.indent = self.indent + 4
+                d.indent = self.indent + 8
                 default.append(str(d))
 
             default_str = ' ' * (self.indent + 4) + 'default:\n' + ''.join(default)
