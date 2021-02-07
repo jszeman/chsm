@@ -14,6 +14,7 @@
 #include "crf.h"
 #include "cevent.h"
 #include "canopen.h"
+#include "can_if.h"
 
 TEST_GROUP(co);
 
@@ -118,11 +119,49 @@ TEST_TEAR_DOWN(co)
  */
 TEST(co, init)
 {
+	const can_frame_tst *e_pst;
+
+	e_pst = (const can_frame_tst *)q_st.get(&q_st);
+
+	TEST_ASSERT_NOT_NULL(e_pst)
+	TEST_ASSERT_EQUAL(SIG_CAN_FRAME, e_pst->super.sig);
+	
+	TEST_ASSERT_EQUAL_HEX(node_st.config_st.node_id_u8 + CO_NMT, e_pst->header_un.bit_st.id_u12);
+	TEST_ASSERT_EQUAL(1, e_pst->header_un.bit_st.dlc_u4);
+	TEST_ASSERT_EQUAL(0, e_pst->header_un.bit_st.rtr_u1);
+	TEST_ASSERT_EQUAL_HEX(0, e_pst->mdl_un.bit_st.d0_u8);
+}
+
+/* bootup
+ * Check that the bootup message is sent after init.
+ */
+TEST(co, bootup)
+{
 }
 
 TEST_GROUP_RUNNER(co)
 {
 	RUN_TEST_CASE(co, init);
+	//RUN_TEST_CASE(co, init);
+	//RUN_TEST_CASE(co, init);
+	//RUN_TEST_CASE(co, init);
+	//RUN_TEST_CASE(co, init);
+	//RUN_TEST_CASE(co, init);
+	//RUN_TEST_CASE(co, init);
+	//RUN_TEST_CASE(co, init);
+	//RUN_TEST_CASE(co, init);
+	//RUN_TEST_CASE(co, init);
+	//RUN_TEST_CASE(co, init);
+	//RUN_TEST_CASE(co, init);
+	//RUN_TEST_CASE(co, init);
+	//RUN_TEST_CASE(co, init);
+	//RUN_TEST_CASE(co, init);
+	//RUN_TEST_CASE(co, init);
+	//RUN_TEST_CASE(co, init);
+	//RUN_TEST_CASE(co, init);
+	//RUN_TEST_CASE(co, init);
+	//RUN_TEST_CASE(co, init);
+	//RUN_TEST_CASE(co, init);
 	//RUN_TEST_CASE(co, init);
 	//RUN_TEST_CASE(co, init);
 	//RUN_TEST_CASE(co, init);
