@@ -96,6 +96,13 @@ struct chsm_st
 	 *		that may need it by calling their put method.
 	 */
 	void				(*send)(chsm_tst *self, const cevent_tst *e_pst);
+
+	/** next
+	 * 		If a state machine has embedded state machine(s), the next pointers
+	 * 		shall be used to link them into list, so the framework can step
+	 * 		throgh them.
+	 */
+	chsm_tst*			next;
 };
 
 void chsm_ctor(chsm_tst *self, chsm_state_tpft init_state_pft,

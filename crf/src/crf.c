@@ -64,20 +64,24 @@ static void	post(crf_tst *self, cevent_tst* e, cqueue_tst *q)
 static bool	step(crf_tst *self)
 {
     cevent_tst *e_pst = NULL;
-    chsm_tst **hsm_pst;
+    chsm_tst **hsm_ppst;
+    chsm_tst *hsm_pst;
     bool event_found_b = false;
 
-    for (hsm_pst = self->chsm_ap; *hsm_pst; hsm_pst++)
+    for (hsm_ppst = self->chsm_ap; *hsm_ppst; hsm_ppst++)
     {
-        e_pst = (cevent_tst *)(*hsm_pst)->event_q_st.get(&((*hsm_pst)->event_q_st));
-        if (e_pst)
-        {
-            event_found_b = true;
-            chsm_dispatch(*hsm_pst, e_pst);
-
-            if (0 == e_pst->gc_info.ref_cnt)
+        for(hsm_pst = *hsm_ppst; hsm_pst; hsm_pst = hsm_pst->next)
+        {     
+            e_pst = (cevent_tst *)hsm_pst->event_q_st.get(&hsm_pst->event_q_st);
+            if (e_pst)
             {
-                gc(self, e_pst);
+                event_found_b = true;
+                chsm_dispatch(hsm_pst, e_pst);
+
+                if (0 == e_pst->gc_info.ref_cnt)
+                {
+                    gc(self, e_pst);
+                }
             }
         }
     }

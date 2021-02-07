@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin-left: 0px;
+        }
+
+        main {
+            width: 100%;
+            height: 100%;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .state_body {
+    stroke: black;
+    stroke-width: 0.2;
+    fill: none;
+    rx: 0.5px;
+}
+
+.state_border {
+    stroke: deepskyblue; 
+    stroke-width: 0.8;
+    fill: none;
+    rx: 0.5px;
+    opacity: 0;
+}
+
+.state_border:hover {
+    opacity: 0.4;
+}
+
+.state_border_highlight {
+    stroke: rgb(23, 197, 66);
+    opacity: 0.4;
+}
+
+.initial_state {
+    stroke: none;
+    stroke-width: 0.4;
+    fill: black;
+    r: 0.7px;
+}
+
+.initial_state:hover {
+    stroke: deepskyblue;
+    stroke-width: 0.5px;
+}
+
+.state_border_deleting {
+    stroke: red; 
+    stroke-width: 0.8;
+    fill: none;
+    rx: 0.5px;
+    opacity: 0.4;
+}
+
+.transition_handle {
+    stroke: deepskyblue; 
+    stroke-width: 0.8;
+    fill: none;
+    rx: 0.5px;
+    opacity: 0;
+    cursor: grab;
+}
+
+.transition_handle:hover {
+    opacity: 0.4;
+}
+
+.transition_handle_deleting {
+    stroke: red;
+    stroke-width: 0.8;
+    fill: none;
+    rx: 0.5px;
+    opacity: 0;
+    cursor: auto;
+}
+
+.transition_handle_deleting:hover {
+    opacity: 0.4;
+}
+
+.transition_handle_highlight_draw {
+    opacity: 0.4;
+    cursor: crosshair;
+}
+
+.transition_handle_highlight_edit {
+    stroke: rgb(23, 197, 66);
+    opacity: 0.4;
+    cursor: grab;
+}
+
+.transition_handle_highlight_drag {
+    opacity: 0.4;
+    cursor: grab;
+}
+
+.state_separator {
+    stroke: grey;
+    stroke-width: 0.1;
+    shape-rendering: crispEdges;
+}
+
+.state_resize_mark {
+    stroke: grey;
+    stroke-width: 0.1;
+}
+
+.state_title {
+    font: bold 0.08em arial,helvetica,sans-serif;
+}
+
+.state_text {
+    font: normal 0.08em arial,helvetica,sans-serif;
+}
+
+.transition_label {
+    font: normal 0.07em arial,helvetica,sans-serif;
+}
+
+.function {
+    fill: black;
+}
+
+.function:hover {
+    fill: blue;
+}
+
+.transition_label:hover {
+    cursor: grab;
+}
+
+.state_drag_handle {
+    fill: rgb(211, 102, 1);
+    opacity: 0.1;
+    stroke: none;
+    rx: 0.5px;
+    cursor: move;
+}
+
+.state_resize_handle {
+    fill: white;
+    opacity: 0.0;
+    stroke: none;
+    r: 0.5px;
+    cursor: nwse-resize;
+}
+
+.transition_line {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 0.2;
+}
+
+.transition_arrow {
+    fill: steelblue;
+    stroke: none;
+    stroke-width: 0.0;
+}
+    </style>
+</head>
+<body>
+    <main>
+        
+			<svg height="100%" width="100%" style="cursor: auto;">
+				<g display="none">
+					<path id="arrow" d="M 0 0 L 0.9 -0.4 L 0.9 0.4 Z" class="arrow_template"></path>
+				</g>
+				<g id="drawing" transform="translate(-72, 149) scale(8.5, 8.5)"><g><path d="M 77 -8 L 77 -8 L 77 -3" class="transition_line"></path><use href="#arrow" transform="translate(77 -3) rotate(-90) " class="transition_arrow" display="block"></use><text x="77.5" y="-5.9" class="transition_label"></text><path d="M 77 -8 L 77 -8 L 77 -3" class="transition_handle"></path></g><g><path d="M 134 18 L 130 18 L 130 18 L 126 18" class="transition_line"></path><use href="#arrow" transform="translate(126 18) " class="transition_arrow" display="block"></use><text x="130.5" y="17.6" class="transition_label"></text><path d="M 134 18 L 130 18 L 130 18 L 126 18" class="transition_handle"></path></g><g><path d="M 106 24 L 79 24 L 79 24 L 52 24" class="transition_line"></path><use href="#arrow" transform="translate(52 24) " class="transition_arrow" display="block"></use><text x="55.5" y="23.6" class="transition_label">[<tspan class="function">sdo_timeout</tspan>(<tspan class="function">SDO_TIMEOUT</tspan>)]/ <tspan class="function">send_sdo_abort</tspan>(<tspan class="function">SDO_TIMEOUT_ABORT</tspan>)</text><path d="M 106 24 L 79 24 L 79 24 L 52 24" class="transition_handle transition_handle_highlight_edit"></path></g><g><path d="M 43 6 L 43 6 L 43 10" class="transition_line"></path><use href="#arrow" transform="translate(43 10) rotate(-90) " class="transition_arrow" display="block"></use><text x="43.5" y="7.6" class="transition_label"></text><path d="M 43 6 L 43 6 L 43 10" class="transition_handle"></path></g><g><path d="M 106 12 L 79 12 L 79 12 L 52 12" class="transition_line"></path><use href="#arrow" transform="translate(52 12) " class="transition_arrow" display="block"></use><text x="55" y="11.6" class="transition_label"><tspan class="function">SIG_CAN_FRAME</tspan> [<tspan class="function">is_abort_frame()</tspan>]</text><path d="M 106 12 L 79 12 L 79 12 L 52 12" class="transition_handle"></path></g><g><path d="M 52 51 L 80 51 L 80 51 L 112 51" class="transition_line"></path><use href="#arrow" transform="translate(112 51) rotate(180) " class="transition_arrow" display="block"></use><text x="55.5" y="50.6" class="transition_label"><tspan class="function">SIG_CANOPEN_SEG_DL_START</tspan></text><path d="M 52 51 L 80 51 L 80 51 L 112 51" class="transition_handle"></path></g><g><path d="M 112 38 L 80 38 L 80 38 L 52 38" class="transition_line"></path><use href="#arrow" transform="translate(52 38) " class="transition_arrow" display="block"></use><text x="55.5" y="37.6" class="transition_label"><tspan class="function">SIG_MEM_READ_FAIL</tspan>/ <tspan class="function">send_sdo_exp_dl_abort()</tspan></text><path d="M 112 38 L 80 38 L 80 38 L 52 38" class="transition_handle"></path></g><g><path d="M 112 36 L 80 36 L 80 36 L 52 36" class="transition_line"></path><use href="#arrow" transform="translate(52 36) " class="transition_arrow" display="block"></use><text x="55.5" y="35.6" class="transition_label"><tspan class="function">SIG_MEM_READ_SUCCESS</tspan>/ <tspan class="function">send_sdo_exp_dl_response()</tspan></text><path d="M 112 36 L 80 36 L 80 36 L 52 36" class="transition_handle"></path></g><g><path d="M 52 32 L 99 32 L 99 32 L 112 32" class="transition_line"></path><use href="#arrow" transform="translate(112 32) rotate(180) " class="transition_arrow" display="block"></use><text x="55.5" y="31.6" class="transition_label"><tspan class="function">SIG_CANOPEN_WAIT_EXP_SDO_DL</tspan></text><path d="M 52 32 L 99 32 L 99 32 L 112 32" class="transition_handle"></path></g><g><path d="M 52 15 L 72 15 L 72 15 L 112 15" class="transition_line"></path><use href="#arrow" transform="translate(112 15) rotate(180) " class="transition_arrow" display="block"></use><text x="55.5" y="14.6" class="transition_label"><tspan class="function">SIG_CANOPEN_WAIT_EXP_SDO_UL</tspan></text><path d="M 52 15 L 72 15 L 72 15 L 112 15" class="transition_handle"></path></g><g><path d="M 112 19 L 72 19 L 72 19 L 52 19" class="transition_line"></path><use href="#arrow" transform="translate(52 19) " class="transition_arrow" display="block"></use><text x="55.5" y="18.6" class="transition_label"><tspan class="function">SIG_MEM_READ_FAIL</tspan>/ <tspan class="function">send_sdo_exp_ul_abort()</tspan></text><path d="M 112 19 L 72 19 L 72 19 L 52 19" class="transition_handle"></path></g><g><path d="M 112 17 L 65 17 L 65 17 L 52 17" class="transition_line"></path><use href="#arrow" transform="translate(52 17) " class="transition_arrow" display="block"></use><text x="55.5" y="16.6" class="transition_label"><tspan class="function">SIG_MEM_READ_SUCCESS</tspan>/ <tspan class="function">send_sdo_exp_ul_response()</tspan></text><path d="M 112 17 L 65 17 L 65 17 L 52 17" class="transition_handle"></path></g>
+				<g transform="translate(-1000000, -1000000)"><rect x="0" y="0" width="2000000" height="2000000" class="state_body"></rect><line x1="0" y1="2" x2="2000000" y2="2" class="state_separator"></line><line x1="0" y1="2" x2="2000000" y2="2" class="state_separator"></line><line x1="1999999" y1="2000000" x2="2000000" y2="1999999" class="state_resize_mark"></line><text x="0.6" y="1.6" class="state_title">__top__</text><rect x="0" y="0" width="2000000" height="2" class="state_drag_handle"></rect><text x="0.6" y="1.6" class="state_text"></text><rect x="0" y="0" width="2000000" height="2000000" class="state_border"></rect><circle cx="1999999.75" cy="1999999.75" class="state_resize_handle"></circle></g><g transform="translate(35, 10)"><rect x="0" y="0" width="17" height="57" class="state_body"></rect><line x1="0" y1="2" x2="17" y2="2" class="state_separator"></line><line x1="0" y1="4" x2="17" y2="4" class="state_separator"></line><line x1="16" y1="57" x2="17" y2="56" class="state_resize_mark"></line><text x="0.6" y="1.6" class="state_title">s_idle</text><rect x="0" y="0" width="17" height="4" class="state_drag_handle"></rect><text x="0.6" y="1.6" class="state_text"><tspan x="0.6" dy="2"><tspan class="function">entry</tspan>/ <tspan class="function">chsm_recall</tspan></tspan></text><rect x="0" y="0" width="17" height="57" class="state_border"></rect><circle cx="16.75" cy="56.75" class="state_resize_handle"></circle></g><g transform="translate(112, 12)"><rect x="0" y="0" width="14" height="12" class="state_body"></rect><line x1="0" y1="2" x2="14" y2="2" class="state_separator"></line><line x1="0" y1="4" x2="14" y2="4" class="state_separator"></line><line x1="13" y1="12" x2="14" y2="11" class="state_resize_mark"></line><text x="0.6" y="1.6" class="state_title">s_sdo_wait_exp_ul</text><rect x="0" y="0" width="14" height="4" class="state_drag_handle"></rect><text x="0.6" y="1.6" class="state_text"><tspan x="0.6" dy="2"></tspan></text><rect x="0" y="0" width="14" height="12" class="state_border"></rect><circle cx="13.75" cy="11.75" class="state_resize_handle"></circle></g><g transform="translate(112, 30)"><rect x="0" y="0" width="14" height="12" class="state_body"></rect><line x1="0" y1="2" x2="14" y2="2" class="state_separator"></line><line x1="0" y1="4" x2="14" y2="4" class="state_separator"></line><line x1="13" y1="12" x2="14" y2="11" class="state_resize_mark"></line><text x="0.6" y="1.6" class="state_title">s_sdo_wait_exp_dl</text><rect x="0" y="0" width="14" height="4" class="state_drag_handle"></rect><text x="0.6" y="1.6" class="state_text"><tspan x="0.6" dy="2"></tspan></text><rect x="0" y="0" width="14" height="12" class="state_border"></rect><circle cx="13.75" cy="11.75" class="state_resize_handle"></circle></g><g transform="translate(112, 49)"><rect x="0" y="0" width="14" height="14" class="state_body"></rect><line x1="0" y1="2" x2="14" y2="2" class="state_separator"></line><line x1="0" y1="6" x2="14" y2="6" class="state_separator"></line><line x1="13" y1="14" x2="14" y2="13" class="state_resize_mark"></line><text x="0.6" y="1.6" class="state_title">s_sdo_wait_seg_dl</text><rect x="0" y="0" width="14" height="6" class="state_drag_handle"></rect><text x="0.6" y="1.6" class="state_text"><tspan x="0.6" dy="2"><tspan class="function">entry</tspan>/</tspan><tspan x="0.6" dy="2"><tspan class="function">exit</tspan>/</tspan></text><rect x="0" y="0" width="14" height="14" class="state_border"></rect><circle cx="13.75" cy="13.75" class="state_resize_handle"></circle></g><g transform="translate(23, -3)"><rect x="0" y="0" width="122" height="79" class="state_body"></rect><line x1="0" y1="2" x2="122" y2="2" class="state_separator"></line><line x1="0" y1="4" x2="122" y2="4" class="state_separator"></line><line x1="121" y1="79" x2="122" y2="78" class="state_resize_mark"></line><text x="0.6" y="1.6" class="state_title">s_sdo</text><rect x="0" y="0" width="122" height="4" class="state_drag_handle"></rect><text x="0.6" y="1.6" class="state_text"><tspan x="0.6" dy="2"><tspan class="function">SIG_CAN_FRAME</tspan>/ <tspan class="function">process_frame()</tspan></tspan></text><rect x="0" y="0" width="122" height="79" class="state_border"></rect><circle cx="121.75" cy="78.75" class="state_resize_handle"></circle></g><g transform="translate(106, 4)"><rect x="0" y="0" width="35" height="62" class="state_body"></rect><line x1="0" y1="2" x2="35" y2="2" class="state_separator"></line><line x1="0" y1="4" x2="35" y2="4" class="state_separator"></line><line x1="34" y1="62" x2="35" y2="61" class="state_resize_mark"></line><text x="0.6" y="1.6" class="state_title">s_busy</text><rect x="0" y="0" width="35" height="4" class="state_drag_handle"></rect><text x="0.6" y="1.6" class="state_text"><tspan x="0.6" dy="2"><tspan class="function">SIG_CAN_FRAME</tspan> [<tspan class="function">is_not_abort_frame()</tspan>]/ <tspan class="function">chsm_defer</tspan></tspan></text><rect x="0" y="0" width="35" height="62" class="state_border"></rect><circle cx="34.75" cy="61.75" class="state_resize_handle"></circle></g><circle cx="43" cy="6" class="initial_state"></circle><circle cx="134" cy="18" class="initial_state"></circle><circle cx="77" cy="-8" class="initial_state"></circle></g>
+			</svg>
+		
+    </main>
+    <script>
+        
+const zoom_speed = 0.5;
+const pan_speed = 20;
+const drawing = document.querySelector('#drawing');
+const svg = document.querySelector('svg');
+
+let translate = [drawing.transform.baseVal[0].matrix.e, drawing.transform.baseVal[0].matrix.f];
+let scale = drawing.transform.baseVal[1].matrix.a;
+
+let drag_start_pos = [0, 0];
+
+function set_transform()
+{
+    const [tx, ty] = translate;
+    const s = scale; 
+    drawing.attributes.transform.value = `translate(${tx}, ${ty}) scale(${s}, ${s})`;
+}
+
+function zoom_in(pos)
+{
+    const zs = zoom_speed;
+    const [x, y] = pos;
+    const [dtx, dty] = [-zs * x, -zs * y];
+    const [tx, ty] = translate;
+    translate = [tx + dtx, ty + dty];
+    scale += zs;
+    set_transform();
+}
+
+function zoom_out(pos)
+{
+    if (scale < 2)
+    {
+        return;
+    }
+    const zs = -zoom_speed;
+    const [x, y] = pos;
+    const [dtx, dty] = [-zs * x, -zs * y];
+    const [tx, ty] = translate;
+    translate = [tx + dtx, ty + dty];
+    scale += zs;
+    set_transform();
+}
+
+function get_absolute_pos(evt)
+{
+    const CTM = drawing.getScreenCTM();
+    const x = Math.round((evt.clientX - CTM.e) / CTM.a);
+    const y = Math.round((evt.clientY - CTM.f) / CTM.d);
+
+    return [x, y];
+}
+
+
+
+svg.addEventListener('wheel', event => {
+    if (event.ctrlKey)
+    {
+        event.stopPropagation();
+        event.preventDefault();
+        const p = get_absolute_pos(event);
+        if (event.deltaY < 0)
+        {
+            zoom_in(p);
+        }
+        else
+        {
+            zoom_out(p);
+        }
+    }
+    else if (event.shiftKey)
+    {
+        event.stopPropagation();
+        event.preventDefault();
+        if (event.deltaY < 0)
+        {
+            translate[0] += pan_speed;
+        }
+        else
+        {
+            translate[0] -= pan_speed;
+        }
+        set_transform();
+    }
+    else
+    {
+        event.stopPropagation();
+        event.preventDefault();
+        if (event.deltaY < 0)
+        {
+            translate[1] += pan_speed;
+        }
+        else
+        {
+            translate[1] -= pan_speed;
+        }
+        set_transform();
+    }
+});
+    </script>
+    <details>
+        <summary>json</summary>
+        <pre id='chsm-json-data'>
+            {
+    "states": {
+        "__top__": {
+            "pos": [
+                -1000000,
+                -1000000
+            ],
+            "size": [
+                2000000,
+                2000000
+            ],
+            "title": "__top__",
+            "text": [],
+            "connectors": [],
+            "parent": null,
+            "children": [
+                "state_4",
+                "istate_2"
+            ],
+            "type": "top"
+        },
+        "state_0": {
+            "pos": [
+                35,
+                10
+            ],
+            "size": [
+                17,
+                57
+            ],
+            "title": "s_idle",
+            "text": [
+                "entry/ chsm_recall"
+            ],
+            "connectors": [
+                "conn_1",
+                "conn_3",
+                "conn_4",
+                "conn_8",
+                "conn_15",
+                "conn_17",
+                "conn_18",
+                "conn_11",
+                "conn_21",
+                "conn_7"
+            ],
+            "parent": "state_4",
+            "children": [],
+            "type": "normal"
+        },
+        "state_1": {
+            "pos": [
+                112,
+                12
+            ],
+            "size": [
+                14,
+                12
+            ],
+            "title": "s_sdo_wait_exp_ul",
+            "text": [
+                ""
+            ],
+            "connectors": [
+                "conn_0",
+                "conn_2",
+                "conn_5",
+                "conn_13"
+            ],
+            "parent": "state_5",
+            "children": [],
+            "type": "normal"
+        },
+        "state_2": {
+            "pos": [
+                112,
+                30
+            ],
+            "size": [
+                14,
+                12
+            ],
+            "title": "s_sdo_wait_exp_dl",
+            "text": [
+                ""
+            ],
+            "connectors": [
+                "conn_9",
+                "conn_14",
+                "conn_16"
+            ],
+            "parent": "state_5",
+            "children": [],
+            "type": "normal"
+        },
+        "state_3": {
+            "pos": [
+                112,
+                49
+            ],
+            "size": [
+                14,
+                14
+            ],
+            "title": "s_sdo_wait_seg_dl",
+            "text": [
+                "entry/",
+                "exit/"
+            ],
+            "connectors": [
+                "conn_19"
+            ],
+            "parent": "state_5",
+            "children": [],
+            "type": "normal"
+        },
+        "state_4": {
+            "pos": [
+                23,
+                -3
+            ],
+            "size": [
+                122,
+                79
+            ],
+            "title": "s_sdo",
+            "text": [
+                "SIG_CAN_FRAME/ process_frame()"
+            ],
+            "connectors": [
+                "conn_23"
+            ],
+            "parent": "__top__",
+            "children": [
+                "state_0",
+                "state_5",
+                "istate_0"
+            ],
+            "type": "normal"
+        },
+        "state_5": {
+            "pos": [
+                106,
+                4
+            ],
+            "size": [
+                35,
+                62
+            ],
+            "title": "s_busy",
+            "text": [
+                "SIG_CAN_FRAME [is_not_abort_frame()]/ chsm_defer"
+            ],
+            "connectors": [
+                "conn_10",
+                "conn_6"
+            ],
+            "parent": "state_4",
+            "children": [
+                "state_1",
+                "state_2",
+                "state_3",
+                "istate_1"
+            ],
+            "type": "normal"
+        },
+        "istate_0": {
+            "pos": [
+                43,
+                6
+            ],
+            "size": [
+                2,
+                2
+            ],
+            "title": "istate_0",
+            "text": [
+                "entry/",
+                "exit/"
+            ],
+            "connectors": [
+                "conn_20"
+            ],
+            "parent": "state_4",
+            "children": [],
+            "type": "initial"
+        },
+        "istate_1": {
+            "pos": [
+                134,
+                18
+            ],
+            "size": [
+                2,
+                2
+            ],
+            "title": "istate_1",
+            "text": [
+                "entry/",
+                "exit/"
+            ],
+            "connectors": [
+                "conn_12"
+            ],
+            "parent": "state_5",
+            "children": [],
+            "type": "initial"
+        },
+        "istate_2": {
+            "pos": [
+                77,
+                -8
+            ],
+            "size": [
+                2,
+                2
+            ],
+            "title": "istate_2",
+            "text": [
+                "entry/",
+                "exit/"
+            ],
+            "connectors": [
+                "conn_22"
+            ],
+            "parent": "__top__",
+            "children": [],
+            "type": "initial"
+        }
+    },
+    "connectors": {
+        "conn_0": {
+            "parent": "state_1",
+            "offset": 5,
+            "side": "left",
+            "dir": "out",
+            "transition": "trans_0"
+        },
+        "conn_1": {
+            "parent": "state_0",
+            "offset": 7,
+            "side": "right",
+            "dir": "in",
+            "transition": "trans_0"
+        },
+        "conn_2": {
+            "parent": "state_1",
+            "offset": 7,
+            "side": "left",
+            "dir": "out",
+            "transition": "trans_1"
+        },
+        "conn_3": {
+            "parent": "state_0",
+            "offset": 9,
+            "side": "right",
+            "dir": "in",
+            "transition": "trans_1"
+        },
+        "conn_4": {
+            "parent": "state_0",
+            "offset": 5,
+            "side": "right",
+            "dir": "out",
+            "transition": "trans_2"
+        },
+        "conn_5": {
+            "parent": "state_1",
+            "offset": 3,
+            "side": "left",
+            "dir": "in",
+            "transition": "trans_2"
+        },
+        "conn_8": {
+            "parent": "state_0",
+            "offset": 22,
+            "side": "right",
+            "dir": "out",
+            "transition": "trans_4"
+        },
+        "conn_9": {
+            "parent": "state_2",
+            "offset": 2,
+            "side": "left",
+            "dir": "in",
+            "transition": "trans_4"
+        },
+        "conn_14": {
+            "parent": "state_2",
+            "offset": 6,
+            "side": "left",
+            "dir": "out",
+            "transition": "trans_7"
+        },
+        "conn_15": {
+            "parent": "state_0",
+            "offset": 26,
+            "side": "right",
+            "dir": "in",
+            "transition": "trans_7"
+        },
+        "conn_16": {
+            "parent": "state_2",
+            "offset": 8,
+            "side": "left",
+            "dir": "out",
+            "transition": "trans_8"
+        },
+        "conn_17": {
+            "parent": "state_0",
+            "offset": 28,
+            "side": "right",
+            "dir": "in",
+            "transition": "trans_8"
+        },
+        "conn_18": {
+            "parent": "state_0",
+            "offset": 41,
+            "side": "right",
+            "dir": "out",
+            "transition": "trans_9"
+        },
+        "conn_19": {
+            "parent": "state_3",
+            "offset": 2,
+            "side": "left",
+            "dir": "in",
+            "transition": "trans_9"
+        },
+        "conn_10": {
+            "parent": "state_5",
+            "offset": 8,
+            "side": "left",
+            "dir": "out",
+            "transition": "trans_5"
+        },
+        "conn_11": {
+            "parent": "state_0",
+            "offset": 2,
+            "side": "right",
+            "dir": "in",
+            "transition": "trans_5"
+        },
+        "conn_20": {
+            "parent": "istate_0",
+            "offset": 0,
+            "side": "all",
+            "dir": "out",
+            "transition": "trans_10"
+        },
+        "conn_21": {
+            "parent": "state_0",
+            "offset": 8,
+            "side": "top",
+            "dir": "in",
+            "transition": "trans_10"
+        },
+        "conn_6": {
+            "parent": "state_5",
+            "offset": 20,
+            "side": "left",
+            "dir": "out",
+            "transition": "trans_3"
+        },
+        "conn_7": {
+            "parent": "state_0",
+            "offset": 14,
+            "side": "right",
+            "dir": "in",
+            "transition": "trans_3"
+        },
+        "conn_12": {
+            "parent": "istate_1",
+            "offset": 0,
+            "side": "all",
+            "dir": "out",
+            "transition": "trans_6"
+        },
+        "conn_13": {
+            "parent": "state_1",
+            "offset": 6,
+            "side": "right",
+            "dir": "in",
+            "transition": "trans_6"
+        },
+        "conn_22": {
+            "parent": "istate_2",
+            "offset": 0,
+            "side": "all",
+            "dir": "out",
+            "transition": "trans_11"
+        },
+        "conn_23": {
+            "parent": "state_4",
+            "offset": 54,
+            "side": "top",
+            "dir": "in",
+            "transition": "trans_11"
+        }
+    },
+    "transitions": {
+        "trans_0": {
+            "start": "conn_0",
+            "end": "conn_1",
+            "vertices": [
+                [
+                    112,
+                    17
+                ],
+                [
+                    65,
+                    17
+                ],
+                [
+                    65,
+                    17
+                ],
+                [
+                    52,
+                    17
+                ]
+            ],
+            "label": "SIG_MEM_READ_SUCCESS/ send_sdo_exp_ul_response()",
+            "label_offset": [
+                -9.5,
+                -0.3999999999999986
+            ],
+            "label_anchor": 2,
+            "label_pos": [
+                55.5,
+                16.6
+            ]
+        },
+        "trans_1": {
+            "start": "conn_2",
+            "end": "conn_3",
+            "vertices": [
+                [
+                    112,
+                    19
+                ],
+                [
+                    72,
+                    19
+                ],
+                [
+                    72,
+                    19
+                ],
+                [
+                    52,
+                    19
+                ]
+            ],
+            "label": "SIG_MEM_READ_FAIL/ send_sdo_exp_ul_abort()",
+            "label_offset": [
+                -16.5,
+                -0.3999999999999986
+            ],
+            "label_anchor": 2,
+            "label_pos": [
+                55.5,
+                18.6
+            ]
+        },
+        "trans_2": {
+            "start": "conn_4",
+            "end": "conn_5",
+            "vertices": [
+                [
+                    52,
+                    15
+                ],
+                [
+                    72,
+                    15
+                ],
+                [
+                    72,
+                    15
+                ],
+                [
+                    112,
+                    15
+                ]
+            ],
+            "label": "SIG_CANOPEN_WAIT_EXP_SDO_UL",
+            "label_offset": [
+                3.5,
+                -0.40000000000000036
+            ],
+            "label_anchor": 0,
+            "label_pos": [
+                55.5,
+                14.6
+            ]
+        },
+        "trans_4": {
+            "start": "conn_8",
+            "end": "conn_9",
+            "vertices": [
+                [
+                    52,
+                    32
+                ],
+                [
+                    99,
+                    32
+                ],
+                [
+                    99,
+                    32
+                ],
+                [
+                    112,
+                    32
+                ]
+            ],
+            "label": "SIG_CANOPEN_WAIT_EXP_SDO_DL",
+            "label_offset": [
+                3.5,
+                -0.3999999999999986
+            ],
+            "label_anchor": 0,
+            "label_pos": [
+                55.5,
+                31.6
+            ]
+        },
+        "trans_7": {
+            "start": "conn_14",
+            "end": "conn_15",
+            "vertices": [
+                [
+                    112,
+                    36
+                ],
+                [
+                    80,
+                    36
+                ],
+                [
+                    80,
+                    36
+                ],
+                [
+                    52,
+                    36
+                ]
+            ],
+            "label": "SIG_MEM_READ_SUCCESS/ send_sdo_exp_dl_response()",
+            "label_offset": [
+                -24.5,
+                -0.3999999999999986
+            ],
+            "label_anchor": 2,
+            "label_pos": [
+                55.5,
+                35.6
+            ]
+        },
+        "trans_8": {
+            "start": "conn_16",
+            "end": "conn_17",
+            "vertices": [
+                [
+                    112,
+                    38
+                ],
+                [
+                    80,
+                    38
+                ],
+                [
+                    80,
+                    38
+                ],
+                [
+                    52,
+                    38
+                ]
+            ],
+            "label": "SIG_MEM_READ_FAIL/ send_sdo_exp_dl_abort()",
+            "label_offset": [
+                -24.5,
+                -0.3999999999999986
+            ],
+            "label_anchor": 2,
+            "label_pos": [
+                55.5,
+                37.6
+            ]
+        },
+        "trans_9": {
+            "start": "conn_18",
+            "end": "conn_19",
+            "vertices": [
+                [
+                    52,
+                    51
+                ],
+                [
+                    80,
+                    51
+                ],
+                [
+                    80,
+                    51
+                ],
+                [
+                    112,
+                    51
+                ]
+            ],
+            "label": "SIG_CANOPEN_SEG_DL_START",
+            "label_offset": [
+                3.5,
+                -0.3999999999999986
+            ],
+            "label_anchor": 0,
+            "label_pos": [
+                55.5,
+                50.6
+            ]
+        },
+        "trans_5": {
+            "start": "conn_10",
+            "end": "conn_11",
+            "vertices": [
+                [
+                    106,
+                    12
+                ],
+                [
+                    79,
+                    12
+                ],
+                [
+                    79,
+                    12
+                ],
+                [
+                    52,
+                    12
+                ]
+            ],
+            "label": "SIG_CAN_FRAME [is_abort_frame()]",
+            "label_offset": [
+                -24,
+                -0.40000000000000036
+            ],
+            "label_anchor": 2,
+            "label_pos": [
+                55,
+                11.6
+            ]
+        },
+        "trans_10": {
+            "start": "conn_20",
+            "end": "conn_21",
+            "vertices": [
+                [
+                    43,
+                    6
+                ],
+                [
+                    43,
+                    6
+                ],
+                [
+                    43,
+                    10
+                ]
+            ],
+            "label": "",
+            "label_offset": [
+                0.5,
+                1.5999999999999996
+            ],
+            "label_anchor": 1,
+            "label_pos": [
+                43.5,
+                7.6
+            ]
+        },
+        "trans_3": {
+            "start": "conn_6",
+            "end": "conn_7",
+            "vertices": [
+                [
+                    106,
+                    24
+                ],
+                [
+                    79,
+                    24
+                ],
+                [
+                    79,
+                    24
+                ],
+                [
+                    52,
+                    24
+                ]
+            ],
+            "label": "[sdo_timeout(SDO_TIMEOUT)]/ send_sdo_abort(SDO_TIMEOUT_ABORT)",
+            "label_offset": [
+                -23.5,
+                -0.3999999999999986
+            ],
+            "label_anchor": 2,
+            "label_pos": [
+                55.5,
+                23.6
+            ]
+        },
+        "trans_6": {
+            "start": "conn_12",
+            "end": "conn_13",
+            "vertices": [
+                [
+                    134,
+                    18
+                ],
+                [
+                    130,
+                    18
+                ],
+                [
+                    130,
+                    18
+                ],
+                [
+                    126,
+                    18
+                ]
+            ],
+            "label": "",
+            "label_offset": [
+                -3.5,
+                -0.3999999999999986
+            ],
+            "label_anchor": 0,
+            "label_pos": [
+                130.5,
+                17.6
+            ]
+        },
+        "trans_11": {
+            "start": "conn_22",
+            "end": "conn_23",
+            "vertices": [
+                [
+                    77,
+                    -8
+                ],
+                [
+                    77,
+                    -8
+                ],
+                [
+                    77,
+                    -3
+                ]
+            ],
+            "label": "",
+            "label_offset": [
+                0.5,
+                2.0999999999999996
+            ],
+            "label_anchor": 1,
+            "label_pos": [
+                77.5,
+                -5.9
+            ]
+        }
+    },
+    "notes": {
+        "sig_0": "Signal 0",
+        "guard()": "Guard function",
+        "func()": "Event handler function",
+        "process_idle()": "Process CAN frame and intiate a transition if waiting is needed.",
+        "SIG_MEM_READ_FAIL": "",
+        "CANOPEN_SDO_TIMEOUT": "",
+        "canopen_timeout": "",
+        "send_sdo_exp_read_response()": "",
+        "SIG_CANOPEN_WAIT_EXP_SDO_READ": "",
+        "send_sdo_abort()": "",
+        "SIG_CANOPEN_ABORT": "",
+        "SIG_CAN_FRAME": "",
+        "SDO_TIMEOUT": ""
+    },
+    "view": {
+        "translate": [
+            -72,
+            149
+        ],
+        "scale": 8.5
+    }
+}
+        </pre>
+    </details>
+</body>
+</html>

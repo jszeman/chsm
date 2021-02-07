@@ -3,11 +3,6 @@
 
 #include <stdint.h>
 
-/**
- * Signal class registry:
- * 	0x0000 - 0x00ff:	HSM framework
- */
-
 /** cevent - Base class for events
  *
  * Fields:

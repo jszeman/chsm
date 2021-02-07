@@ -9,7 +9,8 @@ typedef enum sig_class_ten {
     SIG_UART,
     SIG_LM73,
     SIG_MEM,
-    SIG_CAN
+    SIG_CAN,
+    SIG_INTERNAL = 0xff // This class can be used for state machine internal messages. These messages shall not ever be sent to other state machines.
 } event_class_ten;
 
 #define SIGNAL_CLASS(class) (class * CRF_SIGNAL_CLASS_SIZE)
