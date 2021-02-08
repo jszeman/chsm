@@ -22,6 +22,8 @@ typedef struct co_node_tst
     /* PRIVATE */
     sdo_tst                 sdo_st;
 
+    bool                    ng_toggle_state_b;         
+
 } co_node_tst;
 
 chsm_result_ten co_node_top(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);

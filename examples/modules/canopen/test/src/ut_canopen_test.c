@@ -83,43 +83,53 @@ static void tick_ms(uint32_t tick_cnt_u32)
 
 TEST_SETUP(co)
 {
-    memset(events_apst, 0, sizeof events_apst);
-    memset(&q_st, 0, sizeof q_st);
-
-    memset(&pool_buff_au8, 0, sizeof pool_buff_au8);
-    memset(&pool_ast, 0, sizeof pool_ast);
+	obj_u8 = 0x89;
+	obj_u16 = 0xbb66;
+	obj_u32 = 0xaa55aa55;
+	strcpy(str_ac, "String object");
 
     memset(&node_events_apst, 0, sizeof node_events_apst);
     memset(&node_st, 0, sizeof node_st);
 	
-    memset(&crf, 0, sizeof crf);
-
-	cpool_init(pool_ast+0, pool_buff_au8, 24, 16);
-
-    cqueue_init(&q_st, events_apst, 4);
-
 	chsm_ctor(&node_st.super, co_node_top, node_events_apst, 8, 4);
 	
 	node_st.config_st = (co_node_cfg_tst){
 		.node_id_u8 = 0x11,
+		.od_pst = &od_st,
 		};
 
 	node_st.super.send = co_send;
-
-	crf_init(&crf, hsm_apst, pool_ast, 1);
-	chsm_init((chsm_tst *)&node_st);
 }
 
 TEST_TEAR_DOWN(co)
 {
 }
 
-/*
- * Just call setup
+/* init
+ * Init the CRF. It is only done once, but that should not be a problem,
+ * as long as all resources are properly garbage collected. So in a way,
+ * this is also a test for the framework.
  */
 TEST(co, init)
 {
+    memset(&pool_buff_au8, 0, sizeof pool_buff_au8);
+    memset(&pool_ast, 0, sizeof pool_ast);
+    memset(events_apst, 0, sizeof events_apst);
+    memset(&q_st, 0, sizeof q_st);
+    cqueue_init(&q_st, events_apst, 4);
+    memset(&crf, 0, sizeof crf);
+	cpool_init(pool_ast+0, pool_buff_au8, 24, 16);
+	crf_init(&crf, hsm_apst, pool_ast, 1);
+}
+
+/* bootup
+ * Check that the bootup message is sent after init.
+ */
+TEST(co, bootup)
+{
 	const can_frame_tst *e_pst;
+
+	chsm_init((chsm_tst *)&node_st);
 
 	e_pst = (const can_frame_tst *)q_st.get(&q_st);
 
@@ -132,17 +142,115 @@ TEST(co, init)
 	TEST_ASSERT_EQUAL_HEX(0, e_pst->mdl_un.bit_st.d0_u8);
 }
 
-/* bootup
- * Check that the bootup message is sent after init.
+/* nodeguard_req
+ * Check that the node responds to a nodeguard request
  */
-TEST(co, bootup)
+TEST(co, nodeguard_req)
 {
+	const can_frame_tst *e_pst;
+	can_frame_tst *ng_pst;
+
+	chsm_init((chsm_tst *)&node_st);
+	q_st.get(&q_st);
+
+	ng_pst = CRF_NEW(SIG_CAN_FRAME);
+	TEST_ASSERT_NOT_NULL(ng_pst)
+
+	ng_pst->header_un = CAN_HDR(CO_NMT + self->config_st.node_id_u8, 1, 0);
+	CRF_POST(ng_pst, &node_st);
+
+	tick_ms(1);
+
+	e_pst = (const can_frame_tst *)q_st.get(&q_st);
+
+	TEST_ASSERT_NOT_NULL(e_pst)
+	TEST_ASSERT_EQUAL(SIG_CAN_FRAME, e_pst->super.sig);
+	
+	TEST_ASSERT_EQUAL_HEX(node_st.config_st.node_id_u8 + CO_NMT, e_pst->header_un.bit_st.id_u12);
+	TEST_ASSERT_EQUAL(1, e_pst->header_un.bit_st.dlc_u4);
+	TEST_ASSERT_EQUAL(0, e_pst->header_un.bit_st.rtr_u1);
+	TEST_ASSERT_EQUAL_HEX(0x7f, e_pst->mdl_un.bit_st.d0_u8);
+}
+
+/* nodeguard_toggle
+ * Check that the node responds to a nodeguard request and toggles the
+ * MSB in consecutive responses
+ */
+TEST(co, nodeguard_toggle)
+{
+	const can_frame_tst *e_pst;
+	can_frame_tst *ng_pst;
+
+	chsm_init((chsm_tst *)&node_st);
+	q_st.get(&q_st);
+
+	/* First */
+
+	ng_pst = CRF_NEW(SIG_CAN_FRAME);
+	TEST_ASSERT_NOT_NULL(ng_pst)
+
+	ng_pst->header_un = CAN_HDR(CO_NMT + self->config_st.node_id_u8, 1, 0);
+	CRF_POST(ng_pst, &node_st);
+
+	tick_ms(1);
+
+	e_pst = (const can_frame_tst *)q_st.get(&q_st);
+
+	TEST_ASSERT_NOT_NULL(e_pst)
+	TEST_ASSERT_EQUAL(SIG_CAN_FRAME, e_pst->super.sig);
+	
+	TEST_ASSERT_EQUAL_HEX(node_st.config_st.node_id_u8 + CO_NMT, e_pst->header_un.bit_st.id_u12);
+	TEST_ASSERT_EQUAL(1, e_pst->header_un.bit_st.dlc_u4);
+	TEST_ASSERT_EQUAL(0, e_pst->header_un.bit_st.rtr_u1);
+	TEST_ASSERT_EQUAL_HEX(0x7f, e_pst->mdl_un.bit_st.d0_u8);
+
+	/* Second */
+	
+	ng_pst = CRF_NEW(SIG_CAN_FRAME);
+	TEST_ASSERT_NOT_NULL(ng_pst)
+
+	ng_pst->header_un = CAN_HDR(CO_NMT + self->config_st.node_id_u8, 1, 0);
+	CRF_POST(ng_pst, &node_st);
+
+	tick_ms(1);
+
+	e_pst = (const can_frame_tst *)q_st.get(&q_st);
+
+	TEST_ASSERT_NOT_NULL(e_pst)
+	TEST_ASSERT_EQUAL(SIG_CAN_FRAME, e_pst->super.sig);
+	
+	TEST_ASSERT_EQUAL_HEX(node_st.config_st.node_id_u8 + CO_NMT, e_pst->header_un.bit_st.id_u12);
+	TEST_ASSERT_EQUAL(1, e_pst->header_un.bit_st.dlc_u4);
+	TEST_ASSERT_EQUAL(0, e_pst->header_un.bit_st.rtr_u1);
+	TEST_ASSERT_EQUAL_HEX(0xff, e_pst->mdl_un.bit_st.d0_u8);
+
+	/* Third */
+	
+	ng_pst = CRF_NEW(SIG_CAN_FRAME);
+	TEST_ASSERT_NOT_NULL(ng_pst)
+
+	ng_pst->header_un = CAN_HDR(CO_NMT + self->config_st.node_id_u8, 1, 0);
+	CRF_POST(ng_pst, &node_st);
+
+	tick_ms(1);
+
+	e_pst = (const can_frame_tst *)q_st.get(&q_st);
+
+	TEST_ASSERT_NOT_NULL(e_pst)
+	TEST_ASSERT_EQUAL(SIG_CAN_FRAME, e_pst->super.sig);
+	
+	TEST_ASSERT_EQUAL_HEX(node_st.config_st.node_id_u8 + CO_NMT, e_pst->header_un.bit_st.id_u12);
+	TEST_ASSERT_EQUAL(1, e_pst->header_un.bit_st.dlc_u4);
+	TEST_ASSERT_EQUAL(0, e_pst->header_un.bit_st.rtr_u1);
+	TEST_ASSERT_EQUAL_HEX(0x7f, e_pst->mdl_un.bit_st.d0_u8);
 }
 
 TEST_GROUP_RUNNER(co)
 {
 	RUN_TEST_CASE(co, init);
-	//RUN_TEST_CASE(co, init);
+	RUN_TEST_CASE(co, bootup);
+	RUN_TEST_CASE(co, nodeguard_req);
+	RUN_TEST_CASE(co, nodeguard_toggle);
 	//RUN_TEST_CASE(co, init);
 	//RUN_TEST_CASE(co, init);
 	//RUN_TEST_CASE(co, init);

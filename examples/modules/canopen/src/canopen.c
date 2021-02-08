@@ -1,4 +1,4 @@
-/*Generated with CHSM v0.0.0 at 2021.02.07 15.51.25*/
+/*Generated with CHSM v0.0.0 at 2021.02.07 20.36.07*/
 #include "cevent.h"
 #include "chsm.h"
 #include "canopen.h"
@@ -12,6 +12,12 @@ static chsm_result_ten s_canopen(chsm_tst *self, const cevent_tst  *e_pst, chsm_
     bool guards_only_b=true;
     switch(e_pst->sig)
     {
+        case SIG_CAN_FRAME:
+            if(is_ng_rtr(self, e_pst))
+            {
+                send_ng_resp(self, e_pst);
+            }
+            break;
 
         default:
             guards_only_b = false;
