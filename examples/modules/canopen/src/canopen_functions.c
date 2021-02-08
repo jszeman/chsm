@@ -12,8 +12,16 @@ void co_send_bootup(chsm_tst *_self, const cevent_tst *e_pst)
     if (NULL == f_pst) return;
 
     f_pst->header_un = CAN_HDR(CO_NMT + self->config_st.node_id_u8, 0, 1);
+    f_pst->mdl_un.bit_st.d0_u8 = CO_NMT_STATE_BOOTUP;
 
     CRF_EMIT(f_pst);
+}
+
+void co_node_init(chsm_tst *_self, const cevent_tst *e_pst)
+{
+    co_node_tst *self = (co_node_tst *)_self;
+    
+    self->nmt_state_u8 = CO_NMT_STATE_PREOP;
 }
 
 void send_ng_resp(co_node_tst *self)
@@ -23,7 +31,7 @@ void send_ng_resp(co_node_tst *self)
     if (NULL == f_pst) return;
 
     f_pst->header_un = CAN_HDR(CO_NMT + self->config_st.node_id_u8, 0, 1);
-    f_pst->mdl_un.bit_st.d0_u8 = 0x7f | (self->ng_toggle_state_b ? 0x80 : 0);
+    f_pst->mdl_un.bit_st.d0_u8 = self->nmt_state_u8 | (self->ng_toggle_state_b ? 0x80 : 0);
 
     self->ng_toggle_state_b = !self->ng_toggle_state_b;
 
@@ -45,12 +53,15 @@ void execute_nmt_cmd(co_node_tst *self, TYPEOF(SIG_CAN_FRAME) *f_pst)
     switch(f_pst->mdl_un.bit_st.d0_u8)
     {
         case CO_NMT_CMD_START:
+            self->nmt_state_u8 = CO_NMT_STATE_OPERATIONAL;
             break;
 
         case CO_NMT_CMD_STOP:
+            self->nmt_state_u8 = CO_NMT_STATE_STOPPED;
             break;
             
         case CO_NMT_CMD_PREOP:
+            self->nmt_state_u8 = CO_NMT_STATE_PREOP;
             break;
             
         case CO_NMT_CMD_RESET:

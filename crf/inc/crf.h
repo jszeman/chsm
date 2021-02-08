@@ -36,6 +36,8 @@ struct crf_tst
 	void				(*publish)(crf_tst *self, const cevent_tst* e);			//< Publish an event
 	void				(*post)(crf_tst *self, cevent_tst* e, cqueue_tst *q); //< Put an event into an event queue
 	bool				(*step)(crf_tst *self); //< Dispatch one event
+	void				(*gc)(crf_tst *self, const cevent_tst* e);			//< Publish an event
+
 
 	chsm_tst			**chsm_ap;		//< Pointer to the array of objects in the application
 	cpool_tst			*pool_ast;			//< Pointer to an array of memory pools.
@@ -51,6 +53,7 @@ bool crf_init(crf_tst *self , chsm_tst **chsm_ap, cpool_tst *pool_ast, uint16_t 
 #define CRF_POST(event_ptr, queue_ptr) 	crf.post(&crf, (cevent_tst *)event_ptr, (cqueue_tst *)(queue_ptr))
 #define CRF_STEP()						crf.step(&crf)
 #define CRF_EMIT(event_ptr)				((chsm_tst *)self)->send((chsm_tst *)self, (cevent_tst *)event_ptr)
+#define CRF_GC(event_ptr)				crf.gc(&crf, (cevent_tst *)event_ptr)
 #define CRF_SEND_FUNC(hsm_pst)			((chsm_tst *)hsm_pst)->send
 #define CRF_SIG_VAR(SIGNAL, VAR, E_PST)	TYPEOF(SIGNAL)* VAR = (TYPEOF(SIGNAL)*)E_PST
 

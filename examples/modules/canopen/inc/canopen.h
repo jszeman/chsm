@@ -27,7 +27,8 @@ struct co_node_tst
     /* PRIVATE */
     sdo_tst                 sdo_st;
 
-    bool                    ng_toggle_state_b;         
+    bool                    ng_toggle_state_b;
+    uint8_t                 nmt_state_u8;
 
 };
 
@@ -59,5 +60,10 @@ chsm_result_ten co_node_top(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_
 #define CO_NMT_CMD_PREOP            0x80
 #define CO_NMT_CMD_RESET            0x81
 #define CO_NMT_CMD_RESET_COMM       0x82
+
+#define CO_NMT_STATE_PREOP          0x7f
+#define CO_NMT_STATE_BOOTUP         0x00
+#define CO_NMT_STATE_OPERATIONAL    0x05
+#define CO_NMT_STATE_STOPPED        0x04
 
 #endif

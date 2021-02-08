@@ -97,6 +97,7 @@ bool crf_init(crf_tst *self , chsm_tst **chsm_ap, cpool_tst *pool_ast, uint16_t 
     self->publish = publish;
     self->post = post;
     self->step = step;
+    self->gc = gc;
 
     if (NULL == chsm_ap) return false;
 

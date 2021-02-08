@@ -1,4 +1,4 @@
-/*Generated with CHSM v0.0.0 at 2021.02.08 21.39.50*/
+/*Generated with CHSM v0.0.0 at 2021.02.08 21.49.46*/
 #include "cevent.h"
 #include "chsm.h"
 #include "canopen.h"
@@ -30,6 +30,7 @@ chsm_result_ten co_node_top(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_
     {
         case C_SIG_INIT:
             chsm_exit_children(self, e_pst, ctx_pst);
+            co_node_init(self, e_pst);
             co_send_bootup(self, e_pst);
             return chsm_transition(self, s_canopen);
 

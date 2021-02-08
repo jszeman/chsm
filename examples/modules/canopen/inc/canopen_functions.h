@@ -1,13 +1,15 @@
 #ifndef CANOPEN_FUNCTIONS_H
 #define CANOPEN_FUNCTIONS_H
 
-/*Generated with CHSM v0.0.0 at 2021.02.08 21.39.50*/
+/*Generated with CHSM v0.0.0 at 2021.02.08 21.49.46*/
 
 #include "canopen.h"
 #include "chsm.h"
 #include "cevent.h"
 #include <stdbool.h>
 
+
+void co_node_init(chsm_tst *self, const cevent_tst *e_pst);
 
 void co_process_frame(chsm_tst *self, const cevent_tst *e_pst);
 
