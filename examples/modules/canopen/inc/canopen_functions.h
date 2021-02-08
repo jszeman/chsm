@@ -1,7 +1,7 @@
 #ifndef CANOPEN_FUNCTIONS_H
 #define CANOPEN_FUNCTIONS_H
 
-/*Generated with CHSM v0.0.0 at 2021.02.07 20.36.07*/
+/*Generated with CHSM v0.0.0 at 2021.02.08 21.39.50*/
 
 #include "canopen.h"
 #include "chsm.h"
@@ -9,12 +9,10 @@
 #include <stdbool.h>
 
 
-void send_bootup(chsm_tst *self, const cevent_tst *e_pst);
+void co_process_frame(chsm_tst *self, const cevent_tst *e_pst);
 
-void send_ng_resp(chsm_tst *self, const cevent_tst *e_pst);
+void co_send_bootup(chsm_tst *self, const cevent_tst *e_pst);
 
-
-bool is_ng_rtr(chsm_tst *self, const cevent_tst *e_pst);
 
 typedef enum canopen_state_id_ten
 {

@@ -7,13 +7,18 @@
 #include "od.h"
 #include <stdint.h>
 
+typedef struct co_node_tst co_node_tst;
+
 typedef struct co_node_cfg_tst
 {
     uint8_t                 node_id_u8;
     object_dictionary_tst*  od_pst;
+
+    void*                   user_param_pv;
+    void                    (*on_nmt_reset)(void *pv);
 } co_node_cfg_tst;
 
-typedef struct co_node_tst
+struct co_node_tst
 {
     /* PUBLIC */
     chsm_tst                super;
@@ -24,7 +29,7 @@ typedef struct co_node_tst
 
     bool                    ng_toggle_state_b;         
 
-} co_node_tst;
+};
 
 chsm_result_ten co_node_top(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
 
@@ -36,16 +41,23 @@ chsm_result_ten co_node_top(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_
 
 /* Function base COB-IDs. The node id must be added to generate a valid COB-ID*/
 #define CO_EMCY                     0x080
-#define CO_PDO1_TX              0x180
-#define CO_PDO1_RX              0x200
-#define CO_PDO2_TX              0x280
-#define CO_PDO2_RX              0x300
-#define CO_PDO3_TX              0x380
-#define CO_PDO3_RX              0x400
-#define CO_PDO4_TX              0x480
-#define CO_PDO4_RX              0x500
-#define CO_SDO_TX               0x580
-#define CO_SDO_RX               0x600
-#define CO_NMT                  0x700
+#define CO_PDO1_TX                  0x180
+#define CO_PDO1_RX                  0x200
+#define CO_PDO2_TX                  0x280
+#define CO_PDO2_RX                  0x300
+#define CO_PDO3_TX                  0x380
+#define CO_PDO3_RX                  0x400
+#define CO_PDO4_TX                  0x480
+#define CO_PDO4_RX                  0x500
+#define CO_SDO_TX                   0x580
+#define CO_SDO_RX                   0x600
+#define CO_NMT                      0x700
+
+
+#define CO_NMT_CMD_START            0x01
+#define CO_NMT_CMD_STOP             0x02
+#define CO_NMT_CMD_PREOP            0x80
+#define CO_NMT_CMD_RESET            0x81
+#define CO_NMT_CMD_RESET_COMM       0x82
 
 #endif

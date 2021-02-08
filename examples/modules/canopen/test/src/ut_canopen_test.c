@@ -36,6 +36,8 @@ crf_tst					crf;
 const cevent_tst*       events_apst[4];
 cqueue_tst              q_st;
 
+void*					reset_param_pv;
+
 uint8_t					obj_u8;
 uint16_t				obj_u16;
 uint32_t				obj_u32;
@@ -55,6 +57,10 @@ object_dictionary_tst	od_st = {
 	.objects_ast = 		od_entries_ast
 };
 
+void on_nmt_reset(void *pv)
+{
+	reset_param_pv = pv;
+}
 
 void co_send(chsm_tst *self, const cevent_tst *e_pst)
 {
@@ -65,6 +71,7 @@ void co_send(chsm_tst *self, const cevent_tst *e_pst)
 			CRF_POST(e_pst, &q_st);
 	}
 }
+
 
 const cevent_tst		tick_1ms_st = {.sig = SIG_SYS_TICK_1ms};
 
@@ -88,6 +95,8 @@ TEST_SETUP(co)
 	obj_u32 = 0xaa55aa55;
 	strcpy(str_ac, "String object");
 
+	reset_param_pv = NULL;
+
     memset(&node_events_apst, 0, sizeof node_events_apst);
     memset(&node_st, 0, sizeof node_st);
 	
@@ -96,6 +105,8 @@ TEST_SETUP(co)
 	node_st.config_st = (co_node_cfg_tst){
 		.node_id_u8 = 0x11,
 		.od_pst = &od_st,
+		.user_param_pv = on_nmt_reset,
+		.on_nmt_reset = on_nmt_reset,
 		};
 
 	node_st.super.send = co_send;
@@ -185,64 +196,51 @@ TEST(co, nodeguard_toggle)
 	q_st.get(&q_st);
 
 	/* First */
+	for (int i=0; i<10; i++)
+	{
+		ng_pst = CRF_NEW(SIG_CAN_FRAME);
+		TEST_ASSERT_NOT_NULL(ng_pst)
 
-	ng_pst = CRF_NEW(SIG_CAN_FRAME);
-	TEST_ASSERT_NOT_NULL(ng_pst)
+		ng_pst->header_un = CAN_HDR(CO_NMT + self->config_st.node_id_u8, 1, 0);
+		CRF_POST(ng_pst, &node_st);
 
-	ng_pst->header_un = CAN_HDR(CO_NMT + self->config_st.node_id_u8, 1, 0);
-	CRF_POST(ng_pst, &node_st);
+		tick_ms(1);
 
-	tick_ms(1);
+		e_pst = (const can_frame_tst *)q_st.get(&q_st);
 
-	e_pst = (const can_frame_tst *)q_st.get(&q_st);
+		TEST_ASSERT_NOT_NULL(e_pst)
+		TEST_ASSERT_EQUAL(SIG_CAN_FRAME, e_pst->super.sig);
+		
+		TEST_ASSERT_EQUAL_HEX(node_st.config_st.node_id_u8 + CO_NMT, e_pst->header_un.bit_st.id_u12);
+		TEST_ASSERT_EQUAL(1, e_pst->header_un.bit_st.dlc_u4);
+		TEST_ASSERT_EQUAL(0, e_pst->header_un.bit_st.rtr_u1);
+		TEST_ASSERT_EQUAL_HEX(0x7f | (i & 1 ? 0x80 : 0), e_pst->mdl_un.bit_st.d0_u8);
+	}
+}
 
-	TEST_ASSERT_NOT_NULL(e_pst)
-	TEST_ASSERT_EQUAL(SIG_CAN_FRAME, e_pst->super.sig);
-	
-	TEST_ASSERT_EQUAL_HEX(node_st.config_st.node_id_u8 + CO_NMT, e_pst->header_un.bit_st.id_u12);
-	TEST_ASSERT_EQUAL(1, e_pst->header_un.bit_st.dlc_u4);
-	TEST_ASSERT_EQUAL(0, e_pst->header_un.bit_st.rtr_u1);
-	TEST_ASSERT_EQUAL_HEX(0x7f, e_pst->mdl_un.bit_st.d0_u8);
+/* nmt_reset
+ * Check that on_nmt_reset function is called when an NMT reset frame is received
+ */
+TEST(co, nmt_reset)
+{
+	const can_frame_tst *e_pst;
+	can_frame_tst *f_pst;
 
-	/* Second */
-	
-	ng_pst = CRF_NEW(SIG_CAN_FRAME);
-	TEST_ASSERT_NOT_NULL(ng_pst)
+	chsm_init((chsm_tst *)&node_st);
+	q_st.get(&q_st);
 
-	ng_pst->header_un = CAN_HDR(CO_NMT + self->config_st.node_id_u8, 1, 0);
-	CRF_POST(ng_pst, &node_st);
+	f_pst = CRF_NEW(SIG_CAN_FRAME);
+	TEST_ASSERT_NOT_NULL(f_pst)
 
-	tick_ms(1);
-
-	e_pst = (const can_frame_tst *)q_st.get(&q_st);
-
-	TEST_ASSERT_NOT_NULL(e_pst)
-	TEST_ASSERT_EQUAL(SIG_CAN_FRAME, e_pst->super.sig);
-	
-	TEST_ASSERT_EQUAL_HEX(node_st.config_st.node_id_u8 + CO_NMT, e_pst->header_un.bit_st.id_u12);
-	TEST_ASSERT_EQUAL(1, e_pst->header_un.bit_st.dlc_u4);
-	TEST_ASSERT_EQUAL(0, e_pst->header_un.bit_st.rtr_u1);
-	TEST_ASSERT_EQUAL_HEX(0xff, e_pst->mdl_un.bit_st.d0_u8);
-
-	/* Third */
-	
-	ng_pst = CRF_NEW(SIG_CAN_FRAME);
-	TEST_ASSERT_NOT_NULL(ng_pst)
-
-	ng_pst->header_un = CAN_HDR(CO_NMT + self->config_st.node_id_u8, 1, 0);
-	CRF_POST(ng_pst, &node_st);
+	f_pst->header_un = CAN_HDR(0, 0, 2);
+	f_pst->mdl_un.bit_st.d0_u8 = CO_NMT_CMD_RESET;
+	f_pst->mdl_un.bit_st.d1_u8 = node_st.config_st.node_id_u8;
+	CRF_POST(f_pst, &node_st);
 
 	tick_ms(1);
 
-	e_pst = (const can_frame_tst *)q_st.get(&q_st);
+	TEST_ASSERT_EQUAL_PTR(on_nmt_reset, reset_param_pv);
 
-	TEST_ASSERT_NOT_NULL(e_pst)
-	TEST_ASSERT_EQUAL(SIG_CAN_FRAME, e_pst->super.sig);
-	
-	TEST_ASSERT_EQUAL_HEX(node_st.config_st.node_id_u8 + CO_NMT, e_pst->header_un.bit_st.id_u12);
-	TEST_ASSERT_EQUAL(1, e_pst->header_un.bit_st.dlc_u4);
-	TEST_ASSERT_EQUAL(0, e_pst->header_un.bit_st.rtr_u1);
-	TEST_ASSERT_EQUAL_HEX(0x7f, e_pst->mdl_un.bit_st.d0_u8);
 }
 
 TEST_GROUP_RUNNER(co)
@@ -251,7 +249,7 @@ TEST_GROUP_RUNNER(co)
 	RUN_TEST_CASE(co, bootup);
 	RUN_TEST_CASE(co, nodeguard_req);
 	RUN_TEST_CASE(co, nodeguard_toggle);
-	//RUN_TEST_CASE(co, init);
+	RUN_TEST_CASE(co, nmt_reset);
 	//RUN_TEST_CASE(co, init);
 	//RUN_TEST_CASE(co, init);
 	//RUN_TEST_CASE(co, init);
