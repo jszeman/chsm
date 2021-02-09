@@ -5,8 +5,9 @@
 #include <stdio.h>
 
 
-void process_frame(chsm_tst *_self, const cevent_tst *e_pst)
+void process_sdo_request(chsm_tst *_self, const cevent_tst *e_pst)
 {
+    printf("\n%s\n", __FUNCTION__);
     sdo_tst* self = (sdo_tst*)_self;
 }
 
@@ -35,14 +36,14 @@ void send_sdo_abort(chsm_tst *_self, const cevent_tst *e_pst, uint32_t abort_cod
     sdo_tst* self = (sdo_tst*)_self;
 }
 
-bool is_abort_frame(chsm_tst *_self, const cevent_tst *e_pst)
+bool is_abort_request(chsm_tst *_self, const cevent_tst *e_pst)
 {
     sdo_tst* self = (sdo_tst*)_self;
 
     return false;
 }
 
-bool is_not_abort_frame(chsm_tst *_self, const cevent_tst *e_pst)
+bool is_not_abort_request(chsm_tst *_self, const cevent_tst *e_pst)
 {
     sdo_tst* self = (sdo_tst*)_self;
 

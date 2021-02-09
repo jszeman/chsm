@@ -1,4 +1,4 @@
-/*Generated with CHSM v0.0.0 at 2021.02.06 20.49.31*/
+/*Generated with CHSM v0.0.0 at 2021.02.09 21.32.33*/
 #include "cevent.h"
 #include "chsm.h"
 #include "sdo.h"
@@ -105,7 +105,7 @@ static chsm_result_ten s_sdo(chsm_tst *self, const cevent_tst  *e_pst, chsm_call
     switch(e_pst->sig)
     {
         case SIG_CAN_FRAME:
-            process_frame(self, e_pst);
+            process_sdo_request(self, e_pst);
             break;
 
         default:
@@ -121,11 +121,11 @@ static chsm_result_ten s_busy(chsm_tst *self, const cevent_tst  *e_pst, chsm_cal
     switch(e_pst->sig)
     {
         case SIG_CAN_FRAME:
-            if(is_not_abort_frame(self, e_pst))
+            if(is_not_abort_request(self, e_pst))
             {
                 chsm_defer(self, e_pst);
             }
-            if(is_abort_frame(self, e_pst))
+            if(is_abort_request(self, e_pst))
             {
                 chsm_exit_children(self, e_pst, ctx_pst);
                 chsm_recall(self, e_pst);

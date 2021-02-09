@@ -26,6 +26,7 @@ struct co_node_tst
 
     /* PRIVATE */
     sdo_tst                 sdo_st;
+    const cevent_tst*		sdo_events_ast[6];
 
     bool                    ng_toggle_state_b;
     uint8_t                 nmt_state_u8;
@@ -65,5 +66,12 @@ chsm_result_ten co_node_top(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_
 #define CO_NMT_STATE_BOOTUP         0x00
 #define CO_NMT_STATE_OPERATIONAL    0x05
 #define CO_NMT_STATE_STOPPED        0x04
+
+#define CO_SDO_DL_REQ_EXP_1B        ((1 << 5) | (3 << 2) | (1 << 1) | 1)
+#define CO_SDO_DL_REQ_EXP_2B        ((1 << 5) | (2 << 2) | (1 << 1) | 1)
+#define CO_SDO_DL_REQ_EXP_3B        ((1 << 5) | (1 << 2) | (1 << 1) | 1)
+#define CO_SDO_DL_REQ_EXP_4B        ((1 << 5) | (0 << 2) | (1 << 1) | 1)
+#define CO_SDO_DL_RESP_EXP          (3 << 5)
+
 
 #endif

@@ -295,7 +295,100 @@ TEST(co, nmt_start)
 		TEST_ASSERT_EQUAL_HEX(0x05 | (i & 1 ? 0x80 : 0), e_pst->mdl_un.bit_st.d0_u8);
 		CRF_GC(e_pst);
 	}
+}
 
+
+
+/* nmt_preop
+ * Check that a PREOP command changes the code in NG responses
+ */
+TEST(co, nmt_preop)
+{
+	const can_frame_tst *e_pst;
+	can_frame_tst *f_pst;
+	can_frame_tst *ng_pst;
+
+	node_init();
+
+	/* Go to STARTED state */
+	f_pst = CRF_NEW(SIG_CAN_FRAME);
+	TEST_ASSERT_NOT_NULL(f_pst)
+
+	f_pst->header_un = CAN_HDR(0, 0, 2);
+	f_pst->mdl_un.bit_st.d0_u8 = CO_NMT_CMD_START;
+	f_pst->mdl_un.bit_st.d1_u8 = node_st.config_st.node_id_u8;
+	CRF_POST(f_pst, &node_st);
+
+	tick_ms(1);
+
+	/* Go to PREOP state */
+	f_pst = CRF_NEW(SIG_CAN_FRAME);
+	TEST_ASSERT_NOT_NULL(f_pst)
+
+	f_pst->header_un = CAN_HDR(0, 0, 2);
+	f_pst->mdl_un.bit_st.d0_u8 = CO_NMT_CMD_PREOP;
+	f_pst->mdl_un.bit_st.d1_u8 = node_st.config_st.node_id_u8;
+	CRF_POST(f_pst, &node_st);
+
+	tick_ms(1);
+
+	for (int i=0; i<10; i++)
+	{
+		ng_pst = CRF_NEW(SIG_CAN_FRAME);
+		TEST_ASSERT_NOT_NULL(ng_pst)
+
+		ng_pst->header_un = CAN_HDR(CO_NMT + self->config_st.node_id_u8, 1, 0);
+		CRF_POST(ng_pst, &node_st);
+
+		tick_ms(1);
+
+		e_pst = (const can_frame_tst *)q_st.get(&q_st);
+
+		TEST_ASSERT_NOT_NULL(e_pst)
+		TEST_ASSERT_EQUAL(SIG_CAN_FRAME, e_pst->super.sig);
+		
+		TEST_ASSERT_EQUAL_HEX(node_st.config_st.node_id_u8 + CO_NMT, e_pst->header_un.bit_st.id_u12);
+		TEST_ASSERT_EQUAL(1, e_pst->header_un.bit_st.dlc_u4);
+		TEST_ASSERT_EQUAL(0, e_pst->header_un.bit_st.rtr_u1);
+		TEST_ASSERT_EQUAL_HEX(CO_NMT_STATE_PREOP | (i & 1 ? 0x80 : 0), e_pst->mdl_un.bit_st.d0_u8);
+		CRF_GC(e_pst);
+	}
+}
+
+
+
+/* sdo_dl_exp_1b
+ * Initiate an expedited 1 byte download and check that the value was correctly written.
+ */
+TEST(co, sdo_dl_exp_1b)
+{
+	const can_frame_tst *e_pst;
+	can_frame_tst *f_pst;
+
+	node_init();
+
+	f_pst = CRF_NEW(SIG_CAN_FRAME);
+	TEST_ASSERT_NOT_NULL(f_pst);
+
+	f_pst->header_un = CAN_HDR(CO_SDO_RX + node_st.config_st.node_id_u8, 0, 8);
+	f_pst->mdl_un.bit_st.d0_u8 = CO_SDO_DL_REQ_EXP_1B;
+	f_pst->mdl_un.bit_st.d1_u8 = 0x34;
+	f_pst->mdl_un.bit_st.d2_u8 = 0x12;
+	f_pst->mdl_un.bit_st.d3_u8 = 0x00;
+	f_pst->mdh_un.bit_st.d4_u8 = 0xa5;
+	CRF_POST(f_pst, &node_st);
+
+	tick_ms(1);
+
+	e_pst = (const can_frame_tst *)q_st.get(&q_st);
+
+	TEST_ASSERT_NOT_NULL(e_pst)
+	TEST_ASSERT_EQUAL(SIG_CAN_FRAME, e_pst->super.sig);
+	
+	TEST_ASSERT_EQUAL_HEX(node_st.config_st.node_id_u8 + CO_SDO_TX, e_pst->header_un.bit_st.id_u12);
+	TEST_ASSERT_EQUAL(8, e_pst->header_un.bit_st.dlc_u4);
+	TEST_ASSERT_EQUAL(0, e_pst->header_un.bit_st.rtr_u1);
+	CRF_GC(e_pst);
 }
 
 TEST_GROUP_RUNNER(co)
@@ -306,8 +399,8 @@ TEST_GROUP_RUNNER(co)
 	RUN_TEST_CASE(co, nodeguard_toggle);
 	RUN_TEST_CASE(co, nmt_reset);
 	RUN_TEST_CASE(co, nmt_start);
-	//RUN_TEST_CASE(co, init);
-	//RUN_TEST_CASE(co, init);
+	RUN_TEST_CASE(co, nmt_preop);
+	RUN_TEST_CASE(co, sdo_dl_exp_1b);
 	//RUN_TEST_CASE(co, init);
 	//RUN_TEST_CASE(co, init);
 	//RUN_TEST_CASE(co, init);

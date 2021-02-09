@@ -1,7 +1,7 @@
 #ifndef SDO_FUNCTIONS_H
 #define SDO_FUNCTIONS_H
 
-/*Generated with CHSM v0.0.0 at 2021.02.06 20.49.31*/
+/*Generated with CHSM v0.0.0 at 2021.02.09 21.32.33*/
 
 #include "sdo.h"
 #include "chsm.h"
@@ -9,7 +9,7 @@
 #include <stdbool.h>
 
 
-void process_frame(chsm_tst *self, const cevent_tst *e_pst);
+void process_sdo_request(chsm_tst *self, const cevent_tst *e_pst);
 
 void send_sdo_exp_dl_abort(chsm_tst *self, const cevent_tst *e_pst);
 
@@ -20,9 +20,9 @@ void send_sdo_exp_ul_abort(chsm_tst *self, const cevent_tst *e_pst);
 void send_sdo_exp_ul_response(chsm_tst *self, const cevent_tst *e_pst);
 
 
-bool is_abort_frame(chsm_tst *self, const cevent_tst *e_pst);
+bool is_abort_request(chsm_tst *self, const cevent_tst *e_pst);
 
-bool is_not_abort_frame(chsm_tst *self, const cevent_tst *e_pst);
+bool is_not_abort_request(chsm_tst *self, const cevent_tst *e_pst);
 
 typedef enum sdo_state_id_ten
 {
