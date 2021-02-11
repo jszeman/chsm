@@ -13,7 +13,7 @@ typedef enum sig_class_ten {
     SIG_INTERNAL = 0xff // This class can be used for state machine internal messages. These messages shall not ever be sent to other state machines.
 } event_class_ten;
 
-#define SIGNAL_CLASS(class) (class * CRF_SIGNAL_CLASS_SIZE)
+#define SIGNAL_CLASS(CLASS) (CLASS * CRF_SIGNAL_CLASS_SIZE)
 
 /*
  * SYSTEM SIGNALS
