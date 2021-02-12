@@ -13,9 +13,6 @@ typedef struct co_node_cfg_tst
 {
     uint8_t                 node_id_u8;
     object_dictionary_tst*  od_pst;
-
-    void*                   user_param_pv;
-    void                    (*on_nmt_reset)(void *pv);
 } co_node_cfg_tst;
 
 struct co_node_tst

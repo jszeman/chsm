@@ -83,10 +83,6 @@ void execute_nmt_cmd(co_node_tst *self, TYPEOF(SIG_CAN_FRAME) *f_pst)
             break;
             
         case CO_NMT_CMD_RESET:
-            if (self->config_st.on_nmt_reset)
-            {
-                self->config_st.on_nmt_reset(self->config_st.user_param_pv);
-            }
             break;
             
         case CO_NMT_CMD_RESET_COMM:

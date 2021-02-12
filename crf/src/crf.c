@@ -36,7 +36,7 @@ static void* new_event(crf_tst *self, uint32_t size, signal_t sig)
     return NULL;
 }
 
-static void	gc(crf_tst *self, cevent_tst* e_pst)
+static void	gc(crf_tst *self, const cevent_tst* e_pst)
 {
     if (NULL == self->pool_ast) return;
 

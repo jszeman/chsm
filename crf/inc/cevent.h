@@ -32,11 +32,9 @@ typedef struct cevent_tst
 	gc_info_tst		gc_info;
 } cevent_tst;
 
-#define CRF_SIGNAL_CLASS_START  2
-#define CRF_SIGNAL_CLASS_SIZE   256
-
-#define CRF_SIG_CLASS           0
-#define CRF_INTERNAL_SIG_CLASS  256
+#define CRF_SIGNAL_CLASS_MOD_INTERNAL 1
+#define CRF_SIGNAL_CLASS_START 2
+#define CRF_SIGNAL_CLASS_SIZE 256
 
 static inline void cevent_ref_cnt_inc(const cevent_tst *e_pst)
 {

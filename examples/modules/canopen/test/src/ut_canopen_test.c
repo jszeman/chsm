@@ -36,8 +36,6 @@ crf_tst					crf;
 const cevent_tst*       events_apst[4];
 cqueue_tst              q_st;
 
-void*					reset_param_pv;
-
 uint8_t					obj_u8;
 uint16_t				obj_u16;
 uint32_t				obj_u32;
@@ -56,11 +54,6 @@ object_dictionary_tst	od_st = {
 	.mlx_mask_u32 = 	0xffffffff,
 	.objects_ast = 		od_entries_ast
 };
-
-void on_nmt_reset(void *pv)
-{
-	reset_param_pv = pv;
-}
 
 void co_send(chsm_tst *self, const cevent_tst *e_pst)
 {
@@ -104,8 +97,6 @@ TEST_SETUP(co)
 	obj_u32 = 0xaa55aa55;
 	strcpy(str_ac, "String object");
 
-	reset_param_pv = NULL;
-
     memset(&node_events_apst, 0, sizeof node_events_apst);
     memset(&node_st, 0, sizeof node_st);
 	
@@ -114,8 +105,6 @@ TEST_SETUP(co)
 	node_st.config_st = (co_node_cfg_tst){
 		.node_id_u8 = 0x11,
 		.od_pst = &od_st,
-		.user_param_pv = on_nmt_reset,
-		.on_nmt_reset = on_nmt_reset,
 		};
 
 	node_st.super.send = co_send;
@@ -248,7 +237,6 @@ TEST(co, nmt_reset)
 
 	tick_ms(1);
 
-	TEST_ASSERT_EQUAL_PTR(on_nmt_reset, reset_param_pv);
 }
 
 

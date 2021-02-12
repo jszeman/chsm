@@ -10,7 +10,7 @@ typedef enum sig_class_ten {
     SIG_LM73,
     SIG_MEM,
     SIG_CAN,
-    SIG_INTERNAL = 0xff // This class can be used for state machine internal messages. These messages shall not ever be sent to other state machines.
+    SIG_CANOPEN
 } event_class_ten;
 
 #define SIGNAL_CLASS(CLASS) (CLASS * CRF_SIGNAL_CLASS_SIZE)
@@ -25,6 +25,7 @@ typedef enum sys_signals_ten
     SIG_SYS_TICK_10ms,
     SIG_SYS_TICK_100ms,
     SIG_SYS_TICK_1s,
+    SIG_SYS_RESET
 } sys_signals_ten;
 
 /*
@@ -88,6 +89,17 @@ typedef enum can_signals_ten
     /* External signals */
     SIG_CAN_FRAME = SIGNAL_CLASS(SIG_CAN),
 } can_signals_ten;
+
+/*
+ * CANOPEN INTERFACE SIGNALS
+ */
+
+typedef enum canopen_signals_ten
+{
+    /* External signals */
+    SIG_CANOPEN_NG_OK = SIGNAL_CLASS(SIG_CANOPEN),
+    SIG_CANOPEN_NG_ERROR,
+} canopen_signals_ten;
 
 #endif
 
