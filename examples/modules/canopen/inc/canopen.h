@@ -12,6 +12,8 @@ typedef struct co_node_tst co_node_tst;
 typedef struct co_node_cfg_tst
 {
     uint8_t                 node_id_u8;
+    uint16_t                guard_time_ms_u16;
+    uint16_t                life_time_factor_u16;
     object_dictionary_tst*  od_pst;
 } co_node_cfg_tst;
 
@@ -28,10 +30,14 @@ struct co_node_tst
     bool                    ng_toggle_state_b;
     uint8_t                 nmt_state_u8;
 
+    uint32_t                timer_u32;
+
 };
 
 chsm_result_ten co_node_top(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
+bool co_timeout(chsm_tst *self, const cevent_tst *e_pst, uint32_t timeout_u32);
 
+#define CO_LIFETIME                 (((co_node_tst *)self)->config_st.guard_time_ms_u16 * ((co_node_tst *)self)->config_st.life_time_factor_u16)
 
 /* Broadcast COB-IDs */
 #define CO_NMT_BROADCAST_ID         0x000
@@ -70,5 +76,10 @@ chsm_result_ten co_node_top(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_
 #define CO_SDO_DL_REQ_EXP_4B        ((1 << 5) | (0 << 2) | (1 << 1) | 1)
 #define CO_SDO_DL_RESP_EXP          (3 << 5)
 
+typedef enum canopen_internal_signals_ten
+{
+    /* Internal signals */
+    SIG_I_CANOPEN_NG = SIGNAL_CLASS(CRF_SIGNAL_CLASS_MOD_INTERNAL),
+} canopen_internal_signals_ten;
 
 #endif

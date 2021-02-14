@@ -8,6 +8,7 @@ set(test_files  src/main.c
                 ../src/canopen_functions.c
                 ../src/sdo.c
                 ../src/sdo_functions.c
+                ../../interfaces/src/sys_if.c
                 ../../../../../crf/src/chsm.c
                 ../../../../../crf/src/cvalue.c
                 ../../../../../crf/src/cpool.c

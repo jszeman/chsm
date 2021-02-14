@@ -97,8 +97,8 @@ typedef enum can_signals_ten
 typedef enum canopen_signals_ten
 {
     /* External signals */
-    SIG_CANOPEN_NG_OK = SIGNAL_CLASS(SIG_CANOPEN),
-    SIG_CANOPEN_NG_ERROR,
+    SIG_CANOPEN_NG_ACTIVE = SIGNAL_CLASS(SIG_CANOPEN),
+    SIG_CANOPEN_NG_INACTIVE,
 } canopen_signals_ten;
 
 #endif

@@ -36,6 +36,9 @@ crf_tst					crf;
 const cevent_tst*       events_apst[4];
 cqueue_tst              q_st;
 
+const cevent_tst*       can_drv_events_apst[4];
+cqueue_tst              can_drv_st;
+
 uint8_t					obj_u8;
 uint16_t				obj_u16;
 uint32_t				obj_u32;
@@ -60,6 +63,10 @@ void co_send(chsm_tst *self, const cevent_tst *e_pst)
     //printf("\n%s\n", __FUNCTION__);
 	switch(e_pst->sig)
 	{
+		case SIG_CAN_FRAME:
+			CRF_POST(e_pst, &can_drv_st);
+			break;
+
 		default:
 			CRF_POST(e_pst, &q_st);
 	}
@@ -86,7 +93,7 @@ void node_init(void)
 	const can_frame_tst *e_pst;
 
 	chsm_init((chsm_tst *)&node_st);
-	e_pst = (can_frame_tst *)q_st.get(&q_st);
+	e_pst = (can_frame_tst *)can_drv_st.get(&can_drv_st);
 	CRF_GC(e_pst);
 }
 
@@ -105,6 +112,8 @@ TEST_SETUP(co)
 	node_st.config_st = (co_node_cfg_tst){
 		.node_id_u8 = 0x11,
 		.od_pst = &od_st,
+		.guard_time_ms_u16 = 10,
+		.life_time_factor_u16 = 2,
 		};
 
 	node_st.super.send = co_send;
@@ -123,9 +132,15 @@ TEST(co, init)
 {
     memset(&pool_buff_au8, 0, sizeof pool_buff_au8);
     memset(&pool_ast, 0, sizeof pool_ast);
+
     memset(events_apst, 0, sizeof events_apst);
     memset(&q_st, 0, sizeof q_st);
     cqueue_init(&q_st, events_apst, 4);
+
+    memset(can_drv_events_apst, 0, sizeof can_drv_events_apst);
+    memset(&can_drv_st, 0, sizeof can_drv_st);
+    cqueue_init(&can_drv_st, can_drv_events_apst, 4);
+
     memset(&crf, 0, sizeof crf);
 	cpool_init(pool_ast+0, pool_buff_au8, 24, 16);
 	crf_init(&crf, hsm_apst, pool_ast, 1);
@@ -140,9 +155,9 @@ TEST(co, bootup)
 
 	chsm_init((chsm_tst *)&node_st);
 
-	e_pst = (const can_frame_tst *)q_st.get(&q_st);
+	e_pst = (const can_frame_tst *)can_drv_st.get(&can_drv_st);
 
-	TEST_ASSERT_NOT_NULL(e_pst)
+	TEST_ASSERT_NOT_NULL(e_pst);
 	TEST_ASSERT_EQUAL(SIG_CAN_FRAME, e_pst->super.sig);
 	
 	TEST_ASSERT_EQUAL_HEX(node_st.config_st.node_id_u8 + CO_NMT, e_pst->header_un.bit_st.id_u12);
@@ -164,22 +179,25 @@ TEST(co, nodeguard_req)
 	node_init();
 
 	ng_pst = CRF_NEW(SIG_CAN_FRAME);
-	TEST_ASSERT_NOT_NULL(ng_pst)
+	TEST_ASSERT_NOT_NULL(ng_pst);
 
 	ng_pst->header_un = CAN_HDR(CO_NMT + self->config_st.node_id_u8, 1, 0);
 	CRF_POST(ng_pst, &node_st);
 
 	tick_ms(1);
 
-	e_pst = (const can_frame_tst *)q_st.get(&q_st);
-
-	TEST_ASSERT_NOT_NULL(e_pst)
+	e_pst = (const can_frame_tst *)can_drv_st.get(&can_drv_st);
+	TEST_ASSERT_NOT_NULL(e_pst);
 	TEST_ASSERT_EQUAL(SIG_CAN_FRAME, e_pst->super.sig);
-	
 	TEST_ASSERT_EQUAL_HEX(node_st.config_st.node_id_u8 + CO_NMT, e_pst->header_un.bit_st.id_u12);
 	TEST_ASSERT_EQUAL(1, e_pst->header_un.bit_st.dlc_u4);
 	TEST_ASSERT_EQUAL(0, e_pst->header_un.bit_st.rtr_u1);
 	TEST_ASSERT_EQUAL_HEX(0x7f, e_pst->mdl_un.bit_st.d0_u8);
+	CRF_GC(e_pst);
+
+	e_pst = (const can_frame_tst *)q_st.get(&q_st);
+	TEST_ASSERT_NOT_NULL(e_pst);
+	TEST_ASSERT_EQUAL(SIG_CANOPEN_NG_ACTIVE, e_pst->super.sig);
 	CRF_GC(e_pst);
 }
 
@@ -197,16 +215,16 @@ TEST(co, nodeguard_toggle)
 	for (int i=0; i<10; i++)
 	{
 		ng_pst = CRF_NEW(SIG_CAN_FRAME);
-		TEST_ASSERT_NOT_NULL(ng_pst)
+		TEST_ASSERT_NOT_NULL(ng_pst);
 
 		ng_pst->header_un = CAN_HDR(CO_NMT + self->config_st.node_id_u8, 1, 0);
 		CRF_POST(ng_pst, &node_st);
 
 		tick_ms(1);
 
-		e_pst = (const can_frame_tst *)q_st.get(&q_st);
+		e_pst = (const can_frame_tst *)can_drv_st.get(&can_drv_st);
 
-		TEST_ASSERT_NOT_NULL(e_pst)
+		TEST_ASSERT_NOT_NULL(e_pst);
 		TEST_ASSERT_EQUAL(SIG_CAN_FRAME, e_pst->super.sig);
 		
 		TEST_ASSERT_EQUAL_HEX(node_st.config_st.node_id_u8 + CO_NMT, e_pst->header_un.bit_st.id_u12);
@@ -215,6 +233,61 @@ TEST(co, nodeguard_toggle)
 		TEST_ASSERT_EQUAL_HEX(0x7f | (i & 1 ? 0x80 : 0), e_pst->mdl_un.bit_st.d0_u8);
 		CRF_GC(e_pst);
 	}
+
+	e_pst = (const can_frame_tst *)q_st.get(&q_st);
+	TEST_ASSERT_NOT_NULL(e_pst);
+	TEST_ASSERT_EQUAL(SIG_CANOPEN_NG_ACTIVE, e_pst->super.sig);
+	CRF_GC(e_pst);
+}
+
+/* nodeguard_timeout
+ * Check that the node sends an NG_INACTIVE notification if no NG request arrives within the lifetime
+ */
+TEST(co, nodeguard_timeout)
+{
+	const can_frame_tst *e_pst;
+	can_frame_tst *ng_pst;
+
+	node_init();
+
+	for (int i=0; i<10; i++)
+	{
+		ng_pst = CRF_NEW(SIG_CAN_FRAME);
+		TEST_ASSERT_NOT_NULL(ng_pst);
+
+		ng_pst->header_un = CAN_HDR(CO_NMT + self->config_st.node_id_u8, 1, 0);
+		CRF_POST(ng_pst, &node_st);
+
+		tick_ms(1);
+
+		e_pst = (const can_frame_tst *)can_drv_st.get(&can_drv_st);
+
+		TEST_ASSERT_NOT_NULL(e_pst);
+		TEST_ASSERT_EQUAL(SIG_CAN_FRAME, e_pst->super.sig);
+		
+		TEST_ASSERT_EQUAL_HEX(node_st.config_st.node_id_u8 + CO_NMT, e_pst->header_un.bit_st.id_u12);
+		TEST_ASSERT_EQUAL(1, e_pst->header_un.bit_st.dlc_u4);
+		TEST_ASSERT_EQUAL(0, e_pst->header_un.bit_st.rtr_u1);
+		TEST_ASSERT_EQUAL_HEX(0x7f | (i & 1 ? 0x80 : 0), e_pst->mdl_un.bit_st.d0_u8);
+		CRF_GC(e_pst);
+	}
+
+	e_pst = (const can_frame_tst *)q_st.get(&q_st);
+	TEST_ASSERT_NOT_NULL(e_pst);
+	TEST_ASSERT_EQUAL(SIG_CANOPEN_NG_ACTIVE, e_pst->super.sig);
+	CRF_GC(e_pst);
+
+	tick_ms(node_st.config_st.guard_time_ms_u16 * node_st.config_st.life_time_factor_u16 - 1);
+
+	e_pst = (const can_frame_tst *)q_st.get(&q_st);
+	TEST_ASSERT_NULL(e_pst);
+	
+	tick_ms(1);
+
+	e_pst = (const can_frame_tst *)q_st.get(&q_st);
+	TEST_ASSERT_NOT_NULL(e_pst);
+	TEST_ASSERT_EQUAL(SIG_CANOPEN_NG_INACTIVE, e_pst->super.sig);
+	CRF_GC(e_pst);
 }
 
 /* nmt_reset
@@ -228,7 +301,7 @@ TEST(co, nmt_reset)
 	node_init();
 
 	f_pst = CRF_NEW(SIG_CAN_FRAME);
-	TEST_ASSERT_NOT_NULL(f_pst)
+	TEST_ASSERT_NOT_NULL(f_pst);
 
 	f_pst->header_un = CAN_HDR(0, 0, 2);
 	f_pst->mdl_un.bit_st.d0_u8 = CO_NMT_CMD_RESET;
@@ -237,6 +310,10 @@ TEST(co, nmt_reset)
 
 	tick_ms(1);
 
+	e_pst = (const can_frame_tst *)q_st.get(&q_st);
+	TEST_ASSERT_NOT_NULL(e_pst);
+	TEST_ASSERT_EQUAL(SIG_SYS_RESET, e_pst->super.sig);
+	CRF_GC(e_pst);
 }
 
 
@@ -253,7 +330,7 @@ TEST(co, nmt_start)
 	node_init();
 
 	f_pst = CRF_NEW(SIG_CAN_FRAME);
-	TEST_ASSERT_NOT_NULL(f_pst)
+	TEST_ASSERT_NOT_NULL(f_pst);
 
 	f_pst->header_un = CAN_HDR(0, 0, 2);
 	f_pst->mdl_un.bit_st.d0_u8 = CO_NMT_CMD_START;
@@ -265,16 +342,16 @@ TEST(co, nmt_start)
 	for (int i=0; i<10; i++)
 	{
 		ng_pst = CRF_NEW(SIG_CAN_FRAME);
-		TEST_ASSERT_NOT_NULL(ng_pst)
+		TEST_ASSERT_NOT_NULL(ng_pst);
 
 		ng_pst->header_un = CAN_HDR(CO_NMT + self->config_st.node_id_u8, 1, 0);
 		CRF_POST(ng_pst, &node_st);
 
 		tick_ms(1);
 
-		e_pst = (const can_frame_tst *)q_st.get(&q_st);
+		e_pst = (const can_frame_tst *)can_drv_st.get(&can_drv_st);
 
-		TEST_ASSERT_NOT_NULL(e_pst)
+		TEST_ASSERT_NOT_NULL(e_pst);
 		TEST_ASSERT_EQUAL(SIG_CAN_FRAME, e_pst->super.sig);
 		
 		TEST_ASSERT_EQUAL_HEX(node_st.config_st.node_id_u8 + CO_NMT, e_pst->header_un.bit_st.id_u12);
@@ -300,7 +377,7 @@ TEST(co, nmt_preop)
 
 	/* Go to STARTED state */
 	f_pst = CRF_NEW(SIG_CAN_FRAME);
-	TEST_ASSERT_NOT_NULL(f_pst)
+	TEST_ASSERT_NOT_NULL(f_pst);
 
 	f_pst->header_un = CAN_HDR(0, 0, 2);
 	f_pst->mdl_un.bit_st.d0_u8 = CO_NMT_CMD_START;
@@ -311,7 +388,7 @@ TEST(co, nmt_preop)
 
 	/* Go to PREOP state */
 	f_pst = CRF_NEW(SIG_CAN_FRAME);
-	TEST_ASSERT_NOT_NULL(f_pst)
+	TEST_ASSERT_NOT_NULL(f_pst);
 
 	f_pst->header_un = CAN_HDR(0, 0, 2);
 	f_pst->mdl_un.bit_st.d0_u8 = CO_NMT_CMD_PREOP;
@@ -323,16 +400,16 @@ TEST(co, nmt_preop)
 	for (int i=0; i<10; i++)
 	{
 		ng_pst = CRF_NEW(SIG_CAN_FRAME);
-		TEST_ASSERT_NOT_NULL(ng_pst)
+		TEST_ASSERT_NOT_NULL(ng_pst);
 
 		ng_pst->header_un = CAN_HDR(CO_NMT + self->config_st.node_id_u8, 1, 0);
 		CRF_POST(ng_pst, &node_st);
 
 		tick_ms(1);
 
-		e_pst = (const can_frame_tst *)q_st.get(&q_st);
+		e_pst = (const can_frame_tst *)can_drv_st.get(&can_drv_st);
 
-		TEST_ASSERT_NOT_NULL(e_pst)
+		TEST_ASSERT_NOT_NULL(e_pst);
 		TEST_ASSERT_EQUAL(SIG_CAN_FRAME, e_pst->super.sig);
 		
 		TEST_ASSERT_EQUAL_HEX(node_st.config_st.node_id_u8 + CO_NMT, e_pst->header_un.bit_st.id_u12);
@@ -385,11 +462,11 @@ TEST_GROUP_RUNNER(co)
 	RUN_TEST_CASE(co, bootup);
 	RUN_TEST_CASE(co, nodeguard_req);
 	RUN_TEST_CASE(co, nodeguard_toggle);
+	RUN_TEST_CASE(co, nodeguard_timeout);
 	RUN_TEST_CASE(co, nmt_reset);
 	RUN_TEST_CASE(co, nmt_start);
 	RUN_TEST_CASE(co, nmt_preop);
-	RUN_TEST_CASE(co, sdo_dl_exp_1b);
-	//RUN_TEST_CASE(co, init);
+	//RUN_TEST_CASE(co, sdo_dl_exp_1b);
 	//RUN_TEST_CASE(co, init);
 	//RUN_TEST_CASE(co, init);
 	//RUN_TEST_CASE(co, init);

@@ -1,8 +1,13 @@
 #include "canopen.h"
 #include "crf.h"
 #include "can_if.h"
+#include "sys_if.h"
 #include "signals.h"
 #include <stdio.h>
+
+static const cevent_tst ng_active = {.sig=SIG_CANOPEN_NG_ACTIVE};
+static const cevent_tst ng_inactive = {.sig=SIG_CANOPEN_NG_INACTIVE};
+static const cevent_tst ng = {.sig=SIG_I_CANOPEN_NG};
 
 void co_send_bootup(chsm_tst *_self, const cevent_tst *e_pst)
 {
@@ -28,6 +33,8 @@ void co_node_init(chsm_tst *_self, const cevent_tst *e_pst)
     CRF_SEND_FUNC(&self->sdo_st) = CRF_SEND_FUNC(self);
 
     chsm_init(&self->sdo_st.super);
+
+    self->timer_u32 = 0;
 
     self->super.next = (chsm_tst *)&self->sdo_st;
 }
@@ -83,6 +90,7 @@ void execute_nmt_cmd(co_node_tst *self, TYPEOF(SIG_CAN_FRAME) *f_pst)
             break;
             
         case CO_NMT_CMD_RESET:
+            CRF_EMIT(&sys_event_reset_st);
             break;
             
         case CO_NMT_CMD_RESET_COMM:
@@ -101,6 +109,7 @@ void co_process_frame(chsm_tst *_self, const cevent_tst *e_pst)
     if(is_ng_rtr(self, f_pst))
     {
         send_ng_resp(self);
+        CRF_POST_TO_SELF(&ng);
     }
     else if (is_nmt_cmd(self, f_pst))
     {
@@ -110,7 +119,38 @@ void co_process_frame(chsm_tst *_self, const cevent_tst *e_pst)
     {
         forward_sdo(self, f_pst);
     }
+}
 
+void co_callback(chsm_tst *_self, const cevent_tst *e_pst)
+{
+    co_node_tst *self = (co_node_tst *)_self;
+    self->timer_u32++;
+}
 
+void co_reset_timer(chsm_tst *_self, const cevent_tst *e_pst)
+{
+    co_node_tst *self = (co_node_tst *)_self;
+    self->timer_u32 = 0;
+}
+
+void co_send_ng_active(chsm_tst *_self, const cevent_tst *e_pst)
+{
+    co_node_tst *self = (co_node_tst *)_self;
+
+    CRF_EMIT(&ng_active);
+}
+
+void co_send_ng_inactive(chsm_tst *_self, const cevent_tst *e_pst)
+{
+    co_node_tst *self = (co_node_tst *)_self;
+
+    CRF_EMIT(&ng_inactive);
+}
+
+bool co_timeout(chsm_tst *_self, const cevent_tst *e_pst, uint32_t timeout_u32)
+{
+    co_node_tst *self = (co_node_tst *)_self;
+
+    return self->timer_u32 >= timeout_u32;
 }
 

@@ -51,8 +51,9 @@ bool crf_init(crf_tst *self , chsm_tst **chsm_ap, cpool_tst *pool_ast, uint16_t 
 #define CRF_NEW_EVENT(event_type, sig)  crf.new_event(&crf, sizeof(event_type), sig)
 #define CRF_NEW(SIGNAL)					CRF_NEW_EVENT(TYPEOF(SIGNAL), SIGNAL)
 #define CRF_POST(event_ptr, queue_ptr) 	crf.post(&crf, (cevent_tst *)event_ptr, (cqueue_tst *)(queue_ptr))
+#define CRF_POST_TO_SELF(event_ptr) 	((cqueue_tst *)(self))->put_left((cqueue_tst *)(self), event_ptr)
 #define CRF_STEP()						crf.step(&crf)
-#define CRF_EMIT(event_ptr)				((chsm_tst *)self)->send((chsm_tst *)self, (cevent_tst *)event_ptr)
+#define CRF_EMIT(event_ptr)				((chsm_tst *)self)->send((chsm_tst *)self, (const cevent_tst *)event_ptr)
 #define CRF_GC(event_ptr)				crf.gc(&crf, (cevent_tst *)event_ptr)
 #define CRF_SEND_FUNC(hsm_pst)			((chsm_tst *)hsm_pst)->send
 #define CRF_SIG_VAR(SIGNAL, VAR, E_PST)	TYPEOF(SIGNAL)* VAR = (TYPEOF(SIGNAL)*)E_PST
