@@ -1,4 +1,4 @@
-/*Generated with CHSM v0.0.0 at 2021.02.09 21.32.33*/
+/*Generated with CHSM v0.0.0 at 2021.02.14 22.00.55*/
 #include "cevent.h"
 #include "chsm.h"
 #include "sdo.h"
@@ -140,7 +140,7 @@ static chsm_result_ten s_busy(chsm_tst *self, const cevent_tst  *e_pst, chsm_cal
     if(sdo_timeout(self, e_pst, SDO_TIMEOUT))
     {
         chsm_exit_children(self, e_pst, ctx_pst);
-        send_sdo_abort(self, e_pst, SDO_TIMEOUT_ABORT);
+        send_sdo_abort(self, e_pst, CO_SDO_ABORT_TIMEOUT);
         chsm_recall(self, e_pst);
         return chsm_transition(self, s_idle);
     }

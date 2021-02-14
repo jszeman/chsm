@@ -360,6 +360,11 @@ TEST(co, nmt_start)
 		TEST_ASSERT_EQUAL_HEX(0x05 | (i & 1 ? 0x80 : 0), e_pst->mdl_un.bit_st.d0_u8);
 		CRF_GC(e_pst);
 	}
+
+	e_pst = (const can_frame_tst *)q_st.get(&q_st);
+	TEST_ASSERT_NOT_NULL(e_pst);
+	TEST_ASSERT_EQUAL(SIG_CANOPEN_NG_ACTIVE, e_pst->super.sig);
+	CRF_GC(e_pst);
 }
 
 
@@ -418,6 +423,11 @@ TEST(co, nmt_preop)
 		TEST_ASSERT_EQUAL_HEX(CO_NMT_STATE_PREOP | (i & 1 ? 0x80 : 0), e_pst->mdl_un.bit_st.d0_u8);
 		CRF_GC(e_pst);
 	}
+
+	e_pst = (const can_frame_tst *)q_st.get(&q_st);
+	TEST_ASSERT_NOT_NULL(e_pst);
+	TEST_ASSERT_EQUAL(SIG_CANOPEN_NG_ACTIVE, e_pst->super.sig);
+	CRF_GC(e_pst);
 }
 
 
@@ -445,14 +455,19 @@ TEST(co, sdo_dl_exp_1b)
 
 	tick_ms(1);
 
-	e_pst = (const can_frame_tst *)q_st.get(&q_st);
+	e_pst = (const can_frame_tst *)can_drv_st.get(&can_drv_st);
 
-	TEST_ASSERT_NOT_NULL(e_pst)
+	TEST_ASSERT_NOT_NULL(e_pst);
 	TEST_ASSERT_EQUAL(SIG_CAN_FRAME, e_pst->super.sig);
 	
 	TEST_ASSERT_EQUAL_HEX(node_st.config_st.node_id_u8 + CO_SDO_TX, e_pst->header_un.bit_st.id_u12);
 	TEST_ASSERT_EQUAL(8, e_pst->header_un.bit_st.dlc_u4);
 	TEST_ASSERT_EQUAL(0, e_pst->header_un.bit_st.rtr_u1);
+	TEST_ASSERT_EQUAL(CO_SDO_DL_RESP_EXP,	e_pst->mdl_un.bit_st.d0_u8);
+	TEST_ASSERT_EQUAL(0x34, 				e_pst->mdl_un.bit_st.d1_u8);
+	TEST_ASSERT_EQUAL(0x12, 				e_pst->mdl_un.bit_st.d2_u8);
+	TEST_ASSERT_EQUAL(0x00, 				e_pst->mdl_un.bit_st.d3_u8);
+	TEST_ASSERT_EQUAL(0, 					e_pst->mdh_un.all_u32);
 	CRF_GC(e_pst);
 }
 
@@ -466,7 +481,7 @@ TEST_GROUP_RUNNER(co)
 	RUN_TEST_CASE(co, nmt_reset);
 	RUN_TEST_CASE(co, nmt_start);
 	RUN_TEST_CASE(co, nmt_preop);
-	//RUN_TEST_CASE(co, sdo_dl_exp_1b);
+	RUN_TEST_CASE(co, sdo_dl_exp_1b);
 	//RUN_TEST_CASE(co, init);
 	//RUN_TEST_CASE(co, init);
 	//RUN_TEST_CASE(co, init);

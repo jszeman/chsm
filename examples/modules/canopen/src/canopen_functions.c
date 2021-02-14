@@ -34,6 +34,9 @@ void co_node_init(chsm_tst *_self, const cevent_tst *e_pst)
 
     chsm_init(&self->sdo_st.super);
 
+    self->sdo_st.config_st.od_pst = self->config_st.od_pst;
+    self->sdo_st.config_st.node_id_u8 = self->config_st.node_id_u8;
+
     self->timer_u32 = 0;
 
     self->super.next = (chsm_tst *)&self->sdo_st;
