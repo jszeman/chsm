@@ -145,9 +145,10 @@ void node_init(void)
 
 TEST_SETUP(co)
 {
-	obj_u8 = 0x89;
-	obj_u16 = 0xbb66;
-	obj_u32 = 0xaa55aa55;
+	obj_u8 = 0;
+	obj_u16 = 0;
+	obj_u32 = 0;
+	obj_ro_u8 = 0x3c;
 	strcpy(str_ac, "String object");
 
     memset(&node_events_apst, 0, sizeof node_events_apst);
@@ -491,6 +492,8 @@ TEST(co, sdo_dl_exp_1b)
 	tick_ms(1);
 
 	test_sdo_response(CO_SDO_DL_RESP_EXP, MLX_U8_RW, 0);
+
+	TEST_ASSERT_EQUAL_HEX32(0xa5, obj_u8);
 }
 
 /* sdo_abort_missing_od
@@ -511,6 +514,8 @@ TEST(co, sdo_abort_missing_od)
 	tick_ms(1);
 
 	test_sdo_response(CO_SDO_ABORT, MLX_U8_RW, CO_SDO_ABORT_NO_OBJ_DICT);
+	
+	TEST_ASSERT_EQUAL_HEX32(0, obj_u8);
 }
 
 /* sdo_abort_obj_not_found
@@ -530,6 +535,8 @@ TEST(co, sdo_abort_obj_not_found)
 	tick_ms(1);
 
 	test_sdo_response(CO_SDO_ABORT, MLX_NOT_EXISTS, CO_SDO_ABORT_OBJECT_NOT_FOUND);
+	
+	TEST_ASSERT_EQUAL_HEX32(0, obj_u8);
 }
 
 /* sdo_abort_obj_read_only
@@ -547,9 +554,9 @@ TEST(co, sdo_abort_obj_read_only)
 	tick_ms(1);
 
 	test_sdo_response(CO_SDO_ABORT, MLX_U8_RO, CO_SDO_ABORT_READ_ONLY_OBJECT);
+	
+	TEST_ASSERT_EQUAL_HEX32(0x3c, obj_ro_u8);
 }
-
-
 
 /* sdo_abort_obj_len_mismatch
  * Initiate an expedited 1 byte download to a longer than 1 mlx and check that
@@ -565,7 +572,47 @@ TEST(co, sdo_abort_obj_len_mismatch)
 
 	tick_ms(1);
 
-	test_sdo_response(CO_SDO_ABORT, MLX_U8_RO, CO_SDO_ABORT_LENGTH_MISMATCH);
+	test_sdo_response(CO_SDO_ABORT, MLX_U16_RW, CO_SDO_ABORT_LENGTH_MISMATCH);
+	
+	TEST_ASSERT_EQUAL_HEX32(0, obj_u16);
+}
+
+/* sdo_dl_exp_2b
+ * Initiate an expedited 2 byte download and check that the value was correctly written.
+ */
+TEST(co, sdo_dl_exp_2b)
+{
+	const can_frame_tst *e_pst;
+	can_frame_tst *f_pst;
+
+	node_init();
+
+	send_sdo_request(CO_SDO_DL_REQ_EXP_2B, MLX_U16_RW, 0xa5b6);
+
+	tick_ms(1);
+
+	test_sdo_response(CO_SDO_DL_RESP_EXP, MLX_U16_RW, 0);
+	
+	TEST_ASSERT_EQUAL_HEX32(0xa5b6, obj_u16);
+}
+
+/* sdo_dl_exp_4b
+ * Initiate an expedited 4 byte download and check that the value was correctly written.
+ */
+TEST(co, sdo_dl_exp_4b)
+{
+	const can_frame_tst *e_pst;
+	can_frame_tst *f_pst;
+
+	node_init();
+
+	send_sdo_request(CO_SDO_DL_REQ_EXP_4B, MLX_U32_RW, 0xa5b6c7d8);
+
+	tick_ms(1);
+
+	test_sdo_response(CO_SDO_DL_RESP_EXP, MLX_U32_RW, 0);
+	
+	TEST_ASSERT_EQUAL_HEX32(0xa5b6c7d8, obj_u32);
 }
 
 
@@ -584,8 +631,8 @@ TEST_GROUP_RUNNER(co)
 	RUN_TEST_CASE(co, sdo_abort_obj_not_found);
 	RUN_TEST_CASE(co, sdo_abort_obj_read_only);
 	RUN_TEST_CASE(co, sdo_abort_obj_len_mismatch);
-	//RUN_TEST_CASE(co, init);
-	//RUN_TEST_CASE(co, init);
+	RUN_TEST_CASE(co, sdo_dl_exp_2b);
+	RUN_TEST_CASE(co, sdo_dl_exp_4b);
 	//RUN_TEST_CASE(co, init);
 	//RUN_TEST_CASE(co, init);
 	//RUN_TEST_CASE(co, init);

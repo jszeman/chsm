@@ -5,6 +5,7 @@
 #include "can_if.h"
 #include <stdio.h>
 #include <stddef.h>
+#include <string.h>
 
 typedef struct sdo_hdr_bits_tst
 {
@@ -43,6 +44,43 @@ static void sdo_abort(sdo_tst* self, can_frame_tst* f_pst, can_frame_tst* r_pst,
     r_pst->mdh_un.all_u32 = abort_code_u32;
 
     CRF_EMIT(r_pst);
+}
+
+static void handle_exp_dl(sdo_tst* self, can_frame_tst* f_pst, can_frame_tst *r_pst, od_entry_tst* od_entry_pst, uint16_t len_u16)
+{
+    sdo_hdr_tun     hdr_un = {.all_u32 = f_pst->mdl_un.all_u32};
+
+    if (0 == (od_entry_pst->flags_u16 & OD_ATTR_WRITE))
+    {
+        sdo_abort(self, f_pst, r_pst, CO_SDO_ABORT_READ_ONLY_OBJECT);
+    }
+    else if (len_u16 != od_entry_pst->size_u16)
+    {
+        sdo_abort(self, f_pst, r_pst, CO_SDO_ABORT_LENGTH_MISMATCH);
+    }
+    else
+    {   
+        switch (len_u16)
+        {
+            case 1:
+                *((uint8_t *)(od_entry_pst->addr_u)) = f_pst->mdh_un.all_u32 & 0xff;
+                break;
+
+            case 2:
+                *((uint16_t *)(od_entry_pst->addr_u)) = f_pst->mdh_un.all_u32 & 0xffff;
+                break;
+
+            case 4:
+                *((uint32_t *)(od_entry_pst->addr_u)) = f_pst->mdh_un.all_u32;
+                break;
+        }
+
+        hdr_un.bit_st.command_u8 = CO_SDO_DL_RESP_EXP;
+        r_pst->header_un = CAN_HDR(CO_SDO_TX + self->config_st.node_id_u8, 0, 8);
+        r_pst->mdl_un.all_u32 = hdr_un.all_u32;
+        r_pst->mdh_un.all_u32 = 0;
+        CRF_EMIT(r_pst);
+    }
 }
 
 void process_sdo_request(chsm_tst *_self, const cevent_tst *e_pst)
@@ -85,22 +123,15 @@ void process_sdo_request(chsm_tst *_self, const cevent_tst *e_pst)
     switch(hdr_un.bit_st.command_u8)
     {
         case CO_SDO_DL_REQ_EXP_1B:
-            if (0 == (od_entry_pst->flags_u16 & OD_ATTR_WRITE))
-            {
-                sdo_abort(self, f_pst, r_pst, CO_SDO_ABORT_READ_ONLY_OBJECT);
-                return;
-            }
-            else
-            {
-                *((uint8_t *)(od_entry_pst->addr_u)) = f_pst->mdh_un.bit_st.d4_u8;
-                hdr_un.bit_st.command_u8 = CO_SDO_DL_RESP_EXP;
-                r_pst->header_un = CAN_HDR(CO_SDO_TX + self->config_st.node_id_u8, 0, 8);
-                r_pst->mdl_un.all_u32 = hdr_un.all_u32;
-                r_pst->mdh_un.all_u32 = 0;
-                CRF_EMIT(r_pst);
-                return;
-            }
-            
+            handle_exp_dl(self, f_pst, r_pst, od_entry_pst, 1);
+            break;
+
+        case CO_SDO_DL_REQ_EXP_2B:
+            handle_exp_dl(self, f_pst, r_pst, od_entry_pst, 2);
+            break;
+
+        case CO_SDO_DL_REQ_EXP_4B:
+            handle_exp_dl(self, f_pst, r_pst, od_entry_pst, 4);
             break;
 
         default:
