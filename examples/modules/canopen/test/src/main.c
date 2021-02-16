@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include "unity_fixture.h"
 #include "unity.h"
+#include "crf.h"
+
+crf_tst					crf;
 
 void disableInterrupts(void)
 {

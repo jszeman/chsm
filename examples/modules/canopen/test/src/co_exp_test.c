@@ -18,32 +18,30 @@
 
 TEST_GROUP(co);
 
-const cevent_tst*		node_events_apst[12];
-co_node_tst				node_st;
+static const cevent_tst*		node_events_apst[12];
+static co_node_tst				node_st;
 
 
-co_node_tst *self = 	&node_st;
+static co_node_tst *self = 	&node_st;
 
-chsm_tst*				hsm_apst[] = {
+static chsm_tst*				hsm_apst[] = {
 	(chsm_tst*)(&node_st),
 	NULL};
 
-uint8_t 				pool_buff_au8[1024];
-cpool_tst				pool_ast[1];
+static uint8_t 				pool_buff_au8[1024];
+static cpool_tst				pool_ast[1];
 
-crf_tst					crf;
+static const cevent_tst*       events_apst[4];
+static cqueue_tst              q_st;
 
-const cevent_tst*       events_apst[4];
-cqueue_tst              q_st;
+static const cevent_tst*       can_drv_events_apst[4];
+static cqueue_tst              can_drv_st;
 
-const cevent_tst*       can_drv_events_apst[4];
-cqueue_tst              can_drv_st;
-
-uint8_t					obj_u8;
-uint8_t					obj_ro_u8;
-uint16_t				obj_u16;
-uint32_t				obj_u32;
-char					str_ac[32] = "String object";
+static uint8_t					obj_u8;
+static uint8_t					obj_ro_u8;
+static uint16_t				obj_u16;
+static uint32_t				obj_u32;
+static char					str_ac[32] = "String object";
 
 static inline void send_sdo_request(uint8_t cmd_u8, uint32_t mlx_u32, uint32_t data_u32)
 {
@@ -89,7 +87,7 @@ static inline void test_sdo_response(uint8_t cmd_u8, uint32_t mlx_u32, uint32_t 
 #define MLX_U8_RO 		0x123800
 #define MLX_NOT_EXISTS	0x183400
 
-od_entry_tst			od_entries_ast[] = {
+static od_entry_tst			od_entries_ast[] = {
 	OD_ENTRY_DEF(MLX_U8_RW, 	obj_u8, OD_ATTR_READ | OD_ATTR_WRITE),
 	OD_ENTRY_DEF(MLX_U16_RW, 	obj_u16, OD_ATTR_READ | OD_ATTR_WRITE),
 	OD_ENTRY_DEF(MLX_U32_RW, 	obj_u32, OD_ATTR_READ | OD_ATTR_WRITE),
@@ -98,13 +96,13 @@ od_entry_tst			od_entries_ast[] = {
 	OD_ENTRY_TERMINATOR,
 };
 
-object_dictionary_tst	od_st = {
+static object_dictionary_tst	od_st = {
 	.mem_drv_pst = 		NULL,
 	.mlx_mask_u32 = 	0xffffffff,
 	.objects_ast = 		od_entries_ast
 };
 
-void co_send(chsm_tst *self, const cevent_tst *e_pst)
+static void co_send(chsm_tst *self, const cevent_tst *e_pst)
 {
     //printf("\n%s\n", __FUNCTION__);
 	switch(e_pst->sig)
@@ -118,8 +116,7 @@ void co_send(chsm_tst *self, const cevent_tst *e_pst)
 	}
 }
 
-
-const cevent_tst		tick_1ms_st = {.sig = SIG_SYS_TICK_1ms};
+static const cevent_tst		tick_1ms_st = {.sig = SIG_SYS_TICK_1ms};
 
 static void tick_ms(uint32_t tick_cnt_u32)
 {
@@ -134,7 +131,7 @@ static void tick_ms(uint32_t tick_cnt_u32)
 	}
 }
 
-void node_init(void)
+static void node_init(void)
 {
 	const can_frame_tst *e_pst;
 
