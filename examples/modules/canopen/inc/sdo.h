@@ -40,6 +40,7 @@ typedef enum canopen_sdo_internal_signals_ten
 #define CO_SDO_DL_REQ_EXP_3B        ((1 << 5) | (1 << 2) | (1 << 1) | 1)
 #define CO_SDO_DL_REQ_EXP_4B        ((1 << 5) | (0 << 2) | (1 << 1) | 1)
 #define CO_SDO_DL_RESP_EXP          (3 << 5)
+#define CO_SDO_ABORT                (4 << 5)
 
 #define CO_SDO_ABORT_TOGGLE_BIT_NOT_ALTERNATED  0x05030000
 #define CO_SDO_ABORT_TIMEOUT                    0x05040000
@@ -57,7 +58,7 @@ typedef enum canopen_sdo_internal_signals_ten
 #define CO_SDO_ABORT_PARAMETER_INCOMPATIBLE     0x06040043
 #define CO_SDO_ABORT_INTERNAL_INCOMPATIBLITY    0x06040047
 #define CO_SDO_ABORT_HW_ERROR                   0x06060000
-#define CO_SDO_ABORT_LENGTH_NOT_MATCH           0x06070010
+#define CO_SDO_ABORT_LENGTH_MISMATCH            0x06070010
 #define CO_SDO_ABORT_LENGTH_TOO_HIGH            0x06070012
 #define CO_SDO_ABORT_LENGTH_TOO_LOW             0x06070013
 #define CO_SDO_ABORT_SUBINDEX_NOT_EXISTS        0x06090011

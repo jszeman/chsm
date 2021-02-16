@@ -40,15 +40,61 @@ const cevent_tst*       can_drv_events_apst[4];
 cqueue_tst              can_drv_st;
 
 uint8_t					obj_u8;
+uint8_t					obj_ro_u8;
 uint16_t				obj_u16;
 uint32_t				obj_u32;
 char					str_ac[32] = "String object";
 
+static inline void send_sdo_request(uint8_t cmd_u8, uint32_t mlx_u32, uint32_t data_u32)
+{
+	can_frame_tst* f_pst;
+
+	f_pst = CRF_NEW(SIG_CAN_FRAME);
+	TEST_ASSERT_NOT_NULL(f_pst);
+
+	f_pst->header_un = CAN_HDR(CO_SDO_RX + node_st.config_st.node_id_u8, 0, 8);
+	f_pst->mdl_un.bit_st.d0_u8 = cmd_u8;
+	f_pst->mdl_un.bit_st.d1_u8 = (mlx_u32 >> 8) & 0xff;
+	f_pst->mdl_un.bit_st.d2_u8 = (mlx_u32 >> 16) & 0xff;;
+	f_pst->mdl_un.bit_st.d3_u8 = mlx_u32 & 0xff;
+	f_pst->mdh_un.all_u32 = data_u32;
+
+	CRF_POST(f_pst, &node_st);
+}
+
+static inline void test_sdo_response(uint8_t cmd_u8, uint32_t mlx_u32, uint32_t data_u32)
+{
+	const can_frame_tst *e_pst;
+
+	e_pst = (const can_frame_tst *)can_drv_st.get(&can_drv_st);
+
+	TEST_ASSERT_NOT_NULL(e_pst);
+	TEST_ASSERT_EQUAL(SIG_CAN_FRAME, e_pst->super.sig);
+	
+	TEST_ASSERT_EQUAL_HEX(node_st.config_st.node_id_u8 + CO_SDO_TX, e_pst->header_un.bit_st.id_u12);
+	TEST_ASSERT_EQUAL(8, e_pst->header_un.bit_st.dlc_u4);
+	TEST_ASSERT_EQUAL(0, e_pst->header_un.bit_st.rtr_u1);
+	TEST_ASSERT_EQUAL(cmd_u8,	e_pst->mdl_un.bit_st.d0_u8);
+	TEST_ASSERT_EQUAL((mlx_u32 >> 8) & 0xff, 	e_pst->mdl_un.bit_st.d1_u8);
+	TEST_ASSERT_EQUAL((mlx_u32 >> 16) & 0xff, 	e_pst->mdl_un.bit_st.d2_u8);
+	TEST_ASSERT_EQUAL(mlx_u32 & 0xff, 			e_pst->mdl_un.bit_st.d3_u8);
+	TEST_ASSERT_EQUAL_HEX32(data_u32, e_pst->mdh_un.all_u32);
+	CRF_GC(e_pst);
+}
+
+#define MLX_U8_RW 		0x123400
+#define MLX_U16_RW 		0x123500
+#define MLX_U32_RW 		0x123600
+#define MLX_STR_RW 		0x123700
+#define MLX_U8_RO 		0x123800
+#define MLX_NOT_EXISTS	0x183400
+
 od_entry_tst			od_entries_ast[] = {
-	OD_ENTRY_DEF(0x123400, obj_u8, OD_ATTR_READ | OD_ATTR_WRITE),
-	OD_ENTRY_DEF(0x123500, obj_u16, OD_ATTR_READ | OD_ATTR_WRITE),
-	OD_ENTRY_DEF(0x123600, obj_u32, OD_ATTR_READ | OD_ATTR_WRITE),
-	OD_ENTRY_DEF(0x123700, str_ac, OD_ATTR_READ | OD_ATTR_WRITE),
+	OD_ENTRY_DEF(MLX_U8_RW, 	obj_u8, OD_ATTR_READ | OD_ATTR_WRITE),
+	OD_ENTRY_DEF(MLX_U16_RW, 	obj_u16, OD_ATTR_READ | OD_ATTR_WRITE),
+	OD_ENTRY_DEF(MLX_U32_RW, 	obj_u32, OD_ATTR_READ | OD_ATTR_WRITE),
+	OD_ENTRY_DEF(MLX_STR_RW, 	str_ac, OD_ATTR_READ | OD_ATTR_WRITE),
+	OD_ENTRY_DEF(MLX_U8_RO, 	obj_ro_u8, OD_ATTR_READ),
 	OD_ENTRY_TERMINATOR,
 };
 
@@ -430,8 +476,6 @@ TEST(co, nmt_preop)
 	CRF_GC(e_pst);
 }
 
-
-
 /* sdo_dl_exp_1b
  * Initiate an expedited 1 byte download and check that the value was correctly written.
  */
@@ -442,34 +486,88 @@ TEST(co, sdo_dl_exp_1b)
 
 	node_init();
 
-	f_pst = CRF_NEW(SIG_CAN_FRAME);
-	TEST_ASSERT_NOT_NULL(f_pst);
-
-	f_pst->header_un = CAN_HDR(CO_SDO_RX + node_st.config_st.node_id_u8, 0, 8);
-	f_pst->mdl_un.bit_st.d0_u8 = CO_SDO_DL_REQ_EXP_1B;
-	f_pst->mdl_un.bit_st.d1_u8 = 0x34;
-	f_pst->mdl_un.bit_st.d2_u8 = 0x12;
-	f_pst->mdl_un.bit_st.d3_u8 = 0x00;
-	f_pst->mdh_un.bit_st.d4_u8 = 0xa5;
-	CRF_POST(f_pst, &node_st);
+	send_sdo_request(CO_SDO_DL_REQ_EXP_1B, MLX_U8_RW, 0xa5);
 
 	tick_ms(1);
 
-	e_pst = (const can_frame_tst *)can_drv_st.get(&can_drv_st);
-
-	TEST_ASSERT_NOT_NULL(e_pst);
-	TEST_ASSERT_EQUAL(SIG_CAN_FRAME, e_pst->super.sig);
-	
-	TEST_ASSERT_EQUAL_HEX(node_st.config_st.node_id_u8 + CO_SDO_TX, e_pst->header_un.bit_st.id_u12);
-	TEST_ASSERT_EQUAL(8, e_pst->header_un.bit_st.dlc_u4);
-	TEST_ASSERT_EQUAL(0, e_pst->header_un.bit_st.rtr_u1);
-	TEST_ASSERT_EQUAL(CO_SDO_DL_RESP_EXP,	e_pst->mdl_un.bit_st.d0_u8);
-	TEST_ASSERT_EQUAL(0x34, 				e_pst->mdl_un.bit_st.d1_u8);
-	TEST_ASSERT_EQUAL(0x12, 				e_pst->mdl_un.bit_st.d2_u8);
-	TEST_ASSERT_EQUAL(0x00, 				e_pst->mdl_un.bit_st.d3_u8);
-	TEST_ASSERT_EQUAL(0, 					e_pst->mdh_un.all_u32);
-	CRF_GC(e_pst);
+	test_sdo_response(CO_SDO_DL_RESP_EXP, MLX_U8_RW, 0);
 }
+
+/* sdo_abort_missing_od
+ * Initiate an expedited 1 byte without a valid object dictionaty pointer and
+ * check that the correct abort code was sent.
+ */
+TEST(co, sdo_abort_missing_od)
+{
+	const can_frame_tst *e_pst;
+	can_frame_tst *f_pst;
+
+	node_st.config_st.od_pst = NULL;
+
+	node_init();
+
+	send_sdo_request(CO_SDO_DL_REQ_EXP_1B, MLX_U8_RW, 0xa5);
+
+	tick_ms(1);
+
+	test_sdo_response(CO_SDO_ABORT, MLX_U8_RW, CO_SDO_ABORT_NO_OBJ_DICT);
+}
+
+/* sdo_abort_obj_not_found
+ * Initiate an expedited 1 byte download with a nonexistent mlx and check that
+ * the correct abort code was sent.
+ */
+TEST(co, sdo_abort_obj_not_found)
+{
+	const can_frame_tst *e_pst;
+	can_frame_tst *f_pst;
+
+	node_init();
+
+	
+	send_sdo_request(CO_SDO_DL_REQ_EXP_1B, MLX_NOT_EXISTS, 0xa5);
+
+	tick_ms(1);
+
+	test_sdo_response(CO_SDO_ABORT, MLX_NOT_EXISTS, CO_SDO_ABORT_OBJECT_NOT_FOUND);
+}
+
+/* sdo_abort_obj_read_only
+ * Initiate an expedited 1 byte download with read only mlx and check that the
+ * correct abort code was sent.
+ */
+TEST(co, sdo_abort_obj_read_only)
+{
+	const can_frame_tst *e_pst;
+
+	node_init();
+
+	send_sdo_request(CO_SDO_DL_REQ_EXP_1B, MLX_U8_RO, 0xa5);
+
+	tick_ms(1);
+
+	test_sdo_response(CO_SDO_ABORT, MLX_U8_RO, CO_SDO_ABORT_READ_ONLY_OBJECT);
+}
+
+
+
+/* sdo_abort_obj_len_mismatch
+ * Initiate an expedited 1 byte download to a longer than 1 mlx and check that
+ * correct abort code was sent.
+ */
+TEST(co, sdo_abort_obj_len_mismatch)
+{
+	const can_frame_tst *e_pst;
+
+	node_init();
+
+	send_sdo_request(CO_SDO_DL_REQ_EXP_1B, MLX_U16_RW, 0xa5);
+
+	tick_ms(1);
+
+	test_sdo_response(CO_SDO_ABORT, MLX_U8_RO, CO_SDO_ABORT_LENGTH_MISMATCH);
+}
+
 
 TEST_GROUP_RUNNER(co)
 {
@@ -482,10 +580,10 @@ TEST_GROUP_RUNNER(co)
 	RUN_TEST_CASE(co, nmt_start);
 	RUN_TEST_CASE(co, nmt_preop);
 	RUN_TEST_CASE(co, sdo_dl_exp_1b);
-	//RUN_TEST_CASE(co, init);
-	//RUN_TEST_CASE(co, init);
-	//RUN_TEST_CASE(co, init);
-	//RUN_TEST_CASE(co, init);
+	RUN_TEST_CASE(co, sdo_abort_missing_od);
+	RUN_TEST_CASE(co, sdo_abort_obj_not_found);
+	RUN_TEST_CASE(co, sdo_abort_obj_read_only);
+	RUN_TEST_CASE(co, sdo_abort_obj_len_mismatch);
 	//RUN_TEST_CASE(co, init);
 	//RUN_TEST_CASE(co, init);
 	//RUN_TEST_CASE(co, init);
