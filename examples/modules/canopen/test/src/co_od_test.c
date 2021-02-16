@@ -37,11 +37,17 @@ static cqueue_tst              q_st;
 static const cevent_tst*       can_drv_events_apst[4];
 static cqueue_tst              can_drv_st;
 
-static uint8_t					obj_u8;
-static uint8_t					obj_ro_u8;
-static uint16_t				obj_u16;
-static uint32_t				obj_u32;
-static char					str_ac[32] = "String object";
+typedef struct data_tst
+{
+ 	uint8_t				obj_u8;
+ 	uint8_t				obj_ro_u8;
+ 	uint16_t			obj_u16;
+ 	uint32_t			obj_u32;
+ 	char				str_ac[32];
+} data_tst;
+
+data_tst d1;
+data_tst d2;
 
 static inline void send_sdo_request(uint8_t cmd_u8, uint32_t mlx_u32, uint32_t data_u32)
 {
@@ -87,19 +93,42 @@ static inline void test_sdo_response(uint8_t cmd_u8, uint32_t mlx_u32, uint32_t 
 #define MLX_U8_RO 		0x123800
 #define MLX_NOT_EXISTS	0x183400
 
-static od_entry_tst			od_entries_ast[] = {
-	OD_ENTRY_DEF(MLX_U8_RW, 	obj_u8, OD_ATTR_READ | OD_ATTR_WRITE),
-	OD_ENTRY_DEF(MLX_U16_RW, 	obj_u16, OD_ATTR_READ | OD_ATTR_WRITE),
-	OD_ENTRY_DEF(MLX_U32_RW, 	obj_u32, OD_ATTR_READ | OD_ATTR_WRITE),
-	OD_ENTRY_DEF(MLX_STR_RW, 	str_ac, OD_ATTR_READ | OD_ATTR_WRITE),
-	OD_ENTRY_DEF(MLX_U8_RO, 	obj_ro_u8, OD_ATTR_READ),
+
+#define MLX2_U8_RW 		0xa23400
+#define MLX2_U16_RW 	0xa23500
+#define MLX2_U32_RW 	0xa23600
+#define MLX2_STR_RW 	0xa23700
+#define MLX2_U8_RO 		0xa23800
+
+static od_entry_tst			od_entries1_ast[] = {
+	OD_ENTRY_DEF(MLX_U8_RW, 	d1.obj_u8, OD_ATTR_READ | OD_ATTR_WRITE),
+	OD_ENTRY_DEF(MLX_U16_RW, 	d1.obj_u16, OD_ATTR_READ | OD_ATTR_WRITE),
+	OD_ENTRY_DEF(MLX_U32_RW, 	d1.obj_u32, OD_ATTR_READ | OD_ATTR_WRITE),
+	OD_ENTRY_DEF(MLX_STR_RW, 	d1.str_ac, OD_ATTR_READ | OD_ATTR_WRITE),
+	OD_ENTRY_DEF(MLX_U8_RO, 	d1.obj_ro_u8, OD_ATTR_READ),
 	OD_ENTRY_TERMINATOR,
 };
 
-static object_dictionary_tst	od_st = {
+static object_dictionary_tst	od1_st = {
 	.mem_drv_pst = 		NULL,
 	.mlx_mask_u32 = 	0xffffffff,
-	.objects_ast = 		od_entries_ast
+	.objects_ast = 		od_entries1_ast
+};
+
+static od_entry_tst			od_entries2_ast[] = {
+	OD_ENTRY_DEF(MLX2_U8_RW, 	d2.obj_u8, OD_ATTR_READ | OD_ATTR_WRITE),
+	OD_ENTRY_DEF(MLX2_U16_RW, 	d2.obj_u16, OD_ATTR_READ | OD_ATTR_WRITE),
+	OD_ENTRY_DEF(MLX2_U32_RW, 	d2.obj_u32, OD_ATTR_READ | OD_ATTR_WRITE),
+	OD_EXTENSION(od1_st),
+	OD_ENTRY_DEF(MLX2_STR_RW, 	d2.str_ac, OD_ATTR_READ | OD_ATTR_WRITE),
+	OD_ENTRY_DEF(MLX2_U8_RO, 	d2.obj_ro_u8, OD_ATTR_READ),
+	OD_ENTRY_TERMINATOR,
+};
+
+static object_dictionary_tst	od2_st = {
+	.mem_drv_pst = 		NULL,
+	.mlx_mask_u32 = 	0xffffffff,
+	.objects_ast = 		od_entries2_ast
 };
 
 static void co_send(chsm_tst *self, const cevent_tst *e_pst)
@@ -142,11 +171,17 @@ static void node_init(void)
 
 TEST_SETUP(od)
 {
-	obj_u8 = 0;
-	obj_u16 = 0;
-	obj_u32 = 0;
-	obj_ro_u8 = 0x3c;
-	strcpy(str_ac, "String object");
+	d1.obj_u8 = 0;
+	d1.obj_u16 = 0;
+	d1.obj_u32 = 0;
+	d1.obj_ro_u8 = 0x3c;
+	strcpy(d1.str_ac, "D1 String object");
+
+	d2.obj_u8 = 0;
+	d2.obj_u16 = 0;
+	d2.obj_u32 = 0;
+	d2.obj_ro_u8 = 0x4d;
+	strcpy(d2.str_ac, "D2 String object");
 
     memset(&node_events_apst, 0, sizeof node_events_apst);
     memset(&node_st, 0, sizeof node_st);
@@ -155,7 +190,7 @@ TEST_SETUP(od)
 	
 	node_st.config_st = (co_node_cfg_tst){
 		.node_id_u8 = 0x11,
-		.od_pst = &od_st,
+		.od_pst = &od2_st,
 		.guard_time_ms_u16 = 10,
 		.life_time_factor_u16 = 2,
 		};
@@ -208,7 +243,7 @@ TEST(od, sdo_dl_exp_1b)
 
 	test_sdo_response(CO_SDO_DL_RESP_EXP, MLX_U8_RW, 0);
 
-	TEST_ASSERT_EQUAL_HEX32(0xa5, obj_u8);
+	TEST_ASSERT_EQUAL_HEX32(0xa5, d1.obj_u8);
 }
 
 

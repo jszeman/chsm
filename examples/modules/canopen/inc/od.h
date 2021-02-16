@@ -38,4 +38,11 @@ typedef struct object_dictionary_tst
     .flags_u16  = FLAGS                         \
     }
 
+#define OD_EXTENSION(OD) {                      \
+    .mlx_u32    = 0,                            \
+    .addr_u     = (uintptr_t)(&OD),             \
+    .size_u16   = 0,                            \
+    .flags_u16  = OD_ATTR_OBJECT_DICT           \
+    }
+
 #endif
