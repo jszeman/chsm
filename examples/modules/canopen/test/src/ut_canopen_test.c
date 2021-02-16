@@ -615,6 +615,63 @@ TEST(co, sdo_dl_exp_4b)
 	TEST_ASSERT_EQUAL_HEX32(0xa5b6c7d8, obj_u32);
 }
 
+/* sdo_ul_exp_1b
+ * Initiate an expedited 1 byte upload and check that the value was correctly read.
+ */
+TEST(co, sdo_ul_exp_1b)
+{
+	const can_frame_tst *e_pst;
+	can_frame_tst *f_pst;
+
+	node_init();
+
+	obj_u8 = 0xa5;
+
+	send_sdo_request(CO_SDO_UL_REQ, MLX_U8_RW, 0);
+
+	tick_ms(1);
+
+	test_sdo_response(CO_SDO_UL_RESP_EXP_1B, MLX_U8_RW, 0xa5);
+}
+
+/* sdo_ul_exp_2b
+ * Initiate an expedited 2 byte upload and check that the value was correctly read.
+ */
+TEST(co, sdo_ul_exp_2b)
+{
+	const can_frame_tst *e_pst;
+	can_frame_tst *f_pst;
+
+	node_init();
+
+	obj_u16 = 0xa5b6;
+
+	send_sdo_request(CO_SDO_UL_REQ, MLX_U16_RW, 0);
+
+	tick_ms(1);
+
+	test_sdo_response(CO_SDO_UL_RESP_EXP_2B, MLX_U16_RW, 0xa5b6);
+}
+
+/* sdo_ul_exp_4b
+ * Initiate an expedited 4 byte upload and check that the value was correctly read.
+ */
+TEST(co, sdo_ul_exp_4b)
+{
+	const can_frame_tst *e_pst;
+	can_frame_tst *f_pst;
+
+	node_init();
+
+	obj_u32 = 0xa5b6c7d8;
+
+	send_sdo_request(CO_SDO_UL_REQ, MLX_U32_RW, 0);
+
+	tick_ms(1);
+
+	test_sdo_response(CO_SDO_UL_RESP_EXP_4B, MLX_U32_RW, 0xa5b6c7d8);
+}
+
 
 TEST_GROUP_RUNNER(co)
 {
@@ -633,9 +690,9 @@ TEST_GROUP_RUNNER(co)
 	RUN_TEST_CASE(co, sdo_abort_obj_len_mismatch);
 	RUN_TEST_CASE(co, sdo_dl_exp_2b);
 	RUN_TEST_CASE(co, sdo_dl_exp_4b);
-	//RUN_TEST_CASE(co, init);
-	//RUN_TEST_CASE(co, init);
-	//RUN_TEST_CASE(co, init);
+	RUN_TEST_CASE(co, sdo_ul_exp_1b);
+	RUN_TEST_CASE(co, sdo_ul_exp_2b);
+	RUN_TEST_CASE(co, sdo_ul_exp_4b);
 	//RUN_TEST_CASE(co, init);
 	//RUN_TEST_CASE(co, init);
 	//RUN_TEST_CASE(co, init);

@@ -40,6 +40,13 @@ typedef enum canopen_sdo_internal_signals_ten
 #define CO_SDO_DL_REQ_EXP_3B        ((1 << 5) | (1 << 2) | (1 << 1) | 1)
 #define CO_SDO_DL_REQ_EXP_4B        ((1 << 5) | (0 << 2) | (1 << 1) | 1)
 #define CO_SDO_DL_RESP_EXP          (3 << 5)
+
+#define CO_SDO_UL_REQ               (2 << 5)
+#define CO_SDO_UL_RESP_EXP_1B       ((2 << 5) | (3 << 2) | (1 << 1) | 1)
+#define CO_SDO_UL_RESP_EXP_2B       ((2 << 5) | (2 << 2) | (1 << 1) | 1)
+#define CO_SDO_UL_RESP_EXP_3B       ((2 << 5) | (1 << 2) | (1 << 1) | 1)
+#define CO_SDO_UL_RESP_EXP_4B       ((2 << 5) | (0 << 2) | (1 << 1) | 1)
+
 #define CO_SDO_ABORT                (4 << 5)
 
 #define CO_SDO_ABORT_TOGGLE_BIT_NOT_ALTERNATED  0x05030000
