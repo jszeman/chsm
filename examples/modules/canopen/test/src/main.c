@@ -18,6 +18,7 @@ void enableInterrupts(void)
 void run_co_tests(void)
 {
 	RUN_TEST_GROUP(co);
+	RUN_TEST_GROUP(od);
 }
 
 int main(int argc, const char * argv[])

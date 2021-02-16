@@ -4,6 +4,7 @@ project(example_canopen_test)
 
 set(test_files  src/main.c
                 src/co_exp_test.c
+                src/co_od_test.c
                 ../src/canopen.c
                 ../src/canopen_functions.c
                 ../src/sdo.c
