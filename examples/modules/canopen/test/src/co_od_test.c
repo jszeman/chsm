@@ -86,6 +86,45 @@ static inline void test_sdo_response(uint8_t cmd_u8, uint32_t mlx_u32, uint32_t 
 	CRF_GC(e_pst);
 }
 
+static inline void send_sdo_segment(uint8_t t_bit_u8, uint8_t size_u8, uint8_t last_u8, uint8_t *data_pu8)
+{
+	can_frame_tst* f_pst;
+	uint8_t *dst_pu8;
+
+	f_pst = CRF_NEW(SIG_CAN_FRAME);
+	TEST_ASSERT_NOT_NULL(f_pst);
+
+	f_pst->header_un = CAN_HDR(CO_SDO_RX + node_st.config_st.node_id_u8, 0, 8);
+	f_pst->mdl_un.bit_st.d0_u8 = CO_SDO_DL_SEG_REQ(t_bit_u8, size_u8, last_u8);
+
+	dst_pu8 = (uint8_t *)(&f_pst->mdl_un.all_u32);
+	dst_pu8++;
+
+	while (size_u8--)
+	{
+		*dst_pu8++ = *data_pu8++;
+	}
+
+	CRF_POST(f_pst, &node_st);
+}
+
+static inline void test_sdo_seg_response(uint8_t t_bit_u8)
+{
+	const can_frame_tst *e_pst;
+
+	e_pst = (const can_frame_tst *)can_drv_st.get(&can_drv_st);
+
+	TEST_ASSERT_NOT_NULL(e_pst);
+	TEST_ASSERT_EQUAL(SIG_CAN_FRAME, e_pst->super.sig);
+	
+	TEST_ASSERT_EQUAL_HEX(node_st.config_st.node_id_u8 + CO_SDO_TX, e_pst->header_un.bit_st.id_u12);
+	TEST_ASSERT_EQUAL(8, e_pst->header_un.bit_st.dlc_u4);
+	TEST_ASSERT_EQUAL(0, e_pst->header_un.bit_st.rtr_u1);
+	TEST_ASSERT_EQUAL_HEX32(CO_SDO_DL_SEG_RESP(t_bit_u8), e_pst->mdl_un.all_u32);
+	TEST_ASSERT_EQUAL_HEX32(0, e_pst->mdh_un.all_u32);
+	CRF_GC(e_pst);
+}
+
 #define MLX_U8_RW 		0x123400
 #define MLX_U16_RW 		0x123500
 #define MLX_U32_RW 		0x123600
@@ -228,7 +267,8 @@ TEST(od, init)
 
 
 /* sdo_dl_exp_1b
- * Initiate an expedited 1 byte download and check that the value was correctly written.
+ * Initiate an expedited 1 byte download with an mlx that is in an extension
+ * object dictionaryand check that the value was correctly written.
  */
 TEST(od, sdo_dl_exp_1b)
 {
@@ -248,12 +288,64 @@ TEST(od, sdo_dl_exp_1b)
 
 
 
+/* sdo_dl_seg_str
+ * Perform a segmented download and check the responses from the slave.
+ */
+TEST(od, sdo_dl_seg_str)
+{
+	const can_frame_tst *e_pst;
+	can_frame_tst *f_pst;
+	uint8_t seg1_au8[8] = "SDO seg";
+	uint8_t seg2_au8[8] = "mented ";
+	uint8_t seg3_au8[8] = "downloa";
+	uint8_t seg4_au8[8] = "d\n    ";
+
+	node_init();
+
+	send_sdo_request(CO_SDO_DL_REQ_SEG_INIT_SI, MLX_STR_RW, 29);
+	tick_ms(1);
+	test_sdo_response(CO_SDO_DL_RESP_EXP, MLX_STR_RW, 0);
+
+	send_sdo_segment(0, 7, 0, seg1_au8);
+	tick_ms(1);
+	test_sdo_seg_response(0);
+	TEST_ASSERT_EQUAL_STRING_LEN(seg1_au8, d1.str_ac, 7);
+
+	send_sdo_segment(1, 7, 0, seg2_au8);
+	tick_ms(1);
+	test_sdo_seg_response(1);
+	TEST_ASSERT_EQUAL_STRING_LEN(seg2_au8, d1.str_ac+7, 7);
+
+	send_sdo_segment(0, 7, 0, seg3_au8);
+	tick_ms(1);
+	test_sdo_seg_response(0);
+	TEST_ASSERT_EQUAL_STRING_LEN(seg3_au8, d1.str_ac+14, 7);
+
+	send_sdo_segment(1, 3, 1, seg4_au8);
+	tick_ms(1);
+	test_sdo_seg_response(1);
+	TEST_ASSERT_EQUAL_STRING_LEN(seg4_au8, d1.str_ac+21, 3);
+
+	/*
+	* Initiate an expedited 1 byte download with an mlx that is in an extension
+	* object dictionaryand check that the value was correctly written.
+	* This test is repeated after a segmented download to make sure, that
+	* the state machine returned to a state, where expedited transfers are
+	* possible
+	*/
+	send_sdo_request(CO_SDO_DL_REQ_EXP_1B, MLX_U8_RW, 0xa5);
+	tick_ms(1);
+	test_sdo_response(CO_SDO_DL_RESP_EXP, MLX_U8_RW, 0);
+	TEST_ASSERT_EQUAL_HEX32(0xa5, d1.obj_u8);
+}
+
+
+
 TEST_GROUP_RUNNER(od)
 {
 	RUN_TEST_CASE(od, init);
 	RUN_TEST_CASE(od, sdo_dl_exp_1b);
-	//RUN_TEST_CASE(od, init);
-	//RUN_TEST_CASE(od, init);
+	RUN_TEST_CASE(od, sdo_dl_seg_str);
 	//RUN_TEST_CASE(od, init);
 	//RUN_TEST_CASE(od, init);
 	//RUN_TEST_CASE(od, init);

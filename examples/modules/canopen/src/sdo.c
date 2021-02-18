@@ -1,4 +1,4 @@
-/*Generated with CHSM v0.0.0 at 2021.02.14 22.00.55*/
+/*Generated with CHSM v0.0.0 at 2021.02.18 05.49.24*/
 #include "cevent.h"
 #include "chsm.h"
 #include "sdo.h"
@@ -7,7 +7,7 @@
 
 static chsm_result_ten s_busy(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
 static chsm_result_ten s_sdo(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
-static chsm_result_ten s_sdo_wait_seg_dl(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
+static chsm_result_ten s_sdo_segmented_dl(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
 static chsm_result_ten s_sdo_wait_exp_dl(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
 static chsm_result_ten s_sdo_wait_exp_ul(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
 static chsm_result_ten s_idle(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
@@ -27,7 +27,7 @@ static chsm_result_ten s_idle(chsm_tst *self, const cevent_tst  *e_pst, chsm_cal
 
         case SIG_CANOPEN_SEG_DL_START:
             chsm_exit_children(self, e_pst, ctx_pst);
-            return chsm_transition(self, s_sdo_wait_seg_dl);
+            return chsm_transition(self, s_sdo_segmented_dl);
 
         default:
             guards_only_b = false;
@@ -86,17 +86,25 @@ static chsm_result_ten s_sdo_wait_exp_dl(chsm_tst *self, const cevent_tst  *e_ps
     return chsm_handle_in_parent(self, ctx_pst, s_busy, NULL, guards_only_b);
 }
 
-static chsm_result_ten s_sdo_wait_seg_dl(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst)
+static chsm_result_ten s_sdo_segmented_dl(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst)
 {
     bool guards_only_b=true;
     switch(e_pst->sig)
     {
+        case SIG_CAN_FRAME:
+            process_dl_segment(self, e_pst);
+            break;
+
+        case SIG_CANOPEN_SEG_DL_END:
+            chsm_exit_children(self, e_pst, ctx_pst);
+            chsm_recall(self, e_pst);
+            return chsm_transition(self, s_idle);
 
         default:
             guards_only_b = false;
     }
 
-    return chsm_handle_in_parent(self, ctx_pst, s_busy, NULL, guards_only_b);
+    return chsm_handle_in_parent(self, ctx_pst, s_sdo, NULL, guards_only_b);
 }
 
 static chsm_result_ten s_sdo(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst)

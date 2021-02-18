@@ -18,6 +18,9 @@ typedef struct sdo_tst
     sdo_cfg_tst         config_st;
 
     /* PRIVATE */
+    uint8_t             toggle_bit_u8;
+    od_entry_tst*       active_obj_pst;
+    uint16_t            segment_offset_u16;
 } sdo_tst;
 
 chsm_result_ten sdo_top(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
@@ -27,10 +30,10 @@ void send_sdo_abort(chsm_tst *self, const cevent_tst *e_pst, uint32_t abort_code
 
 typedef enum canopen_sdo_internal_signals_ten
 {
-    /* External signals */
     SIG_CANOPEN_WAIT_EXP_SDO_UL = SIGNAL_CLASS(CRF_SIGNAL_CLASS_MOD_INTERNAL),
     SIG_CANOPEN_WAIT_EXP_SDO_DL,
     SIG_CANOPEN_SEG_DL_START,
+    SIG_CANOPEN_SEG_DL_END,
 } canopen_sdo_internal_signals_ten;
 
 #define SDO_TIMEOUT 3000
@@ -46,6 +49,13 @@ typedef enum canopen_sdo_internal_signals_ten
 #define CO_SDO_UL_RESP_EXP_2B       ((2 << 5) | (2 << 2) | (1 << 1) | 1)
 #define CO_SDO_UL_RESP_EXP_3B       ((2 << 5) | (1 << 2) | (1 << 1) | 1)
 #define CO_SDO_UL_RESP_EXP_4B       ((2 << 5) | (0 << 2) | (1 << 1) | 1)
+
+
+#define CO_SDO_DL_REQ_SEG_INIT_SI   ((1 << 5) | 1)
+#define CO_SDO_DL_REQ_SEG_INIT      (1 << 5)
+
+#define CO_SDO_DL_SEG_REQ(T_BIT, SIZE, LAST)    ((T_BIT << 4) | ((7 - SIZE) << 1) | LAST)
+#define CO_SDO_DL_SEG_RESP(T_BIT)               ((1 << 5) | (T_BIT << 4))
 
 #define CO_SDO_ABORT                (4 << 5)
 

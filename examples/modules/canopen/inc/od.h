@@ -41,7 +41,7 @@ typedef struct object_dictionary_tst
 #define OD_EXTENSION(OD) {                      \
     .mlx_u32    = 0,                            \
     .addr_u     = (uintptr_t)(&OD),             \
-    .size_u16   = 0,                            \
+    .size_u16   = 1,                            \
     .flags_u16  = OD_ATTR_OBJECT_DICT           \
     }
 
