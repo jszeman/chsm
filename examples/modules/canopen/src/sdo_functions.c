@@ -10,8 +10,10 @@
 
 #define CO_OD_MAX_RECURSION_LEVEL 4
 
-static const cevent_tst sdo_seg_dl_start_event = {.sig = SIG_CANOPEN_SEG_DL_START};
-static const cevent_tst sdo_seg_dl_end_event = {.sig = SIG_CANOPEN_SEG_DL_END};
+static const cevent_tst sdo_seg_dl_start_event =    {.sig = SIG_CANOPEN_SEG_DL_START};
+static const cevent_tst sdo_seg_dl_end_event =      {.sig = SIG_CANOPEN_SEG_DL_END};
+static const cevent_tst sdo_seg_ul_start_event =    {.sig = SIG_CANOPEN_SEG_UL_START};
+static const cevent_tst sdo_seg_ul_end_event =      {.sig = SIG_CANOPEN_SEG_UL_END};
 
 typedef struct sdo_hdr_bits_tst
 {
@@ -110,7 +112,7 @@ static void handle_exp_dl(sdo_tst* self, can_frame_tst* f_pst, can_frame_tst *r_
     }
 }
 
-static void handle_exp_ul(sdo_tst* self, can_frame_tst* f_pst, can_frame_tst *r_pst, od_entry_tst* od_entry_pst)
+static void handle_ul(sdo_tst* self, can_frame_tst* f_pst, can_frame_tst *r_pst, od_entry_tst* od_entry_pst)
 {
     sdo_hdr_tun     hdr_un = {.all_u32 = f_pst->mdl_un.all_u32};
 
@@ -136,6 +138,16 @@ static void handle_exp_ul(sdo_tst* self, can_frame_tst* f_pst, can_frame_tst *r_
                 r_pst->mdh_un.all_u32 = *((uint32_t *)(od_entry_pst->addr_u));
                 hdr_un.bit_st.command_u8 = CO_SDO_UL_RESP_EXP_4B;
                 break;
+
+            /* Have to use segmented upload if size is grater than 4. */
+            default:
+                hdr_un.bit_st.command_u8 = CO_SDO_UL_RESP_SEG_INIT_SI;
+                r_pst->mdh_un.all_u32 = od_entry_pst->size_u16;
+
+                self->active_obj_pst = od_entry_pst;
+                self->segment_offset_u16 = 0;
+                self->toggle_bit_u8 = 1;
+                CRF_POST_TO_SELF(&sdo_seg_ul_start_event);
         }
 
         r_pst->header_un = CAN_HDR(CO_SDO_TX + self->config_st.node_id_u8, 0, 8);
@@ -162,7 +174,7 @@ static void handle_seg_dl(sdo_tst* self, can_frame_tst* f_pst, can_frame_tst *r_
 
         self->active_obj_pst = od_entry_pst;
         self->segment_offset_u16 = 0;
-        self->toggle_bit_u8 = 0;
+        self->toggle_bit_u8 = 1;
         CRF_POST_TO_SELF(&sdo_seg_dl_start_event);
     }
 }
@@ -198,8 +210,20 @@ void process_dl_segment(chsm_tst *_self, const cevent_tst *e_pst)
     uint8_t*        src_pu8;
     uint8_t*        dst_pu8;
     
-    /* TODO: abort if toggle bit error */
-    /* TODO: abort if not a segment */
+    /* Ignore frames with the same consecutive toggle bits */
+    if (t_bit_u8 == self->toggle_bit_u8)
+    {
+        return;
+    }
+
+    self->toggle_bit_u8 = t_bit_u8;
+
+    if (!IS_CO_SDO_DL_SEG_REQ(f_pst->mdl_un.bit_st.d0_u8))
+    {
+        send_sdo_abort(_self, e_pst, CO_SDO_ABORT_INVALID_COMMAND);
+        CRF_POST_TO_SELF(&sdo_seg_dl_end_event);
+        return;
+    }
 
 	src_pu8 = (uint8_t *)(&f_pst->mdl_un.all_u32);
 	src_pu8++;
@@ -229,6 +253,71 @@ void process_dl_segment(chsm_tst *_self, const cevent_tst *e_pst)
     if (last_u8)
     {
         CRF_POST_TO_SELF(&sdo_seg_dl_end_event);
+    }
+}
+
+static inline uint8_t min(uint8_t a, uint16_t b)
+{
+    return (a < b) ? a : b; 
+}
+
+void process_ul_segment(chsm_tst *_self, const cevent_tst *e_pst)
+{
+    sdo_tst*        self = (sdo_tst*)_self;
+    CRF_SIG_VAR(SIG_CAN_FRAME, f_pst, e_pst);
+    uint8_t         size_u8;
+    uint8_t         t_bit_u8 = (f_pst->mdl_un.bit_st.d0_u8 >> 4) & 1;
+    uint8_t         last_u8;
+    uint8_t*        src_pu8;
+    uint8_t*        dst_pu8;
+    
+    /* Ignore frames with the same consecutive toggle bits */
+    if (t_bit_u8 == self->toggle_bit_u8)
+    {
+        return;
+    }
+
+    self->toggle_bit_u8 = t_bit_u8;
+
+    if (!IS_CO_SDO_UL_SEG_REQ(f_pst->mdl_un.bit_st.d0_u8))
+    {
+        send_sdo_abort(_self, e_pst, CO_SDO_ABORT_INVALID_COMMAND);
+        CRF_POST_TO_SELF(&sdo_seg_ul_end_event);
+        return;
+    }
+
+    can_frame_tst *r_pst = CRF_NEW(SIG_CAN_FRAME);
+
+    /* Event allocation failed */
+    if (NULL == r_pst) 
+    {
+        /* TODO: send statically allocated error frame */
+        return;
+    }
+
+    size_u8 = min(7, self->active_obj_pst->size_u16 - self->segment_offset_u16);
+    last_u8 = ((self->segment_offset_u16 + size_u8) >= self->active_obj_pst->size_u16) ? 1 : 0;
+
+    r_pst->header_un = CAN_HDR(CO_SDO_TX + self->config_st.node_id_u8, 0, 8);
+    r_pst->mdl_un.all_u32 = CO_SDO_UL_RESP_SEG(t_bit_u8, size_u8, last_u8);
+    r_pst->mdh_un.all_u32 = 0;
+
+	dst_pu8 = (uint8_t *)(&r_pst->mdl_un.all_u32);
+	dst_pu8++;
+
+    src_pu8 = (uint8_t *)(self->active_obj_pst->addr_u + self->segment_offset_u16);
+    self->segment_offset_u16 += size_u8;
+
+	while (size_u8--)
+	{
+		*dst_pu8++ = *src_pu8++;
+	}
+
+    CRF_EMIT(r_pst);
+
+    if (last_u8)
+    {
+        CRF_POST_TO_SELF(&sdo_seg_ul_end_event);
     }
 
 }
@@ -285,7 +374,7 @@ void process_sdo_request(chsm_tst *_self, const cevent_tst *e_pst)
             break;
 
         case CO_SDO_UL_REQ:
-            handle_exp_ul(self, f_pst, r_pst, od_entry_pst);
+            handle_ul(self, f_pst, r_pst, od_entry_pst);
             break;
 
         case CO_SDO_DL_REQ_SEG_INIT:

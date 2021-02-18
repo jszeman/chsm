@@ -37,28 +37,41 @@ typedef enum canopen_sdo_internal_signals_ten
     SIG_CANOPEN_WAIT_EXP_SDO_DL,
     SIG_CANOPEN_SEG_DL_START,
     SIG_CANOPEN_SEG_DL_END,
+    SIG_CANOPEN_SEG_UL_START,
+    SIG_CANOPEN_SEG_UL_END,
 } canopen_sdo_internal_signals_ten;
 
 #define SDO_TIMEOUT (((sdo_tst *)self)->config_st.timeout_ms_u32)
 
+/* Expedited download */
 #define CO_SDO_DL_REQ_EXP_1B        ((1 << 5) | (3 << 2) | (1 << 1) | 1)
 #define CO_SDO_DL_REQ_EXP_2B        ((1 << 5) | (2 << 2) | (1 << 1) | 1)
 #define CO_SDO_DL_REQ_EXP_3B        ((1 << 5) | (1 << 2) | (1 << 1) | 1)
 #define CO_SDO_DL_REQ_EXP_4B        ((1 << 5) | (0 << 2) | (1 << 1) | 1)
 #define CO_SDO_DL_RESP_EXP          (3 << 5)
 
+/* Expedited upload */
 #define CO_SDO_UL_REQ               (2 << 5)
 #define CO_SDO_UL_RESP_EXP_1B       ((2 << 5) | (3 << 2) | (1 << 1) | 1)
 #define CO_SDO_UL_RESP_EXP_2B       ((2 << 5) | (2 << 2) | (1 << 1) | 1)
 #define CO_SDO_UL_RESP_EXP_3B       ((2 << 5) | (1 << 2) | (1 << 1) | 1)
 #define CO_SDO_UL_RESP_EXP_4B       ((2 << 5) | (0 << 2) | (1 << 1) | 1)
 
+/* Segmented download */
+#define CO_SDO_DL_REQ_SEG_INIT_SI               ((1 << 5) | 1)
+#define CO_SDO_DL_REQ_SEG_INIT                  (1 << 5)
 
-#define CO_SDO_DL_REQ_SEG_INIT_SI   ((1 << 5) | 1)
-#define CO_SDO_DL_REQ_SEG_INIT      (1 << 5)
-
+#define IS_CO_SDO_DL_SEG_REQ(CMD)               (0 == (CMD & 0xE0))
 #define CO_SDO_DL_SEG_REQ(T_BIT, SIZE, LAST)    ((T_BIT << 4) | ((7 - SIZE) << 1) | LAST)
 #define CO_SDO_DL_SEG_RESP(T_BIT)               ((1 << 5) | (T_BIT << 4))
+
+/* Segmented upload */
+#define CO_SDO_UL_REQ_SEG_INIT                  CO_SDO_UL_REQ
+#define CO_SDO_UL_RESP_SEG_INIT_SI              ((2 << 5) | 1)
+
+#define IS_CO_SDO_UL_SEG_REQ(CMD)               (0x60 == (CMD & 0xE0))
+#define CO_SDO_UL_REQ_SEG(T_BIT)                ((3 << 5) | (T_BIT << 4))
+#define CO_SDO_UL_RESP_SEG(T_BIT, SIZE, LAST )  CO_SDO_DL_SEG_REQ(T_BIT, SIZE, LAST)
 
 #define CO_SDO_ABORT                (4 << 5)
 
