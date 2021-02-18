@@ -14,6 +14,7 @@ typedef struct co_node_cfg_tst
     uint8_t                 node_id_u8;
     uint16_t                guard_time_ms_u16;
     uint16_t                life_time_factor_u16;
+    uint32_t                sdo_timeout_ms_u32;
     object_dictionary_tst*  od_pst;
 } co_node_cfg_tst;
 

@@ -1,4 +1,4 @@
-/*Generated with CHSM v0.0.0 at 2021.02.18 05.49.24*/
+/*Generated with CHSM v0.0.0 at 2021.02.18 06.30.45*/
 #include "cevent.h"
 #include "chsm.h"
 #include "sdo.h"
@@ -27,6 +27,7 @@ static chsm_result_ten s_idle(chsm_tst *self, const cevent_tst  *e_pst, chsm_cal
 
         case SIG_CANOPEN_SEG_DL_START:
             chsm_exit_children(self, e_pst, ctx_pst);
+            sdo_reset_timer(self, e_pst);
             return chsm_transition(self, s_sdo_segmented_dl);
 
         default:
@@ -91,17 +92,27 @@ static chsm_result_ten s_sdo_segmented_dl(chsm_tst *self, const cevent_tst  *e_p
     bool guards_only_b=true;
     switch(e_pst->sig)
     {
-        case SIG_CAN_FRAME:
-            process_dl_segment(self, e_pst);
-            break;
-
         case SIG_CANOPEN_SEG_DL_END:
             chsm_exit_children(self, e_pst, ctx_pst);
             chsm_recall(self, e_pst);
             return chsm_transition(self, s_idle);
 
+        case SIG_CAN_FRAME:
+            chsm_exit_children(self, e_pst, ctx_pst);
+            process_dl_segment(self, e_pst);
+            sdo_reset_timer(self, e_pst);
+            return chsm_transition(self, s_sdo_segmented_dl);
+
         default:
             guards_only_b = false;
+    }
+
+    if(sdo_timeout(self, e_pst, SDO_TIMEOUT))
+    {
+        chsm_exit_children(self, e_pst, ctx_pst);
+        send_sdo_abort(self, e_pst, CO_SDO_ABORT_TIMEOUT);
+        chsm_recall(self, e_pst);
+        return chsm_transition(self, s_idle);
     }
 
     return chsm_handle_in_parent(self, ctx_pst, s_sdo, NULL, guards_only_b);
@@ -114,6 +125,10 @@ static chsm_result_ten s_sdo(chsm_tst *self, const cevent_tst  *e_pst, chsm_call
     {
         case SIG_CAN_FRAME:
             process_sdo_request(self, e_pst);
+            break;
+
+        case SIG_SYS_TICK_1ms:
+            sdo_callback(self, e_pst);
             break;
 
         default:
@@ -163,6 +178,7 @@ chsm_result_ten sdo_top(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_
     {
         case C_SIG_INIT:
             chsm_exit_children(self, e_pst, ctx_pst);
+            sdo_init(self, e_pst);
             chsm_recall(self, e_pst);
             return chsm_transition(self, s_idle);
 

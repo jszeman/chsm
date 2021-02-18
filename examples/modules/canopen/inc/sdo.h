@@ -8,6 +8,7 @@
 typedef struct sdo_cfg_tst
 {
     uint8_t                 node_id_u8;
+    uint32_t                timeout_ms_u32;
     object_dictionary_tst*  od_pst;
 } sdo_cfg_tst;
 
@@ -21,6 +22,8 @@ typedef struct sdo_tst
     uint8_t             toggle_bit_u8;
     od_entry_tst*       active_obj_pst;
     uint16_t            segment_offset_u16;
+
+    uint32_t            counter_ms_u32;
 } sdo_tst;
 
 chsm_result_ten sdo_top(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
@@ -36,7 +39,7 @@ typedef enum canopen_sdo_internal_signals_ten
     SIG_CANOPEN_SEG_DL_END,
 } canopen_sdo_internal_signals_ten;
 
-#define SDO_TIMEOUT 3000
+#define SDO_TIMEOUT (((sdo_tst *)self)->config_st.timeout_ms_u32)
 
 #define CO_SDO_DL_REQ_EXP_1B        ((1 << 5) | (3 << 2) | (1 << 1) | 1)
 #define CO_SDO_DL_REQ_EXP_2B        ((1 << 5) | (2 << 2) | (1 << 1) | 1)

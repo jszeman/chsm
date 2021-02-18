@@ -3,6 +3,7 @@
 #include "od.h"
 #include "canopen.h"
 #include "can_if.h"
+#include "signals.h"
 #include <stdio.h>
 #include <stddef.h>
 #include <string.h>
@@ -166,6 +167,27 @@ static void handle_seg_dl(sdo_tst* self, can_frame_tst* f_pst, can_frame_tst *r_
     }
 }
 
+void sdo_callback(chsm_tst *_self, const cevent_tst *e_pst)
+{
+    sdo_tst*        self = (sdo_tst*)_self;
+
+    self->counter_ms_u32++;
+}
+
+void sdo_reset_timer(chsm_tst *_self, const cevent_tst *e_pst)
+{
+    sdo_tst*        self = (sdo_tst*)_self;
+
+    self->counter_ms_u32 = 0;
+}
+
+void sdo_init(chsm_tst *_self, const cevent_tst *e_pst)
+{
+    sdo_tst*        self = (sdo_tst*)_self;
+
+    self->counter_ms_u32 = 0;
+}
+
 void process_dl_segment(chsm_tst *_self, const cevent_tst *e_pst)
 {
     sdo_tst*        self = (sdo_tst*)_self;
@@ -299,6 +321,25 @@ void send_sdo_exp_ul_response(chsm_tst *_self, const cevent_tst *e_pst)
 void send_sdo_abort(chsm_tst *_self, const cevent_tst *e_pst, uint32_t abort_code_u32)
 {
     sdo_tst* self = (sdo_tst*)_self;
+    sdo_hdr_tun hdr_un;
+
+    can_frame_tst *r_pst = CRF_NEW(SIG_CAN_FRAME);
+
+    /* Event allocation failed */
+    if (NULL == r_pst) 
+    {
+        /* TODO: send statically allocated error frame */
+        return;
+    }
+
+    r_pst->header_un = CAN_HDR(CO_SDO_TX + self->config_st.node_id_u8, 0, 8);
+    hdr_un.bit_st.command_u8 = CO_SDO_ABORT;
+    hdr_un.bit_st.index_u16 = (self->active_obj_pst->mlx_u32 >> 8) & 0xffff;
+    hdr_un.bit_st.subindex_u8 = self->active_obj_pst->mlx_u32 & 0xff;
+    r_pst->mdl_un.all_u32 = hdr_un.all_u32;
+    r_pst->mdh_un.all_u32 = abort_code_u32;
+
+    CRF_EMIT(r_pst);
 }
 
 bool is_abort_request(chsm_tst *_self, const cevent_tst *e_pst)
@@ -319,5 +360,5 @@ bool sdo_timeout(chsm_tst *_self, const cevent_tst *e_pst, uint32_t timeout_u32)
 {
     sdo_tst* self = (sdo_tst*)_self;
     
-    return false;
+    return self->counter_ms_u32 >= timeout_u32;
 }

@@ -1,7 +1,7 @@
 #ifndef SDO_FUNCTIONS_H
 #define SDO_FUNCTIONS_H
 
-/*Generated with CHSM v0.0.0 at 2021.02.18 05.49.24*/
+/*Generated with CHSM v0.0.0 at 2021.02.18 06.30.45*/
 
 #include "sdo.h"
 #include "chsm.h"
@@ -12,6 +12,12 @@
 void process_dl_segment(chsm_tst *self, const cevent_tst *e_pst);
 
 void process_sdo_request(chsm_tst *self, const cevent_tst *e_pst);
+
+void sdo_callback(chsm_tst *self, const cevent_tst *e_pst);
+
+void sdo_init(chsm_tst *self, const cevent_tst *e_pst);
+
+void sdo_reset_timer(chsm_tst *self, const cevent_tst *e_pst);
 
 void send_sdo_exp_dl_abort(chsm_tst *self, const cevent_tst *e_pst);
 
@@ -46,6 +52,7 @@ Signals:
     SIG_CAN_FRAME               
     SIG_MEM_READ_FAIL           
     SIG_MEM_READ_SUCCESS        
+    SIG_SYS_TICK_1ms            
 */
 
 /*

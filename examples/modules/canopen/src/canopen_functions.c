@@ -36,6 +36,7 @@ void co_node_init(chsm_tst *_self, const cevent_tst *e_pst)
 
     self->sdo_st.config_st.od_pst = self->config_st.od_pst;
     self->sdo_st.config_st.node_id_u8 = self->config_st.node_id_u8;
+    self->sdo_st.config_st.timeout_ms_u32 = self->config_st.sdo_timeout_ms_u32;
 
     self->timer_u32 = 0;
 
@@ -128,6 +129,8 @@ void co_callback(chsm_tst *_self, const cevent_tst *e_pst)
 {
     co_node_tst *self = (co_node_tst *)_self;
     self->timer_u32++;
+
+    CRF_POST(e_pst, &self->sdo_st);
 }
 
 void co_reset_timer(chsm_tst *_self, const cevent_tst *e_pst)

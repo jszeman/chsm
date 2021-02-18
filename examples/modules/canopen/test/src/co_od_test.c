@@ -76,13 +76,13 @@ static inline void test_sdo_response(uint8_t cmd_u8, uint32_t mlx_u32, uint32_t 
 	TEST_ASSERT_EQUAL(SIG_CAN_FRAME, e_pst->super.sig);
 	
 	TEST_ASSERT_EQUAL_HEX(node_st.config_st.node_id_u8 + CO_SDO_TX, e_pst->header_un.bit_st.id_u12);
-	TEST_ASSERT_EQUAL(8, e_pst->header_un.bit_st.dlc_u4);
-	TEST_ASSERT_EQUAL(0, e_pst->header_un.bit_st.rtr_u1);
-	TEST_ASSERT_EQUAL(cmd_u8,	e_pst->mdl_un.bit_st.d0_u8);
-	TEST_ASSERT_EQUAL((mlx_u32 >> 8) & 0xff, 	e_pst->mdl_un.bit_st.d1_u8);
-	TEST_ASSERT_EQUAL((mlx_u32 >> 16) & 0xff, 	e_pst->mdl_un.bit_st.d2_u8);
-	TEST_ASSERT_EQUAL(mlx_u32 & 0xff, 			e_pst->mdl_un.bit_st.d3_u8);
-	TEST_ASSERT_EQUAL_HEX32(data_u32, e_pst->mdh_un.all_u32);
+	TEST_ASSERT_EQUAL_MESSAGE(8, e_pst->header_un.bit_st.dlc_u4, "DLC");
+	TEST_ASSERT_EQUAL_MESSAGE(0, e_pst->header_un.bit_st.rtr_u1, "RTR");
+	TEST_ASSERT_EQUAL_HEX_MESSAGE(cmd_u8,	e_pst->mdl_un.bit_st.d0_u8, "CMD");
+	TEST_ASSERT_EQUAL_HEX_MESSAGE((mlx_u32 >> 8) & 0xff, 	e_pst->mdl_un.bit_st.d1_u8, "INDEX_LSB");
+	TEST_ASSERT_EQUAL_HEX_MESSAGE((mlx_u32 >> 16) & 0xff, 	e_pst->mdl_un.bit_st.d2_u8, "INDEX_MSB");
+	TEST_ASSERT_EQUAL_HEX_MESSAGE(mlx_u32 & 0xff, 			e_pst->mdl_un.bit_st.d3_u8, "SUBINDEX");
+	TEST_ASSERT_EQUAL_HEX32_MESSAGE(data_u32, e_pst->mdh_un.all_u32, "DATA");
 	CRF_GC(e_pst);
 }
 
@@ -232,6 +232,7 @@ TEST_SETUP(od)
 		.od_pst = &od2_st,
 		.guard_time_ms_u16 = 10,
 		.life_time_factor_u16 = 2,
+		.sdo_timeout_ms_u32 = 10,
 		};
 
 	node_st.super.send = co_send;
@@ -327,9 +328,8 @@ TEST(od, sdo_dl_seg_str)
 	TEST_ASSERT_EQUAL_STRING_LEN(seg4_au8, d1.str_ac+21, 3);
 
 	/*
-	* Initiate an expedited 1 byte download with an mlx that is in an extension
-	* object dictionaryand check that the value was correctly written.
-	* This test is repeated after a segmented download to make sure, that
+	* Initiate an expedited 1 byte download.
+	* This test is inserted after a segmented download to make sure, that
 	* the state machine returned to a state, where expedited transfers are
 	* possible
 	*/
@@ -340,13 +340,57 @@ TEST(od, sdo_dl_seg_str)
 }
 
 
+/* sdo_dl_seg_timeout
+ * Start a segmented download and check that the node sends an abort if the
+ * master waits too long between segments.
+ */
+TEST(od, sdo_dl_seg_timeout)
+{
+	const can_frame_tst *e_pst;
+	can_frame_tst *f_pst;
+	uint8_t seg1_au8[8] = "SDO seg";
+	uint8_t seg2_au8[8] = "mented ";
+	uint8_t seg3_au8[8] = "downloa";
+	uint8_t seg4_au8[8] = "d\n    ";
+
+	node_init();
+
+	send_sdo_request(CO_SDO_DL_REQ_SEG_INIT_SI, MLX_STR_RW, 29);
+	tick_ms(1);
+	test_sdo_response(CO_SDO_DL_RESP_EXP, MLX_STR_RW, 0);
+
+	send_sdo_segment(0, 7, 0, seg1_au8);
+	tick_ms(1);
+	test_sdo_seg_response(0);
+	TEST_ASSERT_EQUAL_STRING_LEN(seg1_au8, d1.str_ac, 7);
+
+	send_sdo_segment(1, 7, 0, seg2_au8);
+	tick_ms(1);
+	test_sdo_seg_response(1);
+	TEST_ASSERT_EQUAL_STRING_LEN(seg2_au8, d1.str_ac+7, 7);
+
+	tick_ms(node_st.config_st.sdo_timeout_ms_u32);
+	test_sdo_response(CO_SDO_ABORT, MLX_STR_RW, CO_SDO_ABORT_TIMEOUT);
+
+	/*
+	* Initiate an expedited 1 byte download.
+	* This test is inserted after a segmented download to make sure, that
+	* the state machine returned to a state, where expedited transfers are
+	* possible
+	*/
+	send_sdo_request(CO_SDO_DL_REQ_EXP_1B, MLX_U8_RW, 0xa5);
+	tick_ms(1);
+	test_sdo_response(CO_SDO_DL_RESP_EXP, MLX_U8_RW, 0);
+	TEST_ASSERT_EQUAL_HEX32(0xa5, d1.obj_u8);
+}
+
 
 TEST_GROUP_RUNNER(od)
 {
 	RUN_TEST_CASE(od, init);
 	RUN_TEST_CASE(od, sdo_dl_exp_1b);
 	RUN_TEST_CASE(od, sdo_dl_seg_str);
-	//RUN_TEST_CASE(od, init);
+	RUN_TEST_CASE(od, sdo_dl_seg_timeout);
 	//RUN_TEST_CASE(od, init);
 	//RUN_TEST_CASE(od, init);
 	//RUN_TEST_CASE(od, init);
