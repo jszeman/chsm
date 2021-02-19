@@ -18,7 +18,7 @@ typedef struct od_entry_tst
 {
     uintptr_t       addr_u;         // Object address
     uint32_t        mlx_u32;        // Index + subindex
-    uint16_t        size_u16;       // Object size in bytes
+    uint32_t        size_u32;       // Object size in bytes
     uint16_t        flags_u16;      // Object attributes
 } od_entry_tst;
 
@@ -29,19 +29,19 @@ typedef struct object_dictionary_tst
     od_entry_tst*       objects_ast;    // Pointer to the object list
 } object_dictionary_tst;
 
-#define OD_ENTRY_TERMINATOR {.mlx_u32 = 0, .addr_u = 0, .size_u16 = 0, .flags_u16 = 0}
+#define OD_ENTRY_TERMINATOR {.mlx_u32 = 0, .addr_u = 0, .size_u32 = 0, .flags_u16 = 0}
 
 #define OD_ENTRY_DEF(MLX, OBJ, FLAGS) {         \
     .mlx_u32    = MLX,                          \
     .addr_u     = (uintptr_t)(&OBJ),            \
-    .size_u16   = sizeof(OBJ)*(CHAR_BIT/8),     \
+    .size_u32   = sizeof(OBJ)*(CHAR_BIT/8),     \
     .flags_u16  = FLAGS                         \
     }
 
 #define OD_EXTENSION(OD) {                      \
     .mlx_u32    = 0,                            \
     .addr_u     = (uintptr_t)(&OD),             \
-    .size_u16   = 1,                            \
+    .size_u32   = 1,                            \
     .flags_u16  = OD_ATTR_OBJECT_DICT           \
     }
 

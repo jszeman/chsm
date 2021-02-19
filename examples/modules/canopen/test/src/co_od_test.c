@@ -413,55 +413,6 @@ TEST(od, sdo_dl_seg_timeout)
 	TEST_ASSERT_EQUAL_HEX32(0xa5, d1.obj_u8);
 }
 
-
-
-/* sdo_dl_seg_invalid_cmd
- * Start a segmented download and check that the node sends an abort if the
- * master sends an unexpected SDO request instead of a segment download
- * request.
- */
-TEST(od, sdo_dl_seg_invalid_cmd)
-{
-	const can_frame_tst *e_pst;
-	can_frame_tst *f_pst;
-	uint8_t seg1_au8[8] = "SDO seg";
-	uint8_t seg2_au8[8] = "mented ";
-	uint8_t seg3_au8[8] = "downloa";
-	uint8_t seg4_au8[8] = "d\n    ";
-
-	node_init();
-
-	send_sdo_request(CO_SDO_DL_REQ_SEG_INIT_SI, MLX_STR_RW, 29);
-	tick_ms(1);
-	test_sdo_response(CO_SDO_DL_RESP_EXP, MLX_STR_RW, 0);
-
-	send_sdo_segment(0, 7, 0, seg1_au8);
-	tick_ms(1);
-	test_sdo_seg_response(0);
-	TEST_ASSERT_EQUAL_STRING_LEN(seg1_au8, d1.str_ac, 7);
-
-	send_sdo_segment(1, 7, 0, seg2_au8);
-	tick_ms(1);
-	test_sdo_seg_response(1);
-	TEST_ASSERT_EQUAL_STRING_LEN(seg2_au8, d1.str_ac+7, 7);
-
-
-	send_sdo_request(CO_SDO_DL_REQ_EXP_1B, MLX_U8_RW, 0xa5);
-	tick_ms(1);
-	test_sdo_response(CO_SDO_ABORT, MLX_STR_RW, CO_SDO_ABORT_INVALID_COMMAND);
-
-	/*
-	* Initiate an expedited 1 byte download.
-	* This test is inserted after a segmented download to make sure, that
-	* the state machine returned to a state, where expedited transfers are
-	* possible
-	*/
-	send_sdo_request(CO_SDO_DL_REQ_EXP_1B, MLX_U8_RW, 0xa5);
-	tick_ms(1);
-	test_sdo_response(CO_SDO_DL_RESP_EXP, MLX_U8_RW, 0);
-	TEST_ASSERT_EQUAL_HEX32(0xa5, d1.obj_u8);
-}
-
 /* sdo_dl_seg_toggle_bit_error
  * Start a segmented download and check that the node ignores any segments
  * with the same toggle bit as the previous
@@ -519,6 +470,144 @@ TEST(od, sdo_dl_seg_toggle_bit_error)
 	TEST_ASSERT_EQUAL_HEX32(0xa5, d1.obj_u8);
 }
 
+/* sdo_dl_seg_str_too_many_frames
+ * Perform a segmented download with more data that fits into the selected object
+ * and check that the slave abort the transfer.
+ */
+TEST(od, sdo_dl_seg_str_too_many_frames)
+{
+	const can_frame_tst *e_pst;
+	can_frame_tst *f_pst;
+	uint8_t seg1_au8[8] = "SDO seg";
+	uint8_t seg2_au8[8] = "mented ";
+	uint8_t seg3_au8[8] = "downloa";
+	uint8_t seg4_au8[8] = "d\n    ";
+
+	node_init();
+
+	send_sdo_request(CO_SDO_DL_REQ_SEG_INIT_SI, MLX_STR_RW, 29);
+	tick_ms(1);
+	test_sdo_response(CO_SDO_DL_RESP_EXP, MLX_STR_RW, 0);
+
+	send_sdo_segment(0, 7, 0, seg1_au8);
+	tick_ms(1);
+	test_sdo_seg_response(0);
+	TEST_ASSERT_EQUAL_STRING_LEN(seg1_au8, d1.str_ac, 7);
+
+	send_sdo_segment(1, 7, 0, seg2_au8);
+	tick_ms(1);
+	test_sdo_seg_response(1);
+	TEST_ASSERT_EQUAL_STRING_LEN(seg2_au8, d1.str_ac+7, 7);
+
+	send_sdo_segment(0, 7, 0, seg3_au8);
+	tick_ms(1);
+	test_sdo_seg_response(0);
+	TEST_ASSERT_EQUAL_STRING_LEN(seg3_au8, d1.str_ac+14, 7);
+
+	send_sdo_segment(1, 7, 0, seg4_au8);
+	tick_ms(1);
+	test_sdo_seg_response(1);
+	TEST_ASSERT_EQUAL_STRING_LEN(seg4_au8, d1.str_ac+21, 7);
+
+	send_sdo_segment(0, 7, 0, seg1_au8);
+	tick_ms(1);
+	test_sdo_response(CO_SDO_ABORT, MLX_STR_RW, CO_SDO_ABORT_LENGTH_TOO_HIGH);
+
+	/*
+	* Initiate an expedited 1 byte download.
+	* This test is inserted after a segmented download to make sure, that
+	* the state machine returned to a state, where expedited transfers are
+	* possible
+	*/
+	send_sdo_request(CO_SDO_DL_REQ_EXP_1B, MLX_U8_RW, 0xa5);
+	tick_ms(1);
+	test_sdo_response(CO_SDO_DL_RESP_EXP, MLX_U8_RW, 0);
+	TEST_ASSERT_EQUAL_HEX32(0xa5, d1.obj_u8);
+}
+
+/* sdo_dl_seg_str_new_transfer
+ * Start a segmented download and in the middle of the transfer start an
+ * expedited upload that aborts the segmented transfer.
+ */
+TEST(od, sdo_dl_seg_str_new_transfer)
+{
+	const can_frame_tst *e_pst;
+	can_frame_tst *f_pst;
+	uint8_t seg1_au8[8] = "SDO seg";
+	uint8_t seg2_au8[8] = "mented ";
+	uint8_t seg3_au8[8] = "downloa";
+	uint8_t seg4_au8[8] = "d\n    ";
+
+	node_init();
+
+	send_sdo_request(CO_SDO_DL_REQ_SEG_INIT_SI, MLX_STR_RW, 29);
+	tick_ms(1);
+	test_sdo_response(CO_SDO_DL_RESP_EXP, MLX_STR_RW, 0);
+
+	send_sdo_segment(0, 7, 0, seg1_au8);
+	tick_ms(1);
+	test_sdo_seg_response(0);
+	TEST_ASSERT_EQUAL_STRING_LEN(seg1_au8, d1.str_ac, 7);
+
+	send_sdo_segment(1, 7, 0, seg2_au8);
+	tick_ms(1);
+	test_sdo_seg_response(1);
+	TEST_ASSERT_EQUAL_STRING_LEN(seg2_au8, d1.str_ac+7, 7);
+
+	send_sdo_segment(0, 7, 0, seg3_au8);
+	tick_ms(1);
+	test_sdo_seg_response(0);
+	TEST_ASSERT_EQUAL_STRING_LEN(seg3_au8, d1.str_ac+14, 7);
+
+	d1.obj_u8 = 0xa5;
+	send_sdo_request(CO_SDO_UL_REQ, MLX_U8_RW, 0);
+	tick_ms(1);
+	test_sdo_response(CO_SDO_UL_RESP_EXP_1B, MLX_U8_RW, 0xa5);
+}
+
+/* sdo_dl_seg_str_abort
+ * Start a segmented download and in the middle of the transfer send an abort.
+ * Check that the slave is responding properly for expedited requests.
+ */
+TEST(od, sdo_dl_seg_str_abort)
+{
+	const can_frame_tst *e_pst;
+	can_frame_tst *f_pst;
+	uint8_t seg1_au8[8] = "SDO seg";
+	uint8_t seg2_au8[8] = "mented ";
+	uint8_t seg3_au8[8] = "downloa";
+	uint8_t seg4_au8[8] = "d\n    ";
+
+	node_init();
+
+	send_sdo_request(CO_SDO_DL_REQ_SEG_INIT_SI, MLX_STR_RW, 29);
+	tick_ms(1);
+	test_sdo_response(CO_SDO_DL_RESP_EXP, MLX_STR_RW, 0);
+
+	send_sdo_segment(0, 7, 0, seg1_au8);
+	tick_ms(1);
+	test_sdo_seg_response(0);
+	TEST_ASSERT_EQUAL_STRING_LEN(seg1_au8, d1.str_ac, 7);
+
+	send_sdo_segment(1, 7, 0, seg2_au8);
+	tick_ms(1);
+	test_sdo_seg_response(1);
+	TEST_ASSERT_EQUAL_STRING_LEN(seg2_au8, d1.str_ac+7, 7);
+
+	send_sdo_segment(0, 7, 0, seg3_au8);
+	tick_ms(1);
+	test_sdo_seg_response(0);
+	TEST_ASSERT_EQUAL_STRING_LEN(seg3_au8, d1.str_ac+14, 7);
+
+	send_sdo_request(CO_SDO_ABORT, MLX_STR_RW, CO_SDO_ABORT_GENERAL_ERROR);
+	tick_ms(1);
+
+	d1.obj_u8 = 0xa5;
+	send_sdo_request(CO_SDO_UL_REQ, MLX_U8_RW, 0);
+	tick_ms(1);
+	test_sdo_response(CO_SDO_UL_RESP_EXP_1B, MLX_U8_RW, 0xa5);
+}
+
 /* sdo_ul_seg_str
  * Perform a segmented upload and check the responses from the slave.
  */
@@ -570,6 +659,43 @@ TEST(od, sdo_ul_seg_str)
 	TEST_ASSERT_EQUAL_HEX32(0xa5, d1.obj_u8);
 }
 
+/* sdo_ul_seg_str_new_transfer
+ * Perform a segmented upload and check that the master can abort the transfer
+ * by starting a new one.
+ */
+TEST(od, sdo_ul_seg_str_new_transfer)
+{
+	const can_frame_tst *e_pst;
+	can_frame_tst *f_pst;
+	uint8_t seg1_au8[8] = "";
+	uint8_t seg2_au8[8] = "";
+	uint8_t seg3_au8[8] = "";
+	uint8_t seg4_au8[8] = "";
+
+	node_init();
+
+	send_sdo_request(CO_SDO_UL_REQ_SEG_INIT, MLX_STR_RW, 0);
+	tick_ms(1);
+	test_sdo_response(CO_SDO_UL_RESP_SEG_INIT_SI, MLX_STR_RW, 32);
+
+	send_sdo_request(CO_SDO_UL_REQ_SEG(0), 0, 0);
+	tick_ms(1);
+	assert_sdo_ul_seg_response(0, 7, 0, d1.str_ac);
+
+	send_sdo_request(CO_SDO_UL_REQ_SEG(1), 0, 0);
+	tick_ms(1);
+	assert_sdo_ul_seg_response(1, 7, 0, d1.str_ac+7);
+
+	send_sdo_request(CO_SDO_UL_REQ_SEG(0), 0, 0);
+	tick_ms(1);
+	assert_sdo_ul_seg_response(0, 7, 0, d1.str_ac+14);
+
+	d1.obj_u8 = 0xa5;
+	send_sdo_request(CO_SDO_UL_REQ, MLX_U8_RW, 0);
+	tick_ms(1);
+	test_sdo_response(CO_SDO_UL_RESP_EXP_1B, MLX_U8_RW, 0xa5);
+}
+
 /* sdo_ul_seg_timeout
  * Start a segmented upload and check the slave will abort it if not all
  * segments are requested.
@@ -617,21 +743,130 @@ TEST(od, sdo_ul_seg_timeout)
 	TEST_ASSERT_EQUAL_HEX32(0xa5, d1.obj_u8);
 }
 
+/* sdo_ul_seg_toggle_bit_error
+ * Perform a segmented upload and check that the slave repeats previously
+ * sent data for frames with repeated toggle bit.
+ */
+TEST(od, sdo_ul_seg_toggle_bit_error)
+{
+	const can_frame_tst *e_pst;
+	can_frame_tst *f_pst;
+	uint8_t seg1_au8[8] = "";
+	uint8_t seg2_au8[8] = "";
+	uint8_t seg3_au8[8] = "";
+	uint8_t seg4_au8[8] = "";
+
+	node_init();
+
+	send_sdo_request(CO_SDO_UL_REQ_SEG_INIT, MLX_STR_RW, 0);
+	tick_ms(1);
+	test_sdo_response(CO_SDO_UL_RESP_SEG_INIT_SI, MLX_STR_RW, 32);
+
+	send_sdo_request(CO_SDO_UL_REQ_SEG(0), 0, 0);
+	tick_ms(1);
+	assert_sdo_ul_seg_response(0, 7, 0, d1.str_ac);
+
+	send_sdo_request(CO_SDO_UL_REQ_SEG(1), 0, 0);
+	tick_ms(1);
+	assert_sdo_ul_seg_response(1, 7, 0, d1.str_ac+7);
+
+	send_sdo_request(CO_SDO_UL_REQ_SEG(0), 0, 0);
+	tick_ms(1);
+	assert_sdo_ul_seg_response(0, 7, 0, d1.str_ac+14);
+
+	/* Repeat the last, simulating an event, where the
+	 * previous frame was not received by the master
+	 */
+	send_sdo_request(CO_SDO_UL_REQ_SEG(0), 0, 0);
+	tick_ms(1);
+	assert_sdo_ul_seg_response(0, 7, 0, d1.str_ac+14);
+
+	send_sdo_request(CO_SDO_UL_REQ_SEG(1), 0, 0);
+	tick_ms(1);
+	assert_sdo_ul_seg_response(1, 7, 0, d1.str_ac+21);
+
+	send_sdo_request(CO_SDO_UL_REQ_SEG(0), 0, 0);
+	tick_ms(1);
+	assert_sdo_ul_seg_response(0, 4, 1, d1.str_ac+28);
+
+	/*
+	* Initiate an expedited 1 byte download.
+	* This test is inserted after a segmented download to make sure, that
+	* the state machine returned to a state, where expedited transfers are
+	* possible
+	*/
+
+	send_sdo_request(CO_SDO_DL_REQ_EXP_1B, MLX_U8_RW, 0xa5);
+	tick_ms(1);
+	test_sdo_response(CO_SDO_DL_RESP_EXP, MLX_U8_RW, 0);
+	TEST_ASSERT_EQUAL_HEX32(0xa5, d1.obj_u8);
+}
+
+/* sdo_ul_seg_str_abort
+ * Perform a segmented upload and abort it in the middle. Check that the
+ * slave responds to expedited requests.
+ */
+TEST(od, sdo_ul_seg_str_abort)
+{
+	const can_frame_tst *e_pst;
+	can_frame_tst *f_pst;
+	uint8_t seg1_au8[8] = "";
+	uint8_t seg2_au8[8] = "";
+	uint8_t seg3_au8[8] = "";
+	uint8_t seg4_au8[8] = "";
+
+	node_init();
+
+	send_sdo_request(CO_SDO_UL_REQ_SEG_INIT, MLX_STR_RW, 0);
+	tick_ms(1);
+	test_sdo_response(CO_SDO_UL_RESP_SEG_INIT_SI, MLX_STR_RW, 32);
+
+	send_sdo_request(CO_SDO_UL_REQ_SEG(0), 0, 0);
+	tick_ms(1);
+	assert_sdo_ul_seg_response(0, 7, 0, d1.str_ac);
+
+	send_sdo_request(CO_SDO_UL_REQ_SEG(1), 0, 0);
+	tick_ms(1);
+	assert_sdo_ul_seg_response(1, 7, 0, d1.str_ac+7);
+
+	send_sdo_request(CO_SDO_UL_REQ_SEG(0), 0, 0);
+	tick_ms(1);
+	assert_sdo_ul_seg_response(0, 7, 0, d1.str_ac+14);
+
+	send_sdo_request(CO_SDO_ABORT, MLX_STR_RW, CO_SDO_ABORT_GENERAL_ERROR);
+	tick_ms(1);
+
+	/*
+	* Initiate an expedited 1 byte download.
+	* This test is inserted after a segmented download to make sure, that
+	* the state machine returned to a state, where expedited transfers are
+	* possible
+	*/
+
+	send_sdo_request(CO_SDO_DL_REQ_EXP_1B, MLX_U8_RW, 0xa5);
+	tick_ms(1);
+	test_sdo_response(CO_SDO_DL_RESP_EXP, MLX_U8_RW, 0);
+	TEST_ASSERT_EQUAL_HEX32(0xa5, d1.obj_u8);
+}
+
 TEST_GROUP_RUNNER(od)
 {
 	RUN_TEST_CASE(od, init);
 	RUN_TEST_CASE(od, sdo_dl_exp_1b);
 	RUN_TEST_CASE(od, sdo_dl_seg_str);
 	RUN_TEST_CASE(od, sdo_dl_seg_timeout);
-	RUN_TEST_CASE(od, sdo_dl_seg_invalid_cmd);
 	RUN_TEST_CASE(od, sdo_dl_seg_toggle_bit_error);
+	RUN_TEST_CASE(od, sdo_dl_seg_str_too_many_frames);
+	RUN_TEST_CASE(od, sdo_dl_seg_str_new_transfer);
+	RUN_TEST_CASE(od, sdo_dl_seg_str_abort);
+	//RUN_TEST_CASE(od, init);
+	//RUN_TEST_CASE(od, init);
+	//RUN_TEST_CASE(od, init);
 	RUN_TEST_CASE(od, sdo_ul_seg_str);
 	RUN_TEST_CASE(od, sdo_ul_seg_timeout);
-	//RUN_TEST_CASE(od, init);
-	//RUN_TEST_CASE(od, init);
-	//RUN_TEST_CASE(od, init);
-	//RUN_TEST_CASE(od, init);
-	//RUN_TEST_CASE(od, init);
+	RUN_TEST_CASE(od, sdo_ul_seg_toggle_bit_error);
+	RUN_TEST_CASE(od, sdo_ul_seg_str_new_transfer);
+	RUN_TEST_CASE(od, sdo_ul_seg_str_abort);
 	//RUN_TEST_CASE(od, init);
 	//RUN_TEST_CASE(od, init);
 	//RUN_TEST_CASE(od, init);

@@ -21,7 +21,7 @@ typedef struct sdo_tst
     /* PRIVATE */
     uint8_t             toggle_bit_u8;
     od_entry_tst*       active_obj_pst;
-    uint16_t            segment_offset_u16;
+    uint32_t            segment_offset_u32;
 
     uint32_t            counter_ms_u32;
 } sdo_tst;
