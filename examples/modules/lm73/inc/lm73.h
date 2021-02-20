@@ -5,6 +5,7 @@
 #include "i2c_driver_if.h"
 #include "crf.h"
 #include "signals.h"
+#include "sys_if.h"
 
 /*
 LM73 driver
@@ -24,6 +25,24 @@ Requirements for the LM73 module:
 */
 
 /*
+ * LM73 SIGNALS
+ */
+
+typedef enum lm73_signals_ten
+{
+    SIG_LM73_TEMP = SIGNAL_FROM_CLASS(SIG_CLASS_LM73),
+    SIG_LM73_ONLINE,
+    SIG_LM73_OFFLINE,
+    SIG_LM73_READ
+} lm73_signals_ten;
+
+#define SIG_LM73_TEMP_TYPE      lm73_temp_tst
+#define SIG_LM73_ONLINE_TYPE    lm73_status_tst
+#define SIG_LM73_OFFLINE_TYPE   lm73_status_tst
+#define SIG_LM73_READ_TYPE      cevent_tst
+
+
+/*
  * EVENT DEFINITIONS
  */
 
@@ -39,11 +58,6 @@ typedef struct lm73_status_tst
     cevent_tst          super;              // Signal and GC stuff
     uint16_t            id_u16;             // Sensor ID
 } lm73_status_tst;
-
-#define SIG_LM73_TEMP_TYPE      lm73_temp_tst
-#define SIG_LM73_ONLINE_TYPE    lm73_status_tst
-#define SIG_LM73_OFFLINE_TYPE   lm73_status_tst
-#define SIG_LM73_READ_TYPE      cevent_tst
 
 /*
  * ACTIVE OBJECT

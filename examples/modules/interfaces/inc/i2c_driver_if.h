@@ -4,7 +4,20 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "crf.h"
-#include "signals.h"
+#include SIGNAL_CLASSES_H
+
+typedef enum i2c_driver_signals_ten
+{
+    SIG_I2C_WRITE_SUCCESS  = SIGNAL_FROM_CLASS(SIG_CLASS_I2C_DRIVER),
+    SIG_I2C_WRITE_FAIL,
+    SIG_I2C_READ_SUCCESS,
+    SIG_I2C_READ_FAIL
+} i2c_driver_signals_ten;
+
+#define SIG_I2C_WRITE_SUCCESS_TYPE  cevent_tst
+#define SIG_I2C_READ_SUCCESS_TYPE   cevent_tst
+#define SIG_I2C_WRITE_FAIL_TYPE     cevent_tst
+#define SIG_I2C_READ_FAIL_TYPE      cevent_tst
 
 typedef struct i2c_driver_status_bits_tst
 {
@@ -32,11 +45,6 @@ struct i2c_driver_if_tst
     i2c_driver_status_tun   status_un;
 };
 
-#define SIG_I2C_WRITE_SUCCESS_TYPE  cevent_tst
-#define SIG_I2C_READ_SUCCESS_TYPE   cevent_tst
-#define SIG_I2C_WRITE_FAIL_TYPE     cevent_tst
-#define SIG_I2C_READ_FAIL_TYPE      cevent_tst
-
 /*
 Motivation
 ==========
@@ -61,7 +69,7 @@ Interface description
 The driver implementation shall assume the following:
     * The upper layer will not call a function from the interface until
       the driver signals the end of the previous operation.
-    * q_pst will be set propery before calling any function from the interface.
+    * q_pst will be set properly before calling any function from the interface.
 
 start_tx
 --------

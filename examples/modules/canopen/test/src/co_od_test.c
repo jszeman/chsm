@@ -15,6 +15,7 @@
 #include "cevent.h"
 #include "canopen.h"
 #include "can_if.h"
+#include "sys_if.h"
 
 TEST_GROUP(od);
 

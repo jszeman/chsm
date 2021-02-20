@@ -1,6 +1,7 @@
 /*Generated with CHSM v0.0.0 at 2021.02.18 21.51.37*/
 #include "cevent.h"
 #include "chsm.h"
+#include "can_if.h"
 #include "sdo.h"
 #include "sdo_functions.h"
 

@@ -37,3 +37,4 @@ add_executable(canopen_test ${test_files})
 add_compile_options(-Wall -Wextra -pedantic -Werror)
 
 add_compile_definitions(NDEBUG)
+add_compile_definitions(SIGNAL_CLASSES_H="signal_classes.h")

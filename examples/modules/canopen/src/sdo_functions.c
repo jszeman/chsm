@@ -1,9 +1,8 @@
 #include "sdo_functions.h"
 #include "sdo.h"
 #include "od.h"
-#include "canopen.h"
 #include "can_if.h"
-#include "signals.h"
+#include "canopen.h"
 #include <stdio.h>
 #include <stddef.h>
 #include <string.h>

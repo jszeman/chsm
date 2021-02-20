@@ -5,7 +5,16 @@
 #include <stdbool.h>
 #include "crf.h"
 #include "cevent.h"
-#include "signals.h"
+#include SIGNAL_CLASSES_H
+
+/*
+ * CAN INTERFACE SIGNALS
+ */
+
+typedef enum can_signals_ten
+{
+    SIG_CAN_FRAME = SIGNAL_FROM_CLASS(SIG_CLASS_CAN),
+} can_signals_ten;
 
 typedef struct can_frame_header_bits_tst
 {

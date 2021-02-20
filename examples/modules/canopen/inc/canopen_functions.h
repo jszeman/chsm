@@ -4,10 +4,6 @@
 /*Generated with CHSM v0.0.0 at 2021.02.14 14.35.37*/
 
 #include "canopen.h"
-#include "chsm.h"
-#include "cevent.h"
-#include <stdbool.h>
-
 
 void co_callback(chsm_tst *self, const cevent_tst *e_pst);
 

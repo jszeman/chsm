@@ -17,6 +17,7 @@
 #include "i2c_master.h"
 #include "lm73.h"
 #include "cevent.h"
+#include "sys_if.h"
 
 TEST_GROUP(lm73);
 
@@ -70,7 +71,6 @@ void lm73_send(chsm_tst *self, const cevent_tst *e_pst)
 		case SIG_LM73_TEMP:
 		case SIG_LM73_ONLINE:
 		case SIG_LM73_OFFLINE:
-			printf("\nSIG_LM73_TEMP\n");
 			CRF_POST(e_pst, &q_st);
 			break;
 

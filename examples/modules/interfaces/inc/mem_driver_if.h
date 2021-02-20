@@ -5,8 +5,30 @@
 #include <stdbool.h>
 #include "crf.h"
 #include "cqueue.h"
-#include "signals.h"
+#include SIGNAL_CLASSES_H
 #include "cevent.h"
+
+/*
+ * MEMORY INTERFACE SIGNALS
+ */
+
+typedef enum data_signals_ten
+{
+    /* External signals */
+    SIG_MEM_READ = SIGNAL_FROM_CLASS(SIG_CLASS_MEM),
+    SIG_MEM_WRITE,
+    SIG_MEM_WRITE_SUCCESS,
+    SIG_MEM_WRITE_FAIL,
+    SIG_MEM_READ_SUCCESS,
+    SIG_MEM_READ_FAIL
+} data_signals_ten;
+
+#define SIG_MEM_READ_TYPE           mem_op_tst
+#define SIG_MEM_WRITE_TYPE          mem_op_tst
+#define SIG_MEM_WRITE_SUCCESS_TYPE  mem_status_tst
+#define SIG_MEM_WRITE_FAIL_TYPE     mem_status_tst
+#define SIG_MEM_READ_SUCCESS_TYPE   mem_status_tst
+#define SIG_MEM_READ_FAIL_TYPE      mem_status_tst
 
 
 typedef struct mem_driver_if_tst mem_driver_if_tst;
@@ -40,14 +62,6 @@ typedef struct mem_status_tst
     mem_error_ten   error_en;
     uint32_t        address_u32;
 } mem_status_tst;
-
-#define SIG_MEM_READ_TYPE           mem_op_tst
-#define SIG_MEM_WRITE_TYPE          mem_op_tst
-#define SIG_MEM_WRITE_SUCCESS_TYPE  mem_status_tst
-#define SIG_MEM_WRITE_FAIL_TYPE     mem_status_tst
-#define SIG_MEM_READ_SUCCESS_TYPE   mem_status_tst
-#define SIG_MEM_READ_FAIL_TYPE      mem_status_tst
-
 /*
 Motivation
 ==========

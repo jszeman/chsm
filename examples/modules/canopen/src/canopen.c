@@ -1,9 +1,9 @@
 /*Generated with CHSM v0.0.0 at 2021.02.14 14.35.37*/
 #include "cevent.h"
 #include "chsm.h"
+#include "can_if.h"
 #include "canopen.h"
 #include "canopen_functions.h"
-
 
 static chsm_result_ten s_ng_active(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
 static chsm_result_ten s_ng_inactive(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);

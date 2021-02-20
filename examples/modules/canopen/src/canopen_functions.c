@@ -2,7 +2,6 @@
 #include "crf.h"
 #include "can_if.h"
 #include "sys_if.h"
-#include "signals.h"
 #include <stdio.h>
 
 static const cevent_tst ng_active = {.sig=SIG_CANOPEN_NG_ACTIVE};

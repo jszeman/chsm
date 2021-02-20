@@ -3,7 +3,7 @@
 
 #include "i2c_driver_if.h"
 #include "crf.h"
-#include "signals.h"
+#include SIGNAL_CLASSES_H
 
 /*
 I2C master
@@ -35,6 +35,36 @@ Requirements for the I2C master module:
 
 
 /*
+ * I2C_SIGNALS
+ */
+
+typedef enum i2c_master_signals_ten
+{
+    /* Caller buffered transactions */
+    SIG_I2C_W_TRANSACTION = SIGNAL_FROM_CLASS(SIG_CLASS_I2C_MASTER),
+    SIG_I2C_R_TRANSACTION,
+    SIG_I2C_WR_TRANSACTION,
+
+    /* !!!NOT IMPLEMENTED!!! Internally buffered transactions */
+    SIG_I2C_BUFFERED_W_TRANSACTION,
+    SIG_I2C_BUFFERED_R_TRANSACTION,
+    SIG_I2C_BUFFERED_WR_TRANSACTION,
+
+    /* Transaction result signals */
+    SIG_I2C_RESULT_SUCCESS,
+    SIG_I2C_RESULT_ADDR_NACK,
+    SIG_I2C_RESULT_DATA_NACK,
+} i2c_master_signals_ten;
+
+#define SIG_I2C_W_TRANSACTION_TYPE     i2c_transaction_tst
+#define SIG_I2C_R_TRANSACTION_TYPE     i2c_transaction_tst
+#define SIG_I2C_WR_TRANSACTION_TYPE    i2c_transaction_tst
+
+#define SIG_I2C_RESULT_SUCCESS_TYPE    cevent_tst
+#define SIG_I2C_RESULT_ADDR_NACK_TYPE  cevent_tst
+#define SIG_I2C_RESULT_DATA_NACK_TYPE  cevent_tst
+
+/*
  * EVENT DEFINITIONS
  */
 
@@ -50,10 +80,6 @@ typedef struct i2c_transaction_tst
     uint8_t*            write_data_pu8;     // Pointer to the data buffer for the write operation
     uint8_t*            read_data_pu8;      // Pointer to the data buffer for the read operation
 } i2c_transaction_tst;
-
-#define SIG_I2C_W_TRANSACTION_TYPE    i2c_transaction_tst
-#define SIG_I2C_R_TRANSACTION_TYPE     i2c_transaction_tst
-#define SIG_I2C_WR_TRANSACTION_TYPE    i2c_transaction_tst
 
 /*
  * ACTIVE OBJECT

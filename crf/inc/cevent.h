@@ -36,6 +36,8 @@ typedef struct cevent_tst
 #define CRF_SIGNAL_CLASS_START 2
 #define CRF_SIGNAL_CLASS_SIZE 256
 
+#define SIGNAL_FROM_CLASS(CLASS) (CLASS * CRF_SIGNAL_CLASS_SIZE)
+
 static inline void cevent_ref_cnt_inc(const cevent_tst *e_pst)
 {
 	if (CEVENT_INVALID_POOL != e_pst->gc_info.pool_id)

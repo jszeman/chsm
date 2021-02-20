@@ -2,10 +2,25 @@
 #define CANOPEN_H
 
 #include "crf.h"
-#include "signals.h"
+#include SIGNAL_CLASSES_H
 #include "sdo.h"
 #include "od.h"
+#include "sys_if.h"
 #include <stdint.h>
+
+/*
+ * CANOPEN INTERFACE SIGNALS
+ */
+
+typedef enum canopen_signals_ten
+{
+    /* External signals */
+    SIG_CANOPEN_NG_ACTIVE = SIGNAL_FROM_CLASS(SIG_CLASS_CANOPEN),
+    SIG_CANOPEN_NG_INACTIVE,
+} canopen_signals_ten;
+
+#define SIG_CANOPEN_NG_ACTIVE_TYPE      cevent_tst
+#define SIG_CANOPEN_NG_INACTIVE_TYPE    cevent_tst
 
 typedef struct co_node_tst co_node_tst;
 
@@ -76,7 +91,7 @@ bool co_timeout(chsm_tst *self, const cevent_tst *e_pst, uint32_t timeout_u32);
 typedef enum canopen_internal_signals_ten
 {
     /* Internal signals */
-    SIG_I_CANOPEN_NG = SIGNAL_CLASS(CRF_SIGNAL_CLASS_MOD_INTERNAL),
+    SIG_I_CANOPEN_NG = SIGNAL_FROM_CLASS(CRF_SIGNAL_CLASS_MOD_INTERNAL),
 } canopen_internal_signals_ten;
 
 #endif

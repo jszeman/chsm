@@ -2,8 +2,9 @@
 #define SDO_H
 
 #include "crf.h"
-#include "signals.h"
+#include SIGNAL_CLASSES_H
 #include "od.h"
+#include "sys_if.h"
 
 typedef struct sdo_cfg_tst
 {
@@ -33,7 +34,7 @@ void send_sdo_abort(chsm_tst *self, const cevent_tst *e_pst, uint32_t abort_code
 
 typedef enum canopen_sdo_internal_signals_ten
 {
-    SIG_CANOPEN_WAIT_EXP_SDO_UL = SIGNAL_CLASS(CRF_SIGNAL_CLASS_MOD_INTERNAL),
+    SIG_CANOPEN_WAIT_EXP_SDO_UL = SIGNAL_FROM_CLASS(CRF_SIGNAL_CLASS_MOD_INTERNAL),
     SIG_CANOPEN_WAIT_EXP_SDO_DL,
     SIG_CANOPEN_SEG_DL_START,
     SIG_CANOPEN_SEG_DL_END,
