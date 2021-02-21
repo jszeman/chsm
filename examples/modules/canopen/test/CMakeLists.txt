@@ -3,8 +3,9 @@ cmake_minimum_required(VERSION 3.13.4)
 project(example_canopen_test)
 
 set(test_files  src/main.c
-                src/co_exp_test.c
-                src/co_od_test.c
+                src/co_nmt_exp_sdo_test.c
+                src/co_seg_sdo_test.c
+                src/co_block_sdo_test.c
                 ../src/canopen.c
                 ../src/canopen_functions.c
                 ../src/sdo.c

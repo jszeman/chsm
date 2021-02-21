@@ -19,6 +19,7 @@ void run_co_tests(void)
 {
 	RUN_TEST_GROUP(co);
 	RUN_TEST_GROUP(od);
+	RUN_TEST_GROUP(bk);
 }
 
 int main(int argc, const char * argv[])

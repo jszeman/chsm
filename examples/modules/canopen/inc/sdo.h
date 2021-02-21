@@ -5,6 +5,7 @@
 #include SIGNAL_CLASSES_H
 #include "od.h"
 #include "sys_if.h"
+#include "can_if.h"
 
 typedef struct sdo_cfg_tst
 {
@@ -23,6 +24,8 @@ typedef struct sdo_tst
     uint8_t             toggle_bit_u8;
     od_entry_tst*       active_obj_pst;
     uint32_t            segment_offset_u32;
+    uint8_t             block_size_u8;
+    uint8_t             last_block_msg_size_u8;
 
     uint32_t            counter_ms_u32;
 } sdo_tst;
@@ -40,6 +43,10 @@ typedef enum canopen_sdo_internal_signals_ten
     SIG_CANOPEN_SEG_DL_END,
     SIG_CANOPEN_SEG_UL_START,
     SIG_CANOPEN_SEG_UL_END,
+    SIG_CANOPEN_BLOCK_UL_START,
+    SIG_CANOPEN_BLOCK_UL_END,
+    SIG_CANOPEN_BLOCK_UL_STARTED,
+    SIG_CANOPEN_BLOCK_UL_FINISH,
 } canopen_sdo_internal_signals_ten;
 
 #define SDO_TIMEOUT (((sdo_tst *)self)->config_st.timeout_ms_u32)
@@ -72,7 +79,18 @@ typedef enum canopen_sdo_internal_signals_ten
 
 #define IS_CO_SDO_UL_SEG_REQ(CMD)               (0x60 == (CMD & 0xE0))
 #define CO_SDO_UL_REQ_SEG(T_BIT)                ((3 << 5) | (T_BIT << 4))
-#define CO_SDO_UL_RESP_SEG(T_BIT, SIZE, LAST )  CO_SDO_DL_SEG_REQ(T_BIT, SIZE, LAST)
+#define CO_SDO_UL_RESP_SEG(T_BIT, SIZE, LAST)   CO_SDO_DL_SEG_REQ(T_BIT, SIZE, LAST)
+
+/* Block upload */
+#define CO_SDO_UL_REQ_BLK_INIT(CRC)             ((5 << 5) | (CRC << 2))
+#define CO_SDO_UL_RESP_BLK_INIT(CRC)            ((6 << 5) | (CRC << 2) | (1 << 1))
+#define CO_SDO_UL_REQ_BLK_START                 ((5 << 5) | 3)    
+#define CO_SDO_UL_RESP_BLK_SUBBLOCK(LAST, NO)   ((LAST << 7) | NO)
+#define CO_SDO_UL_RESP_BLK_ACK                  (5 << 5 | 2)
+#define CO_SDO_UL_BLK_END                       ((6 << 5) | 1)
+#define CO_SDO_UL_BLK_END_RESPONSE              ((5 << 5) | 1)
+#define CO_SDO_UL_BLK_FINISH(SIZE)              ((6 << 5) | ((7 - SIZE) << 2) | 1)
+#define CO_SDO_UL_BLK_FINISH_RESP               ((5 << 5) | 1)
 
 #define CO_SDO_ABORT                (4 << 5)
 
