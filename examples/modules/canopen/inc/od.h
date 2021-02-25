@@ -45,4 +45,5 @@ typedef struct object_dictionary_tst
     .flags_u16  = OD_ATTR_OBJECT_DICT           \
     }
 
+
 #endif

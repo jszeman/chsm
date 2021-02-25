@@ -38,6 +38,8 @@ typedef struct sdo_tst
 
 chsm_result_ten sdo_top(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
 
+od_entry_tst* find_od_entry(sdo_tst* self, uint32_t mlx_u32);
+
 bool sdo_timeout(chsm_tst *self, const cevent_tst *e_pst, uint32_t timeout_u32);
 void send_sdo_abort(chsm_tst *self, const cevent_tst *e_pst, uint32_t abort_code_u32);
 

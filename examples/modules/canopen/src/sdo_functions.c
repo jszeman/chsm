@@ -7,7 +7,7 @@
 #include <stddef.h>
 #include <string.h>
 
-#define CO_OD_MAX_RECURSION_LEVEL 4
+
 
 static const cevent_tst sdo_seg_dl_start_event =        {.sig = SIG_CANOPEN_SEG_DL_START};
 static const cevent_tst sdo_seg_dl_end_event =          {.sig = SIG_CANOPEN_SEG_DL_END};
@@ -35,40 +35,7 @@ typedef union sdo_hdr_tun
     sdo_hdr_bits_tst    bit_st;
 } sdo_hdr_tun;
 
-od_entry_tst* find_od_entry_recursive(object_dictionary_tst* od_pst, uint32_t mlx_u32, uint8_t level_u8)
-{
-    od_entry_tst* od_entry_pst;
 
-    if (level_u8 >= CO_OD_MAX_RECURSION_LEVEL) return NULL;
-
-    for (od_entry_pst = od_pst->objects_ast;
-         od_entry_pst->size_u32;
-         od_entry_pst++)
-    {
-        if (mlx_u32 == od_entry_pst->mlx_u32)
-        {
-            return od_entry_pst;
-        }
-        else if (od_entry_pst->flags_u16 & OD_ATTR_OBJECT_DICT)
-        {
-            od_entry_tst* o_pst;
-
-            o_pst = find_od_entry_recursive((object_dictionary_tst* )(od_entry_pst->addr_u), mlx_u32, level_u8 + 1);
-
-            if (NULL != o_pst)
-            {
-                return o_pst;
-            }
-        }
-    }
-
-    return NULL;
-}
-
-od_entry_tst* find_od_entry(sdo_tst* self, uint32_t mlx_u32)
-{
-    return find_od_entry_recursive(self->config_st.od_pst, mlx_u32, 0);
-}
 
 static void sdo_abort(sdo_tst* self, can_frame_tst* f_pst, can_frame_tst* r_pst, uint32_t abort_code_u32)
 {
