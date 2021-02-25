@@ -1,11 +1,14 @@
-/*Generated with CHSM v0.0.0 at 2021.02.21 20.24.07*/
+/*Generated with CHSM v0.0.0 at 2021.02.24 21.55.59*/
 #include "cevent.h"
 #include "chsm.h"
 #include "sdo.h"
 #include "sdo_functions.h"
 
 
-static chsm_result_ten state_9(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
+static chsm_result_ten s_sdo_block_dl_finish(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
+static chsm_result_ten s_sdo_block_dl_started(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
+static chsm_result_ten s_block_transfer(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
+static chsm_result_ten s_sdo_block_ul_finish(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
 static chsm_result_ten s_sdo_block_ul_started(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
 static chsm_result_ten s_sdo_block_ul_wait_for_start(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
 static chsm_result_ten s_sdo_segmented_ul(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
@@ -47,6 +50,11 @@ static chsm_result_ten s_idle(chsm_tst *self, const cevent_tst  *e_pst, chsm_cal
             chsm_exit_children(self, e_pst, ctx_pst);
             sdo_reset_timer(self, e_pst);
             return chsm_transition(self, s_sdo_block_ul_wait_for_start);
+
+        case SIG_CANOPEN_BLOCK_DL_START:
+            chsm_exit_children(self, e_pst, ctx_pst);
+            sdo_reset_timer(self, e_pst);
+            return chsm_transition(self, s_sdo_block_dl_started);
 
         default:
             guards_only_b = false;
@@ -246,7 +254,7 @@ static chsm_result_ten s_sdo_block_ul_wait_for_start(chsm_tst *self, const ceven
             guards_only_b = false;
     }
 
-    return chsm_handle_in_parent(self, ctx_pst, s_sdo, NULL, guards_only_b);
+    return chsm_handle_in_parent(self, ctx_pst, s_block_transfer, NULL, guards_only_b);
 }
 
 static chsm_result_ten s_sdo_block_ul_started(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst)
@@ -273,7 +281,70 @@ static chsm_result_ten s_sdo_block_ul_started(chsm_tst *self, const cevent_tst  
             chsm_exit_children(self, e_pst, ctx_pst);
             send_block_finish(self, e_pst);
             sdo_reset_timer(self, e_pst);
-            return chsm_transition(self, state_9);
+            return chsm_transition(self, s_sdo_block_ul_finish);
+
+        default:
+            guards_only_b = false;
+    }
+
+    return chsm_handle_in_parent(self, ctx_pst, s_block_transfer, NULL, guards_only_b);
+}
+
+static chsm_result_ten s_sdo_block_ul_finish(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst)
+{
+    bool guards_only_b=true;
+    switch(e_pst->sig)
+    {
+        case SIG_CAN_FRAME:
+            chsm_exit_children(self, e_pst, ctx_pst);
+            process_block_finish_response(self, e_pst);
+            chsm_recall(self, e_pst);
+            return chsm_transition(self, s_idle);
+
+        default:
+            guards_only_b = false;
+    }
+
+    return chsm_handle_in_parent(self, ctx_pst, s_block_transfer, NULL, guards_only_b);
+}
+
+static chsm_result_ten s_block_transfer(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst)
+{
+    bool guards_only_b=true;
+    switch(e_pst->sig)
+    {
+
+        default:
+            guards_only_b = false;
+    }
+
+
+    if(sdo_timeout(self, e_pst, SDO_TIMEOUT))
+    {
+        chsm_exit_children(self, e_pst, ctx_pst);
+        send_sdo_abort(self, e_pst, CO_SDO_ABORT_TIMEOUT);
+        chsm_recall(self, e_pst);
+        return chsm_transition(self, s_idle);
+    }
+
+    return chsm_handle_in_parent(self, ctx_pst, s_sdo, NULL, guards_only_b);
+}
+
+static chsm_result_ten s_sdo_block_dl_started(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst)
+{
+    bool guards_only_b=true;
+    switch(e_pst->sig)
+    {
+        case SIG_CAN_FRAME:
+            chsm_exit_children(self, e_pst, ctx_pst);
+            process_dl_subblock(self, e_pst);
+            sdo_reset_timer(self, e_pst);
+            return chsm_transition(self, s_sdo_block_dl_started);
+
+        case SIG_CANOPEN_BLOCK_DL_FINISH:
+            chsm_exit_children(self, e_pst, ctx_pst);
+            sdo_reset_timer(self, e_pst);
+            return chsm_transition(self, s_sdo_block_dl_finish);
 
         default:
             guards_only_b = false;
@@ -282,14 +353,14 @@ static chsm_result_ten s_sdo_block_ul_started(chsm_tst *self, const cevent_tst  
     return chsm_handle_in_parent(self, ctx_pst, s_sdo, NULL, guards_only_b);
 }
 
-static chsm_result_ten state_9(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst)
+static chsm_result_ten s_sdo_block_dl_finish(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst)
 {
     bool guards_only_b=true;
     switch(e_pst->sig)
     {
         case SIG_CAN_FRAME:
             chsm_exit_children(self, e_pst, ctx_pst);
-            process_block_finish_response(self, e_pst);
+            process_block_dl_end(self, e_pst);
             chsm_recall(self, e_pst);
             return chsm_transition(self, s_idle);
 

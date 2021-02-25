@@ -7,6 +7,9 @@
 #include "sys_if.h"
 #include "can_if.h"
 
+#define SDO_BLOCK_SIZE 7
+#define SDO_BLOCK_BUFFER_SIZE (SDO_BLOCK_SIZE * 7)
+
 typedef struct sdo_cfg_tst
 {
     uint8_t                 node_id_u8;
@@ -26,6 +29,9 @@ typedef struct sdo_tst
     uint32_t            segment_offset_u32;
     uint8_t             block_size_u8;
     uint8_t             last_block_msg_size_u8;
+
+    uint8_t             block_buffer_au8[SDO_BLOCK_BUFFER_SIZE];
+    uint8_t             subblock_counter_u8;
 
     uint32_t            counter_ms_u32;
 } sdo_tst;
@@ -47,6 +53,9 @@ typedef enum canopen_sdo_internal_signals_ten
     SIG_CANOPEN_BLOCK_UL_END,
     SIG_CANOPEN_BLOCK_UL_STARTED,
     SIG_CANOPEN_BLOCK_UL_FINISH,
+    SIG_CANOPEN_BLOCK_DL_START,
+    SIG_CANOPEN_BLOCK_DL_END,
+    SIG_CANOPEN_BLOCK_DL_FINISH,
 } canopen_sdo_internal_signals_ten;
 
 #define SDO_TIMEOUT (((sdo_tst *)self)->config_st.timeout_ms_u32)
@@ -91,6 +100,15 @@ typedef enum canopen_sdo_internal_signals_ten
 #define CO_SDO_UL_BLK_END_RESPONSE              ((5 << 5) | 1)
 #define CO_SDO_UL_BLK_FINISH(SIZE)              ((6 << 5) | ((7 - SIZE) << 2) | 1)
 #define CO_SDO_UL_BLK_FINISH_RESP               ((5 << 5) | 1)
+
+/* Block download */
+#define CO_SDO_DL_REQ_BLK_INIT(CRC, SIZE)       ((6 << 5) | (CRC << 2) | (SIZE << 1))
+#define CO_SDO_DL_RESP_BLK_INIT(CRC)            ((5 << 5) | (CRC << 2))
+#define CO_SDO_DL_REQ_BLK_SUBBLOCK(LAST, NO)    ((LAST << 7) | NO)
+#define CO_SDO_DL_REQ_BLK_ACK                   ((5 << 5) | 2)
+#define CO_SDO_DL_BLK_FINISH(SIZE)              ((6 << 5) | ((7 - SIZE) << 2) | 1)
+#define CO_SDO_DL_BLK_FINISH_RESP               ((5 << 5) | 1)
+#define IS_CO_SDO_DL_BLK_FINISH(D0)             (((6 << 5) | 1) == (0xE3 & D0))
 
 #define CO_SDO_ABORT                (4 << 5)
 
