@@ -16,6 +16,7 @@
 #include "canopen.h"
 #include "can_if.h"
 #include "sys_if.h"
+#include "sdo_common.h"
 
 TEST_GROUP(co);
 

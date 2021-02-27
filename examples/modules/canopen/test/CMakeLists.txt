@@ -11,6 +11,10 @@ set(test_files  src/main.c
                 ../src/sdo.c
                 ../src/sdo_functions.c
                 ../src/od.c
+                ../src/sdo_block_dl.c
+                ../src/sdo_block_ul.c
+                ../src/sdo_ul.c
+                ../src/sdo_dl.c
                 ../../interfaces/src/sys_if.c
                 ../../../../../crf/src/chsm.c
                 ../../../../../crf/src/cvalue.c
