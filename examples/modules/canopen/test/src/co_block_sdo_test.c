@@ -707,7 +707,135 @@ TEST(bk, sdo_dl_blk_au8)
 	tick_ms(1);
 	test_sdo_response(CO_SDO_DL_BLK_FINISH_RESP, 0, 0);
 	TEST_ASSERT_EQUAL_HEX8_ARRAY(data_au8, d1.obj_au8 + 7 * 7 * 10, 22);
+}
 
+/* sdo_dl_blk_au8_repeat_frame
+ * Perform a block download on a large array, but repeat a frame in one of the
+ * blocks. Check that the repeated frame is ignored.
+ */
+TEST(bk, sdo_dl_blk_au8_repeat_frame)
+{
+	const can_frame_tst *e_pst;
+	can_frame_tst *f_pst;
+
+	uint8_t data_au8[64];
+
+	for (uint16_t i=0; i<64; i++)
+	{
+		data_au8[i] = i;
+	}
+
+	for (uint16_t i=0; i<512; i++)
+	{
+		d1.obj_au8[i] = 0;
+	}
+
+	node_init();
+
+	/* Init the block upload. Block size is 7, so one block is 7*7=49 bytes. It
+	 * takes 512/49 -> 11 blocks to transfer all data. The last block will
+	 * consist of 4 frames and last frame will contain one byte.
+	 */
+
+	send_sdo_request(CO_SDO_DL_REQ_BLK_INIT(0, 1), MLX_AU8_RW, 512);
+	tick_ms(1);
+	test_sdo_response(CO_SDO_DL_RESP_BLK_INIT(0), MLX_AU8_RW, 7);
+
+	/* Send 10 normal blocks, check acknowledge after each one. */
+	for (uint16_t i=0; i<9; i++)
+	{
+		send_sdo_block(data_au8, 7, 0, 0);
+		tick_ms(1);
+		test_sdo_response(CO_SDO_DL_REQ_BLK_ACK, (7<<16) | (6<<8), 0);
+		TEST_ASSERT_EQUAL_HEX8_ARRAY(data_au8, d1.obj_au8 + 7 * 7 * i, 49);
+	}
+
+	uint16_t i;
+	uint8_t *dst_pu8;
+	uint8_t *data_pu8 = data_au8;
+
+	/* Send 4 frames from the last block */
+	for (i=0; i<4; i++)
+	{
+		printf("d");
+		f_pst = CRF_NEW(SIG_CAN_FRAME);
+		TEST_ASSERT_NOT_NULL(f_pst);
+
+		f_pst->header_un = CAN_HDR(CO_SDO_RX + node_st.config_st.node_id_u8, 0, 8);
+		f_pst->mdl_un.bit_st.d0_u8 = CO_SDO_DL_REQ_BLK_SUBBLOCK(0, i);
+
+		dst_pu8 = (uint8_t *)(&f_pst->mdl_un.all_u32);
+		dst_pu8++;
+
+		for (uint16_t j=0; j<7; j++)
+		{
+			*dst_pu8++ = *data_pu8++;
+		}
+
+		CRF_POST(f_pst, &node_st);
+	}
+
+	/* Repeat the 4th */
+	printf("d");
+	f_pst = CRF_NEW(SIG_CAN_FRAME);
+	TEST_ASSERT_NOT_NULL(f_pst);
+
+	f_pst->header_un = CAN_HDR(CO_SDO_RX + node_st.config_st.node_id_u8, 0, 8);
+	f_pst->mdl_un.bit_st.d0_u8 = CO_SDO_DL_REQ_BLK_SUBBLOCK(0, i);
+
+	dst_pu8 = (uint8_t *)(&f_pst->mdl_un.all_u32);
+	dst_pu8++;
+
+	for (uint16_t j=0; j<7; j++)
+	{
+		*dst_pu8++ = *data_pu8++;
+	}
+
+	CRF_POST(f_pst, &node_st);
+
+	/* Rewind the data pointer. */
+	data_pu8 -= 7;
+
+	/* Send the last 3. */
+	for (; i<7; i++)
+	{
+		printf("d");
+		f_pst = CRF_NEW(SIG_CAN_FRAME);
+		TEST_ASSERT_NOT_NULL(f_pst);
+
+		f_pst->header_un = CAN_HDR(CO_SDO_RX + node_st.config_st.node_id_u8, 0, 8);
+		f_pst->mdl_un.bit_st.d0_u8 = CO_SDO_DL_REQ_BLK_SUBBLOCK(0, i);
+
+		dst_pu8 = (uint8_t *)(&f_pst->mdl_un.all_u32);
+		dst_pu8++;
+
+		for (uint16_t j=0; j<7; j++)
+		{
+			*dst_pu8++ = *data_pu8++;
+		}
+
+		CRF_POST(f_pst, &node_st);
+	}
+	
+
+	tick_ms(1);
+	test_sdo_response(CO_SDO_DL_REQ_BLK_ACK, (7<<16) | (6<<8), 0);
+	TEST_ASSERT_EQUAL_HEX8_ARRAY(data_au8, d1.obj_au8 + 7 * 7 * 9, 49);
+
+	 /* Send the last block */
+	send_sdo_block(data_au8, 4, 1, 1);
+	tick_ms(1);
+	test_sdo_response(CO_SDO_DL_REQ_BLK_ACK, (7<<16) | (3<<8), 0);
+	/* We expect that the block buffer was not flushed into the target
+	 * since we still need to tell the server, how many valid bytes was
+	 * in the last frame.
+	 */
+	TEST_ASSERT_EACH_EQUAL_HEX8(0, d1.obj_au8 + 7 * 7 * 10, 22);
+
+	send_sdo_request(CO_SDO_DL_BLK_FINISH(1), 0, 0);
+	tick_ms(1);
+	test_sdo_response(CO_SDO_DL_BLK_FINISH_RESP, 0, 0);
+	TEST_ASSERT_EQUAL_HEX8_ARRAY(data_au8, d1.obj_au8 + 7 * 7 * 10, 22);
 }
 
 TEST_GROUP_RUNNER(bk)
@@ -720,7 +848,7 @@ TEST_GROUP_RUNNER(bk)
 	RUN_TEST_CASE(bk, sdo_ul_blk_abort_after_init);
 	RUN_TEST_CASE(bk, sdo_ul_blk_abort_before_finish);
 	RUN_TEST_CASE(bk, sdo_dl_blk_au8);
-	//RUN_TEST_CASE(bk, init);
+	RUN_TEST_CASE(bk, sdo_dl_blk_au8_repeat_frame);
 	//RUN_TEST_CASE(bk, init);
 	//RUN_TEST_CASE(bk, init);
 	//RUN_TEST_CASE(bk, init);

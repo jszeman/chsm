@@ -51,6 +51,22 @@ void process_dl_subblock(chsm_tst *_self, const cevent_tst *e_pst)
         CRF_POST_TO_SELF(&sdo_block_dl_end_event);
         return;
     }
+
+#ifdef sdfsdf
+    if (subblock_idx_u8 > self->subblock_counter_u8)
+    {
+        /* TODO: we lost a frame */
+    }
+    else if (subblock_idx_u8 < self->subblock_counter_u8)
+    {
+        /* We received a repeated frame */
+        return;
+    }
+    else
+    {
+        self->subblock_counter_u8++;
+    }
+#endif
     
 /*
     if ((self->segment_offset_u32 + size_u8) > self->active_obj_pst->size_u32)
@@ -107,6 +123,7 @@ void process_dl_subblock(chsm_tst *_self, const cevent_tst *e_pst)
             CRF_POST_TO_SELF(&sdo_block_dl_finish_event);
         }
         
+        self->subblock_counter_u8 = 0;
     }
 }
 
