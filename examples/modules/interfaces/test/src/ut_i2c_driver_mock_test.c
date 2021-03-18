@@ -17,11 +17,11 @@
 
 TEST_GROUP(i2c_drv_mock);
 
-ut_i2c_driver_mock_tst  drv_mock_st;
-i2c_driver_if_tst*      drv_pst = (i2c_driver_if_tst *)&drv_mock_st;
+static ut_i2c_driver_mock_tst  drv_mock_st;
+static i2c_driver_if_tst*      drv_pst = (i2c_driver_if_tst *)&drv_mock_st;
 
-const cevent_tst*       events_apst[4];
-cqueue_tst              q_st;
+static const cevent_tst*       events_apst[4];
+static cqueue_tst              q_st;
 
 static void drv_tick(uint32_t tick_cnt_u32)
 {

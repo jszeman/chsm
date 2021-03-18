@@ -68,7 +68,7 @@ typedef union sdo_hdr_tun
 #define CO_SDO_UL_REQ_BLK_INIT(CRC)             ((5 << 5) | (CRC << 2))
 #define CO_SDO_UL_RESP_BLK_INIT(CRC)            ((6 << 5) | (CRC << 2) | (1 << 1))
 #define CO_SDO_UL_REQ_BLK_START                 ((5 << 5) | 3)    
-#define CO_SDO_UL_RESP_BLK_SUBBLOCK(LAST, NO)   ((LAST << 7) | NO)
+#define CO_SDO_UL_RESP_BLK_SUBBLOCK(LAST, NO)   ((LAST << 7) | (NO + 1))
 #define CO_SDO_UL_RESP_BLK_ACK                  (5 << 5 | 2)
 #define CO_SDO_UL_BLK_END                       ((6 << 5) | 1)
 #define CO_SDO_UL_BLK_END_RESPONSE              ((5 << 5) | 1)
@@ -78,7 +78,7 @@ typedef union sdo_hdr_tun
 /* Block download */
 #define CO_SDO_DL_REQ_BLK_INIT(CRC, SIZE)       ((6 << 5) | (CRC << 2) | (SIZE << 1))
 #define CO_SDO_DL_RESP_BLK_INIT(CRC)            ((5 << 5) | (CRC << 2))
-#define CO_SDO_DL_REQ_BLK_SUBBLOCK(LAST, NO)    ((LAST << 7) | NO)
+#define CO_SDO_DL_REQ_BLK_SUBBLOCK(LAST, NO)    ((LAST << 7) | (NO + 1))
 #define CO_SDO_DL_REQ_BLK_ACK                   ((5 << 5) | 2)
 #define CO_SDO_DL_BLK_FINISH(SIZE)              ((6 << 5) | ((7 - SIZE) << 2) | 1)
 #define CO_SDO_DL_BLK_FINISH_RESP               ((5 << 5) | 1)

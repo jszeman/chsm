@@ -17,7 +17,7 @@ Motivation
 ----------
 
 It is very difficult to make unit tests for embedded hardware drivers. Not
-impossible, but extremly unconvenient compared to a module that only has
+impossible, but extremly inconvenient compared to a module that only has
 software interfaces and therefore can be tested on a PC.
 A simple workaround for this problem is to keep the actual HW drivers as simple
 as possible and move all complexity into modules that can be tested on the 

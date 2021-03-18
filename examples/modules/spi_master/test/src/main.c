@@ -12,13 +12,12 @@ void enableInterrupts(void)
 
 }
 
-void run_intf_tests(void)
+void run_spi_master_tests(void)
 {
-	RUN_TEST_GROUP(i2c_drv_mock);
-	RUN_TEST_GROUP(spi_drv_mock);
+	RUN_TEST_GROUP(spi_master);
 }
 
 int main(int argc, const char * argv[])
 {
-	return UnityMain(argc, argv, run_intf_tests);
+	return UnityMain(argc, argv, run_spi_master_tests);
 }

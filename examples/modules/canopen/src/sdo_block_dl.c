@@ -34,10 +34,9 @@ void handle_block_dl_init(sdo_tst* self, can_frame_tst* f_pst, can_frame_tst *r_
 
 void process_dl_subblock(chsm_tst *_self, const cevent_tst *e_pst)
 {
-
     sdo_tst*        self = (sdo_tst*)_self;
     CRF_SIG_VAR(SIG_CAN_FRAME, f_pst, e_pst);
-    uint8_t         subblock_idx_u8 = f_pst->mdl_un.bit_st.d0_u8 & 0x7f;
+    uint8_t         subblock_idx_u8 = (f_pst->mdl_un.bit_st.d0_u8 & 0x7f) - 1;
     uint8_t         last_u8 = f_pst->mdl_un.bit_st.d0_u8 & 0x80;
     uint8_t*        src_pu8;
     uint8_t*        dst_pu8;
@@ -52,10 +51,10 @@ void process_dl_subblock(chsm_tst *_self, const cevent_tst *e_pst)
         return;
     }
 
-#ifdef sdfsdf
     if (subblock_idx_u8 > self->subblock_counter_u8)
     {
         /* TODO: we lost a frame */
+        printf("\nMissing frame\n");
     }
     else if (subblock_idx_u8 < self->subblock_counter_u8)
     {
@@ -66,7 +65,7 @@ void process_dl_subblock(chsm_tst *_self, const cevent_tst *e_pst)
     {
         self->subblock_counter_u8++;
     }
-#endif
+
     
 /*
     if ((self->segment_offset_u32 + size_u8) > self->active_obj_pst->size_u32)
