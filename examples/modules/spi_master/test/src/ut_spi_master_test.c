@@ -156,6 +156,213 @@ TEST(spi_master, send_2b)
 	TEST_ASSERT_EQUAL(SIG_SPI_MASTER_RESULT_SUCCESS, e_pst->sig);
 }
 
+/* read_1b:
+ * Read 1 byte from the correct slave and assert the following:
+ * 	- The data was read from the device (via the mock driver)
+ *  - The master sent back a success message (put it in the queue designated by the transaction)
+ */
+TEST(spi_master, read_1b)
+{
+    spi_mock_slave_device_tst dev_st = {.tx_data_au8 = {0x5a, 0x6b, 0x7c, 0}};
+
+    drv_mock_st.slave_pst = &dev_st;
+	drv_mock_st.slave_count_u16 = 1;
+
+	uint8_t data_au8[4] = {0, 0, 0, 0};
+
+	spi_transaction_tst*	t_pst = CRF_NEW(SIG_SPI_MASTER_TRANSACTION);
+
+	TEST_ASSERT_NOT_NULL(t_pst);
+
+	t_pst->target_q_pst = &q_st;
+	t_pst->len_u16 = 1;
+	t_pst->slave_idx_u8 = 0;
+	t_pst->rx_data_pu8 = data_au8;
+	t_pst->tx_data_pu8 = NULL;
+
+	TEST_ASSERT_EQUAL(SIG_SPI_MASTER_TRANSACTION, t_pst->super.sig);
+
+	CRF_POST(t_pst, &spi_master_st);
+
+	drv_tick(5);
+
+	uint8_t expected_au8[4] = {0x5a, 0, 0, 0};
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(expected_au8, data_au8, 4);
+
+	const cevent_tst* e_pst = q_st.get(&q_st);
+	TEST_ASSERT(e_pst);
+	TEST_ASSERT_EQUAL(SIG_SPI_MASTER_RESULT_SUCCESS, e_pst->sig);
+}
+
+/* read_2b:
+ * Read 2 bytes from the correct slave and assert the following:
+ * 	- The data was read from the device (via the mock driver)
+ *  - The master sent back a success message (put it in the queue designated by the transaction)
+ */
+TEST(spi_master, read_2b)
+{
+    spi_mock_slave_device_tst dev_st = {.tx_data_au8 = {0x5a, 0x6b, 0x7c, 0}};
+
+    drv_mock_st.slave_pst = &dev_st;
+	drv_mock_st.slave_count_u16 = 1;
+
+	uint8_t data_au8[4] = {0, 0, 0, 0};
+
+	spi_transaction_tst*	t_pst = CRF_NEW(SIG_SPI_MASTER_TRANSACTION);
+
+	TEST_ASSERT_NOT_NULL(t_pst);
+
+	t_pst->target_q_pst = &q_st;
+	t_pst->len_u16 = 2;
+	t_pst->slave_idx_u8 = 0;
+	t_pst->rx_data_pu8 = data_au8;
+	t_pst->tx_data_pu8 = NULL;
+
+	TEST_ASSERT_EQUAL(SIG_SPI_MASTER_TRANSACTION, t_pst->super.sig);
+
+	CRF_POST(t_pst, &spi_master_st);
+
+	drv_tick(5);
+
+	uint8_t expected_au8[4] = {0x5a, 0x6b, 0, 0};
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(expected_au8, data_au8, 4);
+
+	const cevent_tst* e_pst = q_st.get(&q_st);
+	TEST_ASSERT(e_pst);
+	TEST_ASSERT_EQUAL(SIG_SPI_MASTER_RESULT_SUCCESS, e_pst->sig);
+}
+
+
+/* rw_2b:
+ * Read and write 2 bytes from the correct slave and assert the following:
+ * 	- The data was read from the device (via the mock driver)
+ * 	- The data was written to the device
+ *  - The master sent back a success message (put it in the queue designated by the transaction)
+ */
+TEST(spi_master, rw_2b)
+{
+    spi_mock_slave_device_tst dev_st = {.tx_data_au8 = {0x5a, 0x6b, 0x7c, 0}};
+
+    drv_mock_st.slave_pst = &dev_st;
+	drv_mock_st.slave_count_u16 = 1;
+
+	uint8_t rx_data_au8[4] = {0, 0, 0, 0};
+	uint8_t tx_data_au8[4] = {0x11, 0x22, 0x33, 0};
+
+	spi_transaction_tst*	t_pst = CRF_NEW(SIG_SPI_MASTER_TRANSACTION);
+
+	TEST_ASSERT_NOT_NULL(t_pst);
+
+	t_pst->target_q_pst = &q_st;
+	t_pst->len_u16 = 2;
+	t_pst->slave_idx_u8 = 0;
+	t_pst->rx_data_pu8 = rx_data_au8;
+	t_pst->tx_data_pu8 = tx_data_au8;
+
+	TEST_ASSERT_EQUAL(SIG_SPI_MASTER_TRANSACTION, t_pst->super.sig);
+
+	CRF_POST(t_pst, &spi_master_st);
+
+	drv_tick(5);
+
+	uint8_t expected_rx_au8[4] = {0x5a, 0x6b, 0, 0};
+	uint8_t expected_tx_au8[4] = {0x11, 0x22, 0, 0};
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(expected_rx_au8, rx_data_au8, 4);
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(expected_tx_au8, dev_st.rx_data_au8, 4);
+
+	const cevent_tst* e_pst = q_st.get(&q_st);
+	TEST_ASSERT(e_pst);
+	TEST_ASSERT_EQUAL(SIG_SPI_MASTER_RESULT_SUCCESS, e_pst->sig);
+}
+
+
+/* rw_8b_6b:
+ * Start two RW transaction on the same master and check that both are finished
+ * successfully and sequentially.
+ */
+TEST(spi_master, rw_8b_6b)
+{
+    spi_mock_slave_device_tst dev_st = {.tx_data_au8 = {
+		0x12, 0x23, 0x34, 0x45, 0x56, 0x67, 0x78, 0x89,
+		0x10, 0x21, 0x32, 0x43, 0x54, 0x65}
+		};
+
+    drv_mock_st.slave_pst = &dev_st;
+	drv_mock_st.slave_count_u16 = 1;
+
+	uint8_t rx_data1_au8[16] = {0};
+	uint8_t tx_data1_au8[16] = {
+		0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
+		0x99, 0xaa};
+
+	uint8_t rx_data2_au8[16] = {0};
+	uint8_t tx_data2_au8[16] = {
+		0x13, 0x24, 0x35, 0x46, 0x57, 0x68, 0x79, 0x8a};
+
+	/*
+	 * 		FIRST TRANSACTION
+	 */
+	spi_transaction_tst*	t_pst = CRF_NEW(SIG_SPI_MASTER_TRANSACTION);
+
+	TEST_ASSERT_NOT_NULL(t_pst);
+
+	t_pst->target_q_pst = &q_st;
+	t_pst->len_u16 = 8;
+	t_pst->slave_idx_u8 = 0;
+	t_pst->rx_data_pu8 = rx_data1_au8;
+	t_pst->tx_data_pu8 = tx_data1_au8;
+
+	TEST_ASSERT_EQUAL(SIG_SPI_MASTER_TRANSACTION, t_pst->super.sig);
+
+	CRF_POST(t_pst, &spi_master_st);
+
+	/* Make the system work on that a little */
+	drv_tick(3);
+
+	/*
+	 * 		SECOND TRANSACTION
+	 */
+	t_pst = CRF_NEW(SIG_SPI_MASTER_TRANSACTION);
+
+	TEST_ASSERT_NOT_NULL(t_pst);
+
+	t_pst->target_q_pst = &q_st;
+	t_pst->len_u16 = 6;
+	t_pst->slave_idx_u8 = 0;
+	t_pst->rx_data_pu8 = rx_data2_au8;
+	t_pst->tx_data_pu8 = tx_data2_au8;
+
+	TEST_ASSERT_EQUAL(SIG_SPI_MASTER_TRANSACTION, t_pst->super.sig);
+
+	CRF_POST(t_pst, &spi_master_st);
+
+	drv_tick(6);
+
+	/* Check the result of the first transaction */
+
+	uint8_t expected_rx1_au8[16] = {0x12, 0x23, 0x34, 0x45, 0x56, 0x67, 0x78, 0x89};
+	uint8_t expected_tx1_au8[16] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88};
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(expected_rx1_au8, rx_data1_au8, 8);
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(expected_tx1_au8, dev_st.rx_data_au8, 8);
+
+	const cevent_tst* e_pst = q_st.get(&q_st);
+	TEST_ASSERT(e_pst);
+	TEST_ASSERT_EQUAL(SIG_SPI_MASTER_RESULT_SUCCESS, e_pst->sig);
+
+
+	drv_tick(6);
+
+	/* Check the result of the second transaction */
+
+	uint8_t expected_rx2_au8[16] = {0x10, 0x21, 0x32, 0x43, 0x54, 0x65};
+	uint8_t expected_tx2_au8[16] = {0x13, 0x24, 0x35, 0x46, 0x57, 0x68};
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(expected_rx2_au8, rx_data2_au8, 8);
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(expected_tx2_au8, dev_st.rx_data_au8+8, 6);
+
+	e_pst = q_st.get(&q_st);
+	TEST_ASSERT(e_pst);
+	TEST_ASSERT_EQUAL(SIG_SPI_MASTER_RESULT_SUCCESS, e_pst->sig);
+}
 
 
 TEST_GROUP_RUNNER(spi_master)
@@ -163,9 +370,10 @@ TEST_GROUP_RUNNER(spi_master)
 	RUN_TEST_CASE(spi_master, init);
 	RUN_TEST_CASE(spi_master, send_1b);
 	RUN_TEST_CASE(spi_master, send_2b);
-	//RUN_TEST_CASE(spi_master, init);
-	//RUN_TEST_CASE(spi_master, init);
-	//RUN_TEST_CASE(spi_master, init);
+	RUN_TEST_CASE(spi_master, read_1b);
+	RUN_TEST_CASE(spi_master, read_2b);
+	RUN_TEST_CASE(spi_master, rw_2b);
+	RUN_TEST_CASE(spi_master, rw_8b_6b);
 	//RUN_TEST_CASE(spi_master, init);
 	//RUN_TEST_CASE(spi_master, init);
 

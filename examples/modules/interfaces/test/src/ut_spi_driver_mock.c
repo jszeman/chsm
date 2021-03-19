@@ -18,7 +18,6 @@ static void start(spi_driver_if_tst *_self, uint8_t slave_idx_u8,
     }
 
     self->actual_slave_pst = self->slave_pst + slave_idx_u8;
-    self->actual_slave_pst->idx_u16 = 0;
     self->tx_buff_pu8 = tx_data_pu8;
     self->rx_buff_pu8 = rx_data_pu8;
     self->len_u16 = len_u16;
