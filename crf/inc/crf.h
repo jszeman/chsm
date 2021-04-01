@@ -20,23 +20,15 @@
 
 #define CRF_MAX_POOL_COUNT 4
 
-typedef struct route_tst route_tst;
-
-struct route_tst
-{
-	uint16_t			sig;		// Signal to route
-	cqueue_tst			**targets;	// NULL terminated list of pointers to target queues
-};
-
 typedef struct crf_tst crf_tst;
 
 struct crf_tst
 {
-	void*				(*new_event)(crf_tst *self, uint32_t size, signal_t sig);		//< Create a new event
-	void				(*publish)(crf_tst *self, const cevent_tst* e);			//< Publish an event
-	void				(*post)(crf_tst *self, cevent_tst* e, cqueue_tst *q); //< Put an event into an event queue
-	bool				(*step)(crf_tst *self); //< Dispatch one event
-	void				(*gc)(crf_tst *self, const cevent_tst* e);			//< Publish an event
+	void*				(*new_event)(crf_tst *self, uint32_t size, signal_t sig);
+	void				(*publish)(crf_tst *self, const cevent_tst* e);
+	void				(*post)(crf_tst *self, cevent_tst* e, cqueue_tst *q);
+	bool				(*step)(crf_tst *self);
+	void				(*gc)(crf_tst *self, const cevent_tst* e);
 
 
 	chsm_tst			**chsm_ap;		//< Pointer to the array of objects in the application
