@@ -187,10 +187,11 @@ class Project:
     def _load_config_from_file(self, json_path):
         with open(json_path, 'r') as cfg_file:
             return json.load(cfg_file)
-
-    def _find_user_config_file(self, h_dir):
-        for parent in h_dir.parents:
-            p = parent / '.chsm/settings.json'
+        
+    def _find_file(self, dir_path, f_name):
+        
+        for parent in dir_path.parents:
+            p = parent / f'.chsm/{f_name}'
             print(f'Searching settings in {p}')
             if p.exists():
                 self.cfg_file_path = p
@@ -198,8 +199,18 @@ class Project:
 
         return None
 
+    def _find_user_config_file(self, h_dir, h_name):
+        print(f'_find_user_config_file({h_dir}, {h_name})')
+        if h_name:
+            f_name = self._find_file(h_dir, f'{h_name}.json')
+            if f_name:
+                return f_name
+            
+        return self._find_file(h_dir, 'settings.json')
+
+
     def _load_user_config(self, hpath):
-        user_cfg_path = self._find_user_config_file(hpath.parent)
+        user_cfg_path = self._find_user_config_file(hpath.parent, hpath.stem)
 
         if user_cfg_path == None:
             return {}
