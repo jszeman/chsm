@@ -11,12 +11,12 @@
 #include <stdlib.h>
 #include "unity_fixture.h"
 
-TEST_GROUP(eq);
+TEST_GROUP(cq);
 
 cqueue_tst 	eq;
 cevent_tst  *events[8];
 
-TEST_SETUP(eq)
+TEST_SETUP(cq)
 {
 	for (int i=0; i<8; i++)
 	{
@@ -24,7 +24,7 @@ TEST_SETUP(eq)
 	}
 }
 
-TEST_TEAR_DOWN(eq)
+TEST_TEAR_DOWN(cq)
 {
 	// Make sure the no out-of-bounds access happens
 	for (int i=4; i<8; i++)
@@ -36,7 +36,7 @@ TEST_TEAR_DOWN(eq)
 /**
  * Test that we can get back one event from the queue
  */
-TEST(eq, put_1_get_1)
+TEST(cq, put_1_get_1)
 {
 	cevent_tst  e;
 	const cevent_tst  *ep;
@@ -54,7 +54,7 @@ TEST(eq, put_1_get_1)
  * Test that we can get back the first event from the queue,
  * when 2 was put in
  */
-TEST(eq, put_2_get_1)
+TEST(cq, put_2_get_1)
 {
 	cevent_tst  e1, e2;
 	const cevent_tst  *ep;
@@ -74,7 +74,7 @@ TEST(eq, put_2_get_1)
  * Put 2 events in the queue, get 2, then check addresses
  * and order.
  */
-TEST(eq, put_2_get_2)
+TEST(cq, put_2_get_2)
 {
 	cevent_tst  e1, e2;
 	const cevent_tst  *ep1, *ep2;
@@ -93,7 +93,7 @@ TEST(eq, put_2_get_2)
 /**
  * Check that we get NULL when trying to get from empty queue.
  */
-TEST(eq, get_from_empty)
+TEST(cq, get_from_empty)
 {
 	const cevent_tst  *ep1;
 
@@ -106,7 +106,7 @@ TEST(eq, get_from_empty)
 /**
  * Check that cqueue_put returns -1 when there are no more slots.
  */
-TEST(eq, put_more_than_capacity)
+TEST(cq, put_more_than_capacity)
 {
 	cevent_tst  e1;
 	int32_t r;
@@ -118,12 +118,13 @@ TEST(eq, put_more_than_capacity)
 	}
 
 	TEST_ASSERT(-1 == r);
+	TEST_ASSERT_EQUAL(1, eq.fault_cnt);
 }
 
 /**
  * Check that we can get an element even if the queue is full
  */
-TEST(eq, get_all)
+TEST(cq, get_all)
 {
 	cevent_tst  e[4];
 	const cevent_tst  *ep[4];
@@ -149,7 +150,7 @@ TEST(eq, get_all)
  * Check that put will roll over, when more events were put/get from
  * the queue.
  */
-TEST(eq, test_put_roll)
+TEST(cq, test_put_roll)
 {
 	cevent_tst  e1;
 
@@ -168,7 +169,7 @@ TEST(eq, test_put_roll)
  * Check that put/get will work with many operations. (The implementation
  * uses uint16_t indices so it may fail on rollover.)
  */
-TEST(eq, test_put_a_lot)
+TEST(cq, test_put_a_lot)
 {
 	cevent_tst  e1;
 	cevent_tst  e2;
@@ -191,7 +192,7 @@ TEST(eq, test_put_a_lot)
  * Check that get will roll over, when more events were put/get from
  * the queue.
  */
-TEST(eq, test_get_roll)
+TEST(cq, test_get_roll)
 {
 	cevent_tst  e1;
 	const cevent_tst  *ep1;
@@ -210,7 +211,7 @@ TEST(eq, test_get_roll)
 /**
  * Check that put_left will allow getting the pointer back.
  */
-TEST(eq, put_left_1_get_1)
+TEST(cq, put_left_1_get_1)
 {
 	cevent_tst  e;
 	const cevent_tst  *ep;
@@ -228,7 +229,7 @@ TEST(eq, put_left_1_get_1)
  * Check that put_left will result in a stack like operation,
  * when the items are read back in reverse order.
  */
-TEST(eq, put_left_2_get_2)
+TEST(cq, put_left_2_get_2)
 {
 	cevent_tst  e1, e2;
 	const cevent_tst  *ep1, *ep2;
@@ -250,7 +251,7 @@ TEST(eq, put_left_2_get_2)
  * Check that put_left is able to insert an element in
  * front of the previously put in items.
  */
-TEST(eq, put_left_after_put)
+TEST(cq, put_left_after_put)
 {
 	cevent_tst  e1, e2, e3;
 	const cevent_tst  *ep1;
@@ -271,7 +272,7 @@ TEST(eq, put_left_after_put)
 /**
  * Check that put_left returns -1 when there are no more slots.
  */
-TEST(eq, put_left_more_than_capacity)
+TEST(cq, put_left_more_than_capacity)
 {
 	cevent_tst  e1;
 	int32_t r;
@@ -283,13 +284,14 @@ TEST(eq, put_left_more_than_capacity)
 	}
 
 	TEST_ASSERT(-1 == r);
+	TEST_ASSERT_EQUAL(1, eq.fault_cnt);
 }
 
 /**
  * Test that we can get back the last event from the queue,
  * when 2 was put in
  */
-TEST(eq, put_2_get_right_1)
+TEST(cq, put_2_get_right_1)
 {
 	cevent_tst  e1, e2;
 	const cevent_tst  *ep;
@@ -306,23 +308,23 @@ TEST(eq, put_2_get_right_1)
 }
 
 
-TEST_GROUP_RUNNER(eq)
+TEST_GROUP_RUNNER(cq)
 {
-	RUN_TEST_CASE(eq, put_1_get_1);
-	RUN_TEST_CASE(eq, put_2_get_1);
-	RUN_TEST_CASE(eq, put_2_get_2);
-	RUN_TEST_CASE(eq, get_from_empty);
-	RUN_TEST_CASE(eq, put_more_than_capacity);
-	RUN_TEST_CASE(eq, test_put_roll);
-	RUN_TEST_CASE(eq, test_get_roll);
-	RUN_TEST_CASE(eq, put_left_1_get_1);
-	RUN_TEST_CASE(eq, put_left_2_get_2);
-	RUN_TEST_CASE(eq, put_left_after_put);
-	RUN_TEST_CASE(eq, put_left_more_than_capacity);
-	RUN_TEST_CASE(eq, get_all);
-	RUN_TEST_CASE(eq, put_2_get_right_1);
-	RUN_TEST_CASE(eq, test_put_a_lot);
-//	RUN_TEST_CASE(eq, new_1);
-//	RUN_TEST_CASE(eq, new_1);
-//	RUN_TEST_CASE(eq, new_1);
+	RUN_TEST_CASE(cq, put_1_get_1);
+	RUN_TEST_CASE(cq, put_2_get_1);
+	RUN_TEST_CASE(cq, put_2_get_2);
+	RUN_TEST_CASE(cq, get_from_empty);
+	RUN_TEST_CASE(cq, put_more_than_capacity);
+	RUN_TEST_CASE(cq, test_put_roll);
+	RUN_TEST_CASE(cq, test_get_roll);
+	RUN_TEST_CASE(cq, put_left_1_get_1);
+	RUN_TEST_CASE(cq, put_left_2_get_2);
+	RUN_TEST_CASE(cq, put_left_after_put);
+	RUN_TEST_CASE(cq, put_left_more_than_capacity);
+	RUN_TEST_CASE(cq, get_all);
+	RUN_TEST_CASE(cq, put_2_get_right_1);
+	RUN_TEST_CASE(cq, test_put_a_lot);
+//	RUN_TEST_CASE(cq, new_1);
+//	RUN_TEST_CASE(cq, new_1);
+//	RUN_TEST_CASE(cq, new_1);
 }

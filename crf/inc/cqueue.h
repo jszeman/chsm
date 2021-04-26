@@ -36,6 +36,7 @@ struct cqueue_tst
 	atomic_uint16_t	 	head;
 	atomic_uint16_t		tail;
 	uint16_t 			mask;
+	uint32_t			fault_cnt;
 };
 
 int32_t 				cqueue_init(cqueue_tst *self, const cevent_tst **events, uint16_t max_event_count);

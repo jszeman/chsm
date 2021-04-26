@@ -1,5 +1,5 @@
-#ifndef SPI_MASTER_H
-#define SPI_MASTER_H
+#ifndef DAC8565_H
+#define DAC8565_H
 
 #include "spi_master.h"
 #include "crf.h"

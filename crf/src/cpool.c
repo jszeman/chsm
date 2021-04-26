@@ -16,10 +16,6 @@
 
 #define CPOOL_TERMINATOR 0xffff
 
-
-/* Only cpool_new should be called from interrupt context, so only
- * this function is implemented to be thread safe.
- */
 static void *cpool_new(cpool_tst *self)
 {
     uint16_t head;

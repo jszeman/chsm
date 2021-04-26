@@ -15,6 +15,7 @@
 #include "cbits.h"
 #include "ut_spi_driver_mock.h"
 #include "spi_master.h"
+#include "dac8565.h"
 
 TEST_GROUP(dac8565);
 
@@ -23,6 +24,9 @@ spi_driver_if_tst*      drv_pst = (spi_driver_if_tst *)&drv_mock_st;
 
 const cevent_tst*		spi_master_events_apst[8];
 spi_master_tst			spi_master_st;
+
+const cevent_tst*       dac8565_events_apst[8];
+dac8565_tst             dac8565_st;
 
 chsm_tst*				hsm_apst[] = {(chsm_tst*)(&spi_master_st), NULL};
 
@@ -53,8 +57,10 @@ TEST_SETUP(dac8565)
     memset(&q_st, 0, sizeof q_st);
     memset(&drv_mock_st, 0, sizeof drv_mock_st);
     memset(&spi_master_st, 0, sizeof spi_master_st);
+    memset(&dac8565_st, 0, sizeof dac8565_st);
     memset(&crf, 0, sizeof crf);
     memset(&spi_master_events_apst, 0, sizeof spi_master_events_apst);
+    memset(&dac8565_events_apst, 0, sizeof dac8565_events_apst);
     memset(&pool_buff_au8, 0, sizeof pool_buff_au8);
     memset(&pool_ast, 0, sizeof pool_ast);
 
@@ -66,6 +72,7 @@ TEST_SETUP(dac8565)
 
 	spi_master_st.config_st.driver_pst = drv_pst;
 	chsm_ctor(&spi_master_st.super, spi_master_top, spi_master_events_apst, 4, 4);
+    chsm_ctor(&dac8565_st.super, dac8565_top, dac8565_events_apst, 4, 4);
 
 	chsm_init((chsm_tst *)&spi_master_st);
 	crf_init(&crf, hsm_apst, pool_ast, 1);
@@ -92,7 +99,16 @@ TEST(dac8565, set_outputs)
     drv_mock_st.slave_pst = &dev_st;
 	drv_mock_st.slave_count_u16 = 1;
 
-	
+	dac8565_outputs_tst*	t_pst = CRF_NEW(SIG_DAC8565_OUTPUTS);
+
+    TEST_ASSERT_NOT_NULL(t_pst);
+
+    t_pst->outputs[0] = 0x1234;
+    t_pst->outputs[0] = 0x5678;
+    t_pst->outputs[0] = 0x9abc;
+    t_pst->outputs[0] = 0xdef0;
+
+    CRF_POST(t_pst, &dac8565_st);
 }
 
 
