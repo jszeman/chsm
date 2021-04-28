@@ -146,6 +146,7 @@ void lm73_update_temp(chsm_tst *_self, const cevent_tst *e_pst)
     temp_pst->temp_C_i16 = temp_c_i16;
     temp_pst->id_u16 = self->config_st.id_u16;
 
+    self->temp_C_i16 = temp_c_i16;
     self->valid_b = true;
     
     self->super.send(_self, (const cevent_tst *)temp_pst);
