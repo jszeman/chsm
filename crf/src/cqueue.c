@@ -78,9 +78,9 @@ static int32_t cqueue_put_left(cqueue_tst *self, const cevent_tst *e_pst)
 
 	if ((uint16_t)(self->head - self->tail) >= self->max)
 	{
-		return -1;
+        self->fault_cnt++;
 
-		self->fault_cnt++;
+		return -1;
 	}
 
 	self->tail--;
