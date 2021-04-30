@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin-left: 0px;
+        }
+
+        main {
+            width: 100%;
+            height: 100%;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .state_body {
+    stroke: black;
+    stroke-width: 0.2;
+    fill: none;
+    rx: 0.5px;
+}
+
+.state_border {
+    stroke: deepskyblue; 
+    stroke-width: 0.8;
+    fill: none;
+    rx: 0.5px;
+    opacity: 0;
+}
+
+.state_border:hover {
+    opacity: 0.4;
+}
+
+.state_border_highlight {
+    stroke: rgb(23, 197, 66);
+    opacity: 0.4;
+}
+
+.initial_state {
+    stroke: none;
+    stroke-width: 0.4;
+    fill: black;
+    r: 0.7px;
+}
+
+.initial_state:hover {
+    stroke: deepskyblue;
+    stroke-width: 0.5px;
+}
+
+.state_border_deleting {
+    stroke: red; 
+    stroke-width: 0.8;
+    fill: none;
+    rx: 0.5px;
+    opacity: 0.4;
+}
+
+.transition_handle {
+    stroke: deepskyblue; 
+    stroke-width: 0.8;
+    fill: none;
+    rx: 0.5px;
+    opacity: 0;
+    cursor: grab;
+}
+
+.transition_handle:hover {
+    opacity: 0.4;
+}
+
+.transition_handle_deleting {
+    stroke: red;
+    stroke-width: 0.8;
+    fill: none;
+    rx: 0.5px;
+    opacity: 0;
+    cursor: auto;
+}
+
+.transition_handle_deleting:hover {
+    opacity: 0.4;
+}
+
+.transition_handle_highlight_draw {
+    opacity: 0.4;
+    cursor: crosshair;
+}
+
+.transition_handle_highlight_edit {
+    stroke: rgb(23, 197, 66);
+    opacity: 0.4;
+    cursor: grab;
+}
+
+.transition_handle_highlight_drag {
+    opacity: 0.4;
+    cursor: grab;
+}
+
+.state_separator {
+    stroke: grey;
+    stroke-width: 0.1;
+    shape-rendering: crispEdges;
+}
+
+.state_resize_mark {
+    stroke: grey;
+    stroke-width: 0.1;
+}
+
+.state_title {
+    font: bold 0.08em arial,helvetica,sans-serif;
+}
+
+.state_text {
+    font: normal 0.08em arial,helvetica,sans-serif;
+}
+
+.transition_label {
+    font: normal 0.07em arial,helvetica,sans-serif;
+}
+
+.function {
+    fill: black;
+}
+
+.function:hover {
+    fill: blue;
+}
+
+.transition_label:hover {
+    cursor: grab;
+}
+
+.state_drag_handle {
+    fill: rgb(211, 102, 1);
+    opacity: 0.1;
+    stroke: none;
+    rx: 0.5px;
+    cursor: move;
+}
+
+.state_resize_handle {
+    fill: white;
+    opacity: 0.0;
+    stroke: none;
+    r: 0.5px;
+    cursor: nwse-resize;
+}
+
+.transition_line {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 0.2;
+}
+
+.transition_arrow {
+    fill: steelblue;
+    stroke: none;
+    stroke-width: 0.0;
+}
+    </style>
+</head>
+<body>
+    <main>
+        
+			<svg height="100%" width="100%" style="cursor: auto;">
+				<g display="none">
+					<path id="arrow" d="M 0 0 L 0.9 -0.4 L 0.9 0.4 Z" class="arrow_template"></path>
+				</g>
+				<g id="drawing" transform="translate(-258, -151.5) scale(11.5, 11.5)"><g><path d="M 108 57 L 80 57 L 80 57 L 59 57" class="transition_line"></path><use href="#arrow" transform="translate(59 57) " class="transition_arrow" display="block"></use><text x="64" y="56.6" class="transition_label">[<tspan class="function">ltc2471_timeout</tspan>(<tspan class="function">LTC2471_READ_TIMEOUT</tspan>)]/ <tspan class="function">ltc2471_invalidate_sample()</tspan></text><path d="M 108 57 L 80 57 L 80 57 L 59 57" class="transition_handle"></path></g><g><path d="M 108 54 L 80 54 L 80 54 L 59 54" class="transition_line"></path><use href="#arrow" transform="translate(59 54) " class="transition_arrow" display="block"></use><text x="64" y="53.6" class="transition_label"><tspan class="function">SIG_I2C_RESULT_ADDR_NACK</tspan>/ <tspan class="function">ltc2471_invalidate_sample()</tspan></text><path d="M 108 54 L 80 54 L 80 54 L 59 54" class="transition_handle"></path></g><g><path d="M 108 51 L 78 51 L 78 51 L 59 51" class="transition_line"></path><use href="#arrow" transform="translate(59 51) " class="transition_arrow" display="block"></use><text x="64" y="50.6" class="transition_label"><tspan class="function">SIG_I2C_RESULT_SUCCESS</tspan>/ <tspan class="function">ltc2471_update_sample()</tspan></text><path d="M 108 51 L 78 51 L 78 51 L 59 51" class="transition_handle"></path></g><g><path d="M 48 39 L 48 39 L 48 43" class="transition_line"></path><use href="#arrow" transform="translate(48 43) rotate(-90) " class="transition_arrow" display="block"></use><text x="48.5" y="38.6" class="transition_label"></text><path d="M 48 39 L 48 39 L 48 43" class="transition_handle"></path></g><g><path d="M 77 20 L 77 20 L 77 24" class="transition_line"></path><use href="#arrow" transform="translate(77 24) rotate(-90) " class="transition_arrow" display="block"></use><text x="77.5" y="21.6" class="transition_label"></text><path d="M 77 20 L 77 20 L 77 24" class="transition_handle"></path></g><g><path d="M 59 48 L 78 48 L 78 48 L 108 48" class="transition_line"></path><use href="#arrow" transform="translate(108 48) rotate(180) " class="transition_arrow" display="block"></use><text x="64" y="47.6" class="transition_label">[<tspan class="function">ltc2471_timeout</tspan>(<tspan class="function">LTC2471_READ_TIMEOUT</tspan>)]</text><path d="M 59 48 L 78 48 L 78 48 L 108 48" class="transition_handle"></path></g>
+				<g transform="translate(-100000000, -100000000)"><rect x="0" y="0" width="200000000" height="200000000" class="state_body"></rect><line x1="0" y1="2" x2="200000000" y2="2" class="state_separator"></line><line x1="0" y1="2" x2="200000000" y2="2" class="state_separator"></line><line x1="199999999" y1="200000000" x2="200000000" y2="199999999" class="state_resize_mark"></line><text x="0.6" y="1.6" class="state_title">__top__</text><rect x="0" y="0" width="200000000" height="2" class="state_drag_handle"></rect><text x="0.6" y="1.6" class="state_text"></text><rect x="0" y="0" width="200000000" height="200000000" class="state_border"></rect><circle cx="199999999.75" cy="199999999.75" class="state_resize_handle"></circle></g><g transform="translate(34, 24)"><rect x="0" y="0" width="98" height="42" class="state_body"></rect><line x1="0" y1="2" x2="98" y2="2" class="state_separator"></line><line x1="0" y1="4" x2="98" y2="4" class="state_separator"></line><line x1="97" y1="42" x2="98" y2="41" class="state_resize_mark"></line><text x="0.6" y="1.6" class="state_title">s_ltc2471</text><rect x="0" y="0" width="98" height="4" class="state_drag_handle"></rect><text x="0.6" y="1.6" class="state_text"><tspan x="0.6" dy="2"><tspan class="function">SIG_SYS_TICK_1ms</tspan>/ <tspan class="function">ltc2471_1ms_callack()</tspan></tspan></text><rect x="0" y="0" width="98" height="42" class="state_border"></rect><circle cx="97.75" cy="41.75" class="state_resize_handle"></circle></g><g transform="translate(41, 43)"><rect x="0" y="0" width="18" height="19" class="state_body"></rect><line x1="0" y1="2" x2="18" y2="2" class="state_separator"></line><line x1="0" y1="4" x2="18" y2="4" class="state_separator"></line><line x1="17" y1="19" x2="18" y2="18" class="state_resize_mark"></line><text x="0.6" y="1.6" class="state_title">s_idle</text><rect x="0" y="0" width="18" height="4" class="state_drag_handle"></rect><text x="0.6" y="1.6" class="state_text"><tspan x="0.6" dy="2"><tspan class="function">init</tspan>/ <tspan class="function">ltc2471_restart_timer()</tspan></tspan></text><rect x="0" y="0" width="18" height="19" class="state_border"></rect><circle cx="17.75" cy="18.75" class="state_resize_handle"></circle></g><g transform="translate(108, 43)"><rect x="0" y="0" width="20" height="19" class="state_body"></rect><line x1="0" y1="2" x2="20" y2="2" class="state_separator"></line><line x1="0" y1="6" x2="20" y2="6" class="state_separator"></line><line x1="19" y1="19" x2="20" y2="18" class="state_resize_mark"></line><text x="0.6" y="1.6" class="state_title">s_reading</text><rect x="0" y="0" width="20" height="6" class="state_drag_handle"></rect><text x="0.6" y="1.6" class="state_text"><tspan x="0.6" dy="2"><tspan class="function">entry</tspan>/ <tspan class="function">ltc2471_start_read()</tspan></tspan><tspan x="0.6" dy="2"><tspan class="function">init</tspan>/ <tspan class="function">ltc2471_restart_timer()</tspan></tspan></text><rect x="0" y="0" width="20" height="19" class="state_border"></rect><circle cx="19.75" cy="18.75" class="state_resize_handle"></circle></g><circle cx="77" cy="20" class="initial_state"></circle><circle cx="48" cy="39" class="initial_state"></circle></g>
+			</svg>
+		
+    </main>
+    <script>
+        
+const zoom_speed = 0.5;
+const pan_speed = 20;
+const drawing = document.querySelector('#drawing');
+const svg = document.querySelector('svg');
+
+let translate = [drawing.transform.baseVal[0].matrix.e, drawing.transform.baseVal[0].matrix.f];
+let scale = drawing.transform.baseVal[1].matrix.a;
+
+let drag_start_pos = [0, 0];
+
+function set_transform()
+{
+    const [tx, ty] = translate;
+    const s = scale; 
+    drawing.attributes.transform.value = `translate(${tx}, ${ty}) scale(${s}, ${s})`;
+}
+
+function zoom_in(pos)
+{
+    const zs = zoom_speed;
+    const [x, y] = pos;
+    const [dtx, dty] = [-zs * x, -zs * y];
+    const [tx, ty] = translate;
+    translate = [tx + dtx, ty + dty];
+    scale += zs;
+    set_transform();
+}
+
+function zoom_out(pos)
+{
+    if (scale < 2)
+    {
+        return;
+    }
+    const zs = -zoom_speed;
+    const [x, y] = pos;
+    const [dtx, dty] = [-zs * x, -zs * y];
+    const [tx, ty] = translate;
+    translate = [tx + dtx, ty + dty];
+    scale += zs;
+    set_transform();
+}
+
+function get_absolute_pos(evt)
+{
+    const CTM = drawing.getScreenCTM();
+    const x = Math.round((evt.clientX - CTM.e) / CTM.a);
+    const y = Math.round((evt.clientY - CTM.f) / CTM.d);
+
+    return [x, y];
+}
+
+
+
+svg.addEventListener('wheel', event => {
+    if (event.ctrlKey)
+    {
+        event.stopPropagation();
+        event.preventDefault();
+        const p = get_absolute_pos(event);
+        if (event.deltaY < 0)
+        {
+            zoom_in(p);
+        }
+        else
+        {
+            zoom_out(p);
+        }
+    }
+    else if (event.shiftKey)
+    {
+        event.stopPropagation();
+        event.preventDefault();
+        if (event.deltaY < 0)
+        {
+            translate[0] += pan_speed;
+        }
+        else
+        {
+            translate[0] -= pan_speed;
+        }
+        set_transform();
+    }
+    else
+    {
+        event.stopPropagation();
+        event.preventDefault();
+        if (event.deltaY < 0)
+        {
+            translate[1] += pan_speed;
+        }
+        else
+        {
+            translate[1] -= pan_speed;
+        }
+        set_transform();
+    }
+});
+    </script>
+    <details>
+        <summary>json</summary>
+        <pre id='chsm-json-data'>
+            {
+    "states": {
+        "__top__": {
+            "pos": [
+                -100000000,
+                -100000000
+            ],
+            "size": [
+                200000000,
+                200000000
+            ],
+            "title": "__top__",
+            "text": [],
+            "connectors": [],
+            "parent": null,
+            "children": [
+                "state_0",
+                "istate_0"
+            ],
+            "type": "top"
+        },
+        "state_0": {
+            "pos": [
+                34,
+                24
+            ],
+            "size": [
+                98,
+                42
+            ],
+            "title": "s_ltc2471",
+            "text": [
+                "SIG_SYS_TICK_1ms/ ltc2471_1ms_callack()"
+            ],
+            "connectors": [
+                "conn_3"
+            ],
+            "parent": "__top__",
+            "children": [
+                "state_1",
+                "state_2",
+                "istate_1"
+            ],
+            "type": "normal"
+        },
+        "state_1": {
+            "pos": [
+                41,
+                43
+            ],
+            "size": [
+                18,
+                19
+            ],
+            "title": "s_idle",
+            "text": [
+                "init/ ltc2471_restart_timer()"
+            ],
+            "connectors": [
+                "conn_0",
+                "conn_5",
+                "conn_7",
+                "conn_9",
+                "conn_11"
+            ],
+            "parent": "state_0",
+            "children": [],
+            "type": "normal"
+        },
+        "state_2": {
+            "pos": [
+                108,
+                43
+            ],
+            "size": [
+                20,
+                19
+            ],
+            "title": "s_reading",
+            "text": [
+                "entry/ ltc2471_start_read()",
+                "init/ ltc2471_restart_timer()"
+            ],
+            "connectors": [
+                "conn_1",
+                "conn_6",
+                "conn_8",
+                "conn_10"
+            ],
+            "parent": "state_0",
+            "children": [],
+            "type": "normal"
+        },
+        "istate_0": {
+            "pos": [
+                77,
+                20
+            ],
+            "size": [
+                2,
+                2
+            ],
+            "title": "istate_0",
+            "text": [
+                "entry/",
+                "exit/"
+            ],
+            "connectors": [
+                "conn_2"
+            ],
+            "parent": "__top__",
+            "children": [],
+            "type": "initial"
+        },
+        "istate_1": {
+            "pos": [
+                48,
+                39
+            ],
+            "size": [
+                2,
+                2
+            ],
+            "title": "istate_1",
+            "text": [
+                "entry/",
+                "exit/"
+            ],
+            "connectors": [
+                "conn_4"
+            ],
+            "parent": "state_0",
+            "children": [],
+            "type": "initial"
+        }
+    },
+    "connectors": {
+        "conn_0": {
+            "parent": "state_1",
+            "offset": 5,
+            "side": "right",
+            "dir": "out",
+            "transition": "trans_0"
+        },
+        "conn_1": {
+            "parent": "state_2",
+            "offset": 5,
+            "side": "left",
+            "dir": "in",
+            "transition": "trans_0"
+        },
+        "conn_2": {
+            "parent": "istate_0",
+            "offset": 0,
+            "side": "all",
+            "dir": "out",
+            "transition": "trans_1"
+        },
+        "conn_3": {
+            "parent": "state_0",
+            "offset": 43,
+            "side": "top",
+            "dir": "in",
+            "transition": "trans_1"
+        },
+        "conn_4": {
+            "parent": "istate_1",
+            "offset": 0,
+            "side": "all",
+            "dir": "out",
+            "transition": "trans_2"
+        },
+        "conn_5": {
+            "parent": "state_1",
+            "offset": 7,
+            "side": "top",
+            "dir": "in",
+            "transition": "trans_2"
+        },
+        "conn_6": {
+            "parent": "state_2",
+            "offset": 8,
+            "side": "left",
+            "dir": "out",
+            "transition": "trans_3"
+        },
+        "conn_7": {
+            "parent": "state_1",
+            "offset": 8,
+            "side": "right",
+            "dir": "in",
+            "transition": "trans_3"
+        },
+        "conn_8": {
+            "parent": "state_2",
+            "offset": 11,
+            "side": "left",
+            "dir": "out",
+            "transition": "trans_4"
+        },
+        "conn_9": {
+            "parent": "state_1",
+            "offset": 11,
+            "side": "right",
+            "dir": "in",
+            "transition": "trans_4"
+        },
+        "conn_10": {
+            "parent": "state_2",
+            "offset": 14,
+            "side": "left",
+            "dir": "out",
+            "transition": "trans_5"
+        },
+        "conn_11": {
+            "parent": "state_1",
+            "offset": 14,
+            "side": "right",
+            "dir": "in",
+            "transition": "trans_5"
+        }
+    },
+    "transitions": {
+        "trans_0": {
+            "start": "conn_0",
+            "end": "conn_1",
+            "vertices": [
+                [
+                    59,
+                    48
+                ],
+                [
+                    78,
+                    48
+                ],
+                [
+                    78,
+                    48
+                ],
+                [
+                    108,
+                    48
+                ]
+            ],
+            "label": "[ltc2471_timeout(LTC2471_READ_TIMEOUT)]",
+            "label_offset": [
+                5,
+                -0.3999999999999986
+            ],
+            "label_anchor": 0,
+            "label_pos": [
+                64,
+                47.6
+            ]
+        },
+        "trans_1": {
+            "start": "conn_2",
+            "end": "conn_3",
+            "vertices": [
+                [
+                    77,
+                    20
+                ],
+                [
+                    77,
+                    20
+                ],
+                [
+                    77,
+                    24
+                ]
+            ],
+            "label": "",
+            "label_offset": [
+                0.5,
+                1.6000000000000014
+            ],
+            "label_anchor": 1,
+            "label_pos": [
+                77.5,
+                21.6
+            ]
+        },
+        "trans_2": {
+            "start": "conn_4",
+            "end": "conn_5",
+            "vertices": [
+                [
+                    48,
+                    39
+                ],
+                [
+                    48,
+                    39
+                ],
+                [
+                    48,
+                    43
+                ]
+            ],
+            "label": "",
+            "label_offset": [
+                0.5,
+                -0.3999999999999986
+            ],
+            "label_anchor": 1,
+            "label_pos": [
+                48.5,
+                38.6
+            ]
+        },
+        "trans_3": {
+            "start": "conn_6",
+            "end": "conn_7",
+            "vertices": [
+                [
+                    108,
+                    51
+                ],
+                [
+                    78,
+                    51
+                ],
+                [
+                    78,
+                    51
+                ],
+                [
+                    59,
+                    51
+                ]
+            ],
+            "label": "SIG_I2C_RESULT_SUCCESS/ ltc2471_update_sample()",
+            "label_offset": [
+                -14,
+                -0.3999999999999986
+            ],
+            "label_anchor": 2,
+            "label_pos": [
+                64,
+                50.6
+            ]
+        },
+        "trans_4": {
+            "start": "conn_8",
+            "end": "conn_9",
+            "vertices": [
+                [
+                    108,
+                    54
+                ],
+                [
+                    80,
+                    54
+                ],
+                [
+                    80,
+                    54
+                ],
+                [
+                    59,
+                    54
+                ]
+            ],
+            "label": "SIG_I2C_RESULT_ADDR_NACK/ ltc2471_invalidate_sample()",
+            "label_offset": [
+                -16,
+                -0.3999999999999986
+            ],
+            "label_anchor": 2,
+            "label_pos": [
+                64,
+                53.6
+            ]
+        },
+        "trans_5": {
+            "start": "conn_10",
+            "end": "conn_11",
+            "vertices": [
+                [
+                    108,
+                    57
+                ],
+                [
+                    80,
+                    57
+                ],
+                [
+                    80,
+                    57
+                ],
+                [
+                    59,
+                    57
+                ]
+            ],
+            "label": "[ltc2471_timeout(LTC2471_READ_TIMEOUT)]/ ltc2471_invalidate_sample()",
+            "label_offset": [
+                -16,
+                -0.3999999999999986
+            ],
+            "label_anchor": 2,
+            "label_pos": [
+                64,
+                56.6
+            ]
+        }
+    },
+    "notes": {
+        "ltc2471_timeout": "",
+        "SIG_I2C_RESULT_SUCCESS": "",
+        "ltc2471_update_sample()": "",
+        "invalidate_sample()": "",
+        "LTC2471_READ_TIMEOUT": "",
+        "ltc2471_1ms_callack()": "",
+        "ltc2471_start_read()": "",
+        "SIG_SYS_TICK_1ms": ""
+    },
+    "view": {
+        "translate": [
+            -258,
+            -151.5
+        ],
+        "scale": 11.5
+    }
+}
+        </pre>
+    </details>
+</body>
+</html>
