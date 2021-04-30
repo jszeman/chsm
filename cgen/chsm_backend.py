@@ -307,7 +307,7 @@ if __name__ == '__main__':
     eel.init((Path(__file__).parent / '../web').absolute().resolve())
 
     if args['--server-only']:
-        eel.start('main.html', mode=None)
+        eel.start('main.html', mode=None, port=0)
     else:
-        eel.start('main.html')
+        eel.start('main.html', port=0)
 
