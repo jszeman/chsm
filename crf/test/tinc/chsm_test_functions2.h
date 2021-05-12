@@ -1,7 +1,7 @@
 #ifndef CHSM_TEST_FUNCTIONS2_H
 #define CHSM_TEST_FUNCTIONS2_H
 
-/*Generated with CHSM v0.0.0 at 2021.01.17 21.26.20*/
+/*Generated with CHSM v0.0.0 at 2021.05.12 21.17.52*/
 
 #include "chsm_test_machine.h"
 #include "chsm.h"
@@ -28,8 +28,6 @@ void s1_func(chsm_tst *self, const cevent_tst *e_pst);
 void s1_init(chsm_tst *self, const cevent_tst *e_pst);
 
 void s211_entry(chsm_tst *self, const cevent_tst *e_pst);
-
-void s211_exit(chsm_tst *self, const cevent_tst *e_pst);
 
 void s211_id(chsm_tst *self, const cevent_tst *e_pst);
 
@@ -117,5 +115,7 @@ s11_g_guard2:
 s11_guard:
 
 s11_id:
+
+s211_exit:
 */
 #endif

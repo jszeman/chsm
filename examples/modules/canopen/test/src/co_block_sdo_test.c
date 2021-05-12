@@ -861,7 +861,7 @@ TEST(bk, sdo_dl_blk_au8_missing_frame)
 
 	node_init();
 
-	/* Init the block upload. Block size is 7, so one block is 7*7=49 bytes. It
+	/* Init the block download. Block size is 7, so one block is 7*7=49 bytes. It
 	 * takes 512/49 -> 11 blocks to transfer all data. The last block will
 	 * consist of 4 frames and last frame will contain one byte.
 	 */

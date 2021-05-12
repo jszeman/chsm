@@ -143,6 +143,8 @@ int32_t cqueue_init(cqueue_tst *self, const cevent_tst **events, uint16_t max_ev
 	self->tail = 0;
 	self->mask = max_event_count-1;
 
+	self->fault_cnt = 0;
+
 	self->put = cqueue_put;
 	self->put_left = cqueue_put_left;
 	self->get = cqueue_get;

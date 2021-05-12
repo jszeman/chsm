@@ -24,6 +24,21 @@ static void load(test_hsm_tst *self, const char *str)
     }
 }
 
+static void load_param(test_hsm_tst *self, const uint16_t i)
+{
+    char buff[6];
+
+    *self->log++ = '(';
+
+    sprintf(buff, "%d", i);
+
+    load(self, buff);
+
+    *self->log++ = ')';
+    *self->log++ = ' ';
+}
+
+
 void clear_log(test_hsm_tst *self)
 {
     memset(&self->log_buff, 0, sizeof(self->log_buff));
@@ -182,12 +197,12 @@ void s211_entry(chsm_tst *_self, const cevent_tst *e_pst)
     load(self, " ");
 }
 
-void s211_exit(chsm_tst *_self, const cevent_tst *e_pst)
+void s211_exit(chsm_tst *_self, const cevent_tst *e_pst, uint16_t param)
 {
     test_hsm_tst *self = (test_hsm_tst *)_self;
     
     load(self, __func__);
-    load(self, " ");
+    load_param(self, param);
 }
 
 void s211_init(chsm_tst *_self, const cevent_tst *e_pst)

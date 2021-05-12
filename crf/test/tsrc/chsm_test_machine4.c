@@ -1,4 +1,4 @@
-/*Generated with CHSM v0.0.0 at 2021.01.17 21.26.20*/
+/*Generated with CHSM v0.0.0 at 2021.05.12 21.17.52*/
 #include "cevent.h"
 #include "chsm.h"
 #include "chsm_test_machine.h"
@@ -259,6 +259,11 @@ static chsm_result_ten s21(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ct
     return chsm_handle_in_parent(self, ctx_pst, s2, s21_exit, guards_only_b);
 }
 
+static void s211_exit_func_wrapper(chsm_tst *self, const cevent_tst *e_pst)
+{
+    s211_exit(self, e_pst, 6);
+}
+
 static chsm_result_ten s211(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst)
 {
     bool guards_only_b=true;
@@ -270,7 +275,7 @@ static chsm_result_ten s211(chsm_tst *self, const cevent_tst *e_pst, chsm_call_c
 
         case TEST_SIG_H:
             chsm_exit_children(self, e_pst, ctx_pst);
-            s211_exit(self, e_pst);
+            s211_exit(self, e_pst, 6);
             s21_exit(self, e_pst);
             s2_exit(self, e_pst);
             s_init(self, e_pst);
@@ -282,7 +287,7 @@ static chsm_result_ten s211(chsm_tst *self, const cevent_tst *e_pst, chsm_call_c
 
         case TEST_SIG_D:
             chsm_exit_children(self, e_pst, ctx_pst);
-            s211_exit(self, e_pst);
+            s211_exit(self, e_pst, 6);
             s21_init(self, e_pst);
             s211_entry(self, e_pst);
             s211_init(self, e_pst);
@@ -292,7 +297,7 @@ static chsm_result_ten s211(chsm_tst *self, const cevent_tst *e_pst, chsm_call_c
             guards_only_b = false;
     }
 
-    return chsm_handle_in_parent(self, ctx_pst, s21, s211_exit, guards_only_b);
+    return chsm_handle_in_parent(self, ctx_pst, s21, s211_exit_func_wrapper, guards_only_b);
 }
 
 static chsm_result_ten s3(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst)

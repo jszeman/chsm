@@ -518,7 +518,7 @@ TEST(hsm, sm4_s211_a)
 
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_a);
-	TEST_ASSERT_EQUAL_STRING("s211_exit s21_exit s21_entry s21_init s211_entry s211_init ", hsm.log_buff);
+	TEST_ASSERT_EQUAL_STRING("s211_exit(6) s21_exit s21_entry s21_init s211_entry s211_init ", hsm.log_buff);
 
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_id);
@@ -538,7 +538,7 @@ TEST(hsm, sm4_s211_b)
 
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_b);
-	TEST_ASSERT_EQUAL_STRING("s211_exit s211_entry s211_init ", hsm.log_buff);
+	TEST_ASSERT_EQUAL_STRING("s211_exit(6) s211_entry s211_init ", hsm.log_buff);
 
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_id);
@@ -558,7 +558,7 @@ TEST(hsm, sm4_s211_c)
 
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_c);
-	TEST_ASSERT_EQUAL_STRING("s211_exit s21_exit s2_exit s1_entry s1_init s11_entry s11_init ", hsm.log_buff);
+	TEST_ASSERT_EQUAL_STRING("s211_exit(6) s21_exit s2_exit s1_entry s1_init s11_entry s11_init ", hsm.log_buff);
 
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_id);
@@ -578,7 +578,7 @@ TEST(hsm, sm4_s211_f)
 
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_f);
-	TEST_ASSERT_EQUAL_STRING("s211_exit s21_exit s2_exit s1_entry s11_entry s11_init ", hsm.log_buff);
+	TEST_ASSERT_EQUAL_STRING("s211_exit(6) s21_exit s2_exit s1_entry s11_entry s11_init ", hsm.log_buff);
 
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_id);
@@ -598,7 +598,7 @@ TEST(hsm, sm4_s211_h)
 
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_h);
-	TEST_ASSERT_EQUAL_STRING("s211_exit s21_exit s2_exit s_init s1_entry s1_init s11_entry s11_init ", hsm.log_buff);
+	TEST_ASSERT_EQUAL_STRING("s211_exit(6) s21_exit s2_exit s_init s1_entry s1_init s11_entry s11_init ", hsm.log_buff);
 
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_id);
