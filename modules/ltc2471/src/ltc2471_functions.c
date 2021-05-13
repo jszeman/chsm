@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-const cevent_tst ltc2471_error_event_st = {.super.sig = SIG_LTC2471_ERROR};
+const cevent_tst ltc2471_error_event_st = {.sig = SIG_LTC2471_ERROR};
 
 void ltc2471_1ms_callack(chsm_tst *_self, const cevent_tst *e_pst)
 {
@@ -71,7 +71,7 @@ bool ltc2471_timeout(chsm_tst *_self, const cevent_tst *e_pst, uint32_t timeout_
 {
     ltc2471_tst* self = (ltc2471_tst *)_self;
 
-    return self->timer_cnt_u32 > timeout_u32
+    return self->timer_cnt_u32 > timeout_u32;
 }
 
 

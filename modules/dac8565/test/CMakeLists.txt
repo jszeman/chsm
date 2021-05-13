@@ -7,15 +7,15 @@ set(test_files  src/main.c
                 ../../spi_master/src/spi_master.c
                 ../../spi_master/src/spi_master_functions.c
                 ../../interfaces/test/src/ut_spi_driver_mock.c
-                ../../../../../crf/src/chsm.c
-                ../../../../../crf/src/cvalue.c
-                ../../../../../crf/src/cpool.c
-                ../../../../../crf/src/cqueue.c
-                ../../../../../crf/src/crf.c
-                ../../../../../crf/src/cbits.c
-                ../../../../../unity/extras/fixture/src/unity_fixture.c
-                ../../../../../unity/extras/memory/src/unity_memory.c
-                ../../../../../unity/src/unity.c
+                ../../../../crf/src/chsm.c
+                ../../../../crf/src/cvalue.c
+                ../../../../crf/src/cpool.c
+                ../../../../crf/src/cqueue.c
+                ../../../../crf/src/crf.c
+                ../../../../crf/src/cbits.c
+                ../../../../unity/extras/fixture/src/unity_fixture.c
+                ../../../../unity/extras/memory/src/unity_memory.c
+                ../../../../unity/src/unity.c
                 )
 
 include_directories(tinc
@@ -24,10 +24,10 @@ include_directories(tinc
                 ../../spi_master/inc
                 ../../interfaces/test/inc
                 ../../interfaces/inc
-                ../../../../crf/inc
-                ../../../../../unity/extras/fixture/src
-                ../../../../../unity/extras/memory/src
-                ../../../../../unity/src
+                ../../../crf/inc
+                ../../../../unity/extras/fixture/src
+                ../../../../unity/extras/memory/src
+                ../../../../unity/src
                 )
 
 

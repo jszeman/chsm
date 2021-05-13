@@ -16,25 +16,25 @@ set(test_files  src/main.c
                 ../src/sdo_ul.c
                 ../src/sdo_dl.c
                 ../../interfaces/src/sys_if.c
-                ../../../../../crf/src/chsm.c
-                ../../../../../crf/src/cvalue.c
-                ../../../../../crf/src/cpool.c
-                ../../../../../crf/src/cqueue.c
-                ../../../../../crf/src/crf.c
-                ../../../../../crf/src/cbits.c
-                ../../../../../unity/extras/fixture/src/unity_fixture.c
-                ../../../../../unity/extras/memory/src/unity_memory.c
-                ../../../../../unity/src/unity.c
+                ../../../../crf/src/chsm.c
+                ../../../../crf/src/cvalue.c
+                ../../../../crf/src/cpool.c
+                ../../../../crf/src/cqueue.c
+                ../../../../crf/src/crf.c
+                ../../../../crf/src/cbits.c
+                ../../../../unity/extras/fixture/src/unity_fixture.c
+                ../../../../unity/extras/memory/src/unity_memory.c
+                ../../../../unity/src/unity.c
                 )
 
 include_directories(tinc
                 inc
                 ../inc
                 ../../interfaces/inc
-                ../../../../crf/inc
-                ../../../../../unity/extras/fixture/src
-                ../../../../../unity/extras/memory/src
-                ../../../../../unity/src
+                ../../../crf/inc
+                ../../../../unity/extras/fixture/src
+                ../../../../unity/extras/memory/src
+                ../../../../unity/src
                 )
 
 

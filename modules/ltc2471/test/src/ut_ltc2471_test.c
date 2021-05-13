@@ -30,7 +30,7 @@ const cevent_tst*		ltc2471_events_apst[12];
 ltc2471_tst				ltc2471_st;
 
 
-ltc2471_tst *self = 	ltc2471_st; // This is necessary for macros like ltc2471_READ_PERIOD to work here
+ltc2471_tst *self = 	&ltc2471_st; // This is necessary for macros like ltc2471_READ_PERIOD to work here
 
 chsm_tst*				hsm_apst[] = {
 	(chsm_tst*)(&i2c_master_st),
