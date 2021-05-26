@@ -21,5 +21,9 @@ typedef enum sys_signals_ten
  * Constant event definitions.
  */
 extern const cevent_tst sys_event_reset_st;
+extern const cevent_tst sys_event_tick_1ms_st;
+extern const cevent_tst sys_event_tick_10ms_st;
+extern const cevent_tst sys_event_tick_100ms_st;
+extern const cevent_tst sys_event_tick_1s_st;
 
 #endif
