@@ -51,27 +51,28 @@ void ltc2471_send(chsm_tst *self, const cevent_tst *e_pst)
     //printf("\n%s\n", __FUNCTION__);
 	switch(e_pst->sig)
 	{
+		case SIG_LTC2471_SAMPLE:
+			CRF_POST(e_pst, &q_st);
+			break;
+
 		default:
 			CRF_POST(e_pst, &i2c_master_st);
 	}
 }
 
-static void drv_tick(uint32_t tick_cnt_u32)
+static void tick_ms(uint32_t tick_cnt_u32)
 {
-    for (uint32_t i=0; i<tick_cnt_u32; i++)
-    {
-        drv_mock_st.tick(&drv_mock_st);
+	while(tick_cnt_u32--)
+	{
+		drv_mock_st.tick(&drv_mock_st);
+
+		CRF_POST(&sys_event_tick_1ms_st, &ltc2471_st);
 
 		while(CRF_STEP())
 		{
 			printf("|");
 		}
-    }
-}
-
-static void crf_run()
-{
-	drv_tick(1000);
+	}
 }
 
 TEST_SETUP(ltc2471)
@@ -116,6 +117,65 @@ TEST_TEAR_DOWN(ltc2471)
  */
 TEST(ltc2471, init)
 {
+	//tick_ms(10);
+}
+
+/*
+ * Read one sample
+ */
+TEST(ltc2471, read_one)
+{
+	i2c_mock_slave_device_tst dev_st = {
+        .address_u8 = 0x12,
+        .nack_idx_u16 = 20,
+		.tx_data_au8 = {0x55, 0x66, 0x77, 0x88, 0x99, 0xaa}
+    };
+
+	
+	const ltc2471_sample_tst* s_pst;
+
+    drv_mock_st.slave_pst = &dev_st;
+
+	tick_ms(14);
+
+	s_pst = (ltc2471_sample_tst*)q_st.get(&q_st);
+	TEST_ASSERT(s_pst);
+	TEST_ASSERT_EQUAL(SIG_LTC2471_SAMPLE, s_pst->super.sig);
+	TEST_ASSERT_EQUAL_HEX(0x5566, s_pst->sample_u16);
+}
+
+/*
+ * Read two samples
+ */
+TEST(ltc2471, read_two)
+{
+	i2c_mock_slave_device_tst dev_st = {
+        .address_u8 = 0x12,
+        .nack_idx_u16 = 20,
+		.tx_data_au8 = {0x55, 0x66, 0x77, 0x88, 0x99, 0xaa}
+    };
+
+	
+	const ltc2471_sample_tst* s_pst;
+
+    drv_mock_st.slave_pst = &dev_st;
+
+	tick_ms(14);
+
+	s_pst = (ltc2471_sample_tst*)q_st.get(&q_st);
+	TEST_ASSERT(s_pst);
+	TEST_ASSERT_EQUAL(SIG_LTC2471_SAMPLE, s_pst->super.sig);
+	TEST_ASSERT_EQUAL_HEX(0x5566, s_pst->sample_u16);
+
+	s_pst = (ltc2471_sample_tst*)q_st.get(&q_st);
+	TEST_ASSERT_NULL(s_pst);
+
+	tick_ms(14);
+
+	s_pst = (ltc2471_sample_tst*)q_st.get(&q_st);
+	TEST_ASSERT(s_pst);
+	TEST_ASSERT_EQUAL(SIG_LTC2471_SAMPLE, s_pst->super.sig);
+	TEST_ASSERT_EQUAL_HEX(0x7788, s_pst->sample_u16);
 }
 
 
@@ -124,8 +184,8 @@ TEST_GROUP_RUNNER(ltc2471)
 {
 	RUN_TEST_CASE(ltc2471, init);
 
-	//RUN_TEST_CASE(ltc2471, init);
-	//RUN_TEST_CASE(ltc2471, init);
+	RUN_TEST_CASE(ltc2471, read_one);
+	RUN_TEST_CASE(ltc2471, read_two);
 	//RUN_TEST_CASE(ltc2471, init);
 	//RUN_TEST_CASE(ltc2471, init);
 	//RUN_TEST_CASE(ltc2471, init);

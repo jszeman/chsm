@@ -9,15 +9,16 @@ set(test_files  src/main.c
                 ../../i2c_master/src/i2c_master.c
                 ../../i2c_master/src/i2c_master_functions.c
                 ../../interfaces/test/src/ut_i2c_driver_mock.c
+                ../../interfaces/src/sys_if.c
                 ../../../../crf/src/chsm.c
                 ../../../../crf/src/cvalue.c
                 ../../../../crf/src/cpool.c
                 ../../../../crf/src/cqueue.c
                 ../../../../crf/src/crf.c
                 ../../../../crf/src/cbits.c
-                ../../../../unity/extras/fixture/src/unity_fixture.c
-                ../../../../unity/extras/memory/src/unity_memory.c
-                ../../../../unity/src/unity.c
+                ../../../../../unity/extras/fixture/src/unity_fixture.c
+                ../../../../../unity/extras/memory/src/unity_memory.c
+                ../../../../../unity/src/unity.c
                 )
 
 include_directories(tinc
