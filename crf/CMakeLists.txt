@@ -24,5 +24,5 @@ target_compile_definitions(crf PUBLIC
 
 include(diagnostic)
 set(debug on)
-set(autodetect_toolchain on)
+# set(autodetect_toolchain on)
 diagnostic(crf)
