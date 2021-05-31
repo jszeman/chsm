@@ -13,20 +13,18 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../../cmake/utils")
 
 message(STATUS "Using toolchain file: ${CMAKE_TOOLCHAIN_FILE}.")
 
-# add_subdirectory(../../../Unity)
+include(FetchContent)
 
-# include(FetchContent)
+FetchContent_Declare(
+  unity
+  GIT_REPOSITORY https://github.com/ThrowTheSwitch/Unity.git
+  GIT_TAG        origin/master
+  SOURCE_DIR     ${PROJECT_SOURCE_DIR}/../../deps/unity
+  )
 
-# FetchContent_Declare(
-#   unity
-#   GIT_REPOSITORY https://github.com/ThrowTheSwitch/Unity.git
-#   GIT_TAG        origin/master
-#   SOURCE_DIR     ${PROJECT_SOURCE_DIR}/../../deps/unity
-#   )
+set(FETCHCONTENT_QUIET OFF)
 
-# set(FETCHCONTENT_QUIET OFF)
-
-# FetchContent_MakeAvailable( unity )
+FetchContent_MakeAvailable( unity )
 
 add_executable(crf_test 
                 tsrc/main.c
