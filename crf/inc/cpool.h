@@ -12,7 +12,17 @@
 #include <stdbool.h>
 #include "cevent.h"
 #include "atomic_ops.h"
+#include <limits.h>
 
+#if (CHAR_BIT == 16)
+    #ifndef COMMON_TYPES_H_
+        typedef unsigned char       uint8_t;
+        typedef char                int8_t;
+    #endif
+#endif
+#if (CHAR_BIT == 8)
+typedef unsigned char               uint8;
+#endif
 
 typedef struct cpool_tst cpool_tst;
 

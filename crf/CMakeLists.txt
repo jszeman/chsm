@@ -1,15 +1,28 @@
-cmake_minimum_required(VERSION 3.13.4)
+cmake_minimum_required(VERSION 3.19)
 
-project(crf_lib)
+project(crf_lib 
+        LANGUAGES C)
 
-set(lib_files   src/chsm.c
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../../cmake/utils")
+
+add_library(crf   
+                src/cbits.c
+                src/chsm.c
                 src/cpool.c
                 src/cqueue.c
                 src/crf.c
+                src/cvalue.c
                 )
+                
+target_include_directories(crf PUBLIC
+                inc
+                ../modules/interfaces/inc)
 
-include_directories(inc)
+target_compile_definitions(crf PUBLIC 
+                NDEBUG
+)
 
-add_library(crf ${lib_files})
-
-add_compile_definitions(NDEBUG)
+include(diagnostic)
+set(debug on)
+set(autodetect_toolchain on)
+diagnostic(crf)
