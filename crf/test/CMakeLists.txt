@@ -13,18 +13,7 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../../cmake/utils")
 
 message(STATUS "Using toolchain file: ${CMAKE_TOOLCHAIN_FILE}.")
 
-include(FetchContent)
-
-FetchContent_Declare(
-  unity
-  GIT_REPOSITORY https://github.com/ThrowTheSwitch/Unity.git
-  GIT_TAG        origin/master
-  SOURCE_DIR     ${PROJECT_SOURCE_DIR}/../../deps/unity
-  )
-
-set(FETCHCONTENT_QUIET OFF)
-
-FetchContent_MakeAvailable( unity )
+include(Fetch_unity)
 
 add_executable(crf_test 
                 tsrc/main.c
@@ -50,17 +39,12 @@ add_executable(crf_test
                 ../src/cqueue.c
                 ../src/crf.c
                 ../src/cbits.c
-                ../../deps/unity/extras/fixture/src/unity_fixture.c
-                ../../deps/unity/extras/memory/src/unity_memory.c
-                ../../deps/unity/src/unity.c
                 )
 
 target_include_directories(crf_test PRIVATE
                 tinc
                 ../inc
-                ../../deps/unity/extras/fixture/src
-                ../../deps/unity/extras/memory/src
-                ../../deps/unity/src)
+                )
 
 
 target_compile_options(crf_test PRIVATE 
@@ -74,16 +58,13 @@ target_compile_definitions(crf_test PRIVATE
                 NDEBUG)
 
 target_link_options(crf_test PRIVATE
-    -Wl,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map   
+    -Wl,-Map=${PROJECT_BINARY_DIR}/bin/${PROJECT_NAME}.map   
 )
-# target_link_libraries(crf_test PRIVATE
-#                 unity
-#                 )
 
-# target_link_directories(crf_test PRIVATE unity)
-
-# get_target_property(list unity INCLUDE_DIRECTORIES)
-
+target_link_libraries(crf_test
+                unity
+                )
+                
 include(diagnostic)
 set(debug on)
 set(autodetect off)
