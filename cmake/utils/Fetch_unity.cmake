@@ -3,8 +3,7 @@ include(FetchContent)
 set(FETCHCONTENT_QUIET OFF)
 
 get_filename_component(DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
-get_filename_component(PARENT_DIR ${DIR} DIRECTORY)
-get_filename_component(MODULE_NAME ${PARENT_DIR} NAME)
+get_filename_component(MODULE_NAME ${DIR} NAME)
 message("MODULE_NAME: -> ${MODULE_NAME}")
 
 if(MODULE_NAME STREQUAL "crf")
