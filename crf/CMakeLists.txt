@@ -22,6 +22,7 @@ target_compile_definitions(crf PRIVATE
 )
 
 # Includes ---------------------------------------------------------------------
+
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
@@ -53,6 +54,8 @@ set_target_properties(${PROJECT_NAME}
         PUBLIC_HEADER       "${${PROJECT_NAME}_PUBLIC_HEADERS}"
         EXPORT_NAME         framework
 )
+
+# Install ------------------------------------------------------------------------
 
 write_basic_package_version_file(${PROJECT_NAME}ConfigVersion.cmake
     VERSION       ${PROJECT_VERSION}
