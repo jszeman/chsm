@@ -4,15 +4,15 @@ project(crf
         VERSION 1.0.0
         LANGUAGES C)
 
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../../cmake/utils")
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/utils")
 
 add_library(crf   
-                src/cbits.c
-                src/chsm.c
-                src/cpool.c
-                src/cqueue.c
-                src/crf.c
-                src/cvalue.c
+                crf/src/cbits.c
+                crf/src/chsm.c
+                crf/src/cpool.c
+                crf/src/cqueue.c
+                crf/src/crf.c
+                crf/src/cvalue.c
                 )
 
 add_library(${PROJECT_NAME}::framework ALIAS ${PROJECT_NAME})
@@ -29,20 +29,20 @@ include(CMakePackageConfigHelpers)
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/inc>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../modules/interfaces/inc>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/crf/inc>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/modules/interfaces/inc>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>
 )
 
 set(${PROJECT_NAME}_PUBLIC_HEADERS
-        inc/atomic_ops.h 
-        inc/cbits.h      
-        inc/cevent.h     
-        inc/chsm.h       
-        inc/cpool.h      
-        inc/cqueue.h     
-        inc/crf.h        
-        inc/cvalue.h     
+        crf/inc/atomic_ops.h 
+        crf/inc/cbits.h      
+        crf/inc/cevent.h     
+        crf/inc/chsm.h       
+        crf/inc/cpool.h      
+        crf/inc/cqueue.h     
+        crf/inc/crf.h        
+        crf/inc/cvalue.h     
     
 )
 
