@@ -52,7 +52,7 @@ target_link_options(ltc2471_test PRIVATE
     -Wl,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map   
 )
 
-target_link_libraries(ltc2471_test PRIVATE unity crf)
+target_link_libraries(ltc2471_test PRIVATE unity)
 
 set(debug ON)
 

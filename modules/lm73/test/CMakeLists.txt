@@ -12,8 +12,6 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}../../../../cmake/utils")
 
 include(Fetch_unity)
 
-add_subdirectory(../../../crf ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR} )
-
 add_executable(lm73_test 
                 src/main.c
                 src/ut_lm73_test.c
@@ -22,12 +20,12 @@ add_executable(lm73_test
                 ../../i2c_master/src/i2c_master.c
                 ../../i2c_master/src/i2c_master_functions.c
                 ../../interfaces/test/src/ut_i2c_driver_mock.c
-                # ../../../crf/src/chsm.c
-                # ../../../crf/src/cvalue.c
-                # ../../../crf/src/cpool.c
-                # ../../../crf/src/cqueue.c
-                # ../../../crf/src/crf.c
-                # ../../../crf/src/cbits.c
+                ../../../crf/src/chsm.c
+                ../../../crf/src/cvalue.c
+                ../../../crf/src/cpool.c
+                ../../../crf/src/cqueue.c
+                ../../../crf/src/crf.c
+                ../../../crf/src/cbits.c
                 )
 
 target_include_directories(lm73_test PRIVATE
@@ -53,7 +51,7 @@ target_link_options(lm73_test PRIVATE
     -Wl,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map   
 )
 
-target_link_libraries(lm73_test PRIVATE unity crf)
+target_link_libraries(lm73_test PRIVATE unity)
 
 set(debug ON)
 
