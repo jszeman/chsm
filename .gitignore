@@ -2,3 +2,6 @@
 /**/__pycache__/
 /**/build/*
 !/**/build/.keep
+
+#dependencies
+**/deps/**

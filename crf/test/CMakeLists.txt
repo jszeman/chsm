@@ -1,8 +1,22 @@
-cmake_minimum_required(VERSION 3.13.4)
+cmake_minimum_required(VERSION 3.19)
 
-project(CrfTest)
+project(CrfTest
+        LANGUAGES C)
 
-set(test_files  tsrc/main.c
+include(GNUInstallDirs)
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
+
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../../cmake/utils")
+
+message(STATUS "Using toolchain file: ${CMAKE_TOOLCHAIN_FILE}.")
+
+include(Fetch_unity)
+
+add_executable(crf_test 
+                tsrc/main.c
                 tsrc/cpool_test.c
                 tsrc/cqueue_test.c
                 tsrc/chsm_test.c
@@ -18,26 +32,40 @@ set(test_files  tsrc/main.c
                 tsrc/bus_driver_functions.c
                 tsrc/dev_driver.c
                 tsrc/dev_driver_functions.c
+                tsrc/atomic_functions.c
                 ../src/chsm.c
                 ../src/cvalue.c
                 ../src/cpool.c
                 ../src/cqueue.c
                 ../src/crf.c
                 ../src/cbits.c
-                ../../../unity/extras/fixture/src/unity_fixture.c
-                ../../../unity/extras/memory/src/unity_memory.c
-                ../../../unity/src/unity.c
                 )
 
-include_directories(tinc
-                    ../inc
-                    ../../../unity/extras/fixture/src
-                    ../../../unity/extras/memory/src
-                    ../../../unity/src)
+target_include_directories(crf_test PRIVATE
+                tinc
+                ../inc
+                )
 
 
-add_executable(crf_test ${test_files})
+target_compile_options(crf_test PRIVATE 
+                -Wall 
+                -Wextra 
+                -pedantic 
+                # -Werror
+                )
 
-add_compile_options(-Wall -Wextra -pedantic -Werror)
+target_compile_definitions(crf_test PRIVATE
+                NDEBUG)
 
-add_compile_definitions(NDEBUG)
+target_link_options(crf_test PRIVATE
+    -Wl,-Map=${PROJECT_BINARY_DIR}/bin/${PROJECT_NAME}.map   
+)
+
+target_link_libraries(crf_test
+                unity
+                )
+                
+include(diagnostic)
+set(debug on)
+set(autodetect off)
+diagnostic(crf_test)
