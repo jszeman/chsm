@@ -1,14 +1,5 @@
 cmake_minimum_required(VERSION 3.19)
 
-project(CrfTest
-        LANGUAGES C)
-
-include(GNUInstallDirs)
-
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
-
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../../cmake/utils")
 
 message(STATUS "Using toolchain file: ${CMAKE_TOOLCHAIN_FILE}.")
@@ -52,13 +43,13 @@ target_compile_options(crf_test PRIVATE
                 -Wextra 
                 -pedantic 
                 # -Werror
+                -Wl,-Map=${PROJECT_BINARY_DIR}/bin/crf_test.map   
                 )
 
 target_compile_definitions(crf_test PRIVATE
                 NDEBUG)
 
 target_link_options(crf_test PRIVATE
-    -Wl,-Map=${PROJECT_BINARY_DIR}/bin/${PROJECT_NAME}.map   
 )
 
 target_link_libraries(crf_test
@@ -69,3 +60,9 @@ include(diagnostic)
 set(debug on)
 set(autodetect off)
 diagnostic(crf_test)
+
+enable_testing()
+
+add_test(NAME crf_test
+        COMMAND crf_test
+       )

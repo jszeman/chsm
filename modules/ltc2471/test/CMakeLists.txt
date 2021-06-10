@@ -1,13 +1,5 @@
 cmake_minimum_required(VERSION 3.19)
 
-project(example_ltc2471_test)
-
-include(GNUInstallDirs)
-
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
-
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}../../../../cmake/utils")
 
 include(Fetch_unity)
@@ -52,9 +44,15 @@ target_link_options(ltc2471_test PRIVATE
     -Wl,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map   
 )
 
-target_link_libraries(ltc2471_test PRIVATE unity crf)
+target_link_libraries(ltc2471_test PRIVATE unity)
 
 set(debug ON)
 
 include(diagnostic)
 diagnostic(ltc2471_test)
+
+enable_testing()
+
+add_test(NAME ltc2471_test
+        COMMAND ltc2471_test
+       )

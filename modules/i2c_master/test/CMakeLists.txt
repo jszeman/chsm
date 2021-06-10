@@ -1,13 +1,5 @@
 cmake_minimum_required(VERSION 3.19)
 
-project(example_i2c_master_test)
-
-include(GNUInstallDirs)
-
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
-
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}../../../../cmake/utils")
 
 include(Fetch_unity)
@@ -55,3 +47,9 @@ set(debug ON)
 
 include(diagnostic)
 diagnostic(i2c_master_test)
+
+enable_testing()
+
+add_test(NAME i2c_master_test
+        COMMAND i2c_master_test
+       )
