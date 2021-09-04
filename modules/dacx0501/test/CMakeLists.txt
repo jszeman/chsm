@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.19)
 
-project(example_ltc2471_test)
+project(example_dacx0501_test)
 
 include(GNUInstallDirs)
 
@@ -12,11 +12,11 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}../../../../cmake/utils")
 
 include(Fetch_unity)
 
-add_executable(ltc2471_test 
+add_executable(dacx0501_test 
                 src/main.c
-                src/ut_ltc2471_test.c
-                ../src/ltc2471.c
-                ../src/ltc2471_functions.c
+                src/ut_dacx0501_test.c
+                ../src/dacx0501.c
+                ../src/dacx0501_functions.c
                 ../../interfaces/src/sys_if.c
                 ../../i2c_master/src/i2c_master.c
                 ../../i2c_master/src/i2c_master_functions.c
@@ -29,7 +29,7 @@ add_executable(ltc2471_test
                 ../../../crf/src/cbits.c
                 )
 
-target_include_directories(ltc2471_test PRIVATE
+target_include_directories(dacx0501_test PRIVATE
                 inc
                 ../inc
                 ../../i2c_master/inc
@@ -38,23 +38,23 @@ target_include_directories(ltc2471_test PRIVATE
                 ../../../crf/inc
                 )
 
-target_compile_definitions(ltc2471_test PRIVATE 
+target_compile_definitions(dacx0501_test PRIVATE 
                 NDEBUG
                 SIGNAL_CLASSES_H="signal_classes.h")
 
-target_compile_options(ltc2471_test PRIVATE 
+target_compile_options(dacx0501_test PRIVATE 
     -Wall 
     -Wextra 
     -pedantic 
     # -Werror
     )
-target_link_options(ltc2471_test PRIVATE
+target_link_options(dacx0501_test PRIVATE
     -Wl,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map   
 )
 
-target_link_libraries(ltc2471_test PRIVATE unity)
+target_link_libraries(dacx0501_test PRIVATE unity)
 
 set(debug ON)
 
 include(diagnostic)
-diagnostic(ltc2471_test)
+diagnostic(dacx0501_test)

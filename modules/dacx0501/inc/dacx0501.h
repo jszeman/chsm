@@ -24,7 +24,6 @@ typedef struct dacx0501_sample_tst
 {
     cevent_tst          super;              // Signal and GC stuff
     uint16_t            sample_u16;         // Sample
-    uint16_t            id_u16;             // ADC ID
 } dacx0501_sample_tst;
 
 /*
@@ -41,7 +40,7 @@ typedef struct dacx0501_tst
 {
     /* PUBLIC */
     chsm_tst            super;
-    dacx0501_cfg_tst     config_st;
+    dacx0501_cfg_tst    config_st;
 
     /* PRIVATE */
 
@@ -49,16 +48,11 @@ typedef struct dacx0501_tst
 
     uint8_t             rx_buff_au8[4];
 
-    uint16_t            last_sample_u16;
-    bool                sample_valid_b;
+    bool                online_b;
 
     uint32_t            timer_cnt_u32;
 } dacx0501_tst;
 
-#define DACX0501_READ_TIMEOUT (((dacx0501_tst *)self)->config_st.read_timeout_ms_u16)
-
 chsm_result_ten dacx0501_top(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
-
-bool dacx0501_timeout(chsm_tst *self, const cevent_tst *e_pst, uint32_t timeout_u32);
 
 #endif
