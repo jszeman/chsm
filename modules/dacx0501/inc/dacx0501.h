@@ -45,13 +45,17 @@ typedef struct dacx0501_tst
     /* PRIVATE */
 
     i2c_transaction_tst t_st;
-
-    uint8_t             rx_buff_au8[4];
-
-    bool                online_b;
+    uint8_t             tx_buff_au8[4];
 
     uint32_t            timer_cnt_u32;
+
+    uint16_t            sample_u16;
+    bool                sample_valid_b;
 } dacx0501_tst;
+
+#define DACX0501_TIMEOUT 10
+
+bool dacx0501_timeout_ms(chsm_tst *_self, const cevent_tst *e_pst, uint32_t timeout_u32);
 
 chsm_result_ten dacx0501_top(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
 

@@ -117,12 +117,12 @@ void chsm_exit_children(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_
 extern const cevent_tst chsm_init_event_st;
 
 static inline chsm_result_ten chsm_handle_in_parent(chsm_tst *self, chsm_call_ctx_tst *ctx_pst,
-	chsm_state_tpft parent, void *exit_func, bool guards_only_b)
+	chsm_state_tpft parent, chsm_user_func_tpft exit_func, bool guards_only_b)
 {
 	self->state_handler_pft = parent;
 	if (exit_func)
 	{
-		*(ctx_pst->exit_ppft) = (chsm_user_func_tpft)exit_func;
+		*(ctx_pst->exit_ppft) = exit_func;
 		ctx_pst->exit_ppft++;
 	}
 
@@ -143,11 +143,15 @@ static inline chsm_result_ten chsm_transition(chsm_tst *self, chsm_state_tpft ta
 
 static inline chsm_result_ten chsm_ignored(chsm_tst *self)
 {
+	(void)self;
+
     return C_RES_IGNORED;
 }
 
 static inline chsm_result_ten chsm_handled(chsm_tst *self)
 {
+	(void)self;
+	
     return C_RES_HANDLED;
 }
 
