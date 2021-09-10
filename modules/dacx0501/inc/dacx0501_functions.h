@@ -1,7 +1,7 @@
 #ifndef DACX0501_FUNCTIONS_H
 #define DACX0501_FUNCTIONS_H
 
-/*Generated with CHSM v0.0.0 at 2021.09.06 08.49.22*/
+/*Generated with CHSM v0.0.0 at 2021.09.09 07.12.55*/
 
 #include "dacx0501.h"
 #include "chsm.h"
@@ -21,8 +21,6 @@ void dacx0501_set_valid_sample(chsm_tst *self, const cevent_tst *e_pst);
 
 void dacx0501_write_sample(chsm_tst *self, const cevent_tst *e_pst);
 
-
-bool dacx0501_is_different(chsm_tst *self, const cevent_tst *e_pst);
 
 typedef enum dacx0501_state_id_ten
 {

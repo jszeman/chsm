@@ -78,14 +78,6 @@ void dacx0501_write_sample(chsm_tst *_self, const cevent_tst *e_pst)
     CRF_EMIT(&self->t_st);
 }
 
-bool dacx0501_is_different(chsm_tst *_self, const cevent_tst *e_pst)
-{
-    dacx0501_tst* self = (dacx0501_tst *)_self;
-    CRF_SIG_VAR(SIG_DACX0501_SAMPLE, s_pst, e_pst);
-
-    return s_pst->sample_u16 == self->sample_u16 ? false : true;
-}
-
 bool dacx0501_timeout_ms(chsm_tst *_self, const cevent_tst *e_pst, uint32_t timeout_u32)
 {
     CRF_UNUSED(e_pst);

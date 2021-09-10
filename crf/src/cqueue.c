@@ -51,6 +51,12 @@ static int32_t cqueue_put(cqueue_tst *self, const cevent_tst *e)
 
 	// 1.
 
+	uint16_t event_cnt_u16 = head - self->tail;
+	if (event_cnt_u16 > self->max_fill)
+	{
+		self->max_fill = event_cnt_u16;
+	}
+
 	if (head - self->tail >= self->max)  // 2.
 	{
 	    // 3.
@@ -84,6 +90,12 @@ static int32_t cqueue_put_left(cqueue_tst *self, const cevent_tst *e_pst)
 	}
 
 	self->tail--;
+
+	uint16_t event_cnt_u16 = self->head - self->tail;
+	if (event_cnt_u16 > self->max_fill)
+	{
+		self->max_fill = event_cnt_u16;
+	}
 
 	cevent_ref_cnt_inc(e_pst);
 

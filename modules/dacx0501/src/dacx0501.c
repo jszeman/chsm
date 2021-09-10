@@ -1,4 +1,4 @@
-/*Generated with CHSM v0.0.0 at 2021.09.06 08.49.22*/
+/*Generated with CHSM v0.0.0 at 2021.09.09 07.12.55*/
 #include "cevent.h"
 #include "chsm.h"
 #include "dacx0501.h"
@@ -31,14 +31,10 @@ static chsm_result_ten s_idle(chsm_tst *self, const cevent_tst  *e_pst, chsm_cal
     switch(e_pst->sig)
     {
         case SIG_DACX0501_SAMPLE:
-            if(dacx0501_is_different(self, e_pst))
-            {
-                chsm_exit_children(self, e_pst, ctx_pst);
-                dacx0501_write_sample(self, e_pst);
-                dacx0501_reset_timer(self, e_pst);
-                return chsm_transition(self, s_busy);
-            }
-            break;
+            chsm_exit_children(self, e_pst, ctx_pst);
+            dacx0501_write_sample(self, e_pst);
+            dacx0501_reset_timer(self, e_pst);
+            return chsm_transition(self, s_busy);
 
         default:
             guards_only_b = false;
