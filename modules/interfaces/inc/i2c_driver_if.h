@@ -24,6 +24,7 @@ typedef struct i2c_driver_status_bits_tst
     uint16_t    busy_u16: 1; // The peripheral is busy transmitting or receiving data.
     uint16_t    addr_nack_u16: 1;
     uint16_t    data_nack_u16: 1;
+    uint16_t    bus_busy_u16: 1;
 } i2c_driver_status_bits_tst;
 
 typedef union i2c_driver_status_tun
