@@ -154,7 +154,7 @@ TEST(lm73, read_temp_twice)
 	e_pst = (lm73_temp_tst*)q_st.get(&q_st);
 	TEST_ASSERT(e_pst);
 	TEST_ASSERT_EQUAL(SIG_LM73_TEMP, e_pst->super.sig);
-	TEST_ASSERT_EQUAL(-25, e_pst->temp_C_i16);
+	TEST_ASSERT_EQUAL(-25, e_pst->temp_C_i32);
 
 	tick_ms(LM73_READ_PERIOD+1);
 
@@ -166,7 +166,7 @@ TEST(lm73, read_temp_twice)
 	e_pst = (lm73_temp_tst*)q_st.get(&q_st);
 	TEST_ASSERT(e_pst);
 	TEST_ASSERT_EQUAL(SIG_LM73_TEMP, e_pst->super.sig);
-	TEST_ASSERT_EQUAL(25, e_pst->temp_C_i16);
+	TEST_ASSERT_EQUAL(25, e_pst->temp_C_i32);
 }
 
 /* read_id_retry:
@@ -262,14 +262,14 @@ TEST(lm73, go_offline)
 	e_pst = (lm73_temp_tst*)q_st.get(&q_st);
 	TEST_ASSERT(e_pst);
 	TEST_ASSERT_EQUAL(SIG_LM73_TEMP, e_pst->super.sig);
-	TEST_ASSERT_EQUAL(-25, e_pst->temp_C_i16);
+	TEST_ASSERT_EQUAL(-25, e_pst->temp_C_i32);
 
 	tick_ms(LM73_READ_PERIOD + 1);
 
 	e_pst = (lm73_temp_tst*)q_st.get(&q_st);
 	TEST_ASSERT(e_pst);
 	TEST_ASSERT_EQUAL(SIG_LM73_TEMP, e_pst->super.sig);
-	TEST_ASSERT_EQUAL(25, e_pst->temp_C_i16);
+	TEST_ASSERT_EQUAL(25, e_pst->temp_C_i32);
 	
 	TEST_ASSERT_TRUE(lm73_st.valid_b);
 	
@@ -312,7 +312,7 @@ TEST(lm73, triggered_read)
 	e_pst = (lm73_temp_tst*)q_st.get(&q_st);
 	TEST_ASSERT(e_pst);
 	TEST_ASSERT_EQUAL(SIG_LM73_TEMP, e_pst->super.sig);
-	TEST_ASSERT_EQUAL(-25, e_pst->temp_C_i16);
+	TEST_ASSERT_EQUAL(-25, e_pst->temp_C_i32);
 
 	tick_ms(1);
 
@@ -328,7 +328,7 @@ TEST(lm73, triggered_read)
 	e_pst = (lm73_temp_tst*)q_st.get(&q_st);
 	TEST_ASSERT(e_pst);
 	TEST_ASSERT_EQUAL(SIG_LM73_TEMP, e_pst->super.sig);
-	TEST_ASSERT_EQUAL(25, e_pst->temp_C_i16);
+	TEST_ASSERT_EQUAL(25, e_pst->temp_C_i32);
 }
 
 TEST_GROUP_RUNNER(lm73)
