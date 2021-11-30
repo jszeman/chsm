@@ -51,6 +51,8 @@ bool crf_init(crf_tst *self , chsm_tst **chsm_ap, cpool_tst *pool_ast, uint16_t 
 #define CRF_SIG_VAR(SIGNAL, VAR, E_PST)	TYPEOF(SIGNAL)* VAR = (TYPEOF(SIGNAL)*)E_PST
 #define CRF_SET_SEND_FUNC(hsm_pst, func) CRF_SEND_FUNC(hsm_pst) = (void (*)(chsm_tst *, const cevent_tst *))func
 
+#define CRF_UNUSED(p) (void)(p)
+
 extern crf_tst crf;
 
 #endif /* INC_CRF_H_ */

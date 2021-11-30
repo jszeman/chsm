@@ -1,0 +1,23 @@
+cmake_minimum_required(VERSION 3.19)
+
+add_library(spi_master STATIC 
+        src/spi_master.c
+        src/spi_master_functions.c
+)
+
+target_compile_definitions(spi_master PRIVATE 
+        NDEBUG
+)
+
+target_include_directories(spi_master
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/inc>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/spi_master>
+)
+
+target_link_libraries(spi_master PUBLIC
+crf_interfaces
+)
+
+include(diagnostic)
+diagnostic(spi_master)

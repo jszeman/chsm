@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.19)
 
 
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}../../../../cmake/utils")
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../../../cmake/utils")
 
 include(Fetch_unity)
 
@@ -35,9 +35,9 @@ NDEBUG
 SIGNAL_CLASSES_H="signal_classes.h")
 
 target_compile_options(lm73_test PRIVATE 
--Wall 
--Wextra 
--pedantic 
+# -Wall 
+# -Wextra 
+# -pedantic 
 # -Werror
 )
 target_link_options(lm73_test PRIVATE
