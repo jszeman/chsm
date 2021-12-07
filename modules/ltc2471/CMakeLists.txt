@@ -5,6 +5,8 @@ add_library(ltc2471 STATIC
         src/ltc2471_functions.c
 )
 
+add_library(chsm::ltc2471 ALIAS ltc2471)
+
 target_compile_definitions(ltc2471 PRIVATE 
         NDEBUG
 )

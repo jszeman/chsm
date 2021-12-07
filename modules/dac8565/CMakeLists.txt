@@ -4,6 +4,8 @@ add_library(dac8565 STATIC
     src/dac8565_functions.c
 )
 
+add_library(chsm::dac8565 ALIAS dac8565)
+
 target_compile_definitions(dac8565 PRIVATE 
                 NDEBUG
 )

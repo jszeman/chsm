@@ -5,6 +5,8 @@ add_library(spi_master STATIC
         src/spi_master_functions.c
 )
 
+add_library(chsm::spi_master ALIAS spi_master)
+
 target_compile_definitions(spi_master PRIVATE 
         NDEBUG
 )

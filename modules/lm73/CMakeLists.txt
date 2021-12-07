@@ -5,6 +5,8 @@ add_library(lm73 STATIC
         src/lm73_functions.c
 )
 
+add_library(chsm::lm73 ALIAS lm73)
+
 target_compile_definitions(lm73 PRIVATE 
         NDEBUG
 )

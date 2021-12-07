@@ -1,7 +1,7 @@
 #ifndef LM73_FUNCTIONS_H
 #define LM73_FUNCTIONS_H
 
-/*Generated with CHSM v0.0.0 at 2021.11.25 15.25.42*/
+/*Generated with CHSM v0.0.0 at 2021.12.03 13.06.03*/
 
 #include "lm73.h"
 #include "chsm.h"
@@ -26,10 +26,6 @@ void lm73_reset_pointer(chsm_tst *self, const cevent_tst *e_pst);
 
 /*Reset the timer counter.*/
 void lm73_reset_timer(chsm_tst *self, const cevent_tst *e_pst);
-
-void lm73_set_full_powerdown(chsm_tst *self, const cevent_tst *e_pst);
-
-void lm73_set_full_powerup(chsm_tst *self, const cevent_tst *e_pst);
 
 void lm73_set_resolution(chsm_tst *self, const cevent_tst *e_pst);
 
@@ -65,8 +61,6 @@ typedef enum lm73_state_id_ten
     S_SET_RESOLUTION = 9,
     S_SET_CONFIG = 7,
     S_GET_RESOLUTION = 8,
-    S_SET_FULL_POWERDOWN = 10,
-    S_SET_FULL_POWERUP = 11,
     S_UNPLUGGED = 13,
 } lm73_state_id_ten;
 

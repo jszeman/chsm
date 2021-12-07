@@ -4,6 +4,7 @@ add_library(i2c_master INTERFACE
         src/i2c_master.c
         src/i2c_master_functions.c
 )
+add_library(chsm::i2c_master ALIAS i2c_master)
 
 target_compile_definitions(i2c_master INTERFACE 
         NDEBUG
@@ -16,7 +17,7 @@ INTERFACE
 )
 
 target_link_libraries(i2c_master INTERFACE
-crf_interfaces
+        crf_interfaces
 )
 
 include(diagnostic)

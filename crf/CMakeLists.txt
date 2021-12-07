@@ -8,6 +8,7 @@ add_library(crf STATIC
         src/crf.c
         src/cvalue.c
 )
+add_library(chsm::crf ALIAS crf)
 
 target_compile_definitions(crf PRIVATE 
                 NDEBUG

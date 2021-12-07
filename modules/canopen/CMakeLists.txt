@@ -12,6 +12,8 @@ add_library(canopen STATIC
         src/sdo_ul.c
 )
 
+add_library(chsm::canopen ALIAS canopen)
+
 target_compile_definitions(canopen PRIVATE 
                 NDEBUG
 )

@@ -5,6 +5,8 @@ add_library(fram STATIC
     src/fram_functions.c
 )
 
+add_library(chsm::fram ALIAS fram)
+
 target_compile_definitions(fram PRIVATE 
                 NDEBUG
 )

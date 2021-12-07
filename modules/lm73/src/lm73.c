@@ -1,4 +1,4 @@
-/*Generated with CHSM v0.0.0 at 2021.11.25 15.25.42*/
+/*Generated with CHSM v0.0.0 at 2021.12.03 13.06.03*/
 #include "cevent.h"
 #include "chsm.h"
 #include "lm73.h"
@@ -6,8 +6,6 @@
 
 
 static chsm_result_ten s_unplugged(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
-static chsm_result_ten s_set_full_powerup(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
-static chsm_result_ten s_set_full_powerdown(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
 static chsm_result_ten s_get_resolution(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
 static chsm_result_ten s_set_config(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
 static chsm_result_ten s_set_resolution(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
@@ -298,67 +296,6 @@ static chsm_result_ten s_get_resolution(chsm_tst *self, const cevent_tst  *e_pst
     }
 
     return chsm_handle_in_parent(self, ctx_pst, s_set_config, NULL, guards_only_b);
-}
-
-static chsm_result_ten s_set_full_powerdown(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst)
-{
-    bool guards_only_b=true;
-    switch(e_pst->sig)
-    {
-        case SIG_I2C_RESULT_SUCCESS:
-            if(lm73_timeout(self, e_pst, LM73_RETRY_TIMEOUT))
-            {
-                chsm_exit_children(self, e_pst, ctx_pst);
-                lm73_set_full_powerup(self, e_pst);
-                return chsm_transition(self, s_set_full_powerup);
-            }
-            break;
-
-        default:
-            guards_only_b = false;
-    }
-
-    return chsm_handle_in_parent(self, ctx_pst, s_init, NULL, guards_only_b);
-}
-
-static chsm_result_ten s_set_full_powerup(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst)
-{
-    bool guards_only_b=true;
-    switch(e_pst->sig)
-    {
-        case SIG_I2C_RESULT_SUCCESS:
-            if(lm73_timeout(self, e_pst, LM73_RETRY_TIMEOUT))
-            {
-                chsm_exit_children(self, e_pst, ctx_pst);
-                lm73_reset_timer(self, e_pst);
-                lm73_read_id(self, e_pst);
-                return chsm_transition(self, s_read_id_reg);
-            }
-            break;
-
-        case SIG_I2C_RESULT_ADDR_NACK:
-            chsm_exit_children(self, e_pst, ctx_pst);
-            lm73_set_full_powerup(self, e_pst);
-            return chsm_transition(self, s_set_full_powerup);
-
-        case SIG_I2C_RESULT_DATA_NACK:
-            chsm_exit_children(self, e_pst, ctx_pst);
-            lm73_set_full_powerup(self, e_pst);
-            return chsm_transition(self, s_set_full_powerup);
-
-        default:
-            guards_only_b = false;
-    }
-
-    if(lm73_timeout(self, e_pst, LM73_RETRY_TIMEOUT))
-    {
-        chsm_exit_children(self, e_pst, ctx_pst);
-        lm73_reset_timer(self, e_pst);
-        lm73_set_full_powerup(self, e_pst);
-        return chsm_transition(self, s_set_full_powerup);
-    }
-
-    return chsm_handle_in_parent(self, ctx_pst, s_init, NULL, guards_only_b);
 }
 
 static chsm_result_ten s_unplugged(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst)
