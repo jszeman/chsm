@@ -32,7 +32,7 @@ target_include_directories(fram_test PRIVATE
 
 target_compile_definitions(fram_test PRIVATE 
                 NDEBUG
-                SIGNAL_CLASSES_H="signal_classes.h")
+                SIGNAL_CLASSES_H="${CMAKE_CURRENT_SOURCE_DIR}/inc/signal_classes.h")
 
 target_compile_options(fram_test PRIVATE 
     -Wall 

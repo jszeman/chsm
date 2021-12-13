@@ -15,7 +15,8 @@ add_library(canopen STATIC
 add_library(chsm::canopen ALIAS canopen)
 
 target_compile_definitions(canopen PRIVATE 
-                NDEBUG
+        NDEBUG
+        SIGNAL_CLASSES_H=\"${CHSM_SIGNAL_CLASSES_H}\"
 )
 
 target_include_directories(canopen
@@ -28,5 +29,4 @@ target_link_libraries(canopen PUBLIC
 crf_interfaces
 )
 
-include(diagnostic)
 diagnostic(canopen)

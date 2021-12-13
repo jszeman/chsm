@@ -29,7 +29,7 @@ target_include_directories(spi_master_test PRIVATE
 
 target_compile_definitions(spi_master_test PRIVATE 
                 NDEBUG
-                SIGNAL_CLASSES_H="signal_classes.h")
+                SIGNAL_CLASSES_H=\"${CMAKE_CURRENT_SOURCE_DIR}/inc/signal_classes.h\")
 
 target_compile_options(spi_master_test PRIVATE 
     -Wall 
@@ -43,9 +43,6 @@ target_link_options(spi_master_test PRIVATE
 
 target_link_libraries(spi_master_test PRIVATE unity)
 
-set(debug ON)
-
-include(diagnostic)
 diagnostic(spi_master_test)
 
 enable_testing()

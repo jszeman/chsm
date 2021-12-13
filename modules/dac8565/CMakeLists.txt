@@ -8,6 +8,7 @@ add_library(chsm::dac8565 ALIAS dac8565)
 
 target_compile_definitions(dac8565 PRIVATE 
                 NDEBUG
+                SIGNAL_CLASSES_H=\"${CHSM_SIGNAL_CLASSES_H}\"
 )
 
 target_include_directories(dac8565
@@ -20,5 +21,4 @@ target_link_libraries(dac8565 PUBLIC
 crf_interfaces
 )
 
-include(diagnostic)
 diagnostic(dac8565)

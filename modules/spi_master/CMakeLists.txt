@@ -9,6 +9,7 @@ add_library(chsm::spi_master ALIAS spi_master)
 
 target_compile_definitions(spi_master PRIVATE 
         NDEBUG
+        SIGNAL_CLASSES_H=\"${CHSM_SIGNAL_CLASSES_H}\"
 )
 
 target_include_directories(spi_master

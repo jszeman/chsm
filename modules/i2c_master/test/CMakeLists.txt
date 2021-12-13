@@ -29,7 +29,7 @@ target_include_directories(i2c_master_test PRIVATE
 
 target_compile_definitions(i2c_master_test PRIVATE 
                 NDEBUG
-                SIGNAL_CLASSES_H="signal_classes.h")
+                SIGNAL_CLASSES_H="${CMAKE_CURRENT_SOURCE_DIR}/inc/signal_classes.h")
 
 target_compile_options(i2c_master_test PRIVATE 
     -Wall 
@@ -43,9 +43,6 @@ target_link_options(i2c_master_test PRIVATE
 
 target_link_libraries(i2c_master_test PRIVATE unity)
 
-set(debug ON)
-
-include(diagnostic)
 diagnostic(i2c_master_test)
 
 enable_testing()

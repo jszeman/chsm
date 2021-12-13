@@ -56,9 +56,6 @@ target_link_libraries(crf_test
                 unity
                 )
                 
-include(diagnostic)
-set(debug on)
-set(autodetect off)
 diagnostic(crf_test)
 
 enable_testing()

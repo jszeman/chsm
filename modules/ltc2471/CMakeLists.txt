@@ -9,6 +9,7 @@ add_library(chsm::ltc2471 ALIAS ltc2471)
 
 target_compile_definitions(ltc2471 PRIVATE 
         NDEBUG
+        SIGNAL_CLASSES_H=\"${CHSM_SIGNAL_CLASSES_H}\"
 )
 
 target_include_directories(ltc2471

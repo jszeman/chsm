@@ -24,5 +24,4 @@ target_link_libraries(crf PUBLIC
 crf_interfaces
 )
 
-include(diagnostic)
 diagnostic(crf)
