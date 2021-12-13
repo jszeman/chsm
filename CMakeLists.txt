@@ -6,6 +6,9 @@ project(chsm
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/utils")
 
+set(CHSM_BUILD_TESTS OFF)
+# set(CHSM_SIGNAL_CLASSES_H "C:/Users/livanyi/Desktop/WORK/GIT/mcu_el-26-72-00/app/fan-controller/fan-controller/inc/signal_classes.h")
+
 add_subdirectory(modules/canopen)
 add_subdirectory(modules/dac8565)
 add_subdirectory(modules/fram)
@@ -17,6 +20,12 @@ add_subdirectory(modules/spi_master)
 add_subdirectory(crf)
 
 add_library(${PROJECT_NAME} INTERFACE)
+
+set_target_properties(${PROJECT_NAME}
+    PROPERTIES 
+        C_STANDARD          11
+        C_STANDARD_REQUIRED ON
+)
 
 target_link_libraries(${PROJECT_NAME} INTERFACE
         crf_interfaces
@@ -55,20 +64,6 @@ set(${PROJECT_NAME}_PUBLIC_HEADERS
     ${ltc2471_dir}       
 )
 
-set_target_properties(${PROJECT_NAME}
-    PROPERTIES 
-        C_STANDARD          11
-        C_STANDARD_REQUIRED ON
-        C_EXTENSIONS        OFF
-        PUBLIC_HEADER       "${${PROJECT_NAME}_PUBLIC_HEADERS}"
-        EXPORT_NAME         ${PROJECT_NAME}
-)
-
-# get_target_property(chsm_dir chsm INCLUDE_DIRECTORIES)
-# message(FATAL_ERROR "-----> chsm includes: ----> ${${PROJECT_NAME}_PUBLIC_HEADERS}")
-get_target_property(i2c_master__dir chsm::i2c_master INCLUDE_DIRECTORIES)
-message(FATAL_ERROR "-----> chsm includes: ----> ${i2c_master__dir}")
- 
 # Includes ---------------------------------------------------------------------
 
 include(GNUInstallDirs)
@@ -100,11 +95,11 @@ install(TARGETS   ${PROJECT_NAME}
     COMPONENT     library
 )
 
-# Installing headers
-install(
-    DIRECTORY "${${PROJECT_NAME}_PUBLIC_HEADERS}"
-    DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/include
-)
+# # Installing headers
+# install(
+#     DIRECTORY "${${PROJECT_NAME}_PUBLIC_HEADERS}"
+#     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/include
+# )
 
 ## Target's cmake files: targets export
 install(EXPORT  ${PROJECT_NAME}Targets
@@ -121,21 +116,23 @@ install(FILES   ${PROJECT_NAME}Config.cmake
 set(CMAKE_EXPORT_PACKAGE_REGISTRY ON)
 export(PACKAGE ${PROJECT_NAME})
 
-message(CHECK_PASS " The targets can now be imported with find_package(${PROJECT_NAME})")
-message(STATUS "[${PROJECT_NAME}]: Build the \"install\" target and add \"${CMAKE_INSTALL_PREFIX}/include\" to you PATH for ${PROJECT_NAME} to work")
+# ------------------ Test and diagnostic ----------------------------------------------------
 
 include(diagnostic)
 set(debug on)
 # set(autodetect_toolchain on)
 diagnostic(${PROJECT_NAME})
 
-enable_testing()
-add_subdirectory(modules/canopen/test)
-# add_subdirectory(modules/dac8565/test)
-add_subdirectory(modules/fram/test)
-add_subdirectory(modules/i2c_master/test)
-add_subdirectory(modules/interfaces/test)
-add_subdirectory(modules/lm73/test)
-add_subdirectory(modules/ltc2471/test)
-add_subdirectory(modules/spi_master/test)
-add_subdirectory(crf/test)
+if(CHSM_BUILD_TESTS STREQUAL ON)
+    message(FATAL_ERROR "----------> Enabled the tests!")
+    enable_testing()
+    add_subdirectory(modules/canopen/test)
+    # add_subdirectory(modules/dac8565/test)
+    add_subdirectory(modules/fram/test)
+    add_subdirectory(modules/i2c_master/test)
+    add_subdirectory(modules/interfaces/test)
+    add_subdirectory(modules/lm73/test)
+    add_subdirectory(modules/ltc2471/test)
+    add_subdirectory(modules/spi_master/test)
+    add_subdirectory(crf/test)
+endif()

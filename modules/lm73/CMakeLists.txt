@@ -1,24 +1,26 @@
 cmake_minimum_required(VERSION 3.19)
 
-add_library(lm73 STATIC 
+add_library(lm73 INTERFACE 
         src/lm73.c
         src/lm73_functions.c
 )
 
 add_library(chsm::lm73 ALIAS lm73)
 
-target_compile_definitions(lm73 PRIVATE 
+target_compile_definitions(lm73 INTERFACE 
         NDEBUG
+        SIGNAL_CLASSES_H=\"${CHSM_SIGNAL_CLASSES_H}\"
 )
 
 target_include_directories(lm73
-    PUBLIC
+INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/inc>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/lm73>
 )
 
-target_link_libraries(lm73 PUBLIC
+target_link_libraries(lm73 INTERFACE
 crf_interfaces
+i2c_master
 crf
 )
 

@@ -32,11 +32,10 @@ target_include_directories(lm73_test PRIVATE
 
 target_compile_definitions(lm73_test PRIVATE 
         NDEBUG
-        SIGNAL_CLASSES_H=\"signal_classes.h\"
+        SIGNAL_CLASSES_H=\"${CMAKE_CURRENT_SOURCE_DIR}/inc/signal_classes.h\"
 )
 
 target_compile_options(lm73_test PRIVATE 
-        -std=c11
         -Wall 
         -Wextra 
         -pedantic 

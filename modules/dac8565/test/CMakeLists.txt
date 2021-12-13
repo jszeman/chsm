@@ -30,7 +30,7 @@ target_include_directories(dac8565_test PRIVATE
 
 target_compile_definitions(dac8565_test PRIVATE 
                 NDEBUG
-                SIGNAL_CLASSES_H="signal_classes.h")
+                SIGNAL_CLASSES_H="${CMAKE_CURRENT_SOURCE_DIR}/inc/signal_classes.h")
 
 target_compile_options(dac8565_test PRIVATE 
     -Wall 

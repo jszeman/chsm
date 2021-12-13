@@ -32,7 +32,7 @@ target_include_directories(ltc2471_test PRIVATE
 
 target_compile_definitions(ltc2471_test PRIVATE 
                 NDEBUG
-                SIGNAL_CLASSES_H="signal_classes.h")
+                SIGNAL_CLASSES_H=\"${CMAKE_CURRENT_SOURCE_DIR}/inc/signal_classes.h\")
 
 target_compile_options(ltc2471_test PRIVATE 
     -Wall 
