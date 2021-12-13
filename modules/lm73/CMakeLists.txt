@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.19)
 
-add_library(lm73 STATIC 
+add_library(lm73 INTERFACE 
         src/lm73.c
         src/lm73_functions.c
 )
@@ -18,7 +18,7 @@ PUBLIC
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/lm73>
 )
 
-target_link_libraries(lm73 PUBLIC
+target_link_libraries(lm73 INTERFACE
 crf_interfaces
 i2c_master
 crf
