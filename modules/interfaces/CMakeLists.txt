@@ -8,7 +8,7 @@ add_library(chsm::crf_interfaces ALIAS crf_interfaces)
 
 target_compile_definitions(crf_interfaces PUBLIC 
                 NDEBUG
-                SIGNAL_CLASSES_H=\"${CHSM_SIGNAL_CLASSES_H}\"
+                SIGNAL_CLASSES_H=${CHSM_SIGNAL_CLASSES_H}
 )
 
 target_include_directories(crf_interfaces
@@ -36,7 +36,7 @@ add_library(chsm::test_utils ALIAS test_utils)
 
 target_compile_definitions(test_utils PUBLIC 
         NDEBUG
-        SIGNAL_CLASSES_H=\"${CHSM_SIGNAL_CLASSES_H}\"
+        SIGNAL_CLASSES_H=${CHSM_SIGNAL_CLASSES_H}
 )
 
 target_include_directories(test_utils

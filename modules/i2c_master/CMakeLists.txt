@@ -8,7 +8,7 @@ add_library(chsm::i2c_master ALIAS i2c_master)
 
 target_compile_definitions(i2c_master PUBLIC 
         NDEBUG
-        SIGNAL_CLASSES_H=\"${CHSM_SIGNAL_CLASSES_H}\"
+        SIGNAL_CLASSES_H=${CHSM_SIGNAL_CLASSES_H}
 )
 
 target_include_directories(i2c_master

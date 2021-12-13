@@ -16,7 +16,7 @@ add_library(chsm::canopen ALIAS canopen)
 
 target_compile_definitions(canopen PRIVATE 
         NDEBUG
-        SIGNAL_CLASSES_H=\"${CHSM_SIGNAL_CLASSES_H}\"
+        SIGNAL_CLASSES_H=${CHSM_SIGNAL_CLASSES_H}
 )
 
 target_include_directories(canopen

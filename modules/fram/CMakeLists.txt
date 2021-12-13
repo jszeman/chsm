@@ -9,7 +9,7 @@ add_library(chsm::fram ALIAS fram)
 
 target_compile_definitions(fram PRIVATE 
                 NDEBUG
-                SIGNAL_CLASSES_H=\"${CHSM_SIGNAL_CLASSES_H}\"
+                SIGNAL_CLASSES_H=${CHSM_SIGNAL_CLASSES_H}
 )
 
 target_include_directories(fram
