@@ -19,6 +19,7 @@ PUBLIC
 
 target_link_libraries(i2c_master PUBLIC
         crf_interfaces
+        crf
 )
 
 diagnostic(i2c_master)

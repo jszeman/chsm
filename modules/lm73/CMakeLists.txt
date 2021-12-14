@@ -19,9 +19,7 @@ PUBLIC
 )
 
 target_link_libraries(lm73 PUBLIC
-crf_interfaces
-i2c_master
-crf
+        i2c_master
 )
 
 diagnostic(lm73)

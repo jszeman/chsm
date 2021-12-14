@@ -18,7 +18,7 @@ target_include_directories(dac8565
 )
 
 target_link_libraries(dac8565 PUBLIC
-crf_interfaces
+    i2c_master
 )
 
 diagnostic(dac8565)

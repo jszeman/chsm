@@ -19,7 +19,7 @@ target_include_directories(ltc2471
 )
 
 target_link_libraries(ltc2471 PUBLIC
-crf_interfaces
+        i2c_master
 )
 
 include(diagnostic)

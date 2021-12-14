@@ -19,7 +19,7 @@ target_include_directories(fram
 )
 
 target_link_libraries(fram PUBLIC
-crf_interfaces
+    i2c_master
 )
 
 include(diagnostic)
