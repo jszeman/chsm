@@ -8,6 +8,15 @@ project(chsm
         VERSION 1.0.0
         LANGUAGES C CXX ASM)
 
+# Includes ---------------------------------------------------------------------
+
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})  
+
 message(STATUS "
 ----------------------> Chsm <-----------------------------------
 ")
@@ -70,11 +79,6 @@ set(${PROJECT_NAME}_PUBLIC_HEADERS
     ${ltc2471_dir}       
 )
 
-# Includes ---------------------------------------------------------------------
-
-include(GNUInstallDirs)
-include(CMakePackageConfigHelpers)
-
 # Install ------------------------------------------------------------------------
 
 write_basic_package_version_file(${PROJECT_NAME}ConfigVersion.cmake
@@ -84,16 +88,16 @@ write_basic_package_version_file(${PROJECT_NAME}ConfigVersion.cmake
 
 ## Target installation
 install(TARGETS   ${PROJECT_NAME} 
-                    crf_interfaces 
-                    test_utils
-                    crf
-                    i2c_master 
-                    spi_master
-                    canopen 
-                    dac8565 
-                    fram 
-                    lm73 
-                    ltc2471 
+                    # crf_interfaces 
+                    # test_utils
+                    # crf
+                    # i2c_master 
+                    # spi_master
+                    # canopen 
+                    # dac8565 
+                    # fram 
+                    # lm73 
+                    # ltc2471 
     EXPORT        ${PROJECT_NAME}Targets
     ARCHIVE       DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY       DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -101,11 +105,11 @@ install(TARGETS   ${PROJECT_NAME}
     COMPONENT     library
 )
 
-# # Installing headers
-# install(
-#     DIRECTORY "${${PROJECT_NAME}_PUBLIC_HEADERS}"
-#     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/include
-# )
+# Installing headers
+install(
+    DIRECTORY "${${PROJECT_NAME}_PUBLIC_HEADERS}"
+    DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/include
+)
 
 ## Target's cmake files: targets export
 install(EXPORT  ${PROJECT_NAME}Targets

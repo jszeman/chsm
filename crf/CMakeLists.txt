@@ -21,7 +21,6 @@ target_include_directories(crf
 )
 
 target_link_libraries(crf PUBLIC
-crf_interfaces
 )
 
 diagnostic(crf)
