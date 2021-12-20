@@ -17,10 +17,10 @@ target_compile_definitions(crf PRIVATE
 target_include_directories(crf
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/inc>
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/crf>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/crf>
 )
 
 target_link_libraries(crf PUBLIC
 )
 
-diagnostic(crf)
+install_lib(crf chsm 11)

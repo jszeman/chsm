@@ -22,5 +22,5 @@ target_link_libraries(spi_master PUBLIC
 crf_interfaces
 )
 
-include(diagnostic)
+install_lib(spi_master chsm 11)
 diagnostic(spi_master)

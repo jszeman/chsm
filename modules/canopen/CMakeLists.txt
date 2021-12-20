@@ -29,4 +29,5 @@ target_link_libraries(canopen PUBLIC
 crf_interfaces
 )
 
+install_lib(canopen chsm 11)
 diagnostic(canopen)

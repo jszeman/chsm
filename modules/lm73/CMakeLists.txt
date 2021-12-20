@@ -22,4 +22,5 @@ target_link_libraries(lm73 PUBLIC
         i2c_master
 )
 
+install_lib(lm73 chsm 11)
 diagnostic(lm73)

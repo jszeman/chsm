@@ -22,5 +22,5 @@ target_link_libraries(fram PUBLIC
     i2c_master
 )
 
-include(diagnostic)
+install_lib(fram chsm 11)
 diagnostic(fram)

@@ -21,4 +21,5 @@ target_link_libraries(dac8565 PUBLIC
     i2c_master
 )
 
+install_lib(dac8565 chsm 11)
 diagnostic(dac8565)

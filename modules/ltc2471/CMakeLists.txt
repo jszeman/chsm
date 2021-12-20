@@ -22,5 +22,5 @@ target_link_libraries(ltc2471 PUBLIC
         i2c_master
 )
 
-include(diagnostic)
+install_lib(ltc2471 chsm 11)
 diagnostic(ltc2471)

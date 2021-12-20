@@ -23,6 +23,7 @@ target_link_libraries(crf_interfaces PUBLIC
     crf
 )
 
+install_lib(crf_interfaces chsm 11)
 diagnostic(crf_interfaces)
 
 # -------- Test utilities -----------------------
@@ -51,4 +52,5 @@ target_link_libraries(test_utils PUBLIC
     crf_interfaces
 )
 
+install_lib(test_utils chsm 11)
 diagnostic(test_utils)
