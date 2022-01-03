@@ -4,10 +4,15 @@ project(chsm
 VERSION 1.0.0
 LANGUAGES C CXX ASM)
 
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/utils")
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/compilers")
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+
 # Includes ---------------------------------------------------------------------
 
 include(diagnostic)
 include(install_lib)
+include(graphviz)
 set(DEBUG ON)
 set(CHSM_BUILD_TESTS OFF)
 
@@ -22,7 +27,6 @@ message(STATUS "
 ----------------------> Chsm <-----------------------------------
 ")
 
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/utils")
 
 
 add_subdirectory(modules/canopen)
