@@ -68,14 +68,33 @@ class App {
 		this.text_apply_btn = document.querySelector('#btn-text-apply');
 		this.text_apply_btn.addEventListener('click', e => this.dispatch('APPLY_TEXT', e));
 
+		this.new_btn = document.querySelector('#btn-new');
+		this.new_btn.addEventListener('click', e => this.dispatch('NEW', e));
+		
+		this.new_btn = document.querySelector('#btn-new-window');
+		this.new_btn.addEventListener('click', e => this.dispatch('NEW_WINDOW', e));
+
 		this.save_btn = document.querySelector('#btn-save');
 		this.save_btn.addEventListener('click', e => this.dispatch('SAVE', e));
 
 		this.open_btn = document.querySelector('#btn-open');
 		this.open_btn.addEventListener('click', e => this.dispatch('OPEN', e));
 
+		this.exit_btn = document.querySelector('#btn-exit');
+		this.exit_btn.addEventListener('click', e => this.dispatch('EXIT', e));
+
 		this.codegen_btn = document.querySelector('#btn-codegen');
 		this.codegen_btn.addEventListener('click', e => this.dispatch('CODE_GEN', e));
+		
+		this.auto_save_cb = document.querySelector('#cb-auto_save');
+		this.auto_save_cb.addEventListener('change', e => this.dispatch('AUTO_SAVE', e));
+
+		this.dark_mode_select = document.querySelector('#theme-selector');
+		this.dark_mode_select.addEventListener('change', e => {
+			if(this.dark_mode_select.value == true){
+				this.dispatch('DARK_MODE', e)
+			}
+		});
 
 		this.body.addEventListener('mousemove', event => {
 			this.mouse_pos = this.gui.get_absolute_pos(event);
@@ -119,6 +138,31 @@ class App {
 		this.state = this.idle_state;
 
 		eel.startup()
+	}
+
+	toggleDarkMode() {
+		let bodyTag = document.getElementsByTagName('body');
+		let toggleTag = document.getElementById('colorToggle');
+		
+		if (bodyTag.classList.contains('lightMode')) {
+			bodyTag.classList.replace('lightMode', 'darkMode');
+			toggleTag.innerHTML = 'Light Mode';
+		} else {
+			bodyTag.classList.replace('darkMode', 'lightMode');
+			toggleTag.innerHTML = 'Dark Mode';
+		}
+	}
+
+	handleDarkMode() {
+		let bodyTag = document.getElementsByTagName('body')[0];
+		let toggleTag = document.getElementById('colorToggle');
+		if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+			bodyTag.classList.add('darkMode');
+			toggleTag.innerHTML = 'Light Mode';
+		} else {
+			bodyTag.classList.add('lightMode');
+			toggleTag.innerHTML = 'Dark Mode';
+		}
 	}
 
 	load_model(data, fname, fpath)
@@ -236,8 +280,26 @@ class App {
 				switch(data.code)
 				{
 					case 'KeyS':
-						this.create_state(this.mouse_pos);
-						this.save_state();
+						if(data.ctrlKey){
+							data.stopPropagation();
+							data.preventDefault();
+							this.model.set_view(this.gui.get_view());
+							eel.save_state_machine(this.main.innerHTML, this.model.get_data_string(), this.filepath);
+						}
+						else{
+							this.create_state(this.mouse_pos);
+							this.save_state();
+						}
+						break;
+						
+						case 'KeyG':
+							if(data.ctrlKey){
+								data.stopPropagation();
+								data.preventDefault();
+								this.model.set_view(this.gui.get_view());
+								eel.save_state_machine(this.main.innerHTML, this.model.get_data_string(), this.filepath);
+								eel.genereate_code();
+							}
 						break;
 
 					case 'KeyI':
@@ -472,19 +534,43 @@ class App {
 				this.state = this.state_dragging_state;
 				break;
 
-			case 'SAVE':
-				this.model.set_view(this.gui.get_view());
-				eel.save_state_machine(this.main.innerHTML, this.model.get_data_string(), this.filepath);
+			case 'NEW':
+				eel.create_project();
+				break;
+			
+			case 'NEW_WINDOW':
+				eel.open_window();
 				break;
 
 			case 'OPEN':
 				eel.open_file();
 				break;
 
+			case 'SAVE':
+				this.model.set_view(this.gui.get_view());
+				eel.save_state_machine(this.main.innerHTML, this.model.get_data_string(), this.filepath);
+				break;
+			
+			case 'AUTO_SAVE':
+				this.model.set_view(this.gui.get_view());
+				eel.save_state_machine(this.main.innerHTML, this.model.get_data_string(), this.filepath);
+				break;
+
 			case 'CODE_GEN':
 				this.model.set_view(this.gui.get_view());
 				eel.save_state_machine(this.main.innerHTML, this.model.get_data_string(), this.filepath);
 				eel.genereate_code();
+				break;
+
+			case 'DARK_MODE':
+				// eel.switch_to_dark_mode();
+				break;
+
+			case 'EXIT':
+				window.close();
+				this.model.set_view(this.gui.get_view());
+				eel.save_state_machine(this.main.innerHTML, this.model.get_data_string(), this.filepath);
+				eel.exit_program();
 				break;
 
 			case 'SAVE_RESULT':
@@ -587,12 +673,12 @@ class App {
 		if (obj_type === 'state')
 		{
 			this.highlight_state(obj_id);
-			this.sidebar.style.background = 'rgba(23, 197, 67, 0.1)';
+			this.sidebar.style.background = '(--color-bg-highlight))';
 		}
 		else if (obj_type === 'transition')
 		{
 			this.gui.paths[obj_id].add_handle_class('transition_handle_highlight_edit');
-			this.sidebar.style.background = 'rgba(23, 197, 67, 0.1)';
+			this.sidebar.style.background = '(--color-bg-highlight))';
 		}
 	}
 
@@ -609,7 +695,7 @@ class App {
 			this.gui.paths[obj_id].remove_handle_class('transition_handle_highlight_edit');
 		}
 		
-		this.sidebar.style.background = 'white';
+		this.sidebar.style.background = '(--color-bg))';
 	}
 
 	reset_title()
@@ -1168,6 +1254,7 @@ class App {
 }
 
 window.addEventListener('DOMContentLoaded', event => {window.app = new App(state_machine)});
+// window.onload = handleDarkMode;
 
 eel.expose(load_json); // Expose this function to Python
 function load_json(data, filename, filepath) {

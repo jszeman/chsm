@@ -1,108 +1,155 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	<link rel="stylesheet" type="text/css" href="main.css">
-	<link rel="stylesheet" type="text/css" href="drawing.css">
-	<script type="text/javascript" src="/eel.js"></script>
-	<script type='module' src="./main.js"></script>
-	<title>CHSM</title>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <link rel="stylesheet" type="text/css" href="drawing.css">
+    <script type="text/javascript" src="eel.js"></script>
+    <script type='module' src="./main.js"></script>
+    <title>CHSM</title>
 </head>
+
 <body>
-	<div class='wrapper'>
-		<nav id='sidebar'>
-			<ul class='props'>
-				<li><h4 contenteditable="true" id='title'>CHSM</h4></li>
-				<li><div id='btn-open' class='button' alt='Open a .h file.'>Open</div></li>
-				<li><div id='btn-codegen' class='button' alt='Generate code files.'>Code gen</div></li>
-				<li><div id='btn-save' class='button' alt='Save the state machine in html format.'>Save</div></li>
-				<li>&nbsp</li>
-
-				<li class='row'>
-					<span class='row-title'>Label</span>
-					<div id='btn-label-reset' class='button-inline'>Reset</div>
-					<div id='btn-label-apply' class='button-inline'>Apply</div>
-				</li>
-				<li><input type="text" id='obj-label'></li>
-				<li>&nbsp</li>
-
-				<li class='row'>
-					<span class='row-title'>Text</span>
-					<div id='btn-text-reset' class='button-inline'>Reset</div>
-					<div id='btn-text-apply' class='button-inline'>Apply</div>
-				</li>
-				<li><textarea id='obj-text'></textarea></li>
-				<li>&nbsp</li>
-				<li>
-					<table>
-						<tr>
-							<th>Command</th>
-							<th>Action</th>
-						</tr>
-						<tr>
-							<td>s</td>
-							<td>Create state</td>
-						</tr>
-						<tr>
-							<td>i</td>
-							<td>Create initial state</td>
-						</tr>
-						<tr>
-							<td>t</td>
-							<td>Draw a transition</td>
-						</tr>
-						<tr>
-							<td>space</td>
-							<td>Switch transition corner</td>
-						</tr>
-						<tr>
-							<td>backspace</td>
-							<td>Delete last transition vertex</td>
-						</tr>
-						<tr>
-							<td>d</td>
-							<td>Delete object</td>
-						</tr>
-						<tr>
-							<td>tab</td>
-							<td>Toggle sidebar</td>
-						</tr>
-						<tr>
-							<td>ctrl+wheel</td>
-							<td>Zoom in/out</td>
-						</tr>
-						<tr>
-							<td>ctrl+drag</td>
-							<td>Pan drawing</td>
-						</tr>
-						<tr>
-							<td>u, ctrl+Z</td>
-							<td>Undo</td>
-						</tr>
-						<tr>
-							<td>r, ctrl+Y</td>
-							<td>Redo</td>
-						</tr>
-						<tr>
-							<td>shift+click</td>
-							<td>Redraw transition</td>
-						</tr>
-						<tr>
-							<td>doubleclick</td>
-							<td>Split transition segment</td>
-						</tr>
-						<tr>
-							<td>ctrl+click</td>
-							<td>Select multiple states</td>
-						</tr>
-						<tr>
-							<td>shift+drag state</td>
-							<td>Move state without substates</td>
-						</tr>
-					</table>
-				</li>
-			</ul>
-		</nav>
-		<div id='sidebar-handle'><span id='sidebar-handle-text'>&lt<span></div>
+    <div class='wrapper'>
+        <nav id='sidebar'>
+            <ul class='props'>
+                <li>
+                    <h4 contenteditable="true" id='title'>CHSM</h4>
+                </li>
+                <li>
+                    <div id='btn-new' class='button' alt='Create new project.'>New Project</div>
+                </li>
+                <li>
+                    <div id='btn-new-window' class='button' alt='Open a new window.'>New Window</div>
+                </li>
+                <li>
+                    <div id='btn-open' class='button' alt='Open a .h file.'>Open</div>
+                </li>
+                <li>
+                    <div id='btn-codegen' class='button' alt='Generate code files.'>Code gen</div>
+                </li>
+                <li>
+                    <div id='btn-save' class='button' alt='Save the state machine in html format.'>Save</div>
+                </li>
+                <li>
+                    <div id='btn-exit' class='button' alt='Exit from the program.'>Exit</div>
+                </li>
+                <li>&nbsp</li>
+                <li class='row'>
+                    <span class='row-title'>Label</span>
+                    <div id='btn-label-reset' class='button-inline'>Reset</div>
+                    <div id='btn-label-apply' class='button-inline'>Apply</div>
+                </li>
+                <li><input type="text" id='obj-label'></li>
+                <li>&nbsp</li>
+                <li class='row'>
+                    <span class='row-title'>Text</span>
+                    <div id='btn-text-reset' class='button-inline'>Reset</div>
+                    <div id='btn-text-apply' class='button-inline'>Apply</div>
+                </li>
+                <li><textarea id='obj-text'></textarea></li>
+                <li>&nbsp</li>
+                <details>
+                    <summary>Settings</summary>
+                    <fieldset>
+                        <li class="checkbox-lable">
+                            <label for=cb-auto_save>Autosave</label>
+                            <input type="checkbox" id='cb-auto_save' checked>
+                        </li>
+                        <li class="checkbox-lable">
+                            <label for="theme-selector">Themes</label>
+                            <select name="theme-selector" id="theme-selector">
+								<option value="dark-solarized">Dark solarized</option>
+								<option value="light-solarized">Light solarized</option>
+							</select>
+                        </li>
+                    </fieldset>
+                </details>
+                <li>&nbsp</li>
+                <details>
+                    <summary>Help</summary>
+                    <fieldset>
+                        <li>
+                            <table>
+                                <tr>
+                                    <th>Action</th>
+                                    <th>Command</th>
+                                </tr>
+                                <tr>
+                                    <td>Create state</td>
+                                    <td>s</td>
+                                </tr>
+                                <tr>
+                                    <td>Create initial state</td>
+                                    <td>i</td>
+                                </tr>
+                                <tr>
+                                    <td>Draw a transition</td>
+                                    <td>t</td>
+                                </tr>
+                                <tr>
+                                    <td>Switch transition corner</td>
+                                    <td>space</td>
+                                </tr>
+                                <tr>
+                                    <td>Delete last transition vertex</td>
+                                    <td>backspace</td>
+                                </tr>
+                                <tr>
+                                    <td>Delete object</td>
+                                    <td>d</td>
+                                </tr>
+                                <tr>
+                                    <td>Toggle sidebar</td>
+                                    <td>tab</td>
+                                </tr>
+                                <tr>
+                                    <td>Zoom in/out</td>
+                                    <td>Ctrl+Wheel</td>
+                                </tr>
+                                <tr>
+                                    <td>Pan drawing</td>
+                                    <td>Ctrl+Drag</td>
+                                </tr>
+                                <tr>
+                                    <td>Save</td>
+                                    <td>Ctrl+S</td>
+                                </tr>
+                                <tr>
+                                    <td>Code generation</td>
+                                    <td>Ctrl+G</td>
+                                </tr>
+                                <tr>
+                                    <td>Undo</td>
+                                    <td>u, Ctrl+Z</td>
+                                </tr>
+                                <tr>
+                                    <td>Redo</td>
+                                    <td>r, Ctrl+Y</td>
+                                </tr>
+                                <tr>
+                                    <td>Redraw transition</td>
+                                    <td>Shift+click</td>
+                                </tr>
+                                <tr>
+                                    <td>Split transition segment</td>
+                                    <td>Doubleclick</td>
+                                </tr>
+                                <tr>
+                                    <td>Select multiple states</td>
+                                    <td>Ctrl+click</td>
+                                </tr>
+                                <tr>
+                                    <td>Move state without substates</td>
+                                    <td>Shift+drag state</td>
+                                </tr>
+                            </table>
+                        </li>
+                    </fieldset>
+                </details>
+            </ul>
+        </nav>
+        <div id='sidebar-handle'><span id='sidebar-handle-text'>&lt<span></div>
 		<main class='main'>
 			<svg height="100%" width="100%">
 				<g display='none'>
