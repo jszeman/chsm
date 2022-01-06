@@ -23,6 +23,9 @@ from tkinter.filedialog import askopenfilename, asksaveasfilename
 
 from hsm import StateMachine
 
+import new_project
+from web.new_project.new_project import New_project
+
 class HtmlException(Exception):
     pass
 
@@ -316,6 +319,7 @@ if __name__ == '__main__':
 
     #project = Project('/home/pi/projects/chsm/crf/test/tinc/chsm_test_machine.h')
     #project.generate_code()
+    new_project = New_project()
 
     if args['FILE']:
         p = Path(args['FILE'])

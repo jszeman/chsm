@@ -180,7 +180,7 @@ table {
 }
 
 th, td {
-    border-bottom: 1px solid black;
+    /* border-bottom: 1px solid black; */
 }
 
 tr th:first-child {padding-left:0px;}

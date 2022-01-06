@@ -2,6 +2,10 @@ import eel
 import tkinter as tk
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 
+class New_project:
+    def __init__(self) -> None:
+        pass
+
 @eel.expose
 def browse_loc():
     root = tk.Tk()

@@ -1,3 +1,9 @@
+*,
+*::before,
+*::after{
+    box-sizing: border-box;
+}
+
 html, body {
     width: 100%;
     height: 100%;
@@ -5,22 +11,56 @@ html, body {
     margin-right: 1rem;
     background: rgb(224, 223, 187);
     font: .9em arial,helvetica,sans-serif;
-    display: grid;
+    display: flex;
     justify-content: center;
     align-items: center;
 }
 
-#modul-table{
-    border:1px solid #fff;
-}
-
 legend {
-    font: 1.5em arial,helvetica,sans-serif,bold;
+    font: 1.5em sans-serif,arial,helvetica,bold;
+    font-weight: 600;
+    text-align: left;
+    padding-left: .7rem;
+    padding-right: .7rem;
 }
 
-.generate_btns{
-	width: 100%;
-	display: flex;
-	/* margin-top: 10px; */
+#new_project_legend{
+    text-align: center;
+    font-size: 1.7rem;
 }
 
+fieldset:first-child{
+    padding: 2rem;
+    border-radius: 1.5rem;
+}
+
+fieldset:first-child > *{
+    border-radius: 1rem;
+}
+
+#generate-btns_container{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr; 
+    align-items: center;
+    justify-items: center;
+    /* border: 1px solid rgb(19, 19, 2); */
+}
+
+#btn-generate, #btn-cancel{
+    width: 100%;
+    margin: 0;
+}
+
+#modul_gen_fs ul *{
+    display: block;
+    width: 100%;
+    align-items: center;
+    justify-items: center;
+}
+
+#modul_loc_tr :first-child > *{
+    display: inline-block;
+    width: min-content;
+}

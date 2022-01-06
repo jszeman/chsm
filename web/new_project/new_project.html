@@ -12,7 +12,9 @@
     <body>
         <form>
             <fieldset>
-                <legend>New module</legend>
+                <legend id="new_project_legend" >New project</legend>
+            <fieldset id="modul_gen_fs">
+                <legend>Module</legend>
                 <ul class='props'>
                         <table>
                             <tr>
@@ -27,7 +29,7 @@
                                 <td><label for="module_description">Module description</label></td>
                                 <td><textarea id="module_description"></textarea></td>
                             </tr>
-                            <tr>
+                            <tr id="modul_loc_tr">
                                 <td><label for="module_location">Module location</label></td>
                                 <td><input id="module_location" type="url"></td>
                                 <td><div id='btn-new-module-loc-browse' class='button' alt='Borwse for module location.'>Browse</div></td>
@@ -36,7 +38,7 @@
 
             </fieldset>
             <br>
-            <fieldset>
+            <fieldset id="batch_gen_fs">
                 <legend>Batch file generation</legend>
                 
                 <ul class='props'>
@@ -58,7 +60,7 @@
                     
             </fieldset>
             <br>
-            <fieldset>
+            <fieldset id="cmake_gen_fs">
                 <legend>CMake generation</legend>
                 <ul class='props'>
                     <div>
@@ -92,10 +94,11 @@
 
             </fieldset>
             <br>
-            <div id="generate-btns" class="generate_btns">
+            <div id="generate-btns_container">
                 <div id='btn-generate' class='button' alt='Generate the setup module.'>Generate</div>
                 <div id='btn-cancel' class='button' alt='Cancel from setup module.'>Cancel</div>
             </div>
+        </fieldset>
         </form>
 
     </body>
