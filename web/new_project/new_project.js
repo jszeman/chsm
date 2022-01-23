@@ -1,7 +1,7 @@
-import { Gui } from './../modules/gui.mjs';
-import { Model } from '../modules/model.js';
-import { state_machine } from '../data.js';
-import { App } from '../main.js';
+// import { Gui } from './../modules/gui.mjs';
+// import { Model } from '../modules/model.js';
+// import { state_machine } from '../data.js';
+// import { App } from './../main.js';
 
 class New_project{
     constructor(){
@@ -42,6 +42,7 @@ class New_project{
 
     cancel_project_window()
     {
+        console.log("Cancel button clicked");
         window.close();
     }
 
