@@ -269,10 +269,6 @@ def save_state_machine(drawing: str, json_data: str, filepath: str):
         save_html(Path(filepath), drawing, json_data)
 
 @eel.expose
-def create_project():
-    eel.start('new_project/new_project.html', size=(500, 600))
-
-@eel.expose
 def open_window():
     eel.start('main.html', port=0, mode='None')
 

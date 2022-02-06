@@ -57,7 +57,7 @@ class New_project{
                 generate_project();
                 break;  
             case "BROWSE":
-                browse_loc();
+                eel.browse_loc();
                 break;
         }
 
