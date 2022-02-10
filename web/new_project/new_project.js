@@ -1,9 +1,5 @@
-// import { Gui } from './../modules/gui.mjs';
-// import { Model } from '../modules/model.js';
-// import { state_machine } from '../data.js';
-// import { App } from './../main.js';
 
-class New_project{
+export class New_project{
     constructor(){
         // New module
         this.module.name = document.getElementById("module_name");
@@ -31,14 +27,6 @@ class New_project{
     {
         eel.browse_loc();
     }
-    genarate_module_architect(){}
-    generate_batch(){}
-    generate_cmake(){}
-
-    generate_project()
-    {
-
-    }
 
     cancel_project_window()
     {
@@ -64,5 +52,3 @@ class New_project{
     }
 }
 
-
-let new_project = new New_project();

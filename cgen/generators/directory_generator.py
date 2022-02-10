@@ -28,11 +28,11 @@ Requirements for the module:
  */
 
 typedef enum {name}_signals_ten
-{
+{{
     SIG_{name} = SIGNAL_FROM_CLASS(SIG_CLASS_{name}),
     SIG_{name}_ONLINE,
     SIG_{name}_OFFLINE,
-} {name}_signals_ten;
+}} {name}_signals_ten;
 
 #define SIG_{name}_ONLINE_TYPE             {name}_status_tst
 #define SIG_{name}_OFFLINE_TYPE            {name}_status_tst
@@ -42,24 +42,24 @@ typedef enum {name}_signals_ten
  */
 
 typedef struct {name}_status_tst
-{
-} {name}_status_tst;
+{{
+}} {name}_status_tst;
 
 /*
  * ACTIVE OBJECT
  */
 
 typedef struct {name}_cfg_tst
-{
-} {name}_cfg_tst;
+{{
+}} {name}_cfg_tst;
 
 typedef struct
-{
+{{
     /* PUBLIC */
     chsm_tst                             super;
 
     /* PRIVATE */
-} {name}_tst;
+}}{name}_tst;
 
 chsm_result_ten {name}_top(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst);
 
@@ -72,7 +72,7 @@ bool {name}_error_count(chsm_tst *self, const cevent_tst *e_pst, uint16_t error_
 #define {name}_MAX_ERROR_COUNT (((bodycontour_tst *)self)->config_st.max_error_cnt_u16)
 
 #endif /* {name}_H_ */
-"""
+""".format(name="bodycontour")
 
     
     chsm_test_main = ""
@@ -124,7 +124,7 @@ bool {name}_error_count(chsm_tst *self, const cevent_tst *e_pst, uint16_t error_
         
         
 
-# dg = DirGen()
+dg = DirGen()
 # dg.greeting()
 # dg.makeBaseModulDirs(dg.getLocalDir(), "kecske")
-# dg.createFiles(dg.getLocalDir(), "kecske.c", chsm_header_template)
+dg.createFile(dg.getLocalDir(), "kecske.c", dg.chsm_header_template)
