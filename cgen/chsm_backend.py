@@ -17,6 +17,7 @@ from docopt import docopt
 import logging
 from pprint import pprint
 import collections
+import subprocess
 
 import tkinter as tk
 from tkinter.filedialog import askopenfilename, asksaveasfilename
@@ -270,7 +271,7 @@ def save_state_machine(drawing: str, json_data: str, filepath: str):
 
 @eel.expose
 def open_window():
-    eel.start('main.html', port=0, mode='None')
+    subprocess.run(["python","./chsm_backend.py"])
 
 @eel.expose
 def open_file():
