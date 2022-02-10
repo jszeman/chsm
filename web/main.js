@@ -86,8 +86,8 @@ class App {
 		this.codegen_btn = document.querySelector('#btn-codegen');
 		this.codegen_btn.addEventListener('click', e => this.dispatch('CODE_GEN', e));
 		
-		this.auto_save_cb = document.querySelector('#cb-auto_save');
-		this.auto_save_cb.addEventListener('change', e => this.dispatch('AUTO_SAVE', e));
+		this.auto_save_cb = document.getElementById("cb-auto_save");
+		// this.auto_save_cb.addEventListener('change', e => this.dispatch('AUTO_SAVE', e));
 
 		this.dark_mode_select = document.querySelector('#theme-selector');
 		this.dark_mode_select.addEventListener('change', e => {
@@ -1253,8 +1253,28 @@ class App {
 	}
 }
 
+
 window.addEventListener('DOMContentLoaded', event => {window.app = new App(state_machine)});
-// window.onload = handleDarkMode;
+
+// let interval = null;
+// if(document.getElementById("cb-auto_save").checked == true)
+// {
+// 	if(interval == null)
+// 	{
+// 		interval = setInterval(function(){
+// 			// eel.save_state_machine(window.app.main.innerHTML, window.app.model.get_data_string(), window.app.filepath);
+// 			console.log("blabla")
+// 		},5000);
+// 		console.log(interval);
+// 	}
+// }else
+// {
+// 	if(interval != null)
+// 	{
+// 		clearInterval(interval);
+// 		console.log("clear blabla")
+// 	}
+// }
 
 eel.expose(load_json); // Expose this function to Python
 function load_json(data, filename, filepath) {
