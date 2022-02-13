@@ -2,30 +2,30 @@
 export class New_project{
     constructor(){
         // New module
-        this.module.name = document.getElementById("module_name");
-        this.module.version = document.getElementById("module_version");
-        this.module.description = document.getElementById("module_description");
-        this.module.location = document.getElementById("module_location");
+        this.name = document.getElementById("module_name");
+        this.version = document.getElementById("module_version");
+        this.description = document.getElementById("module_description");
+        this.location = document.getElementById("module_location");
+        this.browse_btn = document.getElementById("btn-new-module-loc-browse");
+        this.browse_btn.addEventListener("click" , e => this.state_select("MODULE_BROWSE"));
         // Batch
         this.batch_cb = document.getElementById("batch_cb");
         this.batch_location_cb = document.getElementById("batch_location");
+        this.batch_browse_btn = document.getElementById("btn-batch-loc-browse");
+        this.batch_browse_btn.addEventListener("click" , e => this.state_select("BATCH_BROWSE"));
         // CMake
         this.cmake_cb = document.getElementById("cmake_cb");
         this.cmake_default_loc_cb = document.getElementById("cmake_default_cb");
-
-        // Browse buttons
-        this.new_module_loc_browse_btn = document.getElementById("btn-new-module-loc-browse");
+        this.cmake_browse_btn = document.getElementById("btn-cmake-loc-browse");
+        this.cmake_browse_btn.addEventListener("click" , e => this.state_select("CMAKE_BROWSE"));
 
         // Buttons
         this.cancel_btn = document.getElementById("btn-cancel");
-        this.cancel_btn.addEventListener("onclick" , e => this.state_select("CANCEL")); 
+        this.cancel_btn.addEventListener("click" , e => this.state_select("CANCEL")); 
         this.generate_btn = document.getElementById("btn-generate");
-        this.generate_btn.addEventListener("onclick" , e => this.state_select("GENERATE")); 
-    }
+        this.generate_btn.addEventListener("click" , e => this.state_select("GENERATE")); 
 
-    browse_loc()
-    {
-        eel.browse_loc();
+        console.log("Constructor done!")
     }
 
     cancel_project_window()
@@ -36,15 +36,23 @@ export class New_project{
 
     state_select(event)
     {
+        console.log("Event received!");
+        console.log(event);
         switch(event)
         {
             case "CANCEL": 
-                cancel_project_window();
+                this.cancel_project_window();
                 break;
             case "GENERATE":
-                generate_project();
+                eel.generate_module(this.name, this.version, this.description, this.location);
                 break;  
-            case "BROWSE":
+            case "MODULE_BROWSE":
+                eel.browse_loc();
+                break;
+            case "BATCH_BROWSE":
+                eel.browse_loc();
+                break;
+            case "CMAKE_BROWSE":
                 eel.browse_loc();
                 break;
         }
@@ -52,3 +60,4 @@ export class New_project{
     }
 }
 
+window.np = new New_project();

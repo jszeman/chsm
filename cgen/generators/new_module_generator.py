@@ -1,6 +1,9 @@
 import eel
 import tkinter as tk
 from tkinter.filedialog import askopenfilename, asksaveasfilename
+from pathlib import Path
+from docopt import docopt
+import logging
 
 class New_module:
     def __init__(self):
@@ -8,6 +11,11 @@ class New_module:
         
     def create(self):
         pass
+
+@eel.expose
+def generate_module(name : str, version : str, description : str, location : str):
+    print("Generate module!")
+    pass
 
 @eel.expose
 def browse_loc():
@@ -22,6 +30,9 @@ def browse_loc():
 
 @eel.expose
 def create_project():
-    eel.start('new_project/new_project.html', size=(500, 600)) 
-# nm = New_module()
-# nm.browse_loc()
+    eel.start('new_project/new_project.html', port=0, mode='None') 
+
+nm = New_module()
+
+eel.init((Path(__file__).parent / '../../web').absolute().resolve())
+create_project()
