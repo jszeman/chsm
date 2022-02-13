@@ -34,5 +34,5 @@ def create_project():
 
 nm = New_module()
 
-eel.init((Path(__file__).parent / '../../web').absolute().resolve())
-create_project()
+# eel.init((Path(__file__).parent / '../../web').absolute().resolve())
+# create_project()
