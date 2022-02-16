@@ -271,7 +271,7 @@ def save_state_machine(drawing: str, json_data: str, filepath: str):
 
 @eel.expose
 def open_window():
-    subprocess.Popen(["python","./cgen/chsm_backend.py"], shell=True)
+    subprocess.Popen(["py","./cgen/chsm_backend.py"], shell=True)
 
 @eel.expose
 def open_file():

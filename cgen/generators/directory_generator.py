@@ -124,7 +124,7 @@ bool {name}_error_count(chsm_tst *self, const cevent_tst *e_pst, uint16_t error_
         
         
 
-dg = DirGen()
+# dg = DirGen()
 # dg.greeting()
 # dg.makeBaseModulDirs(dg.getLocalDir(), "kecske")
-dg.createFile(dg.getLocalDir(), "kecske.c", dg.chsm_header_template)
+# dg.createFile(dg.getLocalDir(), "kecske.c", dg.chsm_header_template)

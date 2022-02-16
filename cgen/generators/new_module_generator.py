@@ -5,9 +5,9 @@ from pathlib import Path
 from docopt import docopt
 import logging
 
-import directory_generator
-import cmake_generator
-import batch_generator
+# import directory_generator
+# import cmake_generator
+# import batch_generator
 
 class New_module:
     def __init__(self):
