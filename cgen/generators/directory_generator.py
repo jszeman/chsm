@@ -7,15 +7,15 @@ class DirGen:
         pass
     
     chsm_header_template = """ 
-#ifndef {name}_H_
-#define {name}_H_
+#ifndef {name_upper}_H_
+#define {name_upper}_H_
 
 #include "crf.h"
 #include "signals.h"
 #include "sys_if.h"
 
 /*
-{name} module
+{name_upper} module
 ==========
 
 This module implements a high level statemachine.
@@ -24,18 +24,18 @@ Requirements for the module:
 */
 
 /*
- * {name} SIGNALS
+ * {name_upper} SIGNALS
  */
 
 typedef enum {name}_signals_ten
 {{
-    SIG_{name} = SIGNAL_FROM_CLASS(SIG_CLASS_{name}),
-    SIG_{name}_ONLINE,
-    SIG_{name}_OFFLINE,
+    SIG_{name_upper} = SIGNAL_FROM_CLASS(SIG_CLASS_{name}),
+    SIG_{name_upper}_ONLINE,
+    SIG_{name_upper}_OFFLINE,
 }} {name}_signals_ten;
 
-#define SIG_{name}_ONLINE_TYPE             {name}_status_tst
-#define SIG_{name}_OFFLINE_TYPE            {name}_status_tst
+#define SIG_{name_upper}_ONLINE_TYPE             {name}_status_tst
+#define SIG_{name_upper}_OFFLINE_TYPE            {name}_status_tst
 
 /*
  * EVENT DEFINITIONS
@@ -66,13 +66,13 @@ chsm_result_ten {name}_top(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ct
 bool {name}_timeout(chsm_tst *self, const cevent_tst *e_pst, uint32_t timeout_u32);
 bool {name}_error_count(chsm_tst *self, const cevent_tst *e_pst, uint16_t error_cnt_threshold_u16);
 
-#define {name}_READ_PERIOD_VALUE     100
+#define {name_upper}_READ_PERIOD_VALUE     100
 
-#define {name}_RETRY_TIMEOUT   500
-#define {name}_MAX_ERROR_COUNT (((bodycontour_tst *)self)->config_st.max_error_cnt_u16)
+#define {name_upper}_RETRY_TIMEOUT   500
+#define {name_upper}_MAX_ERROR_COUNT (((bodycontour_tst *)self)->config_st.max_error_cnt_u16)
 
-#endif /* {name}_H_ */
-""".format(name="bodycontour")
+#endif /* {name_upper}_H_ */
+""".format(name="bodycontour", name_upper = "BODYCONTOUR")
 
     
     chsm_test_main = ""
