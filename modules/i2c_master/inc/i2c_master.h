@@ -54,6 +54,7 @@ typedef enum i2c_master_signals_ten
     SIG_I2C_RESULT_SUCCESS,
     SIG_I2C_RESULT_ADDR_NACK,
     SIG_I2C_RESULT_DATA_NACK,
+    SIG_I2C_RESULT_BUS_BUSY
 } i2c_master_signals_ten;
 
 #define SIG_I2C_W_TRANSACTION_TYPE     i2c_transaction_tst
@@ -63,6 +64,7 @@ typedef enum i2c_master_signals_ten
 #define SIG_I2C_RESULT_SUCCESS_TYPE    cevent_tst
 #define SIG_I2C_RESULT_ADDR_NACK_TYPE  cevent_tst
 #define SIG_I2C_RESULT_DATA_NACK_TYPE  cevent_tst
+#define SIG_I2C_RESULT_BUS_BUSY_TYPE   cevent_tst
 
 /*
  * EVENT DEFINITIONS

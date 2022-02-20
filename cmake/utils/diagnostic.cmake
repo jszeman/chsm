@@ -11,7 +11,7 @@ macro(diagnostic)
     endif()
   endif()
 
-  if(debug)
+  if(CMAKE_DEBUG_MSG)
     color_print(cyan "--> ${libname}: ")
     get_target_property(list ${libname} INCLUDE_DIRECTORIES)
     message(STATUS "${libname} target INCLUDE_DIRECTORIES list: -> ${list}")

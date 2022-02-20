@@ -1,13 +1,5 @@
 cmake_minimum_required(VERSION 3.19)
 
-project(example_spi_master_test)
-
-include(GNUInstallDirs)
-
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
-
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}../../../../cmake/utils")
 
 include(Fetch_unity)
@@ -37,7 +29,7 @@ target_include_directories(spi_master_test PRIVATE
 
 target_compile_definitions(spi_master_test PRIVATE 
                 NDEBUG
-                SIGNAL_CLASSES_H="signal_classes.h")
+                SIGNAL_CLASSES_H=\"${CMAKE_CURRENT_SOURCE_DIR}/inc/signal_classes.h\")
 
 target_compile_options(spi_master_test PRIVATE 
     -Wall 
@@ -51,7 +43,10 @@ target_link_options(spi_master_test PRIVATE
 
 target_link_libraries(spi_master_test PRIVATE unity)
 
-set(debug ON)
-
-include(diagnostic)
 diagnostic(spi_master_test)
+
+enable_testing()
+
+add_test(NAME spi_master_test
+        COMMAND spi_master_test
+       )

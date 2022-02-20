@@ -1,13 +1,5 @@
 cmake_minimum_required(VERSION 3.19)
 
-project(example_fram_test)
-
-include(GNUInstallDirs)
-
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
-
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}../../../../cmake/utils")
 
 include(Fetch_unity)
@@ -40,7 +32,7 @@ target_include_directories(fram_test PRIVATE
 
 target_compile_definitions(fram_test PRIVATE 
                 NDEBUG
-                SIGNAL_CLASSES_H="signal_classes.h")
+                SIGNAL_CLASSES_H="${CMAKE_CURRENT_SOURCE_DIR}/inc/signal_classes.h")
 
 target_compile_options(fram_test PRIVATE 
     -Wall 
@@ -58,3 +50,9 @@ set(debug ON)
 
 include(diagnostic)
 diagnostic(fram_test)
+
+enable_testing()
+
+add_test(NAME fram_test
+        COMMAND fram_test
+       )

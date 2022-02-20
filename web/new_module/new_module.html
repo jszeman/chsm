@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="../main.css">
+        <link rel="stylesheet" type="text/css" href="../drawing.css">
+        <link rel="stylesheet" type="text/css" href="./new_module.css">
+        <script type="text/javascript" src="/eel.js"></script>
+        <script type='module' src="./new_module.js"></script>
+        <title>New Module</title>
+    </head>
+    <body>
+        <form>
+            <fieldset>
+                <legend id="new_module_legend" >New module</legend>
+            <fieldset id="modul_gen_fs">
+                <legend>Module</legend>
+                <ul class='props'>
+                        <table>
+                            <tr>
+                                <td><label for="module_name">Module name</label></td>
+                                <td><input id="module_name" type="text"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="module_version">Module version</label></td>
+                                <td><input id="module_version" type="text" value="0.0.0."></td>
+                            </tr>
+                            <tr>
+                                <td><label for="module_description">Module description</label></td>
+                                <td><textarea id="module_description"></textarea></td>
+                            </tr>
+                            <tr id="modul_loc_tr">
+                                <td><label for="module_location">Module location</label></td>
+                                <td><input id="module_location" type="url"></td>
+                                <td><div id='btn-new-module-loc-browse' class='button' alt='Borwse for module location.'>Browse</div></td>
+                            </tr>
+                        </table>
+
+            </fieldset>
+            <br>
+            <fieldset id="batch_gen_fs">
+                <legend>Batch file generation</legend>
+                
+                <ul class='props'>
+                    <div>
+                        <li>
+                            <table>
+                                <tr>
+                                    <td><label for="batch_cb">Generate Batch file</label></td>
+                                    <td><input id="batch_cb" type="checkbox" checked></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="batch_default_loc_cb">Default location</label></td>
+                                    <td><input id="batch_default_loc_cb" type="checkbox" checked></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="batch_location">Batch file location</label></td>
+                                    <td><input id="batch_location" type="url"></td>
+                                    <td><div id='btn-batch-loc-browse' class='button' alt='Borwse for batch file location.'>Browse</div></td>
+                                </tr>
+                            </table>
+                        </li>
+                    </div>
+                    
+            </fieldset>
+            <br>
+            <fieldset id="cmake_gen_fs">
+                <legend>CMake generation</legend>
+                <ul class='props'>
+                    <div>
+                        <li>
+                            <table>
+                                <tr>
+                                    <td><label for="cmake_cb">Generate CMakeLists file</label></td>
+                                    <td><input id="cmake_cb" type="checkbox" checked></td>
+                                </tr>
+                                <tr class="checkbox-lable">
+                                    <label for="target-type-selector">Select theme</label>
+                                    <select name="target-type-selector" id="target-type-selector">
+                                        <option value="library_opt">Library</option>
+                                        <option value="executable_opt">Executable</option>
+                                    </select>
+                                </tr>
+                                <br>
+                                <tr>
+                                    <td><label for="cmake_default_cb">Default location</label></td>
+                                    <td><input id="cmake_default_cb" type="checkbox" checked></td>
+                                </tr>
+                                <br>
+                                <tr>
+                                    <td><label for="cmake_location">CMake location</label></td>
+                                    <td><input id="cmake_location" type="url"></td>
+                                    <td><div id='btn-cmake-loc-browse' class='button' alt='Borwse for cmake location.'>Browse</div></li></td>
+                                </tr>
+                        </table>
+                    </li>
+                </div>
+
+            </fieldset>
+            <br>
+            <div id="generate-btns_container">
+                <div id='btn-generate' class='button' alt='Generate the setup module.'>Generate</div>
+                <div id='btn-cancel' class='button' alt='Cancel from setup module.'>Cancel</div>
+            </div>
+        </fieldset>
+        </form>
+
+    </body>
+</html>
