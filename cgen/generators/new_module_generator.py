@@ -1,42 +1,56 @@
 import eel
 import tkinter as tk
-from tkinter.filedialog import askopenfilename, asksaveasfilename
+from tkinter.filedialog import askopenfilename, asksaveasfilename, askdirectory
 from pathlib import Path
 from docopt import docopt
 import logging
 
-# import directory_generator
-# import cmake_generator
-# import batch_generator
+from .directory_generator import DirGen
+from .cmake_generator import *
+from .batch_generator import Batch
 
 class New_module:
     def __init__(self):
         pass
         
-    def create(self):
-        pass
-
 @eel.expose
-def generate_module(name : str, version : str, description : str, location : str):
+def generate_module(name : str, 
+                    version : str, 
+                    description : str,
+                    module_location : str, 
+                    batch_location : str, 
+                    cmake_location : str):
     print("Generate module!")
-    pass
+    print(name)
+    print(module_location)
+    print(batch_location)
+    dg.generate_modul_dirs(module_location, name, version, description)
+    print("Generate module directories!")
+    bg.generate_batch_file(batch_location, module_location, name)
+    print("Generate module batch file!")
+    eel.successful_generate()
 
 @eel.expose
-def browse_loc():
+def browse_dir_path():
     root = tk.Tk()
     root.attributes("-topmost", True)
     root.withdraw()
-    filepath = askopenfilename(title='Open state mechine declaration', filetypes=(('C header file', '.h'), ('State chart', '.html')))
+    filepath = askdirectory()
     if not filepath:
         logging.info(f'File open canceled by user')
         return
     logging.info(f'User selected path: {filepath}')
+    path = Path(filepath).parent
+    print(path)
+    eel.set_choosen_path_to_input_text(filepath)
 
 @eel.expose
 def create_project():
-    eel.start('new_project/new_project.html', port=0, mode='None') 
+    eel.start('new_module/new_module.html', port=0, mode='None') 
 
 nm = New_module()
+dg = DirGen()
+bg = Batch((Path(__file__).parent / '../../').absolute().resolve())
 
 # eel.init((Path(__file__).parent / '../../web').absolute().resolve())
 # create_project()
