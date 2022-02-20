@@ -6,7 +6,7 @@ from docopt import docopt
 import logging
 
 from .directory_generator import DirGen
-from .cmake_generator import *
+from .cmake_generator import CmakeGen
 from .batch_generator import Batch
 
 class New_module:
@@ -19,7 +19,7 @@ def generate_module(name : str,
                     description : str,
                     module_location : str, 
                     batch_location : str, 
-                    cmake_location : str,
+                    cmake_target_mode_selector : str,
                     batch_cb :str,
                     cmake_cb : str):
     print("Generate module!")
@@ -32,7 +32,10 @@ def generate_module(name : str,
         bg.generate_batch_file(batch_location, module_location, name)
     print("Generate module batch file!")
     if(cmake_cb):
-        pass
+        if(cmake_target_mode_selector == "library_opt"):
+            cg.generate_cmake_files(module_location, name, "library")
+        elif(cmake_target_mode_selector == "executable_opt"):
+            cg.generate_cmake_files(module_location, name, "executable")
     eel.successful_generate()
 
 @eel.expose
@@ -56,6 +59,4 @@ def create_project():
 nm = New_module()
 dg = DirGen()
 bg = Batch((Path(__file__).parent / '../../').absolute().resolve())
-
-# eel.init((Path(__file__).parent / '../../web').absolute().resolve())
-# create_project()
+cg = CmakeGen()

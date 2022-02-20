@@ -2,7 +2,6 @@ import io
 import os
 import re
 import sys
-# import generators
 
 class Batch:
     def __init__(self, chsm_path):

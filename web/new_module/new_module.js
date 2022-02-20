@@ -18,6 +18,7 @@ export class New_module{
         this.cmake_cb = document.getElementById("cmake_cb");
         this.cmake_default_loc_cb = document.getElementById("cmake_default_cb");
         this.cmake_location = document.getElementById("cmake_location");
+        this.cmake_target_selector = document.getElementById("target-type-selector");
         this.cmake_browse_btn = document.getElementById("btn-cmake-loc-browse");
         this.cmake_browse_btn.addEventListener("click" , e => this.state_select("CMAKE_BROWSE"));
 
@@ -53,7 +54,7 @@ export class New_module{
                                     this.description.value, 
                                     this.module_location.value, 
                                     this.batch_location.value, 
-                                    this.cmake_location.value,
+                                    this.cmake_target_selector.value,
                                     this.batch_cb.checked,
                                     this.cmake_cb.checked);
                 console.log(this);
