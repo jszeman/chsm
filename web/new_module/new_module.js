@@ -48,7 +48,14 @@ export class New_module{
                 this.cancel_project_window();
                 break;
             case "GENERATE":
-                eel.generate_module(this.name.value, this.version.value, this.description.value, this.module_location.value, this.batch_location.value, this.cmake_location.value);
+                eel.generate_module(this.name.value, 
+                                    this.version.value, 
+                                    this.description.value, 
+                                    this.module_location.value, 
+                                    this.batch_location.value, 
+                                    this.cmake_location.value,
+                                    this.batch_cb.checked,
+                                    this.cmake_cb.checked);
                 console.log(this);
                 break;  
             case "MODULE_BROWSE":

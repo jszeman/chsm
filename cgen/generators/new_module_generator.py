@@ -19,15 +19,20 @@ def generate_module(name : str,
                     description : str,
                     module_location : str, 
                     batch_location : str, 
-                    cmake_location : str):
+                    cmake_location : str,
+                    batch_cb :str,
+                    cmake_cb : str):
     print("Generate module!")
     print(name)
     print(module_location)
     print(batch_location)
     dg.generate_modul_dirs(module_location, name, version, description)
     print("Generate module directories!")
-    bg.generate_batch_file(batch_location, module_location, name)
+    if(batch_cb):
+        bg.generate_batch_file(batch_location, module_location, name)
     print("Generate module batch file!")
+    if(cmake_cb):
+        pass
     eel.successful_generate()
 
 @eel.expose
