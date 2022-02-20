@@ -1,7 +1,6 @@
 import { Gui } from './modules/gui.mjs';
 import { Model } from './modules/model.js';
 import { state_machine } from './data.js';
-// import { New_project } from '../web/new_project/new_project.js'
 
 
 class App {
@@ -23,6 +22,7 @@ class App {
 		};
 		this.file_name = '';
 		this.filepath = null;
+		this.is_opened_statemachine = null;
 		
 		this.model.states().map(s => this.render_state(s), this);
 		this.model.transitions().map(t => this.render_transiton(t), this);
@@ -545,6 +545,7 @@ class App {
 
 			case 'OPEN':
 				eel.open_file();
+				this.is_opened_statemachine = "opened";
 				break;
 
 			case 'SAVE':
@@ -569,8 +570,11 @@ class App {
 
 			case 'EXIT':
 				window.close();
-				this.model.set_view(this.gui.get_view());
-				eel.save_state_machine(this.main.innerHTML, this.model.get_data_string(), this.filepath);
+				if(this.is_opened_statemachine)
+				{
+					this.model.set_view(this.gui.get_view());
+					eel.save_state_machine(this.main.innerHTML, this.model.get_data_string(), this.filepath);
+				}
 				eel.exit_program();
 				break;
 
@@ -1256,15 +1260,17 @@ class App {
 
 
 window.addEventListener('DOMContentLoaded', event => {window.app = new App(state_machine)});
+// window.app = new App(state_machine);
+
 
 // let interval = null;
-// if(document.getElementById("cb-auto_save").checked == true)
+// if(window.app.auto_save_cb.checked)
 // {
-// 	if(interval == null)
+// 	if((interval == null) && (window.app.is_opened_statemachine == "opened"))
 // 	{
+// 		console.log("Enter setInterval start state");
 // 		interval = setInterval(function(){
-// 			// eel.save_state_machine(window.app.main.innerHTML, window.app.model.get_data_string(), window.app.filepath);
-// 			console.log("blabla")
+// 			eel.save_state_machine(window.app.main.innerHTML, window.app.model.get_data_string(), window.app.filepath);
 // 		},5000);
 // 		console.log(interval);
 // 	}
@@ -1273,7 +1279,6 @@ window.addEventListener('DOMContentLoaded', event => {window.app = new App(state
 // 	if(interval != null)
 // 	{
 // 		clearInterval(interval);
-// 		console.log("clear blabla")
 // 	}
 // }
 
