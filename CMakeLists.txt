@@ -14,7 +14,7 @@ include(diagnostic)
 include(install_lib)
 include(graphviz)
 set(DEBUG ON)
-set(CHSM_BUILD_TESTS OFF)
+set(CHSM_BUILD_TESTS ON)
 
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
@@ -26,8 +26,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}
 message(STATUS "
 ----------------------> Chsm <-----------------------------------
 ")
-
-
 
 add_subdirectory(modules/canopen)
 add_subdirectory(modules/dac8565)
@@ -60,30 +58,6 @@ target_link_libraries(${PROJECT_NAME} INTERFACE
         ltc2471        
 )
 
-# get_target_property(crf_interfaces_dir  crf_interfaces   INCLUDE_DIRECTORIES)
-# get_target_property(test_utils_dir      test_utils       INCLUDE_DIRECTORIES)
-# get_target_property(crf_dir             crf              INCLUDE_DIRECTORIES)
-# get_target_property(i2c_master_dir      i2c_master       INCLUDE_DIRECTORIES)
-# get_target_property(spi_master_dir      spi_master       INCLUDE_DIRECTORIES)
-# get_target_property(canopen_dir         canopen          INCLUDE_DIRECTORIES)
-# get_target_property(dac8565_dir         dac8565          INCLUDE_DIRECTORIES)
-# get_target_property(fram_dir            fram             INCLUDE_DIRECTORIES)
-# get_target_property(lm73_dir            lm73             INCLUDE_DIRECTORIES)
-# get_target_property(ltc2471_dir         ltc2471          INCLUDE_DIRECTORIES)
-
-# set(${PROJECT_NAME}_PUBLIC_HEADERS
-#     ${crf_interfaces_dir}
-#     ${test_utils}
-#     ${crf_dir}           
-#     ${i2c_master_dir}    
-#     ${spi_master_dir}    
-#     ${canopen_dir}       
-#     ${dac8565_dir}       
-#     ${fram_dir}          
-#     ${lm73_dir}          
-#     ${ltc2471_dir}       
-# )
-
 # Install ------------------------------------------------------------------------
 
 write_basic_package_version_file(${PROJECT_NAME}ConfigVersion.cmake
@@ -93,16 +67,6 @@ write_basic_package_version_file(${PROJECT_NAME}ConfigVersion.cmake
 
 ## Target installation
 install(TARGETS   ${PROJECT_NAME} 
-                    # crf_interfaces 
-                    # test_utils
-                    # crf
-                    # i2c_master 
-                    # spi_master
-                    # canopen 
-                    # dac8565 
-                    # fram 
-                    # lm73 
-                    # ltc2471 
     EXPORT        ${PROJECT_NAME}Targets
     ARCHIVE       DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY       DESTINATION ${CMAKE_INSTALL_LIBDIR}

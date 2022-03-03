@@ -53,3 +53,17 @@ Cloning: `git clone https://github.com/ThrowTheSwitch/Unity.git`
 
 The result should be a new window with a simple state machine already in it.
 
+
+## Compile modules
+
+### To run one individual test, build and run it
+cd build
+cmake --build . -t lm73_test; ctest -VV -R lm73_test
+
+### Build and run all tests with one command
+cd build
+cmake --build . -t ; ctest -VV -R 
+
+### To listout all target
+cd build
+make help

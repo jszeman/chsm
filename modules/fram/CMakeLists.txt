@@ -23,4 +23,3 @@ target_link_libraries(fram PUBLIC
 )
 
 install_lib(fram chsm 11)
-diagnostic(fram)
