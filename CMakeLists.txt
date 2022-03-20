@@ -12,6 +12,7 @@ include(diagnostic)
 include(install_lib)
 include(graphviz)
 mark_as_advanced(CHSM_DEBUG ON)
+set(CMAKE_DEBUG_MSG ${CHSM_DEBUG})
 mark_as_advanced(CHSM_BUILD_TESTS OFF)
 
 include(GNUInstallDirs)
@@ -54,8 +55,23 @@ target_link_libraries(${PROJECT_NAME} INTERFACE
         fram 
         lm73 
         ltc2471        
-)
+        )
+        
+if(CHSM_BUILD_TESTS)
+    include(FindUnity)
+    message(STATUS "----------> Enabled the tests!")
 
+    enable_testing()
+    add_subdirectory(modules/canopen/test)
+    # add_subdirectory(modules/dac8565/test)
+    add_subdirectory(modules/fram/test)
+    add_subdirectory(modules/i2c_master/test)
+    add_subdirectory(modules/interfaces/test)
+    add_subdirectory(modules/lm73/test)
+    add_subdirectory(modules/ltc2471/test)
+    add_subdirectory(modules/spi_master/test)
+    add_subdirectory(crf/test)
+endif()
 # Install ------------------------------------------------------------------------
 
 write_basic_package_version_file(${PROJECT_NAME}ConfigVersion.cmake
@@ -96,18 +112,3 @@ export(PACKAGE ${PROJECT_NAME})
 # ------------------ Test and diagnostic ----------------------------------------------------
 
 diagnostic(${PROJECT_NAME})
-
-if(CHSM_BUILD_TESTS)
-    message(STATUS "----------> Enabled the tests!")
-
-    enable_testing()
-    add_subdirectory(modules/canopen/test)
-    # add_subdirectory(modules/dac8565/test)
-    add_subdirectory(modules/fram/test)
-    add_subdirectory(modules/i2c_master/test)
-    add_subdirectory(modules/interfaces/test)
-    add_subdirectory(modules/lm73/test)
-    add_subdirectory(modules/ltc2471/test)
-    add_subdirectory(modules/spi_master/test)
-    add_subdirectory(crf/test)
-endif()

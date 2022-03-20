@@ -8,8 +8,18 @@ add_library(chsm::crf_interfaces ALIAS crf_interfaces)
 
 target_compile_definitions(crf_interfaces PUBLIC 
                 NDEBUG
+                $<CHSM_SIGNAL_CLASSES_H : SIGNAL_CLASSES_H=${CHSM_SIGNAL_CLASSES_H}>
+                $<IF:>
                 SIGNAL_CLASSES_H=${CHSM_SIGNAL_CLASSES_H}
 )
+
+message(STATUS "${}")
+if(enable_testing()){
+      if(the build target is ltc2471_test)
+              target_compile_definitions(crf_interfaces PUBLIC ltc2471_test_sig_class::SIGNAL_CLASSES_H)
+      endif()
+        
+}
 
 target_include_directories(crf_interfaces
 PUBLIC
