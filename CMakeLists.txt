@@ -8,13 +8,11 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/utils")
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/compilers")
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
-# Includes ---------------------------------------------------------------------
-
 include(diagnostic)
 include(install_lib)
 include(graphviz)
-set(DEBUG ON)
-set(CHSM_BUILD_TESTS ON)
+mark_as_advanced(CHSM_DEBUG ON)
+mark_as_advanced(CHSM_BUILD_TESTS OFF)
 
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
