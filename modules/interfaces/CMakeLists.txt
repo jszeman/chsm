@@ -8,8 +8,7 @@ add_library(chsm::crf_interfaces ALIAS crf_interfaces)
 
 target_compile_definitions(crf_interfaces PUBLIC 
                 NDEBUG
-                
-                $<IF:CHSM_BUILD_TESTS,,$<CHSM_SIGNAL_CLASSES_H:SIGNAL_CLASSES_H=${CHSM_SIGNAL_CLASSES_H}>>
+                $<IF:$<BOOL:CHSM_BUILD_TESTS>,,SIGNAL_CLASSES_H=${CHSM_SIGNAL_CLASSES_H}>
 )
 
 target_include_directories(crf_interfaces
@@ -28,7 +27,7 @@ install_lib(crf_interfaces chsm 11)
 
 # --------------- i2c test utils ------------------
 add_library(i2c_test_utils STATIC 
-        test/src/ut_i2c_driver_mock.c
+        test/tsrc/ut_i2c_driver_mock.c
 )
 
 add_library(chsm::i2c_test_utils ALIAS i2c_test_utils)
@@ -40,7 +39,7 @@ target_compile_definitions(i2c_test_utils PUBLIC
 
 target_include_directories(i2c_test_utils
 PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/test/inc>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/test/tinc>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/test_utils>
 )
 
@@ -55,7 +54,7 @@ install_lib(i2c_test_utils chsm 11)
 # -----------------spi test utils ---------------------
 
 add_library(spi_test_utils STATIC 
-        test/src/ut_spi_driver_mock.c
+        test/tsrc/ut_spi_driver_mock.c
 )
 
 add_library(chsm::spi_test_utils ALIAS spi_test_utils)
@@ -67,7 +66,7 @@ target_compile_definitions(spi_test_utils PUBLIC
 
 target_include_directories(spi_test_utils
 PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/test/inc>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/test/tinc>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/test_utils>
 )
 

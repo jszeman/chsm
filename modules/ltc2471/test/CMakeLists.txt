@@ -30,7 +30,7 @@ target_link_libraries(ltc2471_test PRIVATE
         i2c_test_utils
         i2c_master
         ltc2471
-        ltc2471_test_sig_class
+        # ltc2471_test_sig_class
         )
 
 diagnostic(ltc2471_test)
@@ -41,22 +41,24 @@ add_test(NAME ltc2471_test
 
 # --------------- Signal_classes handling target -----------------------
 
-add_library(ltc2471_test_sig_class PUBLIC
-)
+# add_library(ltc2471_test_sig_class INTERFACE
+# )
 
-target_include_directories(ltc2471_test_sig_class PUBLIC
-        tinc
-        )
-target_compile_definitions(ltc2471_test_sig_classes PUBLIC
+# target_include_directories(ltc2471_test_sig_class INTERFACE
+#         tinc
+#         )
+target_compile_definitions(ltc2471_test PRIVATE
         SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
-        )   
+)   
 
-target_link_libraries(crf_interfaces PUBLIC
-        ltc2471_test_sig_class
+target_compile_definitions(crf_interfaces PRIVATE
+        SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
 )
-target_link_libraries(i2c_master PUBLIC
-        ltc2471_test_sig_class
+
+target_compile_definitions(i2c_master PRIVATE
+        SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
 )
-target_link_libraries(i2c_test_utils PUBLIC
-        ltc2471_test_sig_class
+
+target_compile_definitions(i2c_test_utils PRIVATE
+        SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
 )

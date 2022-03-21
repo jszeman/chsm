@@ -18,7 +18,7 @@ target_compile_options(spi_master_test PRIVATE
     -Wextra 
     -pedantic 
     )
-    
+
 target_link_options(spi_master_test PRIVATE
     -Wl,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map   
 )
@@ -29,7 +29,7 @@ target_link_libraries(spi_master_test PRIVATE
                 crf_interfaces
                 spi_test_utils
                 spi_master
-                spi_master_test_sig_class
+                # spi_master_test_sig_class
                 )
 
 diagnostic(spi_master_test)
@@ -40,12 +40,18 @@ add_test(NAME spi_master_test
 
 # --------------- Signal_classes handling target -----------------------
 
-add_library(spi_master_test_sig_class PUBLIC
+target_compile_definitions(spi_master_test PUBLIC
+        SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
+)   
+
+target_compile_definitions(crf_interfaces PUBLIC
+        SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
 )
 
-target_include_directories(spi_master_test_sig_class PUBLIC
-        tinc
-        )
-target_compile_definitions(spi_master_test_sig_class PUBLIC
+target_compile_definitions(i2c_master PUBLIC
         SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
-        )   
+)
+
+target_compile_definitions(i2c_test_utils PUBLIC
+        SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
+)

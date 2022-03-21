@@ -30,7 +30,7 @@ target_link_libraries(canopen_test PRIVATE
                 crf
                 crf_interfaces
                 canopen
-                canopen_test_sig_classes
+                # canopen_test_sig_classes
                 )
 
 diagnostic(canopen_test)
@@ -41,12 +41,18 @@ add_test(NAME canopen_test
 
 # --------------- Signal_classes handling target -----------------------
 
-add_library(canopen_test_sig_class PUBLIC
+target_compile_definitions(canopen_test PUBLIC
+        SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
+)   
+
+target_compile_definitions(crf_interfaces PUBLIC
+        SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
 )
 
-target_include_directories(canopen_test_sig_class PUBLIC
-        tinc
-        )
-target_compile_definitions(canopen_test_sig_classes PUBLIC
+target_compile_definitions(i2c_master PUBLIC
         SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
-        )   
+)
+
+target_compile_definitions(i2c_test_utils PUBLIC
+        SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
+)

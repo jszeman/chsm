@@ -29,7 +29,7 @@ target_link_libraries(lm73_test PRIVATE
         i2c_test_utils
         i2c_master
         lm73
-        lm73_test_sig_class
+        # lm73_test_sig_class
         )
 
 diagnostic(lm73_test)
@@ -38,15 +38,26 @@ add_test(NAME lm73_test
         COMMAND lm73_test
        )
 
-
 # --------------- Signal_classes handling target -----------------------
 
-add_library(lm73_test_sig_class PUBLIC
-)
+# add_library(ltc2471_test_sig_class INTERFACE
+# )
 
-target_include_directories(lm73_test_sig_class PUBLIC
-        tinc
-        )
-target_compile_definitions(lm73_test_sig_classes PUBLIC
+# target_include_directories(ltc2471_test_sig_class INTERFACE
+#         tinc
+#         )
+target_compile_definitions(lm73_test PUBLIC
         SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
-        )   
+)   
+
+# target_compile_definitions(crf_interfaces PUBLIC
+#         SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
+# )
+
+# target_compile_definitions(i2c_master PUBLIC
+#         SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
+# )
+
+# target_compile_definitions(i2c_test_utils PUBLIC
+#         SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
+# )

@@ -29,7 +29,8 @@ target_link_libraries(i2c_master_test PRIVATE
                 crf_interfaces
                 i2c_test_utils
                 i2c_master
-                i2c_master_test_sig_class)
+                # i2c_master_test_sig_class
+                )
 
 diagnostic(i2c_master_test)
 
@@ -39,12 +40,18 @@ add_test(NAME i2c_master_test
 
 # --------------- Signal_classes handling target -----------------------
 
-add_library(i2c_master_test_sig_class PUBLIC
+target_compile_definitions(i2c_master_test PUBLIC
+        SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
+)   
+
+target_compile_definitions(crf_interfaces PUBLIC
+        SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
 )
 
-target_include_directories(i2c_master_test_sig_class PUBLIC
-        tinc
-        )
-target_compile_definitions(i2c_master_test_sig_class PUBLIC
+target_compile_definitions(i2c_master PUBLIC
         SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
-        )   
+)
+
+target_compile_definitions(i2c_test_utils PUBLIC
+        SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
+)

@@ -30,7 +30,7 @@ target_link_libraries(dac8565_test PRIVATE
                 spi_test_utils
                 spi_master
                 dac8565
-                dac8565_test_sig_class
+                # dac8565_test_sig_class
                 )
 
 diagnostic(dac8565_test)
@@ -41,12 +41,18 @@ add_test(NAME dac8565_test
 
 # --------------- Signal_classes handling target -----------------------
 
-add_library(dac8565_test_sig_class PUBLIC
+target_compile_definitions(dac8565_test PUBLIC
+        SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
+)   
+
+target_compile_definitions(crf_interfaces PUBLIC
+        SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
 )
 
-target_include_directories(dac8565_test_sig_class PUBLIC
-        tinc
-        )
-target_compile_definitions(dac8565_test_sig_class PUBLIC
+target_compile_definitions(i2c_master PUBLIC
         SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
-        )          
+)
+
+target_compile_definitions(i2c_test_utils PUBLIC
+        SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
+)

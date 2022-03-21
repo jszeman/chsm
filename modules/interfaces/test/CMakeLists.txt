@@ -29,7 +29,7 @@ target_link_libraries(intf_test PRIVATE
                 unity
                 crf
                 crf_interfaces
-                intf_test_sig_class
+                # intf_test_sig_class
                 )
 
 diagnostic(intf_test)
@@ -40,12 +40,7 @@ add_test(NAME intf_test
 
 # --------------- Signal_classes handling target -----------------------
 
-add_library(intf_test_sig_class PUBLIC
-)
-
-target_include_directories(intf_test_sig_class PUBLIC
-        tinc
-        )
-target_compile_definitions(intf_test_sig_class PUBLIC
+target_compile_definitions(intf_test PUBLIC
         SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
-        )   
+)   
+

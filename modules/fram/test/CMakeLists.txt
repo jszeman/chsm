@@ -30,7 +30,7 @@ target_link_libraries(fram_test PRIVATE
                 i2c_test_utils
                 i2c_master
                 fram
-                fram_test_sig_class
+                # fram_test_sig_class
                 )
 
 diagnostic(fram_test)
@@ -41,12 +41,18 @@ add_test(NAME fram_test
 
 # --------------- Signal_classes handling target -----------------------
 
-add_library(fram_test_sig_class PUBLIC
+target_compile_definitions(fram_test PUBLIC
+        SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
+)   
+
+target_compile_definitions(crf_interfaces PUBLIC
+        SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
 )
 
-target_include_directories(fram_test_sig_class PUBLIC
-        tinc
-        )
-target_compile_definitions(fram_test_sig_class PUBLIC
+target_compile_definitions(i2c_master PUBLIC
         SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
-        )          
+)
+
+target_compile_definitions(i2c_test_utils PUBLIC
+        SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
+)
