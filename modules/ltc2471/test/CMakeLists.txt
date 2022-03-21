@@ -50,3 +50,13 @@ target_include_directories(ltc2471_test_sig_class PUBLIC
 target_compile_definitions(ltc2471_test_sig_classes PUBLIC
         SIGNAL_CLASSES_H=${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h
         )   
+
+target_link_libraries(crf_interfaces PUBLIC
+        ltc2471_test_sig_class
+)
+target_link_libraries(i2c_master PUBLIC
+        ltc2471_test_sig_class
+)
+target_link_libraries(i2c_test_utils PUBLIC
+        ltc2471_test_sig_class
+)

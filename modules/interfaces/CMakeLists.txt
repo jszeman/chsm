@@ -8,18 +8,9 @@ add_library(chsm::crf_interfaces ALIAS crf_interfaces)
 
 target_compile_definitions(crf_interfaces PUBLIC 
                 NDEBUG
-                $<CHSM_SIGNAL_CLASSES_H : SIGNAL_CLASSES_H=${CHSM_SIGNAL_CLASSES_H}>
-                $<IF:>
-                SIGNAL_CLASSES_H=${CHSM_SIGNAL_CLASSES_H}
+                
+                $<IF:CHSM_BUILD_TESTS,,$<CHSM_SIGNAL_CLASSES_H:SIGNAL_CLASSES_H=${CHSM_SIGNAL_CLASSES_H}>>
 )
-
-message(STATUS "${}")
-if(enable_testing()){
-      if(the build target is ltc2471_test)
-              target_compile_definitions(crf_interfaces PUBLIC ltc2471_test_sig_class::SIGNAL_CLASSES_H)
-      endif()
-        
-}
 
 target_include_directories(crf_interfaces
 PUBLIC
@@ -44,7 +35,7 @@ add_library(chsm::i2c_test_utils ALIAS i2c_test_utils)
 
 target_compile_definitions(i2c_test_utils PUBLIC 
         NDEBUG
-        SIGNAL_CLASSES_H=${CHSM_SIGNAL_CLASSES_H}
+        # SIGNAL_CLASSES_H=${CHSM_SIGNAL_CLASSES_H}
 )
 
 target_include_directories(i2c_test_utils
@@ -71,7 +62,7 @@ add_library(chsm::spi_test_utils ALIAS spi_test_utils)
 
 target_compile_definitions(spi_test_utils PUBLIC 
         NDEBUG
-        SIGNAL_CLASSES_H=${CHSM_SIGNAL_CLASSES_H}
+        # SIGNAL_CLASSES_H=${CHSM_SIGNAL_CLASSES_H}
 )
 
 target_include_directories(spi_test_utils
