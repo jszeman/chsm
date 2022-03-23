@@ -8,7 +8,7 @@ add_library(chsm::crf_interfaces ALIAS crf_interfaces)
 
 target_compile_definitions(crf_interfaces PUBLIC 
                 NDEBUG
-                $<IF:$<BOOL:CHSM_BUILD_TESTS>,,SIGNAL_CLASSES_H=${CHSM_SIGNAL_CLASSES_H}>
+                SIGNAL_CLASSES_H=${CHSM_SIGNAL_CLASSES_H}
 )
 
 target_include_directories(crf_interfaces
@@ -34,7 +34,7 @@ add_library(chsm::i2c_test_utils ALIAS i2c_test_utils)
 
 target_compile_definitions(i2c_test_utils PUBLIC 
         NDEBUG
-        # SIGNAL_CLASSES_H=${CHSM_SIGNAL_CLASSES_H}
+        SIGNAL_CLASSES_H=${CHSM_SIGNAL_CLASSES_H}
 )
 
 target_include_directories(i2c_test_utils
@@ -61,7 +61,7 @@ add_library(chsm::spi_test_utils ALIAS spi_test_utils)
 
 target_compile_definitions(spi_test_utils PUBLIC 
         NDEBUG
-        # SIGNAL_CLASSES_H=${CHSM_SIGNAL_CLASSES_H}
+        SIGNAL_CLASSES_H=${CHSM_SIGNAL_CLASSES_H}
 )
 
 target_include_directories(spi_test_utils
