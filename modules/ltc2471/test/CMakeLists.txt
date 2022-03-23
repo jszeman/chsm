@@ -1,27 +1,9 @@
 cmake_minimum_required(VERSION 3.19)
 
-macro(source_abs_path_list target output_source_list)
-    get_target_property(sources_list_dir ${target} SOURCE_DIR)
-    message(STATUS "sources_list_dir: ---> ${sources_list_dir}")
-    get_target_property(sources_list ${target} SOURCES)
-    message(STATUS "sources_list: ------>${sources_list}")
-
-    foreach(source ${sources_list})
-        string(PREPEND source "${sources_list_dir}/")
-        string(APPEND ${output_source_list} "${source};")
-        message(STATUS "source: ------> ${source}")
-    endforeach()
-    message(STATUS "${target} output_source_list: --------> ${output_source_list}")
-endmacro()
-    
-    source_abs_path_list(crf_interfaces crf_interfaces_sources)
-    message(STATUS "crf_interfaces output_source_list: --------> ${crf_interfaces_sources}")
-    source_abs_path_list(i2c_test_utils i2c_test_utils_sources)
-    message(STATUS "i2c_test_utils output_source_list: --------> ${i2c_test_utils_sources}")
-    source_abs_path_list(i2c_master i2c_master_sources)
-    message(STATUS "i2c_master output_source_list: --------> ${i2c_master_sources}")
-    source_abs_path_list(ltc2471 ltc2471_sources)
-    message(STATUS "ltc2471 output_source_list: --------> ${ltc2471_sources}")
+source_abs_path_list(crf_interfaces crf_interfaces_sources)
+source_abs_path_list(i2c_test_utils i2c_test_utils_sources)
+source_abs_path_list(i2c_master i2c_master_sources)
+source_abs_path_list(ltc2471 ltc2471_sources)
 
 add_executable(ltc2471_test 
     tsrc/main.c

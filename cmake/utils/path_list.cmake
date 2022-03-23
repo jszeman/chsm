@@ -1,0 +1,10 @@
+macro(source_abs_path_list target output_source_list)
+    get_target_property(sources_list_dir ${target} SOURCE_DIR)
+    get_target_property(sources_list ${target} SOURCES)
+
+    foreach(source ${sources_list})
+        string(PREPEND source "${sources_list_dir}/")
+        string(APPEND ${output_source_list} "${source};")
+    endforeach()
+    message(STATUS "${target} output_source_list: --------> ${output_source_list}")
+endmacro()
