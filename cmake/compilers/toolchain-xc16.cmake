@@ -65,10 +65,7 @@ set(LD                  ${TOOLCHAIN_LD})
 set(CMAKE_C_STANDARD_COMPUTED_DEFAULT 99)
 
 add_definitions(
-  # -DdsPIC33FJ128MC802
-  # -DdsPIC33F
-  # -D__dsPIC33F__
-  # -D__dsPIC33FJ128MC802__
+  -DPIC_XC16_BUILD=1
 )
 
 add_compile_options(

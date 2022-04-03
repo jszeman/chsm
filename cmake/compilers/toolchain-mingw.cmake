@@ -11,7 +11,7 @@ elseif(UNIX OR APPLE)
     set(UTIL_SEARCH_CMD which)
 endif()
 
-set(toolchain_name "armcl")
+set(toolchain_name "gcc")
 set(CMAKE_C_COMPILER_ID ${toolchain_name})
 
 if(autodetect_toolchain)
@@ -32,7 +32,7 @@ if(autodetect_toolchain)
     message(FATAL_ERROR "")
   endif()
 else()
-  set(TOOLCHAIN_DIR "C:/ti/ccs1020/ccs/tools/compiler/ti-cgt-arm_20.2.5.LTS/bin")
+  set(TOOLCHAIN_DIR "C:/MinGW/bin") # Add here the absolute path of the actual compiler
   find_program(toolchain NAMES ${toolchain_name} PATHS ${TOOLCHAIN_DIR} NO_DEFAULT_PATH)
   if(toolchain)
     execute_process(COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --blue --bold "Find tolchain as ${TOOLCHAIN_DIR}")
@@ -53,49 +53,32 @@ set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
 
 # toolchain paths
-find_program(TI_GCC             NAMES   armcl    PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
-find_program(TI_CXX             NAMES   armcl    PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
-find_program(TI_AS              NAMES   armcl    PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
-find_program(TI_AR              NAMES   armar    PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
-find_program(TI_OBJCOPY         NAMES   armofd   PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
-find_program(TI_OBJDUMP         NAMES   armhex   PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
-find_program(TI_SIZE            NAMES   armsize  PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
-find_program(TI_LD              NAMES   armcl    PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
+find_program(CUSTOM_GCC             NAMES   gcc       PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
+find_program(CUSTOM_CXX             NAMES   gcc       PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
+find_program(CUSTOM_AS              NAMES   gcc       PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
+find_program(CUSTOM_AR              NAMES   gcc-ar    PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
+find_program(CUSTOM_OBJCOPY         NAMES   objcopy   PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
+find_program(CUSTOM_OBJDUMP         NAMES   objdump   PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
+find_program(CUSTOM_SIZE            NAMES   size      PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
+find_program(CUSTOM_LD              NAMES   ld        PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
 
 # set executables settings
-set(CMAKE_C_COMPILER    ${TI_GCC})
-set(CMAKE_CXX_COMPILER  ${TI_CXX})
-set(AS                  ${TI_AS})
-set(AR                  ${TI_AR})
-set(OBJCOPY             ${TI_OBJCOPY})
-set(OBJDUMP             ${TI_OBJDUMP})
-set(SIZE                ${TI_SIZE})
-set(LD                  ${TI_LD})
+set(CMAKE_C_COMPILER    ${CUSTOM_GCC})
+set(CMAKE_CXX_COMPILER  ${CUSTOM_CXX})
+set(AS                  ${CUSTOM_AS})
+set(AR                  ${CUSTOM_AR})
+set(OBJCOPY             ${CUSTOM_OBJCOPY})
+set(OBJDUMP             ${CUSTOM_OBJDUMP})
+set(SIZE                ${CUSTOM_SIZE})
+set(LD                  ${CUSTOM_LD})
 
 add_definitions(
-  -DOD_EXTENSION
-  -DFPGA_PWM
-  -D_RADIUS_INTERFACE_ACTIVE
-  -DNODEBUG
-  -DBOARD_EL_24_02_03
-  -D_FLASH
-  -DFPGA_TEST
-  -DTI_ARMCL_BUILD=1)
-
-set(CMAKE_C_STANDARD_COMPUTED_DEFAULT 99)
+  -DMINGW_BUILD=1
+)
 
 add_compile_options(
-    -mv7M3
-    --code_state=16
-    -me
-    -O2
-    --c99
-    --gcc
-    --diag_warning=225
-    --diag_wrap=off
-    --display_error_number
-    --gen_func_subsections=on
-    --abi=eabi
-    --ual )
+    -std=c11
+)
 
-    include_directories("${TOOLCHAIN_DIR}/../include")
+include_directories("${TOOLCHAIN_DIR}/../include")
+link_directories("${TOOLCHAIN_DIR}/../lib")

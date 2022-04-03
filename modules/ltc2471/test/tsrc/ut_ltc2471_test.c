@@ -186,8 +186,4 @@ TEST_GROUP_RUNNER(ltc2471)
 
 	RUN_TEST_CASE(ltc2471, read_one);
 	RUN_TEST_CASE(ltc2471, read_two);
-	//RUN_TEST_CASE(ltc2471, init);
-	//RUN_TEST_CASE(ltc2471, init);
-	//RUN_TEST_CASE(ltc2471, init);
-
 }

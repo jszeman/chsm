@@ -86,11 +86,8 @@ add_definitions(
     -DNO_PROFILING
     -DFPGA_PWM
     -DFPGA_TEST
-    # -D__TMS320C2000__
-    # -D__TMS320C28X__
-    # -D__TMS320C28XX__
-    # -D__TMS320C28XX_CLA__
-    -DBOARD_EL_24_02_03)
+    -DBOARD_EL_24_02_03
+    -DTI_CL2000_BUILD=1)
 
 add_compile_options(
     -v28

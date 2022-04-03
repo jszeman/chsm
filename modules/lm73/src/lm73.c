@@ -1,4 +1,4 @@
-/*Generated with CHSM v0.0.0 at 2021.12.03 13.06.03*/
+/*Generated with CHSM v0.0.0 at 2022.03.30 20.54.15*/
 #include "cevent.h"
 #include "chsm.h"
 #include "lm73.h"
@@ -68,17 +68,20 @@ static chsm_result_ten s_reading(chsm_tst *self, const cevent_tst  *e_pst, chsm_
             chsm_exit_children(self, e_pst, ctx_pst);
             lm73_update_temp(self, e_pst);
             lm73_reset_timer(self, e_pst);
+            lm73_reset_timer(self, e_pst);
             return chsm_transition(self, s_idle);
 
         case SIG_I2C_RESULT_ADDR_NACK:
             chsm_exit_children(self, e_pst, ctx_pst);
             lm73_inc_error_counter(self, e_pst);
             lm73_reset_timer(self, e_pst);
+            lm73_reset_timer(self, e_pst);
             return chsm_transition(self, s_idle);
 
         case SIG_I2C_RESULT_DATA_NACK:
             chsm_exit_children(self, e_pst, ctx_pst);
             lm73_inc_error_counter(self, e_pst);
+            lm73_reset_timer(self, e_pst);
             lm73_reset_timer(self, e_pst);
             return chsm_transition(self, s_idle);
 
@@ -91,10 +94,11 @@ static chsm_result_ten s_reading(chsm_tst *self, const cevent_tst  *e_pst, chsm_
         chsm_exit_children(self, e_pst, ctx_pst);
         lm73_inc_error_counter(self, e_pst);
         lm73_reset_timer(self, e_pst);
+        lm73_reset_timer(self, e_pst);
         return chsm_transition(self, s_idle);
     }
 
-    return chsm_handle_in_parent(self, ctx_pst, s_online, NULL, guards_only_b);
+    return chsm_handle_in_parent(self, ctx_pst, s_online, lm73_reset_timer, guards_only_b);
 }
 
 static chsm_result_ten s_read_id_reg(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst)

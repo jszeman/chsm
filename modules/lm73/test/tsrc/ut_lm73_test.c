@@ -46,7 +46,7 @@ crf_tst					crf;
 const cevent_tst*       events_apst[4];
 cqueue_tst              q_st;
 
-const cevent_tst		tick_1ms_st = {.sig = SIG_SYS_TICK_1ms};
+const cevent_tst		tick_10ms_st = {.sig = SIG_SYS_TICK_10ms};
 
 static void tick_ms(uint32_t tick_cnt_u32)
 {
@@ -54,7 +54,7 @@ static void tick_ms(uint32_t tick_cnt_u32)
 	{
 		drv_mock_st.tick(&drv_mock_st);
 
-		CRF_POST(&tick_1ms_st, &lm73_st);
+		CRF_POST(&tick_10ms_st, &lm73_st);
 
 		while(CRF_STEP())
 		{
@@ -105,8 +105,8 @@ TEST_SETUP(lm73)
 	lm73_st.config_st = (lm73_cfg_tst){
 		.address_u8 = 			0x12,
 		.id_u16 = 				0xabcd,
-		.period_ms_u16 = 		100,
-		.max_error_cnt_u16 = 	5
+		.period_ms_u16 = 		LM73_READ_PERIOD_VALUE,
+		.max_error_cnt_u16 = 	LM73_MAX_ERROR_COUNT_VALUE
 		};
 
 	CRF_SEND_FUNC(&lm73_st) = lm73_send;
@@ -145,7 +145,7 @@ TEST(lm73, read_temp_twice)
 
     drv_mock_st.slave_pst = &dev_st;
 
-	tick_ms(100);
+	tick_ms(10);
 
 	s_pst = (lm73_status_tst*)q_st.get(&q_st);
 	TEST_ASSERT(s_pst);
@@ -156,7 +156,7 @@ TEST(lm73, read_temp_twice)
 	TEST_ASSERT_EQUAL(SIG_LM73_TEMP, e_pst->super.sig);
 	TEST_ASSERT_EQUAL(-25, e_pst->temp_C_i32);
 
-	tick_ms(LM73_READ_PERIOD+1);
+	tick_ms((LM73_READ_PERIOD/10)+1);
 
 	uint8_t expected_au8[4] = {7, 0, 0, 0};
     TEST_ASSERT_EQUAL_HEX8_ARRAY(expected_au8, dev_st.rx_data_au8, 4);
@@ -224,7 +224,7 @@ TEST(lm73, read_id_retry_bad_id)
 	s_pst = (lm73_status_tst*)q_st.get(&q_st);
 	TEST_ASSERT_NULL(s_pst);
 	
-	tick_ms(LM73_RETRY_TIMEOUT-10);
+	tick_ms((LM73_RETRY_TIMEOUT-10)/10);
 	
 	s_pst = (lm73_status_tst*)q_st.get(&q_st);
 	TEST_ASSERT_NULL(s_pst);
@@ -234,6 +234,44 @@ TEST(lm73, read_id_retry_bad_id)
 	s_pst = (lm73_status_tst*)q_st.get(&q_st);
 	TEST_ASSERT_NOT_NULL(s_pst);
 	TEST_ASSERT_EQUAL(SIG_LM73_ONLINE, s_pst->super.sig);
+}
+
+/* go_online:
+ * Check that after reading temperature data fails for more than LM73_MAX_ERROR_COUNT times
+ * the state machine goes offline and invalidates the temperature data.
+ */
+TEST(lm73, go_online)
+{
+    i2c_mock_slave_device_tst dev_st = {
+        .address_u8 = 0x12,
+        .nack_idx_u16 = 20,
+		.tx_data_au8 = {0x01, 0x90, 0xf3, 0x80, 0x0c, 0x80}
+    };
+
+	const lm73_temp_tst* e_pst;
+	const lm73_status_tst* s_pst;
+
+    drv_mock_st.slave_pst = &dev_st;
+
+	tick_ms(10);
+
+	s_pst = (lm73_status_tst*)q_st.get(&q_st);
+	TEST_ASSERT(s_pst);
+	TEST_ASSERT_EQUAL(SIG_LM73_ONLINE, s_pst->super.sig);
+
+	e_pst = (lm73_temp_tst*)q_st.get(&q_st);
+	TEST_ASSERT(e_pst);
+	TEST_ASSERT_EQUAL(SIG_LM73_TEMP, e_pst->super.sig);
+	TEST_ASSERT_EQUAL(-25, e_pst->temp_C_i32);
+
+	tick_ms((LM73_READ_PERIOD_VALUE / 10) + 1);
+
+	e_pst = (lm73_temp_tst*)q_st.get(&q_st);
+	TEST_ASSERT(e_pst);
+	TEST_ASSERT_EQUAL(SIG_LM73_TEMP, e_pst->super.sig);
+	TEST_ASSERT_EQUAL(25, e_pst->temp_C_i32);
+	
+	TEST_ASSERT_TRUE(lm73_st.valid_b);
 }
 
 /* go_offline:
@@ -264,7 +302,7 @@ TEST(lm73, go_offline)
 	TEST_ASSERT_EQUAL(SIG_LM73_TEMP, e_pst->super.sig);
 	TEST_ASSERT_EQUAL(-25, e_pst->temp_C_i32);
 
-	tick_ms(LM73_READ_PERIOD + 1);
+	tick_ms((LM73_READ_PERIOD/10) + 1);
 
 	e_pst = (lm73_temp_tst*)q_st.get(&q_st);
 	TEST_ASSERT(e_pst);
@@ -275,7 +313,7 @@ TEST(lm73, go_offline)
 	
 	dev_st.address_u8 = 0x13;
 	
-	tick_ms((LM73_READ_PERIOD + 1) * LM73_MAX_ERROR_COUNT + 1);
+	tick_ms(((LM73_READ_PERIOD/10) + 1) * LM73_MAX_ERROR_COUNT + 1);
 
 	s_pst = (lm73_status_tst*)q_st.get(&q_st);
 	TEST_ASSERT(s_pst);
@@ -338,16 +376,6 @@ TEST_GROUP_RUNNER(lm73)
 	RUN_TEST_CASE(lm73, read_id_retry);
 	RUN_TEST_CASE(lm73, read_id_retry_bad_id);
 	RUN_TEST_CASE(lm73, go_offline);
+	RUN_TEST_CASE(lm73, go_online);
 	RUN_TEST_CASE(lm73, triggered_read);
-	//RUN_TEST_CASE(lm73, init);
-	//RUN_TEST_CASE(lm73, init);
-	//RUN_TEST_CASE(lm73, init);
-	//RUN_TEST_CASE(lm73, init);
-	//RUN_TEST_CASE(lm73, init);
-	//RUN_TEST_CASE(lm73, init);
-	//RUN_TEST_CASE(lm73, init);
-	//RUN_TEST_CASE(lm73, init);
-	//RUN_TEST_CASE(lm73, init);
-	//RUN_TEST_CASE(lm73, init);
-
 }
