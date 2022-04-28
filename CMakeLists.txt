@@ -12,9 +12,9 @@ include(diagnostic)
 include(install_lib)
 include(graphviz)
 include(path_list)
-set(CHSM_DEBUG ON)
-set(CMAKE_DEBUG_MSG ${CHSM_DEBUG})
-set(CHSM_BUILD_TESTS ON)
+
+set(CMAKE_DEBUG_MSG OFF)
+set(CHSM_BUILD_TESTS OFF)
 
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
