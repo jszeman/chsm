@@ -14,7 +14,7 @@ include(diagnostic)
 include(install_lib)
 include(graphviz)
 set(DEBUG ON)
-set(CHSM_BUILD_TESTS OFF)
+option(CHSM_BUILD_TESTS OFF)
 
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
