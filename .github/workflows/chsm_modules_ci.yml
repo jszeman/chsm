@@ -16,6 +16,11 @@ jobs:
       
     - name: Check cmake version
       run: cmake --version
+     
+    - name: Install Graphviz
+      # You may pin to the exact commit or the version.
+      # uses: tlylt/install-graphviz@b2201200d85f06f0189cb74d9b69208504cf12cd
+      uses: tlylt/install-graphviz@v1.0.0
       
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -S ${{github.workspace}} -DCHSM_BUILD_TESTS=ON
