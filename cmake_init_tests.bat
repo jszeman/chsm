@@ -12,5 +12,5 @@ if exist "%~dp0/build-%cpu_architecture%" (
     cd build-%cpu_architecture%
 )
 
-cmake -G "MinGW Makefiles" -DCMAKE_TOOLCHAIN_FILE=%current_path%\cmake\compilers\toolchain-mingw.cmake ../
+cmake -G "MinGW Makefiles" -DCMAKE_TOOLCHAIN_FILE=%current_path%\cmake\compilers\toolchain-mingw.cmake -DCHSM_BUILD_TESTS=ON ../
 
