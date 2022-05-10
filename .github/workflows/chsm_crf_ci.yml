@@ -1,4 +1,4 @@
-name: CI
+name: chsm_crf_ci
 
 on:
   push:
