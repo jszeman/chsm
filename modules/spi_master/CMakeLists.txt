@@ -23,4 +23,3 @@ crf_interfaces
 )
 
 install_lib(spi_master chsm 11)
-diagnostic(spi_master)

@@ -23,4 +23,3 @@ target_link_libraries(ltc2471 PUBLIC
 )
 
 install_lib(ltc2471 chsm 11)
-diagnostic(ltc2471)

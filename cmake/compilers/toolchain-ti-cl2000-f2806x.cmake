@@ -5,13 +5,22 @@ set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_VERSION  1)
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
+set(CMAKE_C_USE_RESPONSE_FILE_FOR_LIBRARIES 1)
+set(CMAKE_CXX_USE_RESPONSE_FILE_FOR_LIBRARIES 1)
+set(CMAKE_C_USE_RESPONSE_FILE_FOR_OBJECTS 1)
+set(CMAKE_CXX_USE_RESPONSE_FILE_FOR_OBJECTS 1)
+set(CMAKE_C_USE_RESPONSE_FILE_FOR_INCLUDES 1)
+set(CMAKE_CXX_USE_RESPONSE_FILE_FOR_INCLUDES 1)
+set(CMAKE_C_RESPONSE_FILE_LINK_FLAG "@")
+set(CMAKE_CXX_RESPONSE_FILE_LINK_FLAG "@")
+
 if(MINGW OR CYGWIN OR WIN32)
     set(UTIL_SEARCH_CMD where)
 elseif(UNIX OR APPLE)
     set(UTIL_SEARCH_CMD which)
 endif()
 
-set(toolchain_name "armcl")
+set(toolchain_name "cl2000")
 set(CMAKE_C_COMPILER_ID ${toolchain_name})
 
 if(autodetect_toolchain)
@@ -20,7 +29,7 @@ if(autodetect_toolchain)
     execute_process(
       COMMAND ${UTIL_SEARCH_CMD} ${toolchain_name}
       OUTPUT_VARIABLE BINUTILS_PATH
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
+      OUTPUT_STRIP_TRAILING_WHITESPACE)
     execute_process(COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --blue --bold "Find tolchain as ${BINUTILS_PATH}")
     get_filename_component(TOOLCHAIN_DIR ${BINUTILS_PATH} DIRECTORY)
     message(STATUS "TOOLCHAIN_DIR: -> ${TOOLCHAIN_DIR}")
@@ -32,7 +41,8 @@ if(autodetect_toolchain)
     message(FATAL_ERROR "")
   endif()
 else()
-  set(TOOLCHAIN_DIR "C:/ti/ccs1020/ccs/tools/compiler/ti-cgt-arm_20.2.5.LTS/bin")
+  # set(TOOLCHAIN_DIR "C:/ti/ccs1010/ccs/tools/compiler/ti-cgt-c2000_21.6.0.LTS/bin")
+  set(TOOLCHAIN_DIR "C:/ti/ccs1010/ccs/tools/compiler/ti-cgt-c2000_20.2.5.LTS/bin")
   find_program(toolchain NAMES ${toolchain_name} PATHS ${TOOLCHAIN_DIR} NO_DEFAULT_PATH)
   if(toolchain)
     execute_process(COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --blue --bold "Find tolchain as ${TOOLCHAIN_DIR}")
@@ -46,21 +56,21 @@ else()
   endif()
 endif()
 
-set(CMAKE_FIND_ROOT_PATH "${TOOLCHAIN_DIR}")
+set(CMAKE_FIND_ROOT_PATH "${TOOLCHAIN_DIR}") # path/bin
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM BOTH)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
 
 # toolchain paths
-find_program(TI_GCC             NAMES   armcl    PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
-find_program(TI_CXX             NAMES   armcl    PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
-find_program(TI_AS              NAMES   armcl    PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
-find_program(TI_AR              NAMES   armar    PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
-find_program(TI_OBJCOPY         NAMES   armofd   PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
-find_program(TI_OBJDUMP         NAMES   armhex   PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
-find_program(TI_SIZE            NAMES   armsize  PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
-find_program(TI_LD              NAMES   armcl    PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
+find_program(TI_GCC             NAMES   cl2000    PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
+find_program(TI_CXX             NAMES   cl2000    PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
+find_program(TI_AS              NAMES   cl2000    PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
+find_program(TI_AR              NAMES   ar2000    PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
+find_program(TI_OBJCOPY         NAMES   ofd2000   PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
+find_program(TI_OBJDUMP         NAMES   hex2000   PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
+# find_program(TI_SIZE            NAMES   size2000  PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
+find_program(TI_LD              NAMES   cl2000    PATHS  ${TOOLCHAIN_DIR}    NO_DEFAULT_PATH)
 
 # set executables settings
 set(CMAKE_C_COMPILER    ${TI_GCC})
@@ -69,33 +79,30 @@ set(AS                  ${TI_AS})
 set(AR                  ${TI_AR})
 set(OBJCOPY             ${TI_OBJCOPY})
 set(OBJDUMP             ${TI_OBJDUMP})
-set(SIZE                ${TI_SIZE})
+# set(SIZE                ${TI_SIZE})
 set(LD                  ${TI_LD})
 
-add_definitions(
-  -DOD_EXTENSION
-  -DFPGA_PWM
-  -D_RADIUS_INTERFACE_ACTIVE
-  -DNODEBUG
-  -DBOARD_EL_24_02_03
-  -D_FLASH
-  -DFPGA_TEST
-  -DTI_ARMCL_BUILD=1)
-
-set(CMAKE_C_STANDARD_COMPUTED_DEFAULT 99)
+add_compile_definitions(
+  -DTI_F2806X_BUILD=1
+)
 
 add_compile_options(
-    -mv7M3
-    --code_state=16
-    -me
-    -O2
-    --c99
-    --gcc
-    --diag_warning=225
-    --diag_wrap=off
-    --display_error_number
-    --gen_func_subsections=on
-    --abi=eabi
-    --ual )
+  -v28 
+  -ml 
+  -mt 
+  --cla_support=cla0 
+  --float_support=fpu32 
+  --vcu_support=vcu0 
+  --advice:performance=all
+  -g 
+  --c11 
+  --diag_warning=225 
+  --diag_wrap=off 
+  --display_error_number 
+  --abi=coffabi 
+  --preproc_with_compile 
+    )
 
-    include_directories("${TOOLCHAIN_DIR}/../include")
+# include the toolchain resources globaly
+include_directories("${TOOLCHAIN_DIR}/../include")
+link_directories("${TOOLCHAIN_DIR}/../lib")

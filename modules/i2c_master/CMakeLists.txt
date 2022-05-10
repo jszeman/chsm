@@ -23,4 +23,3 @@ target_link_libraries(i2c_master PUBLIC
 )
 
 install_lib(i2c_master chsm 11)
-diagnostic(i2c_master)

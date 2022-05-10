@@ -1,10 +1,6 @@
 cmake_minimum_required(VERSION 3.19)
 
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../../cmake/utils")
-
 message(STATUS "Using toolchain file: ${CMAKE_TOOLCHAIN_FILE}.")
-
-include(Fetch_unity)
 
 add_executable(crf_test 
                 tsrc/main.c
@@ -24,17 +20,10 @@ add_executable(crf_test
                 tsrc/dev_driver.c
                 tsrc/dev_driver_functions.c
                 tsrc/atomic_functions.c
-                ../src/chsm.c
-                ../src/cvalue.c
-                ../src/cpool.c
-                ../src/cqueue.c
-                ../src/crf.c
-                ../src/cbits.c
                 )
 
 target_include_directories(crf_test PRIVATE
                 tinc
-                ../inc
                 )
 
 
@@ -54,11 +43,10 @@ target_link_options(crf_test PRIVATE
 
 target_link_libraries(crf_test
                 unity
+                crf
                 )
                 
 diagnostic(crf_test)
-
-enable_testing()
 
 add_test(NAME crf_test
         COMMAND crf_test
