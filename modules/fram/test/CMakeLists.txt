@@ -1,60 +1,49 @@
 cmake_minimum_required(VERSION 3.19)
 
-project(example_fram_test)
-
-include(GNUInstallDirs)
-
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
-
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}../../../../cmake/utils")
-
-include(Fetch_unity)
+source_abs_path_list(crf_interfaces crf_interfaces_sources)
+source_abs_path_list(i2c_test_utils i2c_test_utils_sources)
+source_abs_path_list(i2c_master i2c_master_sources)
+source_abs_path_list(fram fram_sources)
 
 add_executable(fram_test 
-                src/main.c
-                src/ut_fram_test.c
-                ../src/fram.c
-                ../src/fram_functions.c
-                ../../i2c_master/src/i2c_master.c
-                ../../i2c_master/src/i2c_master_functions.c
-                ../../interfaces/test/src/ut_i2c_driver_mock.c
-                ../../../crf/src/chsm.c
-                ../../../crf/src/cvalue.c
-                ../../../crf/src/cpool.c
-                ../../../crf/src/cqueue.c
-                ../../../crf/src/crf.c
-                ../../../crf/src/cbits.c
+                tsrc/main.c
+                tsrc/ut_fram_test.c
+                ${crf_interfaces_sources}
+                ${i2c_test_utils_sources}
+                ${i2c_master_sources}
+                ${fram_sources}
                 )
 
 target_include_directories(fram_test PRIVATE
                 tinc
-                inc
-                ../inc
-                ../../i2c_master/inc
-                ../../interfaces/test/inc
-                ../../interfaces/inc
-                ../../../crf/inc
+                $<TARGET_PROPERTY:crf_interfaces,INCLUDE_DIRECTORIES>
+                $<TARGET_PROPERTY:i2c_test_utils,INCLUDE_DIRECTORIES>
+                $<TARGET_PROPERTY:i2c_master,INCLUDE_DIRECTORIES>
+                $<TARGET_PROPERTY:fram,INCLUDE_DIRECTORIES>
                 )
 
 target_compile_definitions(fram_test PRIVATE 
                 NDEBUG
-                SIGNAL_CLASSES_H="signal_classes.h")
+                SIGNAL_CLASSES_H="${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h"
+                )
 
 target_compile_options(fram_test PRIVATE 
-    -Wall 
-    -Wextra 
-    -pedantic 
-    # -Werror
-    )
+                -Wall 
+                -Wextra 
+                -pedantic 
+                )
+
 target_link_options(fram_test PRIVATE
     -Wl,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map   
 )
 
-target_link_libraries(fram_test PRIVATE unity)
+target_link_libraries(fram_test PRIVATE 
+                unity
+                crf
+                )
 
-set(debug ON)
-
-include(diagnostic)
 diagnostic(fram_test)
+
+add_test(NAME fram_test
+        COMMAND fram_test
+       )

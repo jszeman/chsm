@@ -1,57 +1,46 @@
 cmake_minimum_required(VERSION 3.19)
 
-project(example_spi_master_test)
-
-include(GNUInstallDirs)
-
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
-
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}../../../../cmake/utils")
-
-include(Fetch_unity)
+source_abs_path_list(crf_interfaces crf_interfaces_sources)
+source_abs_path_list(spi_test_utils spi_test_utils_sources)
+source_abs_path_list(spi_master spi_master_sources)
 
 add_executable(spi_master_test 
-                src/main.c
-                src/ut_spi_master_test.c
-                ../src/spi_master.c
-                ../src/spi_master_functions.c
-                ../../interfaces/test/src/ut_spi_driver_mock.c
-                ../../../crf/src/chsm.c
-                ../../../crf/src/cvalue.c
-                ../../../crf/src/cpool.c
-                ../../../crf/src/cqueue.c
-                ../../../crf/src/crf.c
-                ../../../crf/src/cbits.c
+                tsrc/main.c
+                tsrc/ut_spi_master_test.c
+                ${crf_interfaces_sources}
+                ${spi_test_utils_sources}
+                ${spi_master_sources}
                 )
 
 target_include_directories(spi_master_test PRIVATE
                 tinc
-                inc
-                ../inc
-                ../../interfaces/test/inc
-                ../../interfaces/inc
-                ../../../crf/inc
+                $<TARGET_PROPERTY:crf_interfaces,INCLUDE_DIRECTORIES>
+                $<TARGET_PROPERTY:spi_test_utils,INCLUDE_DIRECTORIES>
+                $<TARGET_PROPERTY:spi_master,INCLUDE_DIRECTORIES>
                 )
 
 target_compile_definitions(spi_master_test PRIVATE 
                 NDEBUG
-                SIGNAL_CLASSES_H="signal_classes.h")
+                SIGNAL_CLASSES_H="${CMAKE_CURRENT_SOURCE_DIR}/tinc/signal_classes.h"
+                )
 
 target_compile_options(spi_master_test PRIVATE 
     -Wall 
     -Wextra 
     -pedantic 
-    # -Werror
     )
+
 target_link_options(spi_master_test PRIVATE
     -Wl,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map   
 )
 
-target_link_libraries(spi_master_test PRIVATE unity)
+target_link_libraries(spi_master_test PRIVATE 
+                unity
+                crf
+                )
 
-set(debug ON)
-
-include(diagnostic)
 diagnostic(spi_master_test)
+
+add_test(NAME spi_master_test
+        COMMAND spi_master_test
+       )

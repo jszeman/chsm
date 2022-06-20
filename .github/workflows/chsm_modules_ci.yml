@@ -1,0 +1,44 @@
+name: chsm_modules_ci
+
+on:
+  push:
+    branches: [ feature/fix_test_runs, master, main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: List out the directory
+      run: tree ${{ github.workspace }}
+      
+    - name: Check cmake version
+      run: cmake --version
+     
+    - name: Install Graphviz
+      # You may pin to the exact commit or the version.
+      # uses: tlylt/install-graphviz@b2201200d85f06f0189cb74d9b69208504cf12cd
+      uses: tlylt/install-graphviz@v1.0.0
+      
+    - name: Configure CMake
+      run: cmake -B ${{github.workspace}}/build -S ${{github.workspace}} -DCHSM_BUILD_TESTS=ON
+
+    - name: Build
+      # Build your program with the given configuration
+      run: cmake --build ${{github.workspace}}/build -t canopen_test fram_test i2c_master_test intf_test lm73_test ltc2471_test spi_master_test
+
+    - name: Test
+      working-directory: ${{github.workspace}}/build
+      # Execute tests defined by the CMake configuration.  
+      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
+      run: |
+        ctest -VV -R canopen_test
+        ctest -VV -R fram_test
+        ctest -VV -R i2c_master_test
+        ctest -VV -R intf_test
+        ctest -VV -R lm73_test
+        ctest -VV -R ltc2471_test
+        ctest -VV -R spi_master_test
+      

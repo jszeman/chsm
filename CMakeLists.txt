@@ -1,60 +1,77 @@
 cmake_minimum_required(VERSION 3.19)
 
-project(crf 
-        VERSION 1.0.0
-        LANGUAGES C)
+project(chsm 
+VERSION 1.0.0
+LANGUAGES C CXX ASM)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/utils")
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules")
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
-add_library(crf   
-                crf/src/cbits.c
-                crf/src/chsm.c
-                crf/src/cpool.c
-                crf/src/cqueue.c
-                crf/src/crf.c
-                crf/src/cvalue.c
-                )
-
-add_library(${PROJECT_NAME}::framework ALIAS ${PROJECT_NAME})
-
-target_compile_definitions(crf PRIVATE 
-                NDEBUG
-)
-
-# Includes ---------------------------------------------------------------------
+include(diagnostic)
+include(install_lib)
+include(graphviz)
+include(path_list)
+set(DEBUG ON)
+option(CHSM_BUILD_TESTS OFF)
 
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})  
 
-target_include_directories(${PROJECT_NAME}
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/crf/inc>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/modules/interfaces/inc>
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>
-)
+message(STATUS "
+----------------------> Chsm <-----------------------------------
+")
 
-set(${PROJECT_NAME}_PUBLIC_HEADERS
-        crf/inc/atomic_ops.h 
-        crf/inc/cbits.h      
-        crf/inc/cevent.h     
-        crf/inc/chsm.h       
-        crf/inc/cpool.h      
-        crf/inc/cqueue.h     
-        crf/inc/crf.h        
-        crf/inc/cvalue.h     
-    
-)
+add_subdirectory(modules/canopen)
+add_subdirectory(modules/dac8565)
+add_subdirectory(modules/fram)
+add_subdirectory(modules/i2c_master)
+add_subdirectory(modules/interfaces)
+add_subdirectory(modules/lm73)
+add_subdirectory(modules/ltc2471)
+add_subdirectory(modules/spi_master)
+add_subdirectory(crf)
+
+add_library(${PROJECT_NAME} INTERFACE)
 
 set_target_properties(${PROJECT_NAME}
     PROPERTIES 
-        C_STANDARD          99
+        C_STANDARD          11
         C_STANDARD_REQUIRED ON
-        C_EXTENSIONS        OFF
-        PUBLIC_HEADER       "${${PROJECT_NAME}_PUBLIC_HEADERS}"
-        EXPORT_NAME         framework
 )
 
+target_link_libraries(${PROJECT_NAME} INTERFACE
+        crf_interfaces
+        test_utils
+        crf 
+        i2c_master 
+        spi_master
+        canopen 
+        dac8565 
+        fram 
+        lm73 
+        ltc2471        
+        )
+        
+if(CHSM_BUILD_TESTS)
+    include(FindUnity)
+    message(STATUS "----------> Enabled the tests!")
+
+    enable_testing()
+    add_subdirectory(modules/canopen/test)
+    # add_subdirectory(modules/dac8565/test)
+    add_subdirectory(modules/fram/test)
+    add_subdirectory(modules/i2c_master/test)
+    add_subdirectory(modules/interfaces/test)
+    add_subdirectory(modules/lm73/test)
+    add_subdirectory(modules/ltc2471/test)
+    add_subdirectory(modules/spi_master/test)
+    add_subdirectory(crf/test)
+endif()
 # Install ------------------------------------------------------------------------
 
 write_basic_package_version_file(${PROJECT_NAME}ConfigVersion.cmake
@@ -63,12 +80,18 @@ write_basic_package_version_file(${PROJECT_NAME}ConfigVersion.cmake
 )
 
 ## Target installation
-install(TARGETS   ${PROJECT_NAME}
+install(TARGETS   ${PROJECT_NAME} 
     EXPORT        ${PROJECT_NAME}Targets
     ARCHIVE       DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY       DESTINATION ${CMAKE_INSTALL_LIBDIR}
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
     COMPONENT     library
+)
+
+# Installing headers
+install(
+    DIRECTORY "${${PROJECT_NAME}_PUBLIC_HEADERS}"
+    DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/include
 )
 
 ## Target's cmake files: targets export
@@ -83,7 +106,9 @@ install(FILES   ${PROJECT_NAME}Config.cmake
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )
 
-include(diagnostic)
-set(debug on)
-# set(autodetect_toolchain on)
-diagnostic(crf)
+set(CMAKE_EXPORT_PACKAGE_REGISTRY ON)
+export(PACKAGE ${PROJECT_NAME})
+
+# ------------------ Test and diagnostic ----------------------------------------------------
+
+diagnostic(${PROJECT_NAME})
