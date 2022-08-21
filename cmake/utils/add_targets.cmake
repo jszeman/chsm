@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.19)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
+########################  Static lib target  ############################ 
 function(add_module_lib)
     set(options)
     set(args NAME)
@@ -62,7 +63,7 @@ function(add_module_lib)
 
 endfunction()
 
-
+########################  Executible target  ############################ 
 function(add_module_executable)
 set(options)
     set(args NAME)
@@ -124,7 +125,7 @@ set(options)
 
 endfunction()
 
-
+########################  Interface lib target ############################ 
 function(add_module_interface_lib)
     set(options)
     set(args NAME)
@@ -167,6 +168,7 @@ function(add_module_interface_lib)
     diagnostic(${lib_NAME})
 endfunction()
 
+########################  Test target  ############################ 
 function(add_module_test)
     set(options)
     set(args NAME)

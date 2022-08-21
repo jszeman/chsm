@@ -99,9 +99,9 @@ export(PACKAGE ${PROJECT_NAME})
 diagnostic(${PROJECT_NAME})
 
 
-add_custom_target(chsm_start ALL
-    COMMAND ${OUTSIDE_PYTHON_PATH}\python.exe .\cgen\chsm_backend.py
-    COMMAND dot -Tpng graphviz/project_dependency.dot -o graphviz/project_dependency.png
-    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
-    COMMENT "Graphviz generated dependency map in ${CMAKE_BINARY_DIR}/graphviz/project_dependency.png"
-)
+# add_custom_target(chsm_start ALL
+#     COMMAND ${OUTSIDE_PYTHON_PATH}\python.exe .\cgen\chsm_backend.py
+#     COMMAND dot -Tpng graphviz/project_dependency.dot -o graphviz/project_dependency.png
+#     WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+#     COMMENT "Graphviz generated dependency map in ${CMAKE_BINARY_DIR}/graphviz/project_dependency.png"
+# )
