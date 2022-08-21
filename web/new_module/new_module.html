@@ -4,6 +4,8 @@
         <link rel="stylesheet" type="text/css" href="../main.css">
         <link rel="stylesheet" type="text/css" href="../drawing.css">
         <link rel="stylesheet" type="text/css" href="./new_module.css">
+        <link rel="stylesheet" id="new_module_theme_sheet" type="text/css" href="../themes/default.css">
+        <link rel="stylesheet" type="text/html" href="../main.html">
         <script type="text/javascript" src="/eel.js"></script>
         <script type='module' src="./new_module.js"></script>
         <title>New Module</title>
@@ -73,17 +75,16 @@
                                     <td><label for="cmake_cb">Generate CMakeLists file</label></td>
                                     <td><input id="cmake_cb" type="checkbox" checked></td>
                                 </tr>
+                                <tr>
+                                    <td><label for="cmake_default_cb">Default location</label></td>
+                                    <td><input id="cmake_default_cb" type="checkbox" checked></td>
+                                </tr>
                                 <tr class="checkbox-lable">
-                                    <label for="target-type-selector">Select theme</label>
+                                    <label for="target-type-selector">Select theme </label>
                                     <select name="target-type-selector" id="target-type-selector">
                                         <option value="library_opt">Library</option>
                                         <option value="executable_opt">Executable</option>
                                     </select>
-                                </tr>
-                                <br>
-                                <tr>
-                                    <td><label for="cmake_default_cb">Default location</label></td>
-                                    <td><input id="cmake_default_cb" type="checkbox" checked></td>
                                 </tr>
                                 <br>
                                 <tr>
@@ -103,6 +104,38 @@
             </div>
         </fieldset>
         </form>
+        <script>
+                fetch("../main.html")
+                .then(response => response.text())
+                .then(html => {
+                    let parser = new DOMParser();
+                    let doc = parser.parseFromString(html, 'text/html');
+                    let element = doc.getElementById('theme-selector');
+                    console.log(element.value);
+                })
+            // function init_theme_selector()
+            // {
+                // const theme_selector = document.getElementById("theme-selector");
+            //     const theme_sheet = document.getElementById("new_module_theme_sheet");
+            //     const currentTheme = localStorage.getItem("theme") || "default";
+    
+            //     function activateTheme(themeName) {
+            //         theme_sheet.setAttribute("href", `../themes/${themeName}.css`);
+            //     }
+    
+            //     theme_selector.addEventListener("change", () => {
+            //         activateTheme(theme_selector.value);
+            //         localStorage.setItem("theme", theme_selector.value);
+            //     });
+    
+    
+            //     theme_selector.value = currentTheme;
+            //     activateTheme(currentTheme);
+            // }
+    
+            // init_theme_selector();
+        </script>
 
+        <div></div>
     </body>
 </html>

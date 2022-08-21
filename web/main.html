@@ -4,6 +4,7 @@
 <head>
     <link rel="stylesheet" type="text/css" href="main.css">
     <link rel="stylesheet" type="text/css" href="drawing.css">
+    <link rel="stylesheet" id="theme_sheet" type="text/css" href="themes/default.css">
     <script type="text/javascript" src="eel.js"></script>
     <script type='module' src="./main.js"></script>
     <title>CHSM</title>
@@ -59,8 +60,9 @@
                         <li class="checkbox-lable">
                             <label for="theme-selector">Themes</label>
                             <select name="theme-selector" id="theme-selector">
-								<option value="dark-solarized">Dark solarized</option>
-								<option value="light-solarized">Light solarized</option>
+								<option value="default">Default</option>
+								<option value="solarized_dark">Dark solarized</option>
+								<option value="solarized_light">Light solarized</option>
 							</select>
                         </li>
                     </fieldset>
@@ -160,5 +162,28 @@
 			</svg>
 		</main>
 	</div>
+    <script>
+        function init_theme_selector()
+        {
+            const theme_selector = document.getElementById("theme-selector");
+            const theme_sheet = document.getElementById("theme_sheet");
+            const currentTheme = localStorage.getItem("theme") || "default";
+
+            function activateTheme(themeName) {
+                theme_sheet.setAttribute("href", `themes/${themeName}.css`);
+            }
+
+            theme_selector.addEventListener("change", () => {
+                activateTheme(theme_selector.value);
+                localStorage.setItem("theme", theme_selector.value);
+            });
+
+
+            theme_selector.value = currentTheme;
+            activateTheme(currentTheme);
+        }
+
+        init_theme_selector();
+    </script>
 </body>
 </html>

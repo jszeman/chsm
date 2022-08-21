@@ -1,0 +1,42 @@
+:root {
+    --nc-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    --nc-font-mono: Consolas, monaco, 'Ubuntu Mono', 'Liberation Mono', 'Courier New', Courier, monospace;
+
+    /* drawing.css */
+    --state-body-color: rgb(0, 0, 0);
+    --state-border-color: rgb(0, 191, 255);
+    --state-border-highlight-color: rgb(23, 197, 66);
+    --intial-state-fill-color: rgb(0, 0, 0);
+    --initial-state-hover-color: rgb(0, 191, 255);
+    --state-border-deleting-color: rgb(255, 0, 0);
+    --transition-handle-color: rgb(0, 191, 255);
+    --transition-handle-deleting-color: rgb(255, 0, 0);
+    --transition-handle-highlight-edit-color: rgb(23, 197, 66);
+    --state-separator-color: rgb(128, 128, 128);
+    --state-resize-mark-color: rgb(128, 128, 128);
+    --function-color: rgb(0, 0, 0);
+    --function-hover-color: rgb(0, 0, 255);
+    --state-drag-handle-color: rgb(211, 102, 1);
+    --state-resize-handle-color: rgb(255, 255, 255);
+    --transition-line-color: rgb(70, 130, 180);
+    --transition-arrow-color: rgb(70, 130, 180);
+
+    /* main.css */
+    --sidebar-handle-border-left-color: rgb(221, 221, 221);
+    --sidebar-handle-hover-border-left-color: rgb(170, 170, 170);
+    --sidebar-handle-text-bg-color: rgb(170, 170, 170);
+    --sidebar-handle-text-color: rgb(20, 20, 126);
+    --sidebar-handle-text-hover-color: rgb(153, 153, 153);
+    --button-bg-color: rgb(70, 130, 180);
+    --button-text-color: rgb(255, 255, 255);
+    --button-hover-bg-color: rgb(44, 118, 179);
+    --button-inline-bg-color: rgb(70, 130, 180);
+    --button-inline-text-color: rgb(255, 255, 255);
+    --button-inline-hover-bg-color: rgb(44, 118, 179);
+    --button-border-color: rgb(221, 221, 221);
+    --details-border-color: rgb(8, 0, 0);
+    --input-text-bg-color: rgb(245, 245, 245);
+    --input-textarea-bg-color: rgb(245, 245, 245);
+
+    --html-bg: rgb(255, 255, 255);
+}

@@ -9,7 +9,6 @@ html, body {
     height: 100%;
     margin-left: 1rem;
     margin-right: 1rem;
-    background: rgb(224, 223, 187);
     font: .9em arial,helvetica,sans-serif;
     display: flex;
     justify-content: center;
@@ -22,6 +21,7 @@ legend {
     text-align: left;
     padding-left: .7rem;
     padding-right: .7rem;
+    color: var(--text-color);
 }
 
 #new_module_legend{
@@ -38,6 +38,10 @@ fieldset:first-child > *{
     border-radius: 1rem;
 }
 
+fieldset{
+    border-color: var(--legend-border-color);
+}
+
 #generate-btns_container{
     width: 100%;
     height: 100%;
@@ -45,7 +49,6 @@ fieldset:first-child > *{
     grid-template-columns: 1fr 1fr; 
     align-items: center;
     justify-items: center;
-    /* border: 1px solid rgb(19, 19, 2); */
 }
 
 #btn-generate, #btn-cancel{
@@ -63,4 +66,13 @@ fieldset:first-child > *{
 #modul_loc_tr :first-child > *{
     display: inline-block;
     width: min-content;
+}
+
+label{
+    color: var(--text-color);
+}
+
+input[type="url" i]{
+    background-color: var(--input-text-bg-color);
+    color: var(--input-text-color);
 }

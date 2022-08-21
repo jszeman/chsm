@@ -4,19 +4,24 @@ project(chsm
 VERSION 1.0.0
 LANGUAGES C CXX ASM)
 
+########################  Set where to search .cmake files  ############################ 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/utils")
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules")
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
-include(diagnostic)
-include(install_lib)
-include(graphviz)
-include(path_list)
-set(DEBUG ON)
-option(CHSM_BUILD_TESTS OFF)
-
+########################  External .cmake files includes  ############################ 
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
+include(diagnostic)
+include(install_lib)
+include(add_targets)
+include(graphviz)
+include(path_list)
+
+########################  Global settings  ############################ 
+set(DEBUG ON)
+option(CHSM_BUILD_TESTS OFF)
+set(OUTSIDE_PYTHON_PATH ${$ENV{PYTHON_PATH}})
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
@@ -26,51 +31,31 @@ message(STATUS "
 ----------------------> Chsm <-----------------------------------
 ")
 
-add_subdirectory(modules/canopen)
-add_subdirectory(modules/dac8565)
-add_subdirectory(modules/fram)
-add_subdirectory(modules/i2c_master)
-add_subdirectory(modules/interfaces)
-add_subdirectory(modules/lm73)
-add_subdirectory(modules/ltc2471)
-add_subdirectory(modules/spi_master)
+add_subdirectory(modules)
 add_subdirectory(crf)
 
-add_library(${PROJECT_NAME} INTERFACE)
-
-set_target_properties(${PROJECT_NAME}
-    PROPERTIES 
-        C_STANDARD          11
-        C_STANDARD_REQUIRED ON
+add_module_interface_lib(
+    NAME 
+        ${PROJECT_NAME}
+    LINK
+        chsm::chsm_interfaces
+        chsm::test_utils
+        chsm::crf 
+        chsm::i2c_master 
+        chsm::spi_master
+        chsm::canopen 
+        chsm::dac8565 
+        chsm::fram 
+        chsm::lm73 
+        chsm::ltc2471    
+    STANDARD
+        11
 )
-
-target_link_libraries(${PROJECT_NAME} INTERFACE
-        crf_interfaces
-        test_utils
-        crf 
-        i2c_master 
-        spi_master
-        canopen 
-        dac8565 
-        fram 
-        lm73 
-        ltc2471        
-        )
-        
+    
 if(CHSM_BUILD_TESTS)
     include(FindUnity)
-    message(STATUS "----------> Enabled the tests!")
-
+    message(STATUS "----------> Enabled the tests! <-------------------")
     enable_testing()
-    add_subdirectory(modules/canopen/test)
-    # add_subdirectory(modules/dac8565/test)
-    add_subdirectory(modules/fram/test)
-    add_subdirectory(modules/i2c_master/test)
-    add_subdirectory(modules/interfaces/test)
-    add_subdirectory(modules/lm73/test)
-    add_subdirectory(modules/ltc2471/test)
-    add_subdirectory(modules/spi_master/test)
-    add_subdirectory(crf/test)
 endif()
 # Install ------------------------------------------------------------------------
 
@@ -112,3 +97,11 @@ export(PACKAGE ${PROJECT_NAME})
 # ------------------ Test and diagnostic ----------------------------------------------------
 
 diagnostic(${PROJECT_NAME})
+
+
+add_custom_target(chsm_start ALL
+    COMMAND ${OUTSIDE_PYTHON_PATH}\python.exe .\cgen\chsm_backend.py
+    COMMAND dot -Tpng graphviz/project_dependency.dot -o graphviz/project_dependency.png
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+    COMMENT "Graphviz generated dependency map in ${CMAKE_BINARY_DIR}/graphviz/project_dependency.png"
+)

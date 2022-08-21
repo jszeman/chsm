@@ -1,16 +1,17 @@
 .state_body {
-    stroke: black;
+    stroke: var(--state-body-color);
     stroke-width: 0.2;
     fill: none;
     rx: 0.5px;
 }
 
 .state_border {
-    stroke: deepskyblue; 
+    stroke: var(--state-border-color); 
     stroke-width: 0.8;
     fill: none;
     rx: 0.5px;
     opacity: 0;
+    color: var(--state-text-color);
 }
 
 .state_border:hover {
@@ -18,24 +19,24 @@
 }
 
 .state_border_highlight {
-    stroke: rgb(23, 197, 66);
+    stroke: var(--state-border-highlight-color);
     opacity: 0.4;
 }
 
 .initial_state {
     stroke: none;
     stroke-width: 0.4;
-    fill: black;
+    fill: var(--intial-state-fill-color);
     r: 0.7px;
 }
 
 .initial_state:hover {
-    stroke: deepskyblue;
+    stroke: var(--initial-state-hover-color);
     stroke-width: 0.5px;
 }
 
 .state_border_deleting {
-    stroke: red; 
+    stroke: var(--state-border-deleting); 
     stroke-width: 0.8;
     fill: none;
     rx: 0.5px;
@@ -43,7 +44,7 @@
 }
 
 .transition_handle {
-    stroke: deepskyblue; 
+    stroke: var(--transition-handle-color); 
     stroke-width: 0.8;
     fill: none;
     rx: 0.5px;
@@ -56,7 +57,7 @@
 }
 
 .transition_handle_deleting {
-    stroke: red;
+    stroke: var(--transition-handle-deleting-color);
     stroke-width: 0.8;
     fill: none;
     rx: 0.5px;
@@ -74,7 +75,7 @@
 }
 
 .transition_handle_highlight_edit {
-    stroke: rgb(23, 197, 66);
+    stroke: var(--transition-handle-highlight-edit-color);
     opacity: 0.4;
     cursor: grab;
 }
@@ -85,34 +86,37 @@
 }
 
 .state_separator {
-    stroke: grey;
+    stroke: var(--state-separator-color);
     stroke-width: 0.1;
     shape-rendering: crispEdges;
 }
 
 .state_resize_mark {
-    stroke: grey;
+    stroke: var(--state-resize-mark-color);
     stroke-width: 0.1;
 }
 
 .state_title {
     font: bold 0.08em arial,helvetica,sans-serif;
+    fill: var(--state-title-color);
 }
 
 .state_text {
     font: normal 0.08em arial,helvetica,sans-serif;
+    fill: var(--state-text-color);
 }
 
 .transition_label {
     font: normal 0.07em arial,helvetica,sans-serif;
+    fill: var(--transition-text-color);
 }
 
 .function {
-    fill: black;
+    fill: var(--function-color);
 }
 
 .function:hover {
-    fill: blue;
+    fill: var(--function-hover-color);
 }
 
 .transition_label:hover {
@@ -120,7 +124,7 @@
 }
 
 .state_drag_handle {
-    fill: rgb(211, 102, 1);
+    fill: var(--state-drag-handle-color);
     opacity: 0.1;
     stroke: none;
     rx: 0.5px;
@@ -128,7 +132,7 @@
 }
 
 .state_resize_handle {
-    fill: white;
+    fill: var(--state-resize-handle-color);
     opacity: 0.0;
     stroke: none;
     r: 0.5px;
@@ -137,12 +141,12 @@
 
 .transition_line {
     fill: none;
-    stroke: steelblue;
+    stroke: var(--transition-line-color);
     stroke-width: 0.2;
 }
 
 .transition_arrow {
-    fill: steelblue;
+    fill: var(--transition-arrow-color);
     stroke: none;
     stroke-width: 0.0;
 }

@@ -1,48 +1,11 @@
 
-body.darkMode {
-    --color: #0097fc;
-    --color-accent: #0097fc4f;
-    --color-bg: #333;
-    --color-bg-secondary: #555;
-    --color-link: #0097fc;
-    --color-secondary: #e20de9;
-    --color-secondary-accent: #e20de94f;
-    --color-shadow: #bbbbbb20;
-    --color-table: #0097fc;
-    --color-text: #f7f7f7;
-    --color-text-secondary: #aaa;
-    --color-btn-hover: rgb(44, 118, 179);
-}
-
-body.lightMode {
-    --color: #118bee;
-    --color-accent: #118bee15;
-    --color-bg-secondary: #e9e9e9;
-    --color-link: #118bee;
-    --color-secondary: #920de9;
-    --color-secondary-accent: #920de90b;
-    --color-shadow: #f4f4f4;
-    --color-table: #118bee;
-    --color-text: #000;
-    --color-text-secondary: #999;
-    --color-bg: rgb(211, 210, 192);
-    --color-bg-highlight: rgba(23, 197, 67, 0.1);
-    --color-bg-html: rgb(224, 223, 187);
-    --color-btn-hover: rgb(44, 118, 179);
-}
-
 
 html, body {
     width: 100%;
     height: 100%;
     margin-left: 0px;
-    /* background: (--color-bg); */
-    background: var(--color-bg-html);
-    /* --text-color-normal: #0a244d; */
-    --text-color-normal: var(--color-accent);
-
-    --text-color-light: #8cabd9;
-    font: 1rem arial,helvetica,sans-serif;
+    background-color: var(--html-bg);
+    position: relative;
 }
 
 .wrapper {
@@ -57,23 +20,22 @@ html, body {
 .main {
     width: 100%;
     height: 100%;
+
 }
 
 svg {
     width: 100%;
     height: 100%;
-    background: rgb(211, 210, 192);
 }
 
 #sidebar {
     padding: 0.2em;
     flex: 0 0 250px;
     margin-left: 5px;
-    background: rgb(211, 210, 192);
 }
 
 #sidebar-handle {
-    border-left: 1px solid #ddd;
+    border-left: 1px solid var(--sidebar-handle-border-left-color);
     width: 10px;
     height: 100%;
     display: flex;
@@ -83,15 +45,15 @@ svg {
 }
 
 #sidebar-handle:hover {
-    border-left: 1px solid #aaa;
+    border-left: 1px solid var(--sidebar-handle-hover-border-left-color);
 }
 
 #sidebar-handle-text {
     border-radius: 0 4px 4px 0;
     height: 4em;
     width: 12px;
-    background-color: #aaa;
-    color: rgb(20, 20, 126);
+    background-color: var(--sidebar-handle-text-bg-color);
+    color: var(--sidebar-handle-text-color);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -100,15 +62,13 @@ svg {
 }
 
 #sidebar-handle-text:hover {
-    background-color: #999;
+    background-color: var(--sidebar-handle-text-hover-color);
 }
 
 .props {
     list-style: none;
     width: 100%;
-    padding-left: 0;  
-    margin-block-start: 1rem;
-    margin-block-end: 1rem;  
+    padding-left: 0;    
 }
 
 #obj-label {
@@ -119,13 +79,13 @@ svg {
 #obj-text {
     width: 95%;
     margin: 0.1em;
-    height: 5em;
+    height: 20em;
     resize: vertical;
 }
 
 .button {
-    background-color: steelblue;
-    color: white;
+    background-color: var(--button-bg-color);
+    color: var(--button-text-color);
     margin-bottom: 0.5em;
     margin-left: auto;
     margin-right: auto;
@@ -137,8 +97,8 @@ svg {
 }
 
 .button:hover {
-    background-color: rgb(44, 118, 179);
-    /* background-color: var(--color-btn-hover); */
+    background-color: var(--button-hover-bg-color);
+    color:var(--button-hover-text-color);
     cursor: default;
 }
 
@@ -150,18 +110,13 @@ svg {
 }
 
 .row-title {
-    font: bold 1em arial,helvetica,sans-serif;
-}
-
-.checkbox-lable {
-    font: 0.9rem arial,helvetica,sans-serif;
-    display: flex;
-    justify-content: space-between;
+    font: bold 1.2em arial,helvetica,sans-serif;
+    color: var(--row-title-text-color);
 }
 
 .button-inline {
-    background-color: steelblue;
-    color: white;
+    background-color: var(--button-inline-bg-color);
+    color: var(--button-inline-text-color);
     padding: 0.3em;
     border-radius: 0.2em;
     width: fit-content;
@@ -170,7 +125,8 @@ svg {
 }
 
 .button-inline:hover {
-    background-color: rgb(44, 118, 179);
+    background-color: var(--button-inline-hover-bg-color);
+    color: var(--button-inline-hover-text-color);
     cursor: default;
 }
 
@@ -180,7 +136,7 @@ table {
 }
 
 th, td {
-    /* border-bottom: 1px solid black; */
+    /* border-bottom: 1px solid var(--button-border-color); */
 }
 
 tr th:first-child {padding-left:0px;}
@@ -188,22 +144,31 @@ tr td:first-child {padding-left:0px;}
 td, th {padding-left:1em;}
 
 details {
-    border: 1px solid rgb(8, 0, 0);
+    border: 1px solid var(--details-border-color);
+    color: var(--details-text-color);
     border-radius: 4px;
     padding: .5rem .5rem .5rem;
     width: auto;
+    font: 1em arial,helvetica,sans-serif;
 }
 
 details li{
-    display: inline-block;
+    display: block;
+    font: .8em arial,helvetica,sans-serif;
 }
 
 #title{
     text-align: center;
+    color: var(--title-text-color);
+    font: bold 1.2em arial,helvetica,sans-serif;
 }
 
 nav ul li{
     align-items: center;
+}
+
+fieldset{
+    border-color: var(--details-fieldset-border-color);
 }
 
 details fieldset li:first-child{
@@ -211,13 +176,20 @@ details fieldset li:first-child{
 }
 
 input[type="text" i]{
-    background-color: whitesmoke;
+    background-color: var(--input-text-bg-color);
+    color: var(--input-text-color);
 }
 
 textarea{
-    background-color: whitesmoke;
+    background-color: var(--input-textarea-bg-color);
+    color: var(--input-textarea-color);
 }
 
 #help_details{
     width: max-content;
+}
+
+select{
+    background-color: var(--input-select-bg-color);
+    color: var(--input-select-color);
 }

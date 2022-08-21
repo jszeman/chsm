@@ -1,0 +1,2059 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin-left: 0px;
+        }
+
+        main {
+            width: 100%;
+            height: 100%;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .state_body {
+    stroke: black;
+    stroke-width: 0.2;
+    fill: none;
+    rx: 0.5px;
+}
+
+.state_border {
+    stroke: deepskyblue; 
+    stroke-width: 0.8;
+    fill: none;
+    rx: 0.5px;
+    opacity: 0;
+}
+
+.state_border:hover {
+    opacity: 0.4;
+}
+
+.state_border_highlight {
+    stroke: rgb(23, 197, 66);
+    opacity: 0.4;
+}
+
+.initial_state {
+    stroke: none;
+    stroke-width: 0.4;
+    fill: black;
+    r: 0.7px;
+}
+
+.initial_state:hover {
+    stroke: deepskyblue;
+    stroke-width: 0.5px;
+}
+
+.state_border_deleting {
+    stroke: red; 
+    stroke-width: 0.8;
+    fill: none;
+    rx: 0.5px;
+    opacity: 0.4;
+}
+
+.transition_handle {
+    stroke: deepskyblue; 
+    stroke-width: 0.8;
+    fill: none;
+    rx: 0.5px;
+    opacity: 0;
+    cursor: grab;
+}
+
+.transition_handle:hover {
+    opacity: 0.4;
+}
+
+.transition_handle_deleting {
+    stroke: red;
+    stroke-width: 0.8;
+    fill: none;
+    rx: 0.5px;
+    opacity: 0;
+    cursor: auto;
+}
+
+.transition_handle_deleting:hover {
+    opacity: 0.4;
+}
+
+.transition_handle_highlight_draw {
+    opacity: 0.4;
+    cursor: crosshair;
+}
+
+.transition_handle_highlight_edit {
+    stroke: rgb(23, 197, 66);
+    opacity: 0.4;
+    cursor: grab;
+}
+
+.transition_handle_highlight_drag {
+    opacity: 0.4;
+    cursor: grab;
+}
+
+.state_separator {
+    stroke: grey;
+    stroke-width: 0.1;
+    shape-rendering: crispEdges;
+}
+
+.state_resize_mark {
+    stroke: grey;
+    stroke-width: 0.1;
+}
+
+.state_title {
+    font: bold 0.08em arial,helvetica,sans-serif;
+}
+
+.state_text {
+    font: normal 0.08em arial,helvetica,sans-serif;
+}
+
+.transition_label {
+    font: normal 0.07em arial,helvetica,sans-serif;
+}
+
+.function {
+    fill: black;
+}
+
+.function:hover {
+    fill: blue;
+}
+
+.transition_label:hover {
+    cursor: grab;
+}
+
+.state_drag_handle {
+    fill: rgb(211, 102, 1);
+    opacity: 0.1;
+    stroke: none;
+    rx: 0.5px;
+    cursor: move;
+}
+
+.state_resize_handle {
+    fill: white;
+    opacity: 0.0;
+    stroke: none;
+    r: 0.5px;
+    cursor: nwse-resize;
+}
+
+.transition_line {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 0.2;
+}
+
+.transition_arrow {
+    fill: steelblue;
+    stroke: none;
+    stroke-width: 0.0;
+}
+    </style>
+</head>
+<body>
+    <main>
+        
+			<svg height="100%" width="100%" style="cursor: auto;">
+				<g display="none">
+					<path id="arrow" d="M 0 0 L 0.9 -0.4 L 0.9 0.4 Z" class="arrow_template"></path>
+				</g>
+				<g id="drawing" transform="translate(-43, -240.5) scale(10, 10)"><g><path d="M 17 32 L 17 32 L 17 36" class="transition_line"></path><use href="#arrow" transform="translate(17 36) rotate(-90) " class="transition_arrow" display="block"></use><text x="17.5" y="34.6" class="transition_label"></text><path d="M 17 32 L 17 32 L 17 36" class="transition_handle"></path></g><g><path d="M 76 38 L 76 33 L 23 33 L 23 36" class="transition_line"></path><use href="#arrow" transform="translate(23 36) rotate(-90) " class="transition_arrow" display="block"></use><text x="32" y="32.6" class="transition_label">[<tspan class="function">lm73_timeout<title>Evaluates to true if the internal timer counter is greater than or equal to the parameter.</title></tspan>(<tspan class="function">LM73_UNPLUGGED_TIMEOUT</tspan>)]/ <tspan class="function">lm73_reset_timer()<title>Reset the timer counter.</title></tspan></text><path d="M 76 38 L 76 33 L 23 33 L 23 36" class="transition_handle"></path></g><g><path d="M 111 65 L 118 65 L 118 66 L 111 66" class="transition_line"></path><use href="#arrow" transform="translate(111 66) " class="transition_arrow" display="block"></use><text x="111.5" y="64.6" class="transition_label"><tspan class="function">SIG_I2C_RESULT_DATA_NACK</tspan>/ <tspan class="function">lm73_inc_error_counter()<title>Increase the error counter.</title></tspan></text><path d="M 111 65 L 118 65 L 118 66 L 111 66" class="transition_handle"></path></g><g><path d="M 111 62 L 118 62 L 118 63 L 111 63" class="transition_line"></path><use href="#arrow" transform="translate(111 63) " class="transition_arrow" display="block"></use><text x="111.5" y="61.6" class="transition_label"><tspan class="function">SIG_I2C_RESULT_ADDR_NACK</tspan>/ <tspan class="function">lm73_inc_error_counter()<title>Increase the error counter.</title></tspan></text><path d="M 111 62 L 118 62 L 118 63 L 111 63" class="transition_handle"></path></g><g><path d="M 111 59 L 118 59 L 118 60 L 111 60" class="transition_line"></path><use href="#arrow" transform="translate(111 60) " class="transition_arrow" display="block"></use><text x="111.5" y="58.6" class="transition_label">[<tspan class="function">lm73_timeout<title>Evaluates to true if the internal timer counter is greater than or equal to the parameter.</title></tspan>(<tspan class="function">LM73_RETRY_TIMEOUT</tspan>)]/ <tspan class="function">lm73_reset_timer()<title>Reset the timer counter.</title></tspan></text><path d="M 111 59 L 118 59 L 118 60 L 111 60" class="transition_handle"></path></g><g><path d="M 24 45 L 24 72 L 94 72 L 94 70" class="transition_line"></path><use href="#arrow" transform="translate(94 70) rotate(90) " class="transition_arrow" display="block"></use><text x="37" y="71.6" class="transition_label"><tspan class="function">SIG_I2C_RESULT_SUCCESS</tspan> [<tspan class="function">lm73_id_match()<title>True, if the response data is equal to 0x190. See LM73 datasheet section: 7.5.1.7 Identification Register</title></tspan>]</text><path d="M 24 45 L 24 72 L 94 72 L 94 70" class="transition_handle"></path></g><g><path d="M 32 43 L 38 43 L 38 43 L 65 43" class="transition_line"></path><use href="#arrow" transform="translate(65 43) rotate(180) " class="transition_arrow" display="block"></use><text x="38.5" y="42.6" class="transition_label"><tspan class="function">SIG_I2C_RESULT_DATA_NACK</tspan></text><path d="M 32 43 L 38 43 L 38 43 L 65 43" class="transition_handle"></path></g><g><path d="M 32 41 L 38 41 L 38 41 L 65 41" class="transition_line"></path><use href="#arrow" transform="translate(65 41) rotate(180) " class="transition_arrow" display="block"></use><text x="38.5" y="40.6" class="transition_label"><tspan class="function">SIG_I2C_RESULT_ADDR_NACK</tspan></text><path d="M 32 41 L 38 41 L 38 41 L 65 41" class="transition_handle"></path></g><g><path d="M 101 67 L 101 71 L 99 71 L 99 75" class="transition_line"></path><use href="#arrow" transform="translate(99 75) rotate(-90) " class="transition_arrow" display="block"></use><text x="101.5" y="68.29999999999998" class="transition_label"><tspan class="function">SIG_I2C_RESULT_SUCCESS</tspan></text><path d="M 101 67 L 101 71 L 99 71 L 99 75" class="transition_handle"></path></g><g><path d="M 110 52 L 119 52 L 119 53 L 110 53" class="transition_line"></path><use href="#arrow" transform="translate(110 53) " class="transition_arrow" display="block"></use><text x="110.5" y="51.6" class="transition_label"><tspan class="function">SIG_I2C_RESULT_DATA_NACK</tspan>/ <tspan class="function">lm73_inc_error_counter()<title>Increase the error counter.</title></tspan></text><path d="M 110 52 L 119 52 L 119 53 L 110 53" class="transition_handle"></path></g><g><path d="M 110 49 L 119 49 L 119 50 L 110 50" class="transition_line"></path><use href="#arrow" transform="translate(110 50) " class="transition_arrow" display="block"></use><text x="110.5" y="48.6" class="transition_label"><tspan class="function">SIG_I2C_RESULT_ADDR_NACK</tspan>/ <tspan class="function">lm73_inc_error_counter()<title>Increase the error counter.</title></tspan></text><path d="M 110 49 L 119 49 L 119 50 L 110 50" class="transition_handle"></path></g><g><path d="M 110 46 L 119 46 L 119 47 L 110 47" class="transition_line"></path><use href="#arrow" transform="translate(110 47) " class="transition_arrow" display="block"></use><text x="110.5" y="45.6" class="transition_label">[<tspan class="function">lm73_timeout<title>Evaluates to true if the internal timer counter is greater than or equal to the parameter.</title></tspan>(<tspan class="function">LM73_RETRY_TIMEOUT</tspan>)]/ <tspan class="function">lm73_reset_timer()<title>Reset the timer counter.</title></tspan></text><path d="M 110 46 L 119 46 L 119 47 L 110 47" class="transition_handle"></path></g><g><path d="M 110 40 L 119 40 L 119 41 L 110 41" class="transition_line"></path><use href="#arrow" transform="translate(110 41) " class="transition_arrow" display="block"></use><text x="110.5" y="39.6" class="transition_label"><tspan class="function">SIG_I2C_RESULT_DATA_NACK</tspan>/ <tspan class="function">lm73_inc_error_counter()<title>Increase the error counter.</title></tspan></text><path d="M 110 40 L 119 40 L 119 41 L 110 41" class="transition_handle"></path></g><g><path d="M 110 37 L 119 37 L 119 38 L 110 38" class="transition_line"></path><use href="#arrow" transform="translate(110 38) " class="transition_arrow" display="block"></use><text x="110.5" y="36.6" class="transition_label"><tspan class="function">SIG_I2C_RESULT_ADDR_NACK</tspan>/ <tspan class="function">lm73_inc_error_counter()<title>Increase the error counter.</title></tspan></text><path d="M 110 37 L 119 37 L 119 38 L 110 38" class="transition_handle"></path></g><g><path d="M 110 34 L 119 34 L 119 35 L 110 35" class="transition_line"></path><use href="#arrow" transform="translate(110 35) " class="transition_arrow" display="block"></use><text x="110.5" y="33.6" class="transition_label">[<tspan class="function">lm73_timeout<title>Evaluates to true if the internal timer counter is greater than or equal to the parameter.</title></tspan>(<tspan class="function">LM73_RETRY_TIMEOUT</tspan>)]/ <tspan class="function">lm73_reset_timer()<title>Reset the timer counter.</title></tspan></text><path d="M 110 34 L 119 34 L 119 35 L 110 35" class="transition_handle"></path></g><g><path d="M 101 54 L 101 57 L 101 57 L 101 58" class="transition_line"></path><use href="#arrow" transform="translate(101 58) rotate(-90) " class="transition_arrow" display="block"></use><text x="101.5" y="56.7" class="transition_label"><tspan class="function">SIG_I2C_RESULT_SUCCESS</tspan></text><path d="M 101 54 L 101 57 L 101 57 L 101 58" class="transition_handle"></path></g><g><path d="M 94 42 L 94 42 L 94 42 L 94 45" class="transition_line"></path><use href="#arrow" transform="translate(94 45) rotate(-90) " class="transition_arrow" display="block"></use><text x="94.5" y="44.00000000000001" class="transition_label"><tspan class="function">SIG_I2C_RESULT_SUCCESS</tspan>/ <tspan class="function">lm73_update_resolution()</tspan></text><path d="M 94 42 L 94 42 L 94 42 L 94 45" class="transition_handle"></path></g><g><path d="M 90 31 L 90 31 L 90 62 L 92 62" class="transition_line"></path><use href="#arrow" transform="translate(92 62) rotate(180) " class="transition_arrow" display="block"></use><text x="90.5" y="46.1" class="transition_label"></text><path d="M 90 31 L 90 31 L 90 62 L 92 62" class="transition_handle"></path></g><g><path d="M 68 98 L 48 98 L 48 98 L 29 98" class="transition_line"></path><use href="#arrow" transform="translate(29 98) " class="transition_arrow" display="block"></use><text x="31.5" y="97.6" class="transition_label">[<tspan class="function">lm73_timeout<title>Evaluates to true if the internal timer counter is greater than or equal to the parameter.</title></tspan>(<tspan class="function">LM73_READ_PERIOD</tspan>)]/ <tspan class="function">lm73_inc_error_counter()<title>Increase the error counter.</title></tspan></text><path d="M 68 98 L 48 98 L 48 98 L 29 98" class="transition_handle"></path></g><g><path d="M 26 21 L 20 21 L 20 25" class="transition_line"></path><use href="#arrow" transform="translate(20 25) rotate(-90) " class="transition_arrow" display="block"></use><text x="26.5" y="20.6" class="transition_label"></text><path d="M 26 21 L 20 21 L 20 25" class="transition_handle"></path></g><g><path d="M 68 96 L 48 96 L 48 96 L 29 96" class="transition_line"></path><use href="#arrow" transform="translate(29 96) " class="transition_arrow" display="block"></use><text x="31.5" y="95.6" class="transition_label"><tspan class="function">SIG_I2C_RESULT_DATA_NACK</tspan>/ <tspan class="function">lm73_inc_error_counter()<title>Increase the error counter.</title></tspan></text><path d="M 68 96 L 48 96 L 48 96 L 29 96" class="transition_handle"></path></g><g><path d="M 29 88 L 48 88 L 48 88 L 68 88" class="transition_line"></path><use href="#arrow" transform="translate(68 88) rotate(180) " class="transition_arrow" display="block"></use><text x="32" y="87.6" class="transition_label"><tspan class="function">SIG_LM73_READ</tspan></text><path d="M 29 88 L 48 88 L 48 88 L 68 88" class="transition_handle"></path></g><g><path d="M 75 83 L 77 83 L 77 86" class="transition_line"></path><use href="#arrow" transform="translate(77 86) rotate(-90) " class="transition_arrow" display="block"></use><text x="75.5" y="82.6" class="transition_label"></text><path d="M 75 83 L 77 83 L 77 86" class="transition_handle"></path></g><g><path d="M 13 75 L 13 73 L 13 73 L 13 48" class="transition_line"></path><use href="#arrow" transform="translate(13 48) rotate(90) " class="transition_arrow" display="block"></use><text x="13.5" y="73.8" class="transition_label">[<tspan class="function">lm73_error_count<title>Return true, if the error counter is greater or equal then the parameter.</title></tspan>(<tspan class="function">LM73_MAX_ERROR_COUNT</tspan>)]</text><path d="M 13 75 L 13 73 L 13 73 L 13 48" class="transition_handle"></path></g><g><path d="M 32 39 L 65 39" class="transition_line"></path><use href="#arrow" transform="translate(65 39) rotate(180) " class="transition_arrow" display="block"></use><text x="38" y="38.6" class="transition_label">[<tspan class="function">lm73_timeout<title>Evaluates to true if the internal timer counter is greater than or equal to the parameter.</title></tspan>(<tspan class="function">LM73_RETRY_TIMEOUT</tspan>)]</text><path d="M 32 39 L 65 39" class="transition_handle"></path></g><g><path d="M 68 94 L 37 94 L 37 94 L 29 94" class="transition_line"></path><use href="#arrow" transform="translate(29 94) " class="transition_arrow" display="block"></use><text x="31.5" y="93.6" class="transition_label"><tspan class="function">SIG_I2C_RESULT_ADDR_NACK</tspan>/ <tspan class="function">lm73_inc_error_counter()<title>Increase the error counter.</title></tspan></text><path d="M 68 94 L 37 94 L 37 94 L 29 94" class="transition_handle"></path></g><g><path d="M 68 104 L 37 104 L 37 104 L 29 104" class="transition_line"></path><use href="#arrow" transform="translate(29 104) " class="transition_arrow" display="block"></use><text x="32" y="103.6" class="transition_label"><tspan class="function">SIG_I2C_RESULT_SUCCESS</tspan>/ <tspan class="function">lm73_update_temp()<title>- Update the temperature display
+- Send an event with the new value
+- Decrease the error counter</title></tspan></text><path d="M 68 104 L 37 104 L 37 104 L 29 104" class="transition_handle"></path></g><g><path d="M 29 90 L 36 90 L 36 90 L 68 90" class="transition_line"></path><use href="#arrow" transform="translate(68 90) rotate(180) " class="transition_arrow" display="block"></use><text x="32" y="89.6" class="transition_label">[<tspan class="function">lm73_timeout<title>Evaluates to true if the internal timer counter is greater than or equal to the parameter.</title></tspan>(<tspan class="function">LM73_READ_PERIOD</tspan>)]/ <tspan class="function">lm73_reset_timer()<title>Reset the timer counter.</title></tspan></text><path d="M 29 90 L 36 90 L 36 90 L 68 90" class="transition_handle"></path></g><g><path d="M 46 8 L 46 8 L 46 11" class="transition_line"></path><use href="#arrow" transform="translate(46 11) rotate(-90) " class="transition_arrow" display="block"></use><text x="46.5" y="8.6" class="transition_label"></text><path d="M 46 8 L 46 8 L 46 11" class="transition_handle"></path></g>
+				<g transform="translate(-100000003, -100000004)"><rect x="0" y="0" width="200000000" height="200000000" class="state_body"></rect><line x1="0" y1="2" x2="200000000" y2="2" class="state_separator"></line><line x1="0" y1="2" x2="200000000" y2="2" class="state_separator"></line><line x1="199999999" y1="200000000" x2="200000000" y2="199999999" class="state_resize_mark"></line><text x="0.6" y="1.6" class="state_title">__top__</text><rect x="0" y="0" width="200000000" height="2" class="state_drag_handle"></rect><text x="0.6" y="1.6" class="state_text"></text><rect x="0" y="0" width="200000000" height="200000000" class="state_border"></rect><circle cx="199999999.75" cy="199999999.75" class="state_resize_handle"></circle></g><g transform="translate(7, 11)"><rect x="0" y="0" width="145" height="100" class="state_body"></rect><line x1="0" y1="2" x2="145" y2="2" class="state_separator"></line><line x1="0" y1="6" x2="145" y2="6" class="state_separator"></line><line x1="144" y1="100" x2="145" y2="99" class="state_resize_mark"></line><text x="0.6" y="1.6" class="state_title">s_lm73</text><rect x="0" y="0" width="145" height="6" class="state_drag_handle"></rect><text x="0.6" y="1.6" class="state_text"><tspan x="0.6" dy="2"><tspan class="function">entry</tspan>/ <tspan class="function">lm73_init()</tspan></tspan><tspan x="0.6" dy="2"><tspan class="function">SIG_SYS_TICK_10ms</tspan>/ <tspan class="function">lm73_10ms_callback()</tspan></tspan></text><rect x="0" y="0" width="145" height="100" class="state_border"></rect><circle cx="144.75" cy="99.75" class="state_resize_handle"></circle></g><circle cx="46" cy="8" class="initial_state"></circle><g transform="translate(13, 86)"><rect x="0" y="0" width="16" height="19" class="state_body"></rect><line x1="0" y1="2" x2="16" y2="2" class="state_separator"></line><line x1="0" y1="6" x2="16" y2="6" class="state_separator"></line><line x1="15" y1="19" x2="16" y2="18" class="state_resize_mark"></line><text x="0.6" y="1.6" class="state_title">s_idle</text><rect x="0" y="0" width="16" height="6" class="state_drag_handle"></rect><text x="0.6" y="1.6" class="state_text"><tspan x="0.6" dy="2"><tspan class="function">init</tspan>/ <tspan class="function">lm73_reset_timer()<title>Reset the timer counter.</title></tspan></tspan><tspan x="0.6" dy="2"></tspan></text><rect x="0" y="0" width="16" height="19" class="state_border"></rect><circle cx="15.75" cy="18.75" class="state_resize_handle"></circle></g><g transform="translate(68, 86)"><rect x="0" y="0" width="19" height="19" class="state_body"></rect><line x1="0" y1="2" x2="19" y2="2" class="state_separator"></line><line x1="0" y1="6" x2="19" y2="6" class="state_separator"></line><line x1="18" y1="19" x2="19" y2="18" class="state_resize_mark"></line><text x="0.6" y="1.6" class="state_title">s_reading</text><rect x="0" y="0" width="19" height="6" class="state_drag_handle"></rect><text x="0.6" y="1.6" class="state_text"><tspan x="0.6" dy="2"><tspan class="function">entry</tspan>/ <tspan class="function">lm73_start_read()<title>Send a read transaction to the LM73.</title></tspan></tspan><tspan x="0.6" dy="2"><tspan class="function">exit</tspan>/ <tspan class="function">lm73_reset_timer()<title>Reset the timer counter.</title></tspan></tspan></text><rect x="0" y="0" width="19" height="19" class="state_border"></rect><circle cx="18.75" cy="18.75" class="state_resize_handle"></circle></g><g transform="translate(13, 36)"><rect x="0" y="0" width="19" height="9" class="state_body"></rect><line x1="0" y1="2" x2="19" y2="2" class="state_separator"></line><line x1="0" y1="6" x2="19" y2="6" class="state_separator"></line><line x1="18" y1="9" x2="19" y2="8" class="state_resize_mark"></line><text x="0.6" y="1.6" class="state_title">s_read_id_reg</text><rect x="0" y="0" width="19" height="6" class="state_drag_handle"></rect><text x="0.6" y="1.6" class="state_text"><tspan x="0.6" dy="2"><tspan class="function">init</tspan>/ <tspan class="function">lm73_read_id()<title>Try to read the ID register from the LM73 by sending a write-read transaction to the I2C master.</title></tspan></tspan><tspan x="0.6" dy="2"><tspan class="function">entry</tspan>/ <tspan class="function">lm73_reset_timer()<title>Reset the timer counter.</title></tspan></tspan></text><rect x="0" y="0" width="19" height="9" class="state_border"></rect><circle cx="18.75" cy="8.75" class="state_resize_handle"></circle></g><g transform="translate(92, 58)"><rect x="0" y="0" width="19" height="9" class="state_body"></rect><line x1="0" y1="2" x2="19" y2="2" class="state_separator"></line><line x1="0" y1="4" x2="19" y2="4" class="state_separator"></line><line x1="18" y1="9" x2="19" y2="8" class="state_resize_mark"></line><text x="0.6" y="1.6" class="state_title">s_reset_ptr_reg</text><rect x="0" y="0" width="19" height="4" class="state_drag_handle"></rect><text x="0.6" y="1.6" class="state_text"><tspan x="0.6" dy="2"><tspan class="function">entry</tspan>/ <tspan class="function">lm73_reset_pointer()<title>Reset the pointer register in the LM73 to 0, so all subsequent reads will access the temperature register.</title></tspan></tspan></text><rect x="0" y="0" width="19" height="9" class="state_border"></rect><circle cx="18.75" cy="8.75" class="state_resize_handle"></circle></g><g transform="translate(11, 75)"><rect x="0" y="0" width="91" height="33" class="state_body"></rect><line x1="0" y1="2" x2="91" y2="2" class="state_separator"></line><line x1="0" y1="6" x2="91" y2="6" class="state_separator"></line><line x1="90" y1="33" x2="91" y2="32" class="state_resize_mark"></line><text x="0.6" y="1.6" class="state_title">s_online</text><rect x="0" y="0" width="91" height="6" class="state_drag_handle"></rect><text x="0.6" y="1.6" class="state_text"><tspan x="0.6" dy="2"><tspan class="function">entry</tspan>/ <tspan class="function">send_online_event()<title>Send a SIG_LM73_ONLINE event. This can be used to detect successful initialization.</title></tspan></tspan><tspan x="0.6" dy="2"><tspan class="function">exit</tspan>/ <tspan class="function">send_offline_event()<title>Send a SIG_LM73_OFFLINE event. This can be used to detect communication errors between the module and the I2C slave.</title></tspan></tspan></text><rect x="0" y="0" width="91" height="33" class="state_border"></rect><circle cx="90.75" cy="32.75" class="state_resize_handle"></circle></g><circle cx="75" cy="83" class="initial_state"></circle><g transform="translate(11, 25)"><rect x="0" y="0" width="75" height="23" class="state_body"></rect><line x1="0" y1="2" x2="75" y2="2" class="state_separator"></line><line x1="0" y1="4" x2="75" y2="4" class="state_separator"></line><line x1="74" y1="23" x2="75" y2="22" class="state_resize_mark"></line><text x="0.6" y="1.6" class="state_title">s_init</text><rect x="0" y="0" width="75" height="4" class="state_drag_handle"></rect><text x="0.6" y="1.6" class="state_text"><tspan x="0.6" dy="2"></tspan></text><rect x="0" y="0" width="75" height="23" class="state_border"></rect><circle cx="74.75" cy="22.75" class="state_resize_handle"></circle></g><circle cx="17" cy="32" class="initial_state"></circle><circle cx="26" cy="21" class="initial_state"></circle><g transform="translate(92, 45)"><rect x="0" y="0" width="18" height="9" class="state_body"></rect><line x1="0" y1="2" x2="18" y2="2" class="state_separator"></line><line x1="0" y1="4" x2="18" y2="4" class="state_separator"></line><line x1="17" y1="9" x2="18" y2="8" class="state_resize_mark"></line><text x="0.6" y="1.6" class="state_title">s_set_resolution</text><rect x="0" y="0" width="18" height="4" class="state_drag_handle"></rect><text x="0.6" y="1.6" class="state_text"><tspan x="0.6" dy="2"><tspan class="function">entry</tspan>/ <tspan class="function">lm73_set_resolution()</tspan></tspan></text><rect x="0" y="0" width="18" height="9" class="state_border"></rect><circle cx="17.75" cy="8.75" class="state_resize_handle"></circle></g><g transform="translate(88, 25)"><rect x="0" y="0" width="60" height="45" class="state_body"></rect><line x1="0" y1="2" x2="60" y2="2" class="state_separator"></line><line x1="0" y1="4" x2="60" y2="4" class="state_separator"></line><line x1="59" y1="45" x2="60" y2="44" class="state_resize_mark"></line><text x="0.6" y="1.6" class="state_title">s_set_config</text><rect x="0" y="0" width="60" height="4" class="state_drag_handle"></rect><text x="0.6" y="1.6" class="state_text"><tspan x="0.6" dy="2"><tspan class="function">entry</tspan>/ <tspan class="function">lm73_reset_timer()<title>Reset the timer counter.</title></tspan></tspan></text><rect x="0" y="0" width="60" height="45" class="state_border"></rect><circle cx="59.75" cy="44.75" class="state_resize_handle"></circle></g><g transform="translate(92, 33)"><rect x="0" y="0" width="18" height="9" class="state_body"></rect><line x1="0" y1="2" x2="18" y2="2" class="state_separator"></line><line x1="0" y1="4" x2="18" y2="4" class="state_separator"></line><line x1="17" y1="9" x2="18" y2="8" class="state_resize_mark"></line><text x="0.6" y="1.6" class="state_title">s_get_resolution</text><rect x="0" y="0" width="18" height="4" class="state_drag_handle"></rect><text x="0.6" y="1.6" class="state_text"><tspan x="0.6" dy="2"><tspan class="function">entry</tspan>/ <tspan class="function">lm73_get_resolution()</tspan></tspan></text><rect x="0" y="0" width="18" height="9" class="state_border"></rect><circle cx="17.75" cy="8.75" class="state_resize_handle"></circle></g><circle cx="90" cy="31" class="initial_state"></circle><g transform="translate(65, 38)"><rect x="0" y="0" width="16" height="7" class="state_body"></rect><line x1="0" y1="2" x2="16" y2="2" class="state_separator"></line><line x1="0" y1="4" x2="16" y2="4" class="state_separator"></line><line x1="15" y1="7" x2="16" y2="6" class="state_resize_mark"></line><text x="0.6" y="1.6" class="state_title">s_unplugged</text><rect x="0" y="0" width="16" height="4" class="state_drag_handle"></rect><text x="0.6" y="1.6" class="state_text"><tspan x="0.6" dy="2"><tspan class="function">entry</tspan>/ <tspan class="function">lm73_reset_timer()<title>Reset the timer counter.</title></tspan></tspan></text><rect x="0" y="0" width="16" height="7" class="state_border"></rect><circle cx="15.75" cy="6.75" class="state_resize_handle"></circle></g></g>
+			</svg>
+		
+    </main>
+    <script>
+        
+const zoom_speed = 0.5;
+const pan_speed = 20;
+const drawing = document.querySelector('#drawing');
+const svg = document.querySelector('svg');
+
+let translate = [drawing.transform.baseVal[0].matrix.e, drawing.transform.baseVal[0].matrix.f];
+let scale = drawing.transform.baseVal[1].matrix.a;
+
+let drag_start_pos = [0, 0];
+
+function set_transform()
+{
+    const [tx, ty] = translate;
+    const s = scale; 
+    drawing.attributes.transform.value = `translate(${tx}, ${ty}) scale(${s}, ${s})`;
+}
+
+function zoom_in(pos)
+{
+    const zs = zoom_speed;
+    const [x, y] = pos;
+    const [dtx, dty] = [-zs * x, -zs * y];
+    const [tx, ty] = translate;
+    translate = [tx + dtx, ty + dty];
+    scale += zs;
+    set_transform();
+}
+
+function zoom_out(pos)
+{
+    if (scale < 2)
+    {
+        return;
+    }
+    const zs = -zoom_speed;
+    const [x, y] = pos;
+    const [dtx, dty] = [-zs * x, -zs * y];
+    const [tx, ty] = translate;
+    translate = [tx + dtx, ty + dty];
+    scale += zs;
+    set_transform();
+}
+
+function get_absolute_pos(evt)
+{
+    const CTM = drawing.getScreenCTM();
+    const x = Math.round((evt.clientX - CTM.e) / CTM.a);
+    const y = Math.round((evt.clientY - CTM.f) / CTM.d);
+
+    return [x, y];
+}
+
+
+
+svg.addEventListener('wheel', event => {
+    if (event.ctrlKey)
+    {
+        event.stopPropagation();
+        event.preventDefault();
+        const p = get_absolute_pos(event);
+        if (event.deltaY < 0)
+        {
+            zoom_in(p);
+        }
+        else
+        {
+            zoom_out(p);
+        }
+    }
+    else if (event.shiftKey)
+    {
+        event.stopPropagation();
+        event.preventDefault();
+        if (event.deltaY < 0)
+        {
+            translate[0] += pan_speed;
+        }
+        else
+        {
+            translate[0] -= pan_speed;
+        }
+        set_transform();
+    }
+    else
+    {
+        event.stopPropagation();
+        event.preventDefault();
+        if (event.deltaY < 0)
+        {
+            translate[1] += pan_speed;
+        }
+        else
+        {
+            translate[1] -= pan_speed;
+        }
+        set_transform();
+    }
+});
+    </script>
+    <details>
+        <summary>json</summary>
+        <pre id='chsm-json-data'>
+            {
+    "states": {
+        "__top__": {
+            "pos": [
+                -100000003,
+                -100000004
+            ],
+            "size": [
+                200000000,
+                200000000
+            ],
+            "title": "__top__",
+            "text": [],
+            "connectors": [],
+            "parent": null,
+            "children": [
+                "state_0",
+                "istate_0"
+            ],
+            "type": "top"
+        },
+        "state_0": {
+            "pos": [
+                7,
+                11
+            ],
+            "size": [
+                145,
+                100
+            ],
+            "title": "s_lm73",
+            "text": [
+                "entry/ lm73_init()",
+                "SIG_SYS_TICK_10ms/ lm73_10ms_callback()"
+            ],
+            "connectors": [
+                "conn_1"
+            ],
+            "parent": "__top__",
+            "children": [
+                "state_5",
+                "state_6",
+                "istate_3",
+                "state_7"
+            ],
+            "type": "normal"
+        },
+        "istate_0": {
+            "pos": [
+                46,
+                8
+            ],
+            "size": [
+                2,
+                2
+            ],
+            "title": "istate_0",
+            "text": [
+                "entry/",
+                "exit/"
+            ],
+            "connectors": [
+                "conn_0"
+            ],
+            "parent": "__top__",
+            "children": [],
+            "type": "initial"
+        },
+        "state_1": {
+            "pos": [
+                13,
+                86
+            ],
+            "size": [
+                16,
+                19
+            ],
+            "title": "s_idle",
+            "text": [
+                "init/ lm73_reset_timer()",
+                ""
+            ],
+            "connectors": [
+                "conn_2",
+                "conn_5",
+                "conn_7",
+                "conn_24",
+                "conn_27",
+                "conn_31"
+            ],
+            "parent": "state_5",
+            "children": [],
+            "type": "normal"
+        },
+        "state_2": {
+            "pos": [
+                68,
+                86
+            ],
+            "size": [
+                19,
+                19
+            ],
+            "title": "s_reading",
+            "text": [
+                "entry/ lm73_start_read()",
+                "exit/ lm73_reset_timer()"
+            ],
+            "connectors": [
+                "conn_3",
+                "conn_4",
+                "conn_6",
+                "conn_23",
+                "conn_25",
+                "conn_26",
+                "conn_30"
+            ],
+            "parent": "state_5",
+            "children": [],
+            "type": "normal"
+        },
+        "state_3": {
+            "pos": [
+                13,
+                36
+            ],
+            "size": [
+                19,
+                9
+            ],
+            "title": "s_read_id_reg",
+            "text": [
+                "init/ lm73_read_id()",
+                "entry/ lm73_reset_timer()"
+            ],
+            "connectors": [
+                "conn_10",
+                "conn_14",
+                "conn_16",
+                "conn_20",
+                "conn_73",
+                "conn_29"
+            ],
+            "parent": "state_6",
+            "children": [],
+            "type": "normal"
+        },
+        "state_4": {
+            "pos": [
+                92,
+                58
+            ],
+            "size": [
+                19,
+                9
+            ],
+            "title": "s_reset_ptr_reg",
+            "text": [
+                "entry/ lm73_reset_pointer()"
+            ],
+            "connectors": [
+                "conn_37",
+                "conn_12",
+                "conn_54",
+                "conn_55",
+                "conn_56",
+                "conn_57",
+                "conn_58",
+                "conn_59",
+                "conn_33"
+            ],
+            "parent": "state_7",
+            "children": [],
+            "type": "normal"
+        },
+        "state_5": {
+            "pos": [
+                11,
+                75
+            ],
+            "size": [
+                91,
+                33
+            ],
+            "title": "s_online",
+            "text": [
+                "entry/ send_online_event()",
+                "exit/ send_offline_event()"
+            ],
+            "connectors": [
+                "conn_18",
+                "conn_13"
+            ],
+            "parent": "state_0",
+            "children": [
+                "state_1",
+                "state_2",
+                "istate_2"
+            ],
+            "type": "normal"
+        },
+        "istate_2": {
+            "pos": [
+                75,
+                83
+            ],
+            "size": [
+                2,
+                2
+            ],
+            "title": "istate_2",
+            "text": [
+                "entry/",
+                "exit/"
+            ],
+            "connectors": [
+                "conn_22"
+            ],
+            "parent": "state_5",
+            "children": [],
+            "type": "initial"
+        },
+        "state_6": {
+            "pos": [
+                11,
+                25
+            ],
+            "size": [
+                75,
+                23
+            ],
+            "title": "s_init",
+            "text": [
+                ""
+            ],
+            "connectors": [
+                "conn_9",
+                "conn_19"
+            ],
+            "parent": "state_0",
+            "children": [
+                "istate_1",
+                "state_3",
+                "state_13",
+                "state_10"
+            ],
+            "type": "normal"
+        },
+        "istate_1": {
+            "pos": [
+                17,
+                32
+            ],
+            "size": [
+                2,
+                2
+            ],
+            "title": "istate_1",
+            "text": [
+                "entry/",
+                "exit/"
+            ],
+            "connectors": [
+                "conn_28"
+            ],
+            "parent": "state_6",
+            "children": [],
+            "type": "initial"
+        },
+        "istate_3": {
+            "pos": [
+                26,
+                21
+            ],
+            "size": [
+                2,
+                2
+            ],
+            "title": "istate_3",
+            "text": [
+                "entry/",
+                "exit/"
+            ],
+            "connectors": [
+                "conn_8"
+            ],
+            "parent": "state_0",
+            "children": [],
+            "type": "initial"
+        },
+        "state_9": {
+            "pos": [
+                92,
+                45
+            ],
+            "size": [
+                18,
+                9
+            ],
+            "title": "s_set_resolution",
+            "text": [
+                "entry/ lm73_set_resolution()"
+            ],
+            "connectors": [
+                "conn_35",
+                "conn_36",
+                "conn_44",
+                "conn_45",
+                "conn_46",
+                "conn_47",
+                "conn_48",
+                "conn_49"
+            ],
+            "parent": "state_7",
+            "children": [],
+            "type": "normal"
+        },
+        "state_7": {
+            "pos": [
+                88,
+                25
+            ],
+            "size": [
+                60,
+                45
+            ],
+            "title": "s_set_config",
+            "text": [
+                "entry/ lm73_reset_timer()"
+            ],
+            "connectors": [
+                "conn_21"
+            ],
+            "parent": "state_0",
+            "children": [
+                "state_9",
+                "state_8",
+                "istate_4",
+                "state_4"
+            ],
+            "type": "normal"
+        },
+        "state_8": {
+            "pos": [
+                92,
+                33
+            ],
+            "size": [
+                18,
+                9
+            ],
+            "title": "s_get_resolution",
+            "text": [
+                "entry/ lm73_get_resolution()"
+            ],
+            "connectors": [
+                "conn_34",
+                "conn_38",
+                "conn_39",
+                "conn_40",
+                "conn_41",
+                "conn_42",
+                "conn_43"
+            ],
+            "parent": "state_7",
+            "children": [],
+            "type": "normal"
+        },
+        "istate_4": {
+            "pos": [
+                90,
+                31
+            ],
+            "size": [
+                2,
+                2
+            ],
+            "title": "istate_4",
+            "text": [
+                "entry/",
+                "exit/"
+            ],
+            "connectors": [
+                "conn_32"
+            ],
+            "parent": "state_7",
+            "children": [],
+            "type": "initial"
+        },
+        "state_13": {
+            "pos": [
+                65,
+                38
+            ],
+            "size": [
+                16,
+                7
+            ],
+            "title": "s_unplugged",
+            "text": [
+                "entry/ lm73_reset_timer()"
+            ],
+            "connectors": [
+                "conn_72",
+                "conn_11",
+                "conn_15",
+                "conn_17"
+            ],
+            "parent": "state_6",
+            "children": [],
+            "type": "normal"
+        }
+    },
+    "connectors": {
+        "conn_0": {
+            "parent": "istate_0",
+            "offset": 0,
+            "side": "all",
+            "dir": "out",
+            "transition": "trans_0"
+        },
+        "conn_1": {
+            "parent": "state_0",
+            "offset": 39,
+            "side": "top",
+            "dir": "in",
+            "transition": "trans_0"
+        },
+        "conn_2": {
+            "parent": "state_1",
+            "offset": 4,
+            "side": "right",
+            "dir": "out",
+            "transition": "trans_1"
+        },
+        "conn_3": {
+            "parent": "state_2",
+            "offset": 4,
+            "side": "left",
+            "dir": "in",
+            "transition": "trans_1"
+        },
+        "conn_4": {
+            "parent": "state_2",
+            "offset": 18,
+            "side": "left",
+            "dir": "out",
+            "transition": "trans_2"
+        },
+        "conn_5": {
+            "parent": "state_1",
+            "offset": 18,
+            "side": "right",
+            "dir": "in",
+            "transition": "trans_2"
+        },
+        "conn_6": {
+            "parent": "state_2",
+            "offset": 8,
+            "side": "left",
+            "dir": "out",
+            "transition": "trans_3"
+        },
+        "conn_7": {
+            "parent": "state_1",
+            "offset": 8,
+            "side": "right",
+            "dir": "in",
+            "transition": "trans_3"
+        },
+        "conn_10": {
+            "parent": "state_3",
+            "offset": 3,
+            "side": "right",
+            "dir": "out",
+            "transition": "trans_5"
+        },
+        "conn_11": {
+            "parent": "state_13",
+            "offset": 1,
+            "side": "left",
+            "dir": "in",
+            "transition": "trans_5"
+        },
+        "conn_18": {
+            "parent": "state_5",
+            "offset": 2,
+            "side": "top",
+            "dir": "out",
+            "transition": "trans_9"
+        },
+        "conn_19": {
+            "parent": "state_6",
+            "offset": 2,
+            "side": "bottom",
+            "dir": "in",
+            "transition": "trans_9"
+        },
+        "conn_22": {
+            "parent": "istate_2",
+            "offset": 0,
+            "side": "all",
+            "dir": "out",
+            "transition": "trans_11"
+        },
+        "conn_23": {
+            "parent": "state_2",
+            "offset": 9,
+            "side": "top",
+            "dir": "in",
+            "transition": "trans_11"
+        },
+        "conn_24": {
+            "parent": "state_1",
+            "offset": 2,
+            "side": "right",
+            "dir": "out",
+            "transition": "trans_12"
+        },
+        "conn_25": {
+            "parent": "state_2",
+            "offset": 2,
+            "side": "left",
+            "dir": "in",
+            "transition": "trans_12"
+        },
+        "conn_26": {
+            "parent": "state_2",
+            "offset": 10,
+            "side": "left",
+            "dir": "out",
+            "transition": "trans_13"
+        },
+        "conn_27": {
+            "parent": "state_1",
+            "offset": 10,
+            "side": "right",
+            "dir": "in",
+            "transition": "trans_13"
+        },
+        "conn_8": {
+            "parent": "istate_3",
+            "offset": 0,
+            "side": "all",
+            "dir": "out",
+            "transition": "trans_4"
+        },
+        "conn_9": {
+            "parent": "state_6",
+            "offset": 9,
+            "side": "top",
+            "dir": "in",
+            "transition": "trans_4"
+        },
+        "conn_30": {
+            "parent": "state_2",
+            "offset": 12,
+            "side": "left",
+            "dir": "out",
+            "transition": "trans_15"
+        },
+        "conn_31": {
+            "parent": "state_1",
+            "offset": 12,
+            "side": "right",
+            "dir": "in",
+            "transition": "trans_15"
+        },
+        "conn_32": {
+            "parent": "istate_4",
+            "offset": 0,
+            "side": "all",
+            "dir": "out",
+            "transition": "trans_16"
+        },
+        "conn_33": {
+            "parent": "state_4",
+            "offset": 4,
+            "side": "left",
+            "dir": "in",
+            "transition": "trans_16"
+        },
+        "conn_34": {
+            "parent": "state_8",
+            "offset": 2,
+            "side": "bottom",
+            "dir": "out",
+            "transition": "trans_17"
+        },
+        "conn_35": {
+            "parent": "state_9",
+            "offset": 2,
+            "side": "top",
+            "dir": "in",
+            "transition": "trans_17"
+        },
+        "conn_36": {
+            "parent": "state_9",
+            "offset": 9,
+            "side": "bottom",
+            "dir": "out",
+            "transition": "trans_18"
+        },
+        "conn_37": {
+            "parent": "state_4",
+            "offset": 9,
+            "side": "top",
+            "dir": "in",
+            "transition": "trans_18"
+        },
+        "conn_38": {
+            "parent": "state_8",
+            "offset": 1,
+            "side": "right",
+            "dir": "out",
+            "transition": "trans_19"
+        },
+        "conn_39": {
+            "parent": "state_8",
+            "offset": 2,
+            "side": "right",
+            "dir": "in",
+            "transition": "trans_19"
+        },
+        "conn_40": {
+            "parent": "state_8",
+            "offset": 4,
+            "side": "right",
+            "dir": "out",
+            "transition": "trans_20"
+        },
+        "conn_41": {
+            "parent": "state_8",
+            "offset": 5,
+            "side": "right",
+            "dir": "in",
+            "transition": "trans_20"
+        },
+        "conn_42": {
+            "parent": "state_8",
+            "offset": 7,
+            "side": "right",
+            "dir": "out",
+            "transition": "trans_21"
+        },
+        "conn_43": {
+            "parent": "state_8",
+            "offset": 8,
+            "side": "right",
+            "dir": "in",
+            "transition": "trans_21"
+        },
+        "conn_44": {
+            "parent": "state_9",
+            "offset": 1,
+            "side": "right",
+            "dir": "out",
+            "transition": "trans_22"
+        },
+        "conn_45": {
+            "parent": "state_9",
+            "offset": 2,
+            "side": "right",
+            "dir": "in",
+            "transition": "trans_22"
+        },
+        "conn_46": {
+            "parent": "state_9",
+            "offset": 4,
+            "side": "right",
+            "dir": "out",
+            "transition": "trans_23"
+        },
+        "conn_47": {
+            "parent": "state_9",
+            "offset": 5,
+            "side": "right",
+            "dir": "in",
+            "transition": "trans_23"
+        },
+        "conn_48": {
+            "parent": "state_9",
+            "offset": 7,
+            "side": "right",
+            "dir": "out",
+            "transition": "trans_24"
+        },
+        "conn_49": {
+            "parent": "state_9",
+            "offset": 8,
+            "side": "right",
+            "dir": "in",
+            "transition": "trans_24"
+        },
+        "conn_12": {
+            "parent": "state_4",
+            "offset": 9,
+            "side": "bottom",
+            "dir": "out",
+            "transition": "trans_6"
+        },
+        "conn_13": {
+            "parent": "state_5",
+            "offset": 88,
+            "side": "top",
+            "dir": "in",
+            "transition": "trans_6"
+        },
+        "conn_14": {
+            "parent": "state_3",
+            "offset": 5,
+            "side": "right",
+            "dir": "out",
+            "transition": "trans_7"
+        },
+        "conn_15": {
+            "parent": "state_13",
+            "offset": 3,
+            "side": "left",
+            "dir": "in",
+            "transition": "trans_7"
+        },
+        "conn_16": {
+            "parent": "state_3",
+            "offset": 7,
+            "side": "right",
+            "dir": "out",
+            "transition": "trans_8"
+        },
+        "conn_17": {
+            "parent": "state_13",
+            "offset": 5,
+            "side": "left",
+            "dir": "in",
+            "transition": "trans_8"
+        },
+        "conn_20": {
+            "parent": "state_3",
+            "offset": 11,
+            "side": "bottom",
+            "dir": "out",
+            "transition": "trans_10"
+        },
+        "conn_21": {
+            "parent": "state_7",
+            "offset": 6,
+            "side": "bottom",
+            "dir": "in",
+            "transition": "trans_10"
+        },
+        "conn_54": {
+            "parent": "state_4",
+            "offset": 1,
+            "side": "right",
+            "dir": "out",
+            "transition": "trans_27"
+        },
+        "conn_55": {
+            "parent": "state_4",
+            "offset": 2,
+            "side": "right",
+            "dir": "in",
+            "transition": "trans_27"
+        },
+        "conn_56": {
+            "parent": "state_4",
+            "offset": 4,
+            "side": "right",
+            "dir": "out",
+            "transition": "trans_28"
+        },
+        "conn_57": {
+            "parent": "state_4",
+            "offset": 5,
+            "side": "right",
+            "dir": "in",
+            "transition": "trans_28"
+        },
+        "conn_58": {
+            "parent": "state_4",
+            "offset": 7,
+            "side": "right",
+            "dir": "out",
+            "transition": "trans_29"
+        },
+        "conn_59": {
+            "parent": "state_4",
+            "offset": 8,
+            "side": "right",
+            "dir": "in",
+            "transition": "trans_29"
+        },
+        "conn_72": {
+            "parent": "state_13",
+            "offset": 11,
+            "side": "top",
+            "dir": "out",
+            "transition": "trans_36"
+        },
+        "conn_73": {
+            "parent": "state_3",
+            "offset": 10,
+            "side": "top",
+            "dir": "in",
+            "transition": "trans_36"
+        },
+        "conn_28": {
+            "parent": "istate_1",
+            "offset": 0,
+            "side": "all",
+            "dir": "out",
+            "transition": "trans_14"
+        },
+        "conn_29": {
+            "parent": "state_3",
+            "offset": 4,
+            "side": "top",
+            "dir": "in",
+            "transition": "trans_14"
+        }
+    },
+    "transitions": {
+        "trans_0": {
+            "start": "conn_0",
+            "end": "conn_1",
+            "vertices": [
+                [
+                    46,
+                    8
+                ],
+                [
+                    46,
+                    8
+                ],
+                [
+                    46,
+                    11
+                ]
+            ],
+            "label": "",
+            "label_offset": [
+                0.5,
+                0.5999999999999996
+            ],
+            "label_anchor": 1,
+            "label_pos": [
+                46.5,
+                8.6
+            ]
+        },
+        "trans_1": {
+            "start": "conn_2",
+            "end": "conn_3",
+            "vertices": [
+                [
+                    29,
+                    90
+                ],
+                [
+                    36,
+                    90
+                ],
+                [
+                    36,
+                    90
+                ],
+                [
+                    68,
+                    90
+                ]
+            ],
+            "label": "[lm73_timeout(LM73_READ_PERIOD)]/ lm73_reset_timer()",
+            "label_offset": [
+                3,
+                -0.4000000000000057
+            ],
+            "label_anchor": 0,
+            "label_pos": [
+                32,
+                89.6
+            ]
+        },
+        "trans_2": {
+            "start": "conn_4",
+            "end": "conn_5",
+            "vertices": [
+                [
+                    68,
+                    104
+                ],
+                [
+                    37,
+                    104
+                ],
+                [
+                    37,
+                    104
+                ],
+                [
+                    29,
+                    104
+                ]
+            ],
+            "label": "SIG_I2C_RESULT_SUCCESS/ lm73_update_temp()",
+            "label_offset": [
+                -5,
+                -0.4000000000000057
+            ],
+            "label_anchor": 2,
+            "label_pos": [
+                32,
+                103.6
+            ]
+        },
+        "trans_3": {
+            "start": "conn_6",
+            "end": "conn_7",
+            "vertices": [
+                [
+                    68,
+                    94
+                ],
+                [
+                    37,
+                    94
+                ],
+                [
+                    37,
+                    94
+                ],
+                [
+                    29,
+                    94
+                ]
+            ],
+            "label": "SIG_I2C_RESULT_ADDR_NACK/ lm73_inc_error_counter()",
+            "label_offset": [
+                -5.5,
+                -0.4000000000000057
+            ],
+            "label_anchor": 2,
+            "label_pos": [
+                31.5,
+                93.6
+            ]
+        },
+        "trans_5": {
+            "start": "conn_10",
+            "end": "conn_11",
+            "vertices": [
+                [
+                    32,
+                    39
+                ],
+                [
+                    65,
+                    39
+                ]
+            ],
+            "label": "[lm73_timeout(LM73_RETRY_TIMEOUT)]",
+            "label_offset": [
+                6,
+                -0.3999999999999986
+            ],
+            "label_anchor": 0,
+            "label_pos": [
+                38,
+                38.6
+            ]
+        },
+        "trans_9": {
+            "start": "conn_18",
+            "end": "conn_19",
+            "vertices": [
+                [
+                    13,
+                    75
+                ],
+                [
+                    13,
+                    73
+                ],
+                [
+                    13,
+                    73
+                ],
+                [
+                    13,
+                    48
+                ]
+            ],
+            "label": "[lm73_error_count(LM73_MAX_ERROR_COUNT)]",
+            "label_offset": [
+                0.5,
+                -1.2000000000000028
+            ],
+            "label_anchor": 0,
+            "label_pos": [
+                13.5,
+                73.8
+            ]
+        },
+        "trans_11": {
+            "start": "conn_22",
+            "end": "conn_23",
+            "vertices": [
+                [
+                    75,
+                    83
+                ],
+                [
+                    77,
+                    83
+                ],
+                [
+                    77,
+                    86
+                ]
+            ],
+            "label": "",
+            "label_offset": [
+                0.5,
+                -0.4000000000000057
+            ],
+            "label_anchor": 0,
+            "label_pos": [
+                75.5,
+                82.6
+            ]
+        },
+        "trans_12": {
+            "start": "conn_24",
+            "end": "conn_25",
+            "vertices": [
+                [
+                    29,
+                    88
+                ],
+                [
+                    48,
+                    88
+                ],
+                [
+                    48,
+                    88
+                ],
+                [
+                    68,
+                    88
+                ]
+            ],
+            "label": "SIG_LM73_READ",
+            "label_offset": [
+                3,
+                -0.4000000000000057
+            ],
+            "label_anchor": 0,
+            "label_pos": [
+                32,
+                87.6
+            ]
+        },
+        "trans_13": {
+            "start": "conn_26",
+            "end": "conn_27",
+            "vertices": [
+                [
+                    68,
+                    96
+                ],
+                [
+                    48,
+                    96
+                ],
+                [
+                    48,
+                    96
+                ],
+                [
+                    29,
+                    96
+                ]
+            ],
+            "label": "SIG_I2C_RESULT_DATA_NACK/ lm73_inc_error_counter()",
+            "label_offset": [
+                -16.5,
+                -0.4000000000000057
+            ],
+            "label_anchor": 2,
+            "label_pos": [
+                31.5,
+                95.6
+            ]
+        },
+        "trans_4": {
+            "start": "conn_8",
+            "end": "conn_9",
+            "vertices": [
+                [
+                    26,
+                    21
+                ],
+                [
+                    20,
+                    21
+                ],
+                [
+                    20,
+                    25
+                ]
+            ],
+            "label": "",
+            "label_offset": [
+                0.5,
+                -0.3999999999999986
+            ],
+            "label_anchor": 0,
+            "label_pos": [
+                26.5,
+                20.6
+            ]
+        },
+        "trans_15": {
+            "start": "conn_30",
+            "end": "conn_31",
+            "vertices": [
+                [
+                    68,
+                    98
+                ],
+                [
+                    48,
+                    98
+                ],
+                [
+                    48,
+                    98
+                ],
+                [
+                    29,
+                    98
+                ]
+            ],
+            "label": "[lm73_timeout(LM73_READ_PERIOD)]/ lm73_inc_error_counter()",
+            "label_offset": [
+                -16.5,
+                -0.4000000000000057
+            ],
+            "label_anchor": 2,
+            "label_pos": [
+                31.5,
+                97.6
+            ]
+        },
+        "trans_16": {
+            "start": "conn_32",
+            "end": "conn_33",
+            "vertices": [
+                [
+                    90,
+                    31
+                ],
+                [
+                    90,
+                    31
+                ],
+                [
+                    90,
+                    62
+                ],
+                [
+                    92,
+                    62
+                ]
+            ],
+            "label": "",
+            "label_offset": [
+                0.5,
+                15.100000000000001
+            ],
+            "label_anchor": 1,
+            "label_pos": [
+                90.5,
+                46.1
+            ]
+        },
+        "trans_17": {
+            "start": "conn_34",
+            "end": "conn_35",
+            "vertices": [
+                [
+                    94,
+                    42
+                ],
+                [
+                    94,
+                    42
+                ],
+                [
+                    94,
+                    42
+                ],
+                [
+                    94,
+                    45
+                ]
+            ],
+            "label": "SIG_I2C_RESULT_SUCCESS/ lm73_update_resolution()",
+            "label_offset": [
+                0.5,
+                2.000000000000007
+            ],
+            "label_anchor": 2,
+            "label_pos": [
+                94.5,
+                44.00000000000001
+            ]
+        },
+        "trans_18": {
+            "start": "conn_36",
+            "end": "conn_37",
+            "vertices": [
+                [
+                    101,
+                    54
+                ],
+                [
+                    101,
+                    57
+                ],
+                [
+                    101,
+                    57
+                ],
+                [
+                    101,
+                    58
+                ]
+            ],
+            "label": "SIG_I2C_RESULT_SUCCESS",
+            "label_offset": [
+                0.5,
+                -0.29999999999999716
+            ],
+            "label_anchor": 2,
+            "label_pos": [
+                101.5,
+                56.7
+            ]
+        },
+        "trans_19": {
+            "start": "conn_38",
+            "end": "conn_39",
+            "vertices": [
+                [
+                    110,
+                    34
+                ],
+                [
+                    119,
+                    34
+                ],
+                [
+                    119,
+                    35
+                ],
+                [
+                    110,
+                    35
+                ]
+            ],
+            "label": "[lm73_timeout(LM73_RETRY_TIMEOUT)]/ lm73_reset_timer()",
+            "label_offset": [
+                0.5,
+                -0.3999999999999986
+            ],
+            "label_anchor": 0,
+            "label_pos": [
+                110.5,
+                33.6
+            ]
+        },
+        "trans_20": {
+            "start": "conn_40",
+            "end": "conn_41",
+            "vertices": [
+                [
+                    110,
+                    37
+                ],
+                [
+                    119,
+                    37
+                ],
+                [
+                    119,
+                    38
+                ],
+                [
+                    110,
+                    38
+                ]
+            ],
+            "label": "SIG_I2C_RESULT_ADDR_NACK/ lm73_inc_error_counter()",
+            "label_offset": [
+                0.5,
+                -0.3999999999999986
+            ],
+            "label_anchor": 0,
+            "label_pos": [
+                110.5,
+                36.6
+            ]
+        },
+        "trans_21": {
+            "start": "conn_42",
+            "end": "conn_43",
+            "vertices": [
+                [
+                    110,
+                    40
+                ],
+                [
+                    119,
+                    40
+                ],
+                [
+                    119,
+                    41
+                ],
+                [
+                    110,
+                    41
+                ]
+            ],
+            "label": "SIG_I2C_RESULT_DATA_NACK/ lm73_inc_error_counter()",
+            "label_offset": [
+                0.5,
+                -0.3999999999999986
+            ],
+            "label_anchor": 0,
+            "label_pos": [
+                110.5,
+                39.6
+            ]
+        },
+        "trans_22": {
+            "start": "conn_44",
+            "end": "conn_45",
+            "vertices": [
+                [
+                    110,
+                    46
+                ],
+                [
+                    119,
+                    46
+                ],
+                [
+                    119,
+                    47
+                ],
+                [
+                    110,
+                    47
+                ]
+            ],
+            "label": "[lm73_timeout(LM73_RETRY_TIMEOUT)]/ lm73_reset_timer()",
+            "label_offset": [
+                0.5,
+                -0.3999999999999986
+            ],
+            "label_anchor": 0,
+            "label_pos": [
+                110.5,
+                45.6
+            ]
+        },
+        "trans_23": {
+            "start": "conn_46",
+            "end": "conn_47",
+            "vertices": [
+                [
+                    110,
+                    49
+                ],
+                [
+                    119,
+                    49
+                ],
+                [
+                    119,
+                    50
+                ],
+                [
+                    110,
+                    50
+                ]
+            ],
+            "label": "SIG_I2C_RESULT_ADDR_NACK/ lm73_inc_error_counter()",
+            "label_offset": [
+                0.5,
+                -0.3999999999999986
+            ],
+            "label_anchor": 0,
+            "label_pos": [
+                110.5,
+                48.6
+            ]
+        },
+        "trans_24": {
+            "start": "conn_48",
+            "end": "conn_49",
+            "vertices": [
+                [
+                    110,
+                    52
+                ],
+                [
+                    119,
+                    52
+                ],
+                [
+                    119,
+                    53
+                ],
+                [
+                    110,
+                    53
+                ]
+            ],
+            "label": "SIG_I2C_RESULT_DATA_NACK/ lm73_inc_error_counter()",
+            "label_offset": [
+                0.5,
+                -0.3999999999999986
+            ],
+            "label_anchor": 0,
+            "label_pos": [
+                110.5,
+                51.6
+            ]
+        },
+        "trans_6": {
+            "start": "conn_12",
+            "end": "conn_13",
+            "vertices": [
+                [
+                    101,
+                    67
+                ],
+                [
+                    101,
+                    71
+                ],
+                [
+                    99,
+                    71
+                ],
+                [
+                    99,
+                    75
+                ]
+            ],
+            "label": "SIG_I2C_RESULT_SUCCESS",
+            "label_offset": [
+                0.5,
+                1.299999999999983
+            ],
+            "label_anchor": 0,
+            "label_pos": [
+                101.5,
+                68.29999999999998
+            ]
+        },
+        "trans_7": {
+            "start": "conn_14",
+            "end": "conn_15",
+            "vertices": [
+                [
+                    32,
+                    41
+                ],
+                [
+                    38,
+                    41
+                ],
+                [
+                    38,
+                    41
+                ],
+                [
+                    65,
+                    41
+                ]
+            ],
+            "label": "SIG_I2C_RESULT_ADDR_NACK",
+            "label_offset": [
+                6.5,
+                -0.3999999999999986
+            ],
+            "label_anchor": 0,
+            "label_pos": [
+                38.5,
+                40.6
+            ]
+        },
+        "trans_8": {
+            "start": "conn_16",
+            "end": "conn_17",
+            "vertices": [
+                [
+                    32,
+                    43
+                ],
+                [
+                    38,
+                    43
+                ],
+                [
+                    38,
+                    43
+                ],
+                [
+                    65,
+                    43
+                ]
+            ],
+            "label": "SIG_I2C_RESULT_DATA_NACK",
+            "label_offset": [
+                6.5,
+                -0.3999999999999986
+            ],
+            "label_anchor": 0,
+            "label_pos": [
+                38.5,
+                42.6
+            ]
+        },
+        "trans_10": {
+            "start": "conn_20",
+            "end": "conn_21",
+            "vertices": [
+                [
+                    24,
+                    45
+                ],
+                [
+                    24,
+                    72
+                ],
+                [
+                    94,
+                    72
+                ],
+                [
+                    94,
+                    70
+                ]
+            ],
+            "label": "SIG_I2C_RESULT_SUCCESS [lm73_id_match()]",
+            "label_offset": [
+                13,
+                -0.4000000000000057
+            ],
+            "label_anchor": 1,
+            "label_pos": [
+                37,
+                71.6
+            ]
+        },
+        "trans_27": {
+            "start": "conn_54",
+            "end": "conn_55",
+            "vertices": [
+                [
+                    111,
+                    59
+                ],
+                [
+                    118,
+                    59
+                ],
+                [
+                    118,
+                    60
+                ],
+                [
+                    111,
+                    60
+                ]
+            ],
+            "label": "[lm73_timeout(LM73_RETRY_TIMEOUT)]/ lm73_reset_timer()",
+            "label_offset": [
+                0.5,
+                -0.3999999999999986
+            ],
+            "label_anchor": 0,
+            "label_pos": [
+                111.5,
+                58.6
+            ]
+        },
+        "trans_28": {
+            "start": "conn_56",
+            "end": "conn_57",
+            "vertices": [
+                [
+                    111,
+                    62
+                ],
+                [
+                    118,
+                    62
+                ],
+                [
+                    118,
+                    63
+                ],
+                [
+                    111,
+                    63
+                ]
+            ],
+            "label": "SIG_I2C_RESULT_ADDR_NACK/ lm73_inc_error_counter()",
+            "label_offset": [
+                0.5,
+                -0.3999999999999986
+            ],
+            "label_anchor": 0,
+            "label_pos": [
+                111.5,
+                61.6
+            ]
+        },
+        "trans_29": {
+            "start": "conn_58",
+            "end": "conn_59",
+            "vertices": [
+                [
+                    111,
+                    65
+                ],
+                [
+                    118,
+                    65
+                ],
+                [
+                    118,
+                    66
+                ],
+                [
+                    111,
+                    66
+                ]
+            ],
+            "label": "SIG_I2C_RESULT_DATA_NACK/ lm73_inc_error_counter()",
+            "label_offset": [
+                0.5,
+                -0.4000000000000057
+            ],
+            "label_anchor": 0,
+            "label_pos": [
+                111.5,
+                64.6
+            ]
+        },
+        "trans_36": {
+            "start": "conn_72",
+            "end": "conn_73",
+            "vertices": [
+                [
+                    76,
+                    38
+                ],
+                [
+                    76,
+                    33
+                ],
+                [
+                    23,
+                    33
+                ],
+                [
+                    23,
+                    36
+                ]
+            ],
+            "label": "[lm73_timeout(LM73_UNPLUGGED_TIMEOUT)]/ lm73_reset_timer()",
+            "label_offset": [
+                -44,
+                -0.3999999999999986
+            ],
+            "label_anchor": 1,
+            "label_pos": [
+                32,
+                32.6
+            ]
+        },
+        "trans_14": {
+            "start": "conn_28",
+            "end": "conn_29",
+            "vertices": [
+                [
+                    17,
+                    32
+                ],
+                [
+                    17,
+                    32
+                ],
+                [
+                    17,
+                    36
+                ]
+            ],
+            "label": "",
+            "label_offset": [
+                0.5,
+                2.6000000000000014
+            ],
+            "label_anchor": 1,
+            "label_pos": [
+                17.5,
+                34.6
+            ]
+        }
+    },
+    "notes": {
+        "LM73_READ_TIMEOUT": "",
+        "SIG_I2C_RESULT_ADDR_NACK": "",
+        "trans_4": "",
+        "SIG_I2C_RESULT_DATA_NACK": "",
+        "lm73_update_temp()": "- Update the temperature display\n- Send an event with the new value\n- Decrease the error counter",
+        "lm73_reset_timer()": "Reset the timer counter.",
+        "lm73_inc_error_counter()": "Increase the error counter.",
+        "lm73_1ms_callback()": "Increase the timer counter.",
+        "lm73_reset_temp()": "Reset the temperature to an undefined/invalid value and send an event with it.",
+        "lm73_start_read()": "Send a read transaction to the LM73.",
+        "lm73_error_count": "Return true, if the error counter is greater or equal then the parameter.",
+        "lm73_read_id()": "Try to read the ID register from the LM73 by sending a write-read transaction to the I2C master.",
+        "entry": "",
+        "trans_7": "",
+        "SIG_I2C_RESULT_SUCCESS": "",
+        "lm73_id_match()": "True, if the response data is equal to 0x190. See LM73 datasheet section: 7.5.1.7 Identification Register",
+        "lm73_timeout": "Evaluates to true if the internal timer counter is greater than or equal to the parameter.",
+        "trans_8": "",
+        "LM73_MAX_ERROR_COUNT": "",
+        "lm73_reset_pointer()": "Reset the pointer register in the LM73 to 0, so all subsequent reads will access the temperature register.",
+        "send_online_event()": "Send a SIG_LM73_ONLINE event. This can be used to detect successful initialization.",
+        "LM73_RETRY_TIMEOUT": "",
+        "send_offline_event()": "Send a SIG_LM73_OFFLINE event. This can be used to detect communication errors between the module and the I2C slave.",
+        "SIG_LM73_READ": "",
+        "trans_6": "",
+        "trans_14": "",
+        "trans_29": "",
+        "trans_28": "",
+        "LM73_UNPLUGGED_TIMEOUT": "",
+        "init": ""
+    },
+    "view": {
+        "translate": [
+            -43,
+            -240.5
+        ],
+        "scale": 10
+    }
+}
+        </pre>
+    </details>
+</body>
+</html>
