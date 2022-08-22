@@ -167,7 +167,13 @@
         {
             const theme_selector = document.getElementById("theme-selector");
             const theme_sheet = document.getElementById("theme_sheet");
-            const currentTheme = localStorage.getItem("theme") || "default";
+            var cookies = document.cookie
+                        .split(';')
+                        .map(cookie => cookie.split('='))
+                        .reduce((accumulator, [key, value]) =>
+                            ({ ...accumulator, [key.trim()]: decodeURIComponent(value)}), {} );
+                    console.log(cookies.theme);
+            const currentTheme = cookies.theme || "default";
 
             function activateTheme(themeName) {
                 theme_sheet.setAttribute("href", `themes/${themeName}.css`);
@@ -175,11 +181,11 @@
 
             theme_selector.addEventListener("change", () => {
                 activateTheme(theme_selector.value);
-                localStorage.setItem("theme", theme_selector.value);
+                document.cookie = 'theme=' + encodeURIComponent(theme_selector.value);
             });
-
-
+            
             theme_selector.value = currentTheme;
+            document.cookie = 'theme=' + encodeURIComponent(currentTheme);
             activateTheme(currentTheme);
         }
 

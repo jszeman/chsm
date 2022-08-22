@@ -105,35 +105,34 @@
         </fieldset>
         </form>
         <script>
-                fetch("../main.html")
-                .then(response => response.text())
-                .then(html => {
-                    let parser = new DOMParser();
-                    let doc = parser.parseFromString(html, 'text/html');
-                    let element = doc.getElementById('theme-selector');
-                    console.log(element.value);
-                })
-            // function init_theme_selector()
-            // {
-                // const theme_selector = document.getElementById("theme-selector");
-            //     const theme_sheet = document.getElementById("new_module_theme_sheet");
-            //     const currentTheme = localStorage.getItem("theme") || "default";
+                // fetch("../main.html")
+                // .then(response => response.text())
+                // .then(html => {
+                //     let parser = new DOMParser();
+                //     let doc = parser.parseFromString(html, 'text/html');
+                //     let element = doc.getElementById('theme-selector');
+                //     console.log(element.value);
+                // })
+
+                function init_theme_selector()
+                {
+                    const theme_sheet = document.getElementById("new_module_theme_sheet");
+                    var cookies = document.cookie
+                        .split(';')
+                        .map(cookie => cookie.split('='))
+                        .reduce((accumulator, [key, value]) =>
+                            ({ ...accumulator, [key.trim()]: decodeURIComponent(value)}), {} );
+                    console.log(cookies.theme);
+                const currentTheme = cookies.theme;
     
-            //     function activateTheme(themeName) {
-            //         theme_sheet.setAttribute("href", `../themes/${themeName}.css`);
-            //     }
+                function activateTheme(themeName) {
+                    theme_sheet.setAttribute("href", `../themes/${themeName}.css`);
+                }
     
-            //     theme_selector.addEventListener("change", () => {
-            //         activateTheme(theme_selector.value);
-            //         localStorage.setItem("theme", theme_selector.value);
-            //     });
+                activateTheme(currentTheme);
+            }
     
-    
-            //     theme_selector.value = currentTheme;
-            //     activateTheme(currentTheme);
-            // }
-    
-            // init_theme_selector();
+            init_theme_selector();
         </script>
 
         <div></div>
