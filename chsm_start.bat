@@ -1,8 +1,11 @@
 @echo off
 
-@REM version 3.8
-set python_version=38 
-set python_path="%LOCALAPPDATA%\Programs\Python\Python%python_version%"
+set python_path=%PYTHON_PATH%
 
-echo %python_path%
-%python_path%\python.exe .\cgen\chsm_backend.py
+if exist "%PYTHON_PATH%" (
+    echo Environment variable PYTHON_PATH exists!
+    echo %python_path%
+    %python_path%\python.exe .\cgen\chsm_backend.py
+) else (
+    echo Environment variable PYTHON_PATH doesen't exists please create it!
+)
