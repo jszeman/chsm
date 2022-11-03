@@ -50,7 +50,7 @@ target_include_directories(crf_test PRIVATE
 target_compile_options(crf_test PRIVATE 
                 -Wall 
                 -Wextra 
-                -pedantic 
+                -pedantic
                 # -Werror
                 )
 

@@ -4,6 +4,7 @@ import logging
 from datetime import datetime
 from .ast import Func, If, Switch, Case, Call, Break, Return, Blank, Expr, Ast, FuncDeclaration, Include, Ifndef, Define, Endif, Comment, Decl, Assignment, Enum
 from typing import List, Dict
+import pprint
 
 # TODO: make sure, that there is only one exit function and it has no parameters
 
@@ -32,6 +33,14 @@ class StateMachine:
         self.states = self.get_states(data)                 # Extract states from the data
         self.add_transitions_to_states(self.states, data)   # Extract transition info from the data and add it to the states
         self.process_transitions(self.states)               # Calculate transition exit and entry paths and the exact end state
+
+        with open("states.txt", 'w') as f:
+            pprint.pprint(self.states, f, indent=4)
+
+        # self.add_parent_signals(self.states)
+        # self.delete_non_leaf_states(self.states)
+
+
         self.notes = data['notes']
 
         top_func = self._get_user_symbols(h_file)
@@ -161,6 +170,52 @@ class StateMachine:
         tfuncs, target = self.get_transition_funcs('__top__', g['target'])
         g['funcs'].extend(tfuncs)
         g['target_title'] = states[target]['title']
+
+    def delete_non_leaf_states(self, states):
+        for s_id in [*states.keys()]:
+            s = states[s_id]
+            if s['children'] and s['parent']:
+                print(s['title'])
+                del states[s_id]
+            elif s['parent']:
+                s['parent'] = '__top__'
+
+    def add_parent_signals(self, states):
+        for s_id, s in states.items():
+            if not s['children'] and s['type'] == 'normal':
+                self.add_parent_signals_to_state(s_id, states)
+
+    def add_parent_signals_to_state(self, state_id, states):
+        """
+            Take a state, go through its parent states and add signal handlers
+            that are not already in the original state.
+            If the signal already has some handlers in the original state, then
+            go through the guards one by one and copy those that are not in the
+            original state.
+        """
+        signals = states[state_id]['signals']
+
+        parent_id = states[state_id]['parent']
+        while parent_id:
+            p_signals = states[parent_id]['signals']
+            for sig_id, sig in p_signals.items():
+                if not sig_id in signals:
+                    signals[sig_id] = sig
+
+                else:
+                    guards = signals[sig_id]['guards']
+                    for guard_id, p_guard in sig['guards'].items():
+                        if not guard_id in guards:
+                            guards[guard_id] = p_guard
+                            if p_guard['target']:
+                                tfuncs, target = self.get_transition_funcs(state_id, p_guard['target'])
+                                p_guard['funcs'].extend(tfuncs)
+                                p_guard['target_title'] = states[target]['title']
+
+            parent_id = states[parent_id]['parent']
+    
+
+
 
 
     def str_to_signal(self, line, target=None, target_title=None, initial=False):

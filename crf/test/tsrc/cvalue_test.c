@@ -25,7 +25,7 @@ uint32_t in_cnt_u32;
 uint32_t high_cnt_u32;
 
 
-void *last_user_param_pv;
+static void *last_user_param_pv;
 
 #define TEST_POINTER (void *)0x12345678
 

@@ -21,7 +21,7 @@ cevent_tst inactive_events_ast[32];
 
 uint32_t active_bits_u32;
 uint32_t inactive_bits_u32;
-void *last_user_param_pv;
+static void *last_user_param_pv;
 
 cbits_tst cb_st;
 
