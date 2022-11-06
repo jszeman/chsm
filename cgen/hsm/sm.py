@@ -3,8 +3,8 @@ import re
 import logging
 from datetime import datetime
 from .ast import Func, If, Switch, Case, Call, Break, Return, Blank, Expr, Ast, FuncDeclaration, Include, Ifndef, Define, Endif, Comment, Decl, Assignment, Enum
-from typing import List, Dict
 import pprint
+from copy import deepcopy
 
 # TODO: make sure, that there is only one exit function and it has no parameters
 
@@ -32,14 +32,13 @@ class StateMachine:
 
         self.states = self.get_states(data)                 # Extract states from the data
         self.add_transitions_to_states(self.states, data)   # Extract transition info from the data and add it to the states
+        self.add_parent_signals(self.states)
         self.process_transitions(self.states)               # Calculate transition exit and entry paths and the exact end state
 
         with open("states.txt", 'w') as f:
             pprint.pprint(self.states, f, indent=4)
-
-        # self.add_parent_signals(self.states)
-        # self.delete_non_leaf_states(self.states)
-
+        
+        self.delete_non_leaf_states(self.states)
 
         self.notes = data['notes']
 
@@ -149,25 +148,27 @@ class StateMachine:
 
         return ast
 
-    def get_transition_funcs(self, start, end):
-        path = self.get_transition_path(start, end)
+    def get_transition_funcs(self, start, end, lca):
+        path = self.get_transition_path(start, end, lca)
         return self.path_to_funcs(path), path[-1][0]
 
     def process_transitions(self, states):
         for s_id, s in states.items():
+            if s['children']:
+                continue
             for sig_id, sig in s['signals'].items():
                 if sig_id == 'init':
                     continue
                 for g in sig['guards'].values():
                     if g['target']:
-                        tfuncs, target = self.get_transition_funcs(s_id, g['target'])
+                        tfuncs, target = self.get_transition_funcs(s_id, g['target'], g['lca'])
                         #g['transition_funcs'] = tfuncs
                         g['funcs'].extend(tfuncs)
                         g['target_title'] = states[target]['title']
         
         #The only place where transition functions are needed for an init signal is the __top__
         g = states['__top__']['signals']['init']['guards'][(None, None)]
-        tfuncs, target = self.get_transition_funcs('__top__', g['target'])
+        tfuncs, target = self.get_transition_funcs('__top__', g['target'], g['lca'])
         g['funcs'].extend(tfuncs)
         g['target_title'] = states[target]['title']
 
@@ -199,18 +200,17 @@ class StateMachine:
         while parent_id:
             p_signals = states[parent_id]['signals']
             for sig_id, sig in p_signals.items():
+                if sig_id in ('entry', 'exit', 'init'):
+                    continue
+
                 if not sig_id in signals:
-                    signals[sig_id] = sig
+                    signals[sig_id] = deepcopy(sig)
 
                 else:
                     guards = signals[sig_id]['guards']
                     for guard_id, p_guard in sig['guards'].items():
                         if not guard_id in guards:
-                            guards[guard_id] = p_guard
-                            if p_guard['target']:
-                                tfuncs, target = self.get_transition_funcs(state_id, p_guard['target'])
-                                p_guard['funcs'].extend(tfuncs)
-                                p_guard['target_title'] = states[target]['title']
+                            guards[guard_id] = deepcopy(p_guard)
 
             parent_id = states[parent_id]['parent']
     
@@ -218,7 +218,7 @@ class StateMachine:
 
 
 
-    def str_to_signal(self, line, target=None, target_title=None, initial=False):
+    def str_to_signal(self, line, target=None, target_title=None, initial=False, lca=None):
         signal = None
         guard = None
         func = None
@@ -259,7 +259,8 @@ class StateMachine:
             'guard': (guard, gparams),
             'funcs': [(func, fparams)],
             'target': target,
-            'target_title': target_title
+            'target_title': target_title,
+            'lca': lca
         }
 
         s = {
@@ -349,13 +350,21 @@ class StateMachine:
         for tr in data['transitions'].values():
             start, target, label = self.resolve_transition(tr, data)
 
+            if target:
+                if self.is_in(start, target):
+                    lca = target
+                else:
+                    lca = self.get_LCA(start, target)
+            else:
+                lca = None
+
             if states[start]['type'] == 'initial':
                 start = states[start]['parent']
                 states[start]['initial'] = target
 
                 signal = self.str_to_signal(label, target=target, target_title=states[target]['title'], initial=True)
             else:
-                signal = self.str_to_signal(label, target, target_title=states[target]['title'], initial=False)
+                signal = self.str_to_signal(label, target, target_title=states[target]['title'], initial=False, lca=lca)
 
             self.add_signal_to_state(states[start], signal)
 
@@ -530,8 +539,8 @@ class StateMachine:
     def get_LCA(self, start_state_id, target_state_id):
         """Find Lowest Common Ancestor"""
         
-        if self.is_in(start_state_id, target_state_id):
-            return target_state_id
+        #if self.is_in(start_state_id, target_state_id):
+        #    return target_state_id
         
         super_id = start_state_id
         while True:
@@ -550,11 +559,10 @@ class StateMachine:
              
         return path
     
-    def get_transition_path(self, start_state_id, target_state_id):
+    def get_transition_path(self, start_state_id, target_state_id, lca):
         if target_state_id == '__top__':
             return self.get_exit_path(start_state_id, '__top__')
         else:
-            lca = self.get_LCA(start_state_id, target_state_id)
             exit_path = self.get_exit_path(start_state_id, lca)
             init_path = self.get_init_path(lca, target_state_id)
             return exit_path + init_path
