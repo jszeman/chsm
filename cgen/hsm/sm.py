@@ -383,8 +383,8 @@ class StateMachine:
             add(i)
             add = i.add_true
 
-        if guard['target']:
-            add(Call(self.templates['exit_children'], self.templates['func_args']))
+        #if guard['target']:
+        #    add(Call(self.templates['exit_children'], self.templates['func_args']))
         
         for func, param in guard['funcs']:
             if func:
@@ -420,7 +420,7 @@ class StateMachine:
 
     def build_func_from_state(self, state_id, state, insert_init=False, spec=''):
         f = Func(name=state['title'], ftype=self.templates['func_return_type'], params=self.templates['func_params'], spec=spec)
-        f.add(Decl('bool', self.templates['guards_only_variable'], 'true'))
+        #f.add(Decl('bool', self.templates['guards_only_variable'], 'true'))
         s = Switch(self.templates['switch_variable'])
         f.add(s)
 
@@ -434,7 +434,7 @@ class StateMachine:
             if c:
                 s.add_case(c)
 
-        s.add_default(Assignment(self.templates['guards_only_variable'], 'false'))
+        #s.add_default(Assignment(self.templates['guards_only_variable'], 'false'))
 
         for guard in state['signals'][None]['guards'].values():
             f.add(Blank())
@@ -448,7 +448,7 @@ class StateMachine:
         efw = None
         try:
             exit_func, exit_param = state['signals']['exit']['guards'][(None, None)]['funcs'][0]
-            print(f"{state['title']} exit: {exit_func}({exit_param})")
+            #print(f"{state['title']} exit: {exit_func}({exit_param})")
 
             if exit_param:
                 exit_func_wrapper = f"{state['title']}_exit_func_wrapper"
@@ -462,10 +462,11 @@ class StateMachine:
         if exit_func == None:
             exit_func = 'NULL'
 
-        if state['parent']:
-            result = self.templates['parent_result'].format(parent=state['parent_title'], exit_func=exit_func)
-        else:
-            result = self.templates['ignored_result']
+        # if state['parent']:
+        #     result = self.templates['parent_result'].format(parent=state['parent_title'], exit_func=exit_func)
+        # else:
+        
+        result = self.templates['ignored_result']
 
         f.add(Return(result))
 
