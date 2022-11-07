@@ -1,4 +1,4 @@
-/*Generated with CHSM v0.0.0 at 2022.11.07 20.24.08*/
+/*Generated with CHSM v0.0.0 at 2022.11.07 21.05.30*/
 #include "cevent.h"
 #include "chsm.h"
 #include "chsm_test_machine.h"
@@ -114,7 +114,6 @@ static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ct
             s1_exit(self, e_pst);
             chsm_recall(self, e_pst);
             return chsm_transition(self, s3);
-
     }
 
     if(s11_guard(self, e_pst, 6))
@@ -154,11 +153,6 @@ static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ct
     }
 
     return chsm_ignored(self);
-}
-
-static void s211_exit_func_wrapper(chsm_tst *self, const cevent_tst *e_pst)
-{
-    s211_exit(self, e_pst, 6);
 }
 
 static chsm_result_ten s211(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst)
@@ -246,7 +240,6 @@ static chsm_result_ten s211(chsm_tst *self, const cevent_tst *e_pst, chsm_call_c
             s2_exit(self, e_pst);
             chsm_recall(self, e_pst);
             return chsm_transition(self, s3);
-
     }
 
     return chsm_ignored(self);
@@ -290,9 +283,7 @@ static chsm_result_ten s3(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx
             s11_entry(self, e_pst);
             s11_init(self, e_pst);
             return chsm_transition(self, s11);
-
     }
-
 
     return chsm_ignored(self);
 }
@@ -314,7 +305,6 @@ static chsm_result_ten s4(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx
         case TEST_SIG_J:
             chsm_recall(self, e_pst);
             return chsm_transition(self, s3);
-
     }
 
     return chsm_ignored(self);
@@ -332,7 +322,6 @@ chsm_result_ten __top__4(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_
             s11_entry(self, e_pst);
             s11_init(self, e_pst);
             return chsm_transition(self, s11);
-
     }
 
     return chsm_ignored(self);

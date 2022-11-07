@@ -25,8 +25,6 @@ add_executable(crf_test
                 tsrc/cvalue_test.c
                 tsrc/chsm_test_functions.c
                 tsrc/chsm_test_machine.c
-                tsrc/chsm_test_machine2.c
-                tsrc/chsm_test_machine3.c
                 tsrc/chsm_test_machine4.c
                 tsrc/bus_driver.c
                 tsrc/bus_driver_functions.c

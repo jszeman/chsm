@@ -38,5 +38,5 @@ static chsm_result_ten s(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx
             break;
     }
 
-    return chsm_handle_in_parent(self, ctx_pst, __top__1, NULL, false);
+    return chsm_ignored(self);
 }

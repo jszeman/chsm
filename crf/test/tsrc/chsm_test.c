@@ -76,77 +76,6 @@ TEST(hsm, enter_initial_state)
 	TEST_ASSERT_EQUAL_STRING("s_sig1_handler ", hsm.log_buff);
 }
 
-/* handle_unknown_event:
- *		Send an event to a state that is not handled anywhere.
- *		The original state shall remain active, that is checked by dispatching
- *		an event that is handled there.
- */
-
-TEST(hsm, handle_unknown_event)
-{
-	chsm_ctor(&hsm.super, __top__1, events, EVENT_QUEUE_SIZE, 0);
-	chsm_init(&hsm.super);
-	
-	clear_log(&hsm);
-
-	chsm_dispatch(&hsm.super, &event2);
-	chsm_dispatch(&hsm.super, &event1);
-
-	TEST_ASSERT_EQUAL_STRING("s_sig1_handler ", hsm.log_buff);
-}
-
-/* handle_event_in_parent:
- *		Send an event to a state that is only handled in its parent.
- *		The event handler in the parent should be run.
- */
-
-TEST(hsm, handle_event_in_parent)
-{
-	chsm_ctor(&hsm.super, __top__2, events, EVENT_QUEUE_SIZE, 0);
-	chsm_init(&hsm.super);
-	TEST_ASSERT_EQUAL_STRING("s_entry s_init s1_entry s1_init ", hsm.log_buff);
-	
-	clear_log(&hsm);
-	chsm_dispatch(&hsm.super, &event1);
-	TEST_ASSERT_EQUAL_STRING("s_sig1_handler ", hsm.log_buff);
-}
-
-
-/* handle_event_in_parent_orig_state:
- *		Send an event to a state that is only handled in its parent.
- *		The original state shall remain active, that is checked by dispatching
- *		an event that is handled there.
- */
-
-TEST(hsm, handle_event_in_parent_orig_state)
-{
-	chsm_ctor(&hsm.super, __top__2, events, EVENT_QUEUE_SIZE, 0);
-	chsm_init(&hsm.super);
-	chsm_dispatch(&hsm.super, &event1);
-
-	clear_log(&hsm);
-	chsm_dispatch(&hsm.super, &event2);
-	TEST_ASSERT_EQUAL_STRING("s_sig2_handler ", hsm.log_buff);
-}
-
-
-/* handle_exit_from_child:
- *		Send an event to a state that is only handled in its parent. If
- *		the event processing result in a transition, the exit function
- *		of the child state should be called before executing the transition
- *		function chain.
- */
-
-TEST(hsm, handle_exit_from_child)
-{
-	chsm_ctor(&hsm.super, __top__3, events, EVENT_QUEUE_SIZE, 0);
-	chsm_init(&hsm.super);
-
-	clear_log(&hsm);
-	chsm_dispatch(&hsm.super, &event1);
-
-	TEST_ASSERT_EQUAL_STRING("s_sig1_handler s1_exit s2_entry s2_init ", hsm.log_buff);
-}
 
 /**********************************************************************************
  * Tests below check if the correct sequence of function calls were made based on *
@@ -736,10 +665,6 @@ TEST(hsm, defer_2)
 TEST_GROUP_RUNNER(hsm)
 {
 	RUN_TEST_CASE(hsm, enter_initial_state);
-	RUN_TEST_CASE(hsm, handle_unknown_event);
-	RUN_TEST_CASE(hsm, handle_event_in_parent);
-	RUN_TEST_CASE(hsm, handle_event_in_parent_orig_state);
-	RUN_TEST_CASE(hsm, handle_exit_from_child);
 	RUN_TEST_CASE(hsm, sm4_init);
 	RUN_TEST_CASE(hsm, sm4_s11_g_guard1);
 	RUN_TEST_CASE(hsm, sm4_s11_g_guard2);

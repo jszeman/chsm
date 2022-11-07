@@ -1,5 +1,4 @@
-/*Generated with CHSM v0.0.0 at 2020.07.26 07.12.40*/
-
+/*Generated with CHSM v0.0.0 at 2022.11.07 21.23.00*/
 #include "cevent.h"
 #include "chsm.h"
 #include "bus_driver.h"
@@ -14,20 +13,18 @@ static chsm_result_ten idle(chsm_tst *self, const cevent_tst *e_pst, chsm_call_c
     switch(e_pst->sig)
     {
         case TEST_SIG_SEND_DATA:
-            send_data((bus_driver_tst *)self, e_pst);
-            return chsm_handled(self);
+            send_data(self, e_pst);
+            break;
 
         case TEST_SIG_TICK_1MS:
-            emit_event((bus_driver_tst *)self, e_pst);
-            return chsm_handled(self);
+            emit_event(self, e_pst);
+            break;
 
         case TEST_SIG_START_WAIT:
-            chsm_exit_children(self, e_pst, ctx_pst);
             return chsm_transition(self, waiting);
-
     }
 
-    return chsm_handle_in_parent(self, ctx_pst, bus_driver_top, NULL, false);
+    return chsm_ignored(self);
 }
 
 static chsm_result_ten waiting(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst)
@@ -35,12 +32,10 @@ static chsm_result_ten waiting(chsm_tst *self, const cevent_tst *e_pst, chsm_cal
     switch(e_pst->sig)
     {
         case TEST_SIG_STOP_WAIT:
-            chsm_exit_children(self, e_pst, ctx_pst);
             return chsm_transition(self, idle);
-
     }
 
-    return chsm_handle_in_parent(self, ctx_pst, bus_driver_top, NULL, false);
+    return chsm_ignored(self);
 }
 
 chsm_result_ten bus_driver_top(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst)
@@ -48,9 +43,7 @@ chsm_result_ten bus_driver_top(chsm_tst *self, const cevent_tst *e_pst, chsm_cal
     switch(e_pst->sig)
     {
         case C_SIG_INIT:
-            chsm_exit_children(self, e_pst, ctx_pst);
             return chsm_transition(self, idle);
-
     }
 
     return chsm_ignored(self);

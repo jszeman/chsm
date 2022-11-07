@@ -48,8 +48,6 @@ struct test_hsm_tst
 };
 
 chsm_result_ten __top__1(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
-chsm_result_ten __top__2(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
-chsm_result_ten __top__3(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
 chsm_result_ten __top__4(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
 
 void clear_log(test_hsm_tst  *self);

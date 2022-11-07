@@ -23,57 +23,66 @@ void dev_driver_clear_log(dev_driver_tst  *self)
     self->log = self->log_buff;
 }
 
-void dev_drv_init(dev_driver_tst *self, const cevent_tst *e_pst)
+void dev_drv_init(chsm_tst *_self, const cevent_tst *e_pst)
 {
+    dev_driver_tst *self = (dev_driver_tst *)_self;
     dev_driver_clear_log(self);
 }
 
-void cancel_request(dev_driver_tst *self, const cevent_tst *e_pst)
+void cancel_request(chsm_tst *_self, const cevent_tst *e_pst)
 {
+    dev_driver_tst *self = (dev_driver_tst *)_self;
     load(self, __func__);
     load(self, " ");
 }
 
-void inc_timer(dev_driver_tst *self, const cevent_tst *e_pst)
+void inc_timer(chsm_tst *_self, const cevent_tst *e_pst)
 {
+    dev_driver_tst *self = (dev_driver_tst *)_self;
     load(self, __func__);
     load(self, " ");
 }
 
-void insert_data(dev_driver_tst *self, const cevent_tst *e_pst)
+void insert_data(chsm_tst *_self, const cevent_tst *e_pst)
 {
+    dev_driver_tst *self = (dev_driver_tst *)_self;
     load(self, __func__);
     load(self, " ");
 }
 
-void send_read_request(dev_driver_tst *self, const cevent_tst *e_pst)
+void send_read_request(chsm_tst *_self, const cevent_tst *e_pst)
 {
+    dev_driver_tst *self = (dev_driver_tst *)_self;
     load(self, __func__);
     load(self, " ");
 }
 
-void send_write_request(dev_driver_tst *self, const cevent_tst *e_pst)
+void send_write_request(chsm_tst *_self, const cevent_tst *e_pst)
 {
+    dev_driver_tst *self = (dev_driver_tst *)_self;
     load(self, __func__);
     load(self, " ");
 }
 
-void start_timer(dev_driver_tst *self, const cevent_tst *e_pst)
+void start_timer(chsm_tst *_self, const cevent_tst *e_pst)
 {
+    dev_driver_tst *self = (dev_driver_tst *)_self;
     load(self, __func__);
     load(self, " ");
 }
 
 
-bool response_complete(dev_driver_tst *self, const cevent_tst *e_pst)
+bool response_complete(chsm_tst *_self, const cevent_tst *e_pst)
 {
+    dev_driver_tst *self = (dev_driver_tst *)_self;
     load(self, __func__);
     load(self, " ");
     return self->response_complete;
 }
 
-bool timeout(dev_driver_tst *self, const cevent_tst *e_pst)
+bool timeout(chsm_tst *_self, const cevent_tst *e_pst)
 {
+    dev_driver_tst *self = (dev_driver_tst *)_self;
     load(self, __func__);
     load(self, " ");
     return self->timeout;

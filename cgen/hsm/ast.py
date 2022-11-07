@@ -123,7 +123,7 @@ class Switch(Node):
             default_str = ''
 
         indent = ' ' * self.indent
-        return f'{indent}switch({self.variable})\n{indent}{{\n{cases_str}\n{default_str}{indent}}}\n'
+        return f'{indent}switch({self.variable})\n{indent}{{\n{cases_str}{default_str}{indent}}}\n'
 
     def add_case(self, case):
         self.cases.append(case)

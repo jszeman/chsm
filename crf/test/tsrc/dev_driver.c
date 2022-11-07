@@ -1,5 +1,4 @@
-/*Generated with CHSM v0.0.0 at 2020.07.29 06.46.58*/
-
+/*Generated with CHSM v0.0.0 at 2022.11.07 21.22.49*/
 #include "cevent.h"
 #include "chsm.h"
 #include "dev_driver.h"
@@ -14,20 +13,17 @@ static chsm_result_ten idle(chsm_tst *self, const cevent_tst *e_pst, chsm_call_c
     switch(e_pst->sig)
     {
         case TEST_SIG_READ:
-            chsm_exit_children(self, e_pst, ctx_pst);
-            send_read_request((dev_driver_tst *)self, e_pst);
-            start_timer((dev_driver_tst *)self, e_pst);
+            send_read_request(self, e_pst);
+            start_timer(self, e_pst);
             return chsm_transition(self, wait_response);
 
         case TEST_SIG_WRITE:
-            chsm_exit_children(self, e_pst, ctx_pst);
-            send_write_request((dev_driver_tst *)self, e_pst);
-            start_timer((dev_driver_tst *)self, e_pst);
+            send_write_request(self, e_pst);
+            start_timer(self, e_pst);
             return chsm_transition(self, wait_response);
-
     }
 
-    return chsm_handle_in_parent(self, ctx_pst, dev_driver_top, NULL, false);
+    return chsm_ignored(self);
 }
 
 static chsm_result_ten wait_response(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst)
@@ -35,36 +31,32 @@ static chsm_result_ten wait_response(chsm_tst *self, const cevent_tst *e_pst, ch
     switch(e_pst->sig)
     {
         case TEST_SIG_RECEIVE:
-            insert_data((dev_driver_tst *)self, e_pst);
-            return chsm_handled(self);
+            insert_data(self, e_pst);
+            break;
 
         case TEST_SIG_TICK_1MS:
-            inc_timer((dev_driver_tst *)self, e_pst);
-            return chsm_handled(self);
+            inc_timer(self, e_pst);
+            break;
 
         case TEST_SIG_CANCEL:
-            chsm_exit_children(self, e_pst, ctx_pst);
-            cancel_request((dev_driver_tst *)self, e_pst);
-            dev_drv_init((dev_driver_tst *)self, e_pst);
+            cancel_request(self, e_pst);
+            dev_drv_init(self, e_pst);
             return chsm_transition(self, idle);
-
     }
 
-    if(timeout((dev_driver_tst *)self, e_pst))
+    if(timeout(self, e_pst))
     {
-        chsm_exit_children(self, e_pst, ctx_pst);
-        dev_drv_init((dev_driver_tst *)self, e_pst);
+        dev_drv_init(self, e_pst);
         return chsm_transition(self, idle);
     }
 
-    if(response_complete((dev_driver_tst *)self, e_pst))
+    if(response_complete(self, e_pst))
     {
-        chsm_exit_children(self, e_pst, ctx_pst);
-        dev_drv_init((dev_driver_tst *)self, e_pst);
+        dev_drv_init(self, e_pst);
         return chsm_transition(self, idle);
     }
 
-    return chsm_handle_in_parent(self, ctx_pst, dev_driver_top, NULL, false);
+    return chsm_ignored(self);
 }
 
 chsm_result_ten dev_driver_top(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst)
@@ -72,10 +64,8 @@ chsm_result_ten dev_driver_top(chsm_tst *self, const cevent_tst *e_pst, chsm_cal
     switch(e_pst->sig)
     {
         case C_SIG_INIT:
-            chsm_exit_children(self, e_pst, ctx_pst);
-            dev_drv_init((dev_driver_tst *)self, e_pst);
+            dev_drv_init(self, e_pst);
             return chsm_transition(self, idle);
-
     }
 
     return chsm_ignored(self);

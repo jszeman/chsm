@@ -382,9 +382,6 @@ class StateMachine:
             i = If(self.make_call(func, param))
             add(i)
             add = i.add_true
-
-        #if guard['target']:
-        #    add(Call(self.templates['exit_children'], self.templates['func_args']))
         
         for func, param in guard['funcs']:
             if func:
@@ -420,7 +417,6 @@ class StateMachine:
 
     def build_func_from_state(self, state_id, state, insert_init=False, spec=''):
         f = Func(name=state['title'], ftype=self.templates['func_return_type'], params=self.templates['func_params'], spec=spec)
-        #f.add(Decl('bool', self.templates['guards_only_variable'], 'true'))
         s = Switch(self.templates['switch_variable'])
         f.add(s)
 
@@ -434,43 +430,19 @@ class StateMachine:
             if c:
                 s.add_case(c)
 
-        #s.add_default(Assignment(self.templates['guards_only_variable'], 'false'))
-
         for guard in state['signals'][None]['guards'].values():
-            f.add(Blank())
             nodes = self.guard_to_ast(guard)
+            if nodes:
+                f.add(Blank())
             for n in nodes:
                 f.add(n)
-
-        f.add(Blank())
-
-        exit_func = 'NULL'
-        efw = None
-        try:
-            exit_func, exit_param = state['signals']['exit']['guards'][(None, None)]['funcs'][0]
-            #print(f"{state['title']} exit: {exit_func}({exit_param})")
-
-            if exit_param:
-                exit_func_wrapper = f"{state['title']}_exit_func_wrapper"
-                efw = Func(name=exit_func_wrapper, ftype='void', params=self.templates['user_func_params_t'], spec='static')
-                efw.add(self.make_call(exit_func, exit_param, True))
-                exit_func = exit_func_wrapper
-
-        except KeyError:
-            pass
-
-        if exit_func == None:
-            exit_func = 'NULL'
-
-        # if state['parent']:
-        #     result = self.templates['parent_result'].format(parent=state['parent_title'], exit_func=exit_func)
-        # else:
         
         result = self.templates['ignored_result']
 
+        f.add(Blank())
         f.add(Return(result))
 
-        return f, efw
+        return f
 
     def build_ast(self, states):
         ast = Ast()
@@ -478,16 +450,13 @@ class StateMachine:
         for s_id, s in states.items():
             if s['type'] != 'normal':
                 continue
-            state_func, exit_func_wrapper = self.build_func_from_state(s_id, s, spec='static') 
-
-            if exit_func_wrapper:
-                ast.nodes.append(exit_func_wrapper)
+            state_func = self.build_func_from_state(s_id, s, spec='static') 
 
             ast.nodes.append(state_func)
             ast.nodes.insert(0, state_func.declaration())
 
 
-        top_func, _ = self.build_func_from_state(self.top_func, states['__top__'], True)
+        top_func = self.build_func_from_state(self.top_func, states['__top__'], True)
         ast.nodes.append(top_func)
 
         ast.nodes.insert(0, Blank())

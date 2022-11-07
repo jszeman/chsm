@@ -53,72 +53,10 @@ void chsm_recall(chsm_tst *self, const cevent_tst *e_pst)
 	}
 }
 
-void chsm_exit_children(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst)
-{
-	chsm_user_func_tpft *exit_ppft;
-
-	exit_ppft = ctx_pst->exit_stack_apft;
-
-	for (int i=0; i<CHSM_MAX_NESTING_LEVEL; i++)
-	{
-		if (NULL != *exit_ppft)
-		{
-			(*exit_ppft)(self, e_pst);
-		}
-		else
-		{
-			return;
-		}
-
-		exit_ppft++;
-	}
-}
-
 void chsm_dispatch(chsm_tst *self, const cevent_tst  *e_pst)
 {
 	assert(NULL != self);
 	assert(NULL != e_pst);
 
-	chsm_result_ten 	result_en;
-	chsm_call_ctx_tst 	ctx_st = {0};
-
-	ctx_st.exit_ppft = ctx_st.exit_stack_apft;
-	ctx_st.start_pft = self->state_handler_pft;
-
-	for (int i=0; i<CHSM_MAX_NESTING_LEVEL; i++)
-	{
-		result_en = self->state_handler_pft(self, e_pst, &ctx_st);
-
-		switch(result_en)
-		{
-			case C_RES_HANDLED:
-			case C_RES_IGNORED:
-				/* In these cases the event was handled in an ancestor so we have to
-				 * restore the original state then finish the event processing.
-				 */
-				self->state_handler_pft = ctx_st.start_pft;
-				return;
-
-			case C_RES_TRANS:
-				/* The event resulted in a transition. Don't need to do anything else. */
-				return;
-
-			case C_RES_PARENT:
-				/* The event was not handled by the current state, so it changed the
-				 * state pointer to its parent. This means that we need to call
-				 * the new state handler with the same event.
-				 */
-				break;
-
-			case C_RES_GUARDS:
-				/* The event was handled without transitioning into a new state,
-				 * so the original event shall not be handled in the parents, but
-				 * we still want to run all the guards.
-				 */
-				e_pst = &chsm_none_event_st;
-				break;
-		}
-	}
-
-	//TODO: error handling for nesting overflow	
+	self->state_handler_pft(self, e_pst, NULL);
 }
