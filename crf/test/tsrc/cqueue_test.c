@@ -128,12 +128,11 @@ TEST(cq, get_all)
 {
 	cevent_tst  e[4];
 	const cevent_tst  *ep[4];
-	int32_t r;
 
 	cqueue_init(&eq, (const cevent_tst  **)events, 4);
 	for (uint16_t i=0; i<4; i++)
 	{
-		r = eq.put(&eq, &e[i]);
+		eq.put(&eq, &e[i]);
 	}
 
 	for (uint16_t i=0; i<4; i++)

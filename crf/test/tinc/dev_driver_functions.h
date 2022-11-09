@@ -1,7 +1,7 @@
 #ifndef DEV_DRIVER_FUNCTIONS_H
 #define DEV_DRIVER_FUNCTIONS_H
 
-/*Generated with CHSM v0.0.0 at 2022.11.07 21.22.49*/
+/*Generated with CHSM v0.0.0 at 2022.11.08 20.45.11*/
 
 #include "dev_driver.h"
 #include "chsm.h"

@@ -53,11 +53,13 @@ static void	gc(crf_tst *self, const cevent_tst* e_pst)
  */
 static void	publish(crf_tst *self, const cevent_tst* e)
 {
-
+    (void)self;
+    (void)e;
 }
 
 static void	post(crf_tst *self, cevent_tst* e, cqueue_tst *q)
 {
+    (void)self;
     q->put(q, e);
 }
 
@@ -76,7 +78,8 @@ static bool	step(crf_tst *self)
             if (e_pst)
             {
                 event_found_b = true;
-                chsm_dispatch(hsm_pst, e_pst);
+
+                hsm_pst->state_handler_pft(hsm_pst, e_pst);
 
                 if (0 == e_pst->gc_info.ref_cnt)
                 {

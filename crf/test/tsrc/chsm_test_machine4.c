@@ -1,16 +1,16 @@
-/*Generated with CHSM v0.0.0 at 2022.11.07 21.05.30*/
+/*Generated with CHSM v0.0.0 at 2022.11.08 05.50.13*/
 #include "cevent.h"
 #include "chsm.h"
 #include "chsm_test_machine.h"
 #include "chsm_test_functions2.h"
 
 
-static chsm_result_ten s4(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst);
-static chsm_result_ten s3(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst);
-static chsm_result_ten s211(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst);
-static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst);
+static chsm_result_ten s4(chsm_tst *self, const cevent_tst *e_pst);
+static chsm_result_ten s3(chsm_tst *self, const cevent_tst *e_pst);
+static chsm_result_ten s211(chsm_tst *self, const cevent_tst *e_pst);
+static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst);
 
-static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst)
+static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst)
 {
     switch(e_pst->sig)
     {
@@ -155,7 +155,7 @@ static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ct
     return chsm_ignored(self);
 }
 
-static chsm_result_ten s211(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst)
+static chsm_result_ten s211(chsm_tst *self, const cevent_tst *e_pst)
 {
     switch(e_pst->sig)
     {
@@ -245,7 +245,7 @@ static chsm_result_ten s211(chsm_tst *self, const cevent_tst *e_pst, chsm_call_c
     return chsm_ignored(self);
 }
 
-static chsm_result_ten s3(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst)
+static chsm_result_ten s3(chsm_tst *self, const cevent_tst *e_pst)
 {
     switch(e_pst->sig)
     {
@@ -288,7 +288,7 @@ static chsm_result_ten s3(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx
     return chsm_ignored(self);
 }
 
-static chsm_result_ten s4(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst)
+static chsm_result_ten s4(chsm_tst *self, const cevent_tst *e_pst)
 {
     switch(e_pst->sig)
     {
@@ -310,7 +310,7 @@ static chsm_result_ten s4(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx
     return chsm_ignored(self);
 }
 
-chsm_result_ten __top__4(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst)
+chsm_result_ten __top__4(chsm_tst *self, const cevent_tst *e_pst)
 {
     switch(e_pst->sig)
     {

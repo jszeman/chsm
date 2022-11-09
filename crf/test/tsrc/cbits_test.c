@@ -25,7 +25,7 @@ static void *last_user_param_pv;
 
 cbits_tst cb_st;
 
-#define TEST_POINTER (void *)0x12345678
+#define TEST_POINTER ((void *)0x12345678)
 
 void send(void *user_param_pv, const cevent_tst *e_pst)
 {
@@ -96,7 +96,7 @@ TEST(cb, set_bit_0)
     cb_st.set_data(&cb_st, 1);
 
     TEST_ASSERT_EQUAL_HEX32(1, active_bits_u32);
-    TEST_ASSERT_EQUAL_HEX32(TEST_POINTER, last_user_param_pv);
+    TEST_ASSERT_EQUAL_HEX64((uint64_t)TEST_POINTER, (uint64_t)last_user_param_pv);
 }
 
 /**

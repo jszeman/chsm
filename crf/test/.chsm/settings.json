@@ -6,7 +6,7 @@
 		"init_signal":			"C_SIG_INIT",
 		"signal_prefix":		"TEST_SIG_",
 		"func_args":        	"self, e_pst, ctx_pst",
-		"func_params":      	"chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst",
+		"func_params":      	"chsm_tst *self, const cevent_tst *e_pst",
 		"user_func_args_t":   	"self, e_pst",
 		"user_func_params_t": 	"chsm_tst *self, const cevent_tst *e_pst",
 		"func_return_type": 	"chsm_result_ten",
@@ -20,7 +20,7 @@
 		"exit_children":		"chsm_exit_children",
 		"c_include_list":		["chsm.h", "cevent.h"],
 		"h_include_list":		["chsm.h", "cevent.h", "<stdbool.h>"],
-		"top_state_name": 		"chsm_result_ten\\s+(?P<top_func>\\w+)\\(chsm_tst\\s+\\*self,\\s+const\\s+cevent_tst\\s+\\*e_pst,\\s+chsm_call_ctx_tst\\s+\\*ctx_pst\\)\\s*;",
+		"top_state_name": 		"chsm_result_ten\\s+(?P<top_func>\\w+)\\(chsm_tst\\s+\\*self,\\s+const\\s+cevent_tst\\s+\\*e_pst\\)\\s*;",
 		"set_state_id":			""
 	},
 

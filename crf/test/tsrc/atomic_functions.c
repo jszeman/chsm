@@ -1,8 +1,11 @@
 #include "stdint.h"
 #include "stdbool.h"
 
-cpu_c28x_enable_interrupts(){}
-cpu_c28x_disable_interrupts(){}
+void cpu_c28x_enable_interrupts(void)
+{}
+
+void cpu_c28x_disable_interrupts(void)
+{}
 
 typedef volatile uint16_t atomic_uint16_t;
 typedef volatile int16_t atomic_int16_t;

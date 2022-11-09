@@ -1,14 +1,14 @@
-/*Generated with CHSM v0.0.0 at 2022.11.07 21.22.49*/
+/*Generated with CHSM v0.0.0 at 2022.11.08 20.45.11*/
 #include "cevent.h"
 #include "chsm.h"
 #include "dev_driver.h"
 #include "dev_driver_functions.h"
 
 
-static chsm_result_ten wait_response(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst);
-static chsm_result_ten idle(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst);
+static chsm_result_ten wait_response(chsm_tst *self, const cevent_tst *e_pst);
+static chsm_result_ten idle(chsm_tst *self, const cevent_tst *e_pst);
 
-static chsm_result_ten idle(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst)
+static chsm_result_ten idle(chsm_tst *self, const cevent_tst *e_pst)
 {
     switch(e_pst->sig)
     {
@@ -26,7 +26,7 @@ static chsm_result_ten idle(chsm_tst *self, const cevent_tst *e_pst, chsm_call_c
     return chsm_ignored(self);
 }
 
-static chsm_result_ten wait_response(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst)
+static chsm_result_ten wait_response(chsm_tst *self, const cevent_tst *e_pst)
 {
     switch(e_pst->sig)
     {
@@ -59,7 +59,7 @@ static chsm_result_ten wait_response(chsm_tst *self, const cevent_tst *e_pst, ch
     return chsm_ignored(self);
 }
 
-chsm_result_ten dev_driver_top(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst)
+chsm_result_ten dev_driver_top(chsm_tst *self, const cevent_tst *e_pst)
 {
     switch(e_pst->sig)
     {

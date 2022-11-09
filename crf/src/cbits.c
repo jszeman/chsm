@@ -35,6 +35,8 @@ static void set_data(cbits_tst *self, uint32_t data_u32)
 
 bool cbits_init(cbits_tst *self, uint32_t data_u32)
 {
+    (void)data_u32;
+    
     self->set_data = set_data;
 
     if (self->config.send_pft) return true;

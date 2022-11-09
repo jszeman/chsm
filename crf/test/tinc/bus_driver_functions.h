@@ -1,7 +1,7 @@
 #ifndef BUS_DRIVER_FUNCTIONS_H
 #define BUS_DRIVER_FUNCTIONS_H
 
-/*Generated with CHSM v0.0.0 at 2022.11.07 21.23.00*/
+/*Generated with CHSM v0.0.0 at 2022.11.08 20.45.19*/
 
 #include "bus_driver.h"
 #include "chsm.h"

@@ -47,8 +47,8 @@ struct test_hsm_tst
     bool        s11_g_guard2;
 };
 
-chsm_result_ten __top__1(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
-chsm_result_ten __top__4(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
+chsm_result_ten __top__1(chsm_tst *self, const cevent_tst  *e_pst);
+chsm_result_ten __top__4(chsm_tst *self, const cevent_tst  *e_pst);
 
 void clear_log(test_hsm_tst  *self);
 

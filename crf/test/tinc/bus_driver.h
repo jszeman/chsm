@@ -12,6 +12,6 @@ typedef struct
     uint16_t    tmp_u16;
 } bus_driver_tst;
 
-chsm_result_ten bus_driver_top(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
+chsm_result_ten bus_driver_top(chsm_tst *self, const cevent_tst  *e_pst);
 
 #endif

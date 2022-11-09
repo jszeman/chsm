@@ -6,7 +6,7 @@
 		"init_signal":			"C_SIG_INIT",
 		"signal_prefix":		"",
 		"func_args":        	"self, e_pst, ctx_pst",
-		"func_params":      	"chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst",
+		"func_params":      	"chsm_tst *self, const cevent_tst  *e_pst",
 		"user_func_args_t":   	"self, e_pst",
 		"user_func_params_t": 	"chsm_tst *self, const cevent_tst *e_pst",
 		"func_return_type": 	"chsm_result_ten",

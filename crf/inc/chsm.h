@@ -31,7 +31,6 @@ typedef enum
 } chsm_result_ten;
 
 typedef struct chsm_st chsm_tst;
-typedef struct chsm_call_ctx_st chsm_call_ctx_tst;
 
 /*
  * This is the type for functions the generated state machine will call.
@@ -53,7 +52,7 @@ typedef void (*chsm_user_func_tpft)(chsm_tst *self, const cevent_tst *e_pst);
  *		ctx_pst: Pointer to a call context that stores some information about the states involved
  *			in the event processing.
  */
-typedef chsm_result_ten (*chsm_state_tpft)(chsm_tst *self, const cevent_tst *e_pst, chsm_call_ctx_tst *ctx_pst);
+typedef chsm_result_ten (*chsm_state_tpft)(chsm_tst *self, const cevent_tst *e_pst);
 
 /*
  * Call context structure
@@ -123,12 +122,15 @@ static inline chsm_result_ten chsm_transition(chsm_tst *self, chsm_state_tpft ta
 
 static inline chsm_result_ten chsm_ignored(chsm_tst *self)
 {
+    (void)self;
     return C_RES_IGNORED;
 }
 
 static inline chsm_result_ten chsm_handled(chsm_tst *self)
 {
+    (void)self;
     return C_RES_HANDLED;
+	
 }
 
 #endif /* INC_CHSM_H_ */

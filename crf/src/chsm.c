@@ -15,7 +15,8 @@ const cevent_tst chsm_none_event_st = {.sig=C_SIG_NONE, .gc_info={0}};
 
 static void send(chsm_tst *self, const cevent_tst *e_pst)
 {
-
+	(void)self;
+	(void)e_pst;
 }
 
 void chsm_ctor(chsm_tst *self, chsm_state_tpft init_state_pft, const cevent_tst **events, uint16_t event_q_len, uint16_t defer_q_len)
@@ -47,7 +48,9 @@ void chsm_recall(chsm_tst *self, const cevent_tst *e_pst)
 {
 	const cevent_tst *ev_pst;
 
-	while(ev_pst = self->defer_q_st.get_right(&self->defer_q_st))
+    (void)e_pst;
+
+	while((ev_pst = self->defer_q_st.get_right(&self->defer_q_st)))
 	{
 		self->event_q_st.put_left(&self->event_q_st, (cevent_tst *)ev_pst);
 	}
@@ -58,5 +61,5 @@ void chsm_dispatch(chsm_tst *self, const cevent_tst  *e_pst)
 	assert(NULL != self);
 	assert(NULL != e_pst);
 
-	self->state_handler_pft(self, e_pst, NULL);
+	self->state_handler_pft(self, e_pst);
 }
