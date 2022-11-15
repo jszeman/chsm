@@ -1,7 +1,7 @@
 #ifndef I2C_MASTER_FUNCTIONS_H
 #define I2C_MASTER_FUNCTIONS_H
 
-/*Generated with CHSM v0.0.0 at 2020.12.29 08.44.03*/
+/*Generated with CHSM v0.0.0 at 2022.11.12 20.02.22*/
 
 #include "i2c_master.h"
 #include "chsm.h"
@@ -24,6 +24,16 @@ void i2c_master_start_tx(chsm_tst *self, const cevent_tst *e_pst);
 void i2c_master_stop(chsm_tst *self, const cevent_tst *e_pst);
 
 void store_transaction_info(chsm_tst *self, const cevent_tst *e_pst);
+
+
+typedef enum i2c_master_state_id_ten
+{
+    S_IDLE = 0,
+    S_WRITE = 2,
+    S_READ = 3,
+    S_WR_WRITE = 5,
+    S_WR_READ = 6,
+} i2c_master_state_id_ten;
 
 
 /*

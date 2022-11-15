@@ -26,7 +26,7 @@ i2c_master_tst			i2c_master_st;
 
 chsm_tst*				hsm_apst[] = {(chsm_tst*)(&i2c_master_st), NULL};
 
-uint8_t 				pool_buff_au8[1024];
+uint8_t 				pool_buff_au8[64*16];
 cpool_tst				pool_ast[1];
 
 crf_tst					crf;
@@ -58,7 +58,7 @@ TEST_SETUP(i2c_master)
     memset(&pool_buff_au8, 0, sizeof pool_buff_au8);
     memset(&pool_ast, 0, sizeof pool_ast);
 
-	cpool_init(pool_ast+0, pool_buff_au8, 24, 16);
+	cpool_init(pool_ast+0, pool_buff_au8, 64, 16);
 
     cqueue_init(&q_st, events_apst, 4);
 
