@@ -54,6 +54,8 @@ void fram_send(chsm_tst *self, const cevent_tst *e_pst)
 		default:
 			CRF_POST(e_pst, &i2c_master_st);
 	}
+
+    (void)self;
 }
 
 static void drv_tick(uint32_t tick_cnt_u32)

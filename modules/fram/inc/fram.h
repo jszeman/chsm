@@ -52,7 +52,7 @@ typedef struct fram_tst
     uint32_t            bytes_remaining_u32;
 } fram_tst;
 
-chsm_result_ten fram_top(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
+chsm_result_ten fram_top(chsm_tst *self, const cevent_tst  *e_pst);
 
 bool fram_timeout(chsm_tst *self, const cevent_tst *e_pst, uint32_t timeout_u32);
 bool fram_error_count(chsm_tst *self, const cevent_tst *e_pst, uint16_t error_cnt_threshold_u16);

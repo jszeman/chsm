@@ -15,6 +15,8 @@ void fram_init(chsm_tst *_self, const cevent_tst *e_pst)
     self->t_st.target_q_pst =   (cqueue_tst *)self;
     self->t_st.read_data_pu8 =  self->rx_buff_au8;
     self->t_st.write_data_pu8 = self->tx_buff_au8;
+
+    (void)e_pst;
 }
 
 /*Prepare and send a transaction to the I2C master to write a chunk of data to the FRAM.*/
@@ -68,6 +70,8 @@ void write_a_chunk(chsm_tst *_self, const cevent_tst *e_pst)
      */
     self->op_st.len_u32 -= size_u8;
     self->op_st.address_u32 += size_u8;
+
+    (void)e_pst;
 }
 
 
@@ -105,14 +109,14 @@ void read_a_chunk(chsm_tst *_self, const cevent_tst *e_pst)
 
     self->super.send(_self, (const cevent_tst *)(&self->t_st));
 
-    
-
     /*
      * Prepare for the next chunk.
      */
     self->op_st.len_u32 -= size_u8;
     self->op_st.address_u32 += size_u8;
     self->op_st.buff_pu8 += size_u8;
+
+    (void)e_pst;
 }
 
 /*Send a read fail event to the queue designated by the read event.*/
@@ -150,6 +154,8 @@ void send_read_success_response(chsm_tst *_self, const cevent_tst *e_pst)
     fram_tst*   self = (fram_tst *)_self;
 
     CRF_POST(&read_success_event_st, self->op_st.q_pst);
+
+    (void)e_pst;
 }
 
 /*Make a local copy of the operation event so fields can be used later. */
@@ -178,6 +184,8 @@ void clear_op_info(chsm_tst *_self, const cevent_tst *e_pst)
 
     self->op_st = (mem_op_tst){0};
     self->bytes_remaining_u32 = 0;
+
+    (void)e_pst;
 }
 
 /*Send a write fail event to the queue designated by the read event.*/
@@ -215,6 +223,8 @@ void send_write_success_response(chsm_tst *_self, const cevent_tst *e_pst)
     fram_tst*   self = (fram_tst *)_self;
 
     self->op_st.q_pst->put(self->op_st.q_pst, (const cevent_tst *)&write_success_event_st);
+
+    (void)e_pst;
 }
 
 /*Returns true, if we don't need to read more data from the FRAM.*/
@@ -225,6 +235,8 @@ bool all_data_read(chsm_tst *_self, const cevent_tst *e_pst)
     fram_tst*   self = (fram_tst *)_self;
 
     return 0 == self->bytes_remaining_u32 ? true : false;
+
+    (void)e_pst;
 }
 
 /*Returns true, if we don't need to write more data to the FRAM.*/
@@ -235,6 +247,8 @@ bool all_data_written(chsm_tst *_self, const cevent_tst *e_pst)
     fram_tst*   self = (fram_tst *)_self;
 
     return 0 == self->op_st.len_u32 ? true : false;
+
+    (void)e_pst;
 }
 
 
@@ -245,4 +259,6 @@ bool last_transaction(chsm_tst *_self, const cevent_tst *e_pst)
     fram_tst*   self = (fram_tst *)_self;
 
     return 0 == self->bytes_remaining_u32 ? true : false;
+
+    (void)e_pst;
 }

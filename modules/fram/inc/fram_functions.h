@@ -1,7 +1,7 @@
 #ifndef FRAM_FUNCTIONS_H
 #define FRAM_FUNCTIONS_H
 
-/*Generated with CHSM v0.0.0 at 2021.01.03 22.41.08*/
+/*Generated with CHSM v0.0.0 at 2022.11.16 20.52.07*/
 
 #include "fram.h"
 #include "chsm.h"
@@ -37,6 +37,14 @@ void write_a_chunk(chsm_tst *self, const cevent_tst *e_pst);
 
 
 bool last_transaction(chsm_tst *self, const cevent_tst *e_pst);
+
+typedef enum fram_state_id_ten
+{
+    S_IDLE = 1,
+    S_READING = 2,
+    S_WRITING = 3,
+} fram_state_id_ten;
+
 
 /*
 Signals:
