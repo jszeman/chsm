@@ -90,7 +90,7 @@ struct lm73_tst
     uint8_t             rx_buff_au8[4];
 };
 
-chsm_result_ten lm73_top(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
+chsm_result_ten lm73_top(chsm_tst *self, const cevent_tst  *e_pst);
 
 bool lm73_timeout(chsm_tst *self, const cevent_tst *e_pst, uint32_t timeout_u32);
 bool lm73_error_count(chsm_tst *self, const cevent_tst *e_pst, uint16_t error_cnt_threshold_u16);

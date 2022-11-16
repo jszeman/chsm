@@ -1,7 +1,7 @@
 #ifndef LM73_FUNCTIONS_H
 #define LM73_FUNCTIONS_H
 
-/*Generated with CHSM v0.0.0 at 2021.01.08 20.11.18*/
+/*Generated with CHSM v0.0.0 at 2022.11.16 20.36.57*/
 
 #include "lm73.h"
 #include "chsm.h"
@@ -43,6 +43,15 @@ void send_online_event(chsm_tst *self, const cevent_tst *e_pst);
 
 /*True, if the response data is equal to 0x190. See LM73 datasheet section: 7.5.1.7 Identification Register*/
 bool lm73_id_match(chsm_tst *self, const cevent_tst *e_pst);
+
+typedef enum lm73_state_id_ten
+{
+    S_IDLE = 1,
+    S_READING = 2,
+    S_READ_ID_REG = 3,
+    S_RESET_PTR_REG = 4,
+} lm73_state_id_ten;
+
 
 /*
 Signals:
