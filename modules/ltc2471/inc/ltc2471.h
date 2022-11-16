@@ -57,7 +57,7 @@ typedef struct ltc2471_tst
 
 #define LTC2471_READ_TIMEOUT (((ltc2471_tst *)self)->config_st.read_timeout_ms_u16)
 
-chsm_result_ten ltc2471_top(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
+chsm_result_ten ltc2471_top(chsm_tst *self, const cevent_tst  *e_pst);
 
 bool ltc2471_timeout(chsm_tst *self, const cevent_tst *e_pst, uint32_t timeout_u32);
 

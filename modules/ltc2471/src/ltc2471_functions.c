@@ -11,6 +11,8 @@ void ltc2471_1ms_callack(chsm_tst *_self, const cevent_tst *e_pst)
     ltc2471_tst* self = (ltc2471_tst *)_self;
 
     self->timer_cnt_u32++;
+
+    (void)e_pst;
 }
 
 void ltc2471_invalidate_sample(chsm_tst *_self, const cevent_tst *e_pst)
@@ -20,6 +22,8 @@ void ltc2471_invalidate_sample(chsm_tst *_self, const cevent_tst *e_pst)
     self->sample_valid_b = false;
 
     CRF_EMIT(&ltc2471_error_event_st);
+
+    (void)e_pst;
 }
 
 void ltc2471_restart_timer(chsm_tst *_self, const cevent_tst *e_pst)
@@ -27,6 +31,8 @@ void ltc2471_restart_timer(chsm_tst *_self, const cevent_tst *e_pst)
     ltc2471_tst* self = (ltc2471_tst *)_self;
 
     self->timer_cnt_u32 = 0;
+
+    (void)e_pst;
 }
 
 void ltc2471_start_read(chsm_tst *_self, const cevent_tst *e_pst)
@@ -43,6 +49,8 @@ void ltc2471_start_read(chsm_tst *_self, const cevent_tst *e_pst)
     self->t_st.read_data_pu8 =  self->rx_buff_au8;
 
     CRF_EMIT(&self->t_st);
+
+    (void)e_pst;
 }
 
 void ltc2471_update_sample(chsm_tst *_self, const cevent_tst *e_pst)
@@ -65,6 +73,8 @@ void ltc2471_update_sample(chsm_tst *_self, const cevent_tst *e_pst)
     self->sample_valid_b =      true;
     
     CRF_EMIT(sample_pst);
+
+    (void)e_pst;
 }
 
 bool ltc2471_timeout(chsm_tst *_self, const cevent_tst *e_pst, uint32_t timeout_u32)
@@ -72,6 +82,8 @@ bool ltc2471_timeout(chsm_tst *_self, const cevent_tst *e_pst, uint32_t timeout_
     ltc2471_tst* self = (ltc2471_tst *)_self;
 
     return self->timer_cnt_u32 > timeout_u32;
+
+    (void)e_pst;
 }
 
 

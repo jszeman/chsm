@@ -1,7 +1,7 @@
 #ifndef LTC2471_FUNCTIONS_H
 #define LTC2471_FUNCTIONS_H
 
-/*Generated with CHSM v0.0.0 at 2021.04.30 16.05.52*/
+/*Generated with CHSM v0.0.0 at 2022.11.16 21.08.53*/
 
 #include "ltc2471.h"
 #include "chsm.h"
@@ -22,7 +22,6 @@ void ltc2471_update_sample(chsm_tst *self, const cevent_tst *e_pst);
 
 typedef enum ltc2471_state_id_ten
 {
-    S_LTC2471 = 0,
     S_IDLE = 1,
     S_READING = 2,
 } ltc2471_state_id_ten;
