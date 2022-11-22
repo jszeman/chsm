@@ -1,7 +1,7 @@
 #ifndef SDO_FUNCTIONS_H
 #define SDO_FUNCTIONS_H
 
-/*Generated with CHSM v0.0.0 at 2021.02.24 21.55.59*/
+/*Generated with CHSM v0.0.0 at 2022.11.22 13.22.23*/
 
 #include "sdo.h"
 #include "chsm.h"
@@ -54,13 +54,10 @@ typedef enum sdo_state_id_ten
     S_SDO_WAIT_EXP_UL = 1,
     S_SDO_WAIT_EXP_DL = 2,
     S_SDO_SEGMENTED_DL = 3,
-    S_SDO = 4,
-    S_BUSY = 5,
     S_SDO_SEGMENTED_UL = 6,
     S_SDO_BLOCK_UL_WAIT_FOR_START = 7,
     S_SDO_BLOCK_UL_STARTED = 8,
     S_SDO_BLOCK_UL_FINISH = 9,
-    S_BLOCK_TRANSFER = 10,
     S_SDO_BLOCK_DL_STARTED = 11,
     S_SDO_BLOCK_DL_FINISH = 12,
 } sdo_state_id_ten;

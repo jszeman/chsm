@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.19)
 
-project(example_canopen_test)
+project(canopen_test)
 
 include(GNUInstallDirs)
 
@@ -52,7 +52,8 @@ target_compile_definitions(canopen_test PRIVATE
 target_compile_options(canopen_test PRIVATE 
     -Wall 
     -Wextra 
-    -pedantic 
+    -pedantic
+    -g
     # -Werror
     )
 target_link_options(canopen_test PRIVATE

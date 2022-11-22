@@ -23,9 +23,6 @@ TEST_GROUP(od);
 static const cevent_tst*		node_events_apst[12];
 static co_node_tst				node_st;
 
-
-static co_node_tst *self = 	&node_st;
-
 static chsm_tst*				hsm_apst[] = {
 	(chsm_tst*)(&node_st),
 	NULL};
@@ -45,11 +42,11 @@ typedef struct data_tst
  	uint8_t				obj_ro_u8;
  	uint16_t			obj_u16;
  	uint32_t			obj_u32;
- 	char				str_ac[32];
+ 	uint8_t				str_ac[32];
 } data_tst;
 
-data_tst d1;
-data_tst d2;
+static data_tst d1;
+static data_tst d2;
 
 static inline void send_sdo_request(uint8_t cmd_u8, uint32_t mlx_u32, uint32_t data_u32)
 {
@@ -216,6 +213,8 @@ static void co_send(chsm_tst *self, const cevent_tst *e_pst)
 		default:
 			CRF_POST(e_pst, &q_st);
 	}
+
+	(void)self;
 }
 
 static const cevent_tst		tick_1ms_st = {.sig = SIG_SYS_TICK_1ms};
@@ -248,13 +247,13 @@ TEST_SETUP(od)
 	d1.obj_u16 = 0;
 	d1.obj_u32 = 0;
 	d1.obj_ro_u8 = 0x3c;
-	strcpy(d1.str_ac, "D1 String object");
+	strcpy((void *)d1.str_ac, "D1 String object");
 
 	d2.obj_u8 = 0;
 	d2.obj_u16 = 0;
 	d2.obj_u32 = 0;
 	d2.obj_ro_u8 = 0x4d;
-	strcpy(d2.str_ac, "D2 String object");
+	strcpy((void *)d2.str_ac, "D2 String object");
 
     memset(&node_events_apst, 0, sizeof node_events_apst);
     memset(&node_st, 0, sizeof node_st);
@@ -307,9 +306,6 @@ TEST(od, init)
  */
 TEST(od, sdo_dl_exp_1b)
 {
-	const can_frame_tst *e_pst;
-	can_frame_tst *f_pst;
-
 	node_init();
 
 	send_sdo_request(CO_SDO_DL_REQ_EXP_1B, MLX_U8_RW, 0xa5);
@@ -326,8 +322,6 @@ TEST(od, sdo_dl_exp_1b)
  */
 TEST(od, sdo_dl_seg_str)
 {
-	const can_frame_tst *e_pst;
-	can_frame_tst *f_pst;
 	uint8_t seg1_au8[8] = "SDO seg";
 	uint8_t seg2_au8[8] = "mented ";
 	uint8_t seg3_au8[8] = "downloa";
@@ -377,12 +371,8 @@ TEST(od, sdo_dl_seg_str)
  */
 TEST(od, sdo_dl_seg_timeout)
 {
-	const can_frame_tst *e_pst;
-	can_frame_tst *f_pst;
 	uint8_t seg1_au8[8] = "SDO seg";
 	uint8_t seg2_au8[8] = "mented ";
-	uint8_t seg3_au8[8] = "downloa";
-	uint8_t seg4_au8[8] = "d\n    ";
 
 	node_init();
 
@@ -422,8 +412,6 @@ TEST(od, sdo_dl_seg_timeout)
  */
 TEST(od, sdo_dl_seg_toggle_bit_error)
 {
-	const can_frame_tst *e_pst;
-	can_frame_tst *f_pst;
 	uint8_t seg1_au8[8] = "SDO seg";
 	uint8_t seg2_au8[8] = "mented ";
 	uint8_t seg3_au8[8] = "downloa";
@@ -478,8 +466,6 @@ TEST(od, sdo_dl_seg_toggle_bit_error)
  */
 TEST(od, sdo_dl_seg_str_too_many_frames)
 {
-	const can_frame_tst *e_pst;
-	can_frame_tst *f_pst;
 	uint8_t seg1_au8[8] = "SDO seg";
 	uint8_t seg2_au8[8] = "mented ";
 	uint8_t seg3_au8[8] = "downloa";
@@ -533,12 +519,9 @@ TEST(od, sdo_dl_seg_str_too_many_frames)
  */
 TEST(od, sdo_dl_seg_str_new_transfer)
 {
-	const can_frame_tst *e_pst;
-	can_frame_tst *f_pst;
 	uint8_t seg1_au8[8] = "SDO seg";
 	uint8_t seg2_au8[8] = "mented ";
 	uint8_t seg3_au8[8] = "downloa";
-	uint8_t seg4_au8[8] = "d\n    ";
 
 	node_init();
 
@@ -573,12 +556,9 @@ TEST(od, sdo_dl_seg_str_new_transfer)
  */
 TEST(od, sdo_dl_seg_str_abort)
 {
-	const can_frame_tst *e_pst;
-	can_frame_tst *f_pst;
 	uint8_t seg1_au8[8] = "SDO seg";
 	uint8_t seg2_au8[8] = "mented ";
 	uint8_t seg3_au8[8] = "downloa";
-	uint8_t seg4_au8[8] = "d\n    ";
 
 	node_init();
 
@@ -615,13 +595,6 @@ TEST(od, sdo_dl_seg_str_abort)
  */
 TEST(od, sdo_ul_seg_str)
 {
-	const can_frame_tst *e_pst;
-	can_frame_tst *f_pst;
-	uint8_t seg1_au8[8] = "";
-	uint8_t seg2_au8[8] = "";
-	uint8_t seg3_au8[8] = "";
-	uint8_t seg4_au8[8] = "";
-
 	node_init();
 
 	send_sdo_request(CO_SDO_UL_REQ_SEG_INIT, MLX_STR_RW, 0);
@@ -667,13 +640,6 @@ TEST(od, sdo_ul_seg_str)
  */
 TEST(od, sdo_ul_seg_str_new_transfer)
 {
-	const can_frame_tst *e_pst;
-	can_frame_tst *f_pst;
-	uint8_t seg1_au8[8] = "";
-	uint8_t seg2_au8[8] = "";
-	uint8_t seg3_au8[8] = "";
-	uint8_t seg4_au8[8] = "";
-
 	node_init();
 
 	send_sdo_request(CO_SDO_UL_REQ_SEG_INIT, MLX_STR_RW, 0);
@@ -704,13 +670,6 @@ TEST(od, sdo_ul_seg_str_new_transfer)
  */
 TEST(od, sdo_ul_seg_timeout)
 {
-	const can_frame_tst *e_pst;
-	can_frame_tst *f_pst;
-	uint8_t seg1_au8[8] = "";
-	uint8_t seg2_au8[8] = "";
-	uint8_t seg3_au8[8] = "";
-	uint8_t seg4_au8[8] = "";
-
 	node_init();
 
 	send_sdo_request(CO_SDO_UL_REQ_SEG_INIT, MLX_STR_RW, 0);
@@ -751,13 +710,6 @@ TEST(od, sdo_ul_seg_timeout)
  */
 TEST(od, sdo_ul_seg_toggle_bit_error)
 {
-	const can_frame_tst *e_pst;
-	can_frame_tst *f_pst;
-	uint8_t seg1_au8[8] = "";
-	uint8_t seg2_au8[8] = "";
-	uint8_t seg3_au8[8] = "";
-	uint8_t seg4_au8[8] = "";
-
 	node_init();
 
 	send_sdo_request(CO_SDO_UL_REQ_SEG_INIT, MLX_STR_RW, 0);
@@ -810,13 +762,6 @@ TEST(od, sdo_ul_seg_toggle_bit_error)
  */
 TEST(od, sdo_ul_seg_str_abort)
 {
-	const can_frame_tst *e_pst;
-	can_frame_tst *f_pst;
-	uint8_t seg1_au8[8] = "";
-	uint8_t seg2_au8[8] = "";
-	uint8_t seg3_au8[8] = "";
-	uint8_t seg4_au8[8] = "";
-
 	node_init();
 
 	send_sdo_request(CO_SDO_UL_REQ_SEG_INIT, MLX_STR_RW, 0);

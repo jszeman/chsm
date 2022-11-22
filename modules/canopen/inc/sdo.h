@@ -36,7 +36,7 @@ typedef struct sdo_tst
     uint32_t            counter_ms_u32;
 } sdo_tst;
 
-chsm_result_ten sdo_top(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
+chsm_result_ten sdo_top(chsm_tst *self, const cevent_tst *e_pst);
 
 od_entry_tst* find_od_entry(sdo_tst* self, uint32_t mlx_u32);
 

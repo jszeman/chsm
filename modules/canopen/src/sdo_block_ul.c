@@ -74,6 +74,8 @@ void send_next_block(chsm_tst *_self, const cevent_tst *e_pst)
         CRF_EMIT(r_pst);
 
     }
+
+    (void)e_pst;
 }
 
 void send_block_finish(chsm_tst *_self, const cevent_tst *e_pst)
@@ -86,7 +88,7 @@ void send_block_finish(chsm_tst *_self, const cevent_tst *e_pst)
     if (NULL == r_pst) 
     {
         /* TODO: send statically allocated error frame */
-        printf("\nEvent allocation failed in send_block_finish, cycle\n");
+        // printf("\nEvent allocation failed in send_block_finish, cycle\n");
         return;
     }
 
@@ -95,6 +97,8 @@ void send_block_finish(chsm_tst *_self, const cevent_tst *e_pst)
     r_pst->mdh_un.all_u32 = 0;
 
     CRF_EMIT(r_pst);
+
+    (void)e_pst;
 }
 
 
@@ -113,6 +117,7 @@ void process_block_finish_response(chsm_tst *_self, const cevent_tst *e_pst)
         }
         else
         {
+            //printf("process_block_finish_response: CO_SDO_ABORT_INVALID_COMMAND\n");
             send_sdo_abort(_self, e_pst, CO_SDO_ABORT_INVALID_COMMAND);
         }
     }
@@ -127,6 +132,7 @@ bool process_ul_block_ack(chsm_tst *_self, const cevent_tst *e_pst)
     {
         if (CO_SDO_ABORT != f_pst->mdl_un.bit_st.d0_u8)
         {
+            //printf("process_ul_block_ack: CO_SDO_ABORT_INVALID_COMMAND\n");
             send_sdo_abort(_self, e_pst, CO_SDO_ABORT_INVALID_COMMAND);
         }
         CRF_POST_TO_SELF(&sdo_block_ul_end_event);
@@ -148,15 +154,12 @@ void process_ul_block_start(chsm_tst *_self, const cevent_tst *e_pst)
 {
     sdo_tst*        self = (sdo_tst*)_self;
     CRF_SIG_VAR(SIG_CAN_FRAME, f_pst, e_pst);
-    uint8_t         size_u8;
-    uint8_t         last_u8;
-    uint8_t*        src_pu8;
-    uint8_t*        dst_pu8;
 
     if (CO_SDO_UL_REQ_BLK_START != f_pst->mdl_un.bit_st.d0_u8)
     {
         if (CO_SDO_ABORT != f_pst->mdl_un.bit_st.d0_u8)
         {
+            //printf("process_ul_block_start: CO_SDO_ABORT_INVALID_COMMAND\n");
             send_sdo_abort(_self, e_pst, CO_SDO_ABORT_INVALID_COMMAND);
         }
         CRF_POST_TO_SELF(&sdo_block_ul_end_event);

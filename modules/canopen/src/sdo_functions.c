@@ -22,6 +22,8 @@ const cevent_tst sdo_block_dl_finish_event =     {.sig = SIG_CANOPEN_BLOCK_DL_FI
 
 void sdo_abort(sdo_tst* self, can_frame_tst* f_pst, can_frame_tst* r_pst, uint32_t abort_code_u32)
 {
+    //printf("\nAbort: %x\n", abort_code_u32);
+
     sdo_hdr_tun     hdr_un = {.all_u32 = f_pst->mdl_un.all_u32};
     
     r_pst->header_un = CAN_HDR(CO_SDO_TX + self->config_st.node_id_u8, 0, 8);
@@ -37,6 +39,8 @@ void sdo_callback(chsm_tst *_self, const cevent_tst *e_pst)
     sdo_tst*        self = (sdo_tst*)_self;
 
     self->counter_ms_u32++;
+
+    (void)e_pst;
 }
 
 void sdo_reset_timer(chsm_tst *_self, const cevent_tst *e_pst)
@@ -44,6 +48,8 @@ void sdo_reset_timer(chsm_tst *_self, const cevent_tst *e_pst)
     sdo_tst*        self = (sdo_tst*)_self;
 
     self->counter_ms_u32 = 0;
+
+    (void)e_pst;
 }
 
 void sdo_init(chsm_tst *_self, const cevent_tst *e_pst)
@@ -51,6 +57,8 @@ void sdo_init(chsm_tst *_self, const cevent_tst *e_pst)
     sdo_tst*        self = (sdo_tst*)_self;
 
     self->counter_ms_u32 = 0;
+
+    (void)e_pst;
 }
 
 void process_sdo_request(chsm_tst *_self, const cevent_tst *e_pst)
@@ -133,21 +141,33 @@ void process_sdo_request(chsm_tst *_self, const cevent_tst *e_pst)
 void send_sdo_exp_dl_abort(chsm_tst *_self, const cevent_tst *e_pst)
 {
     sdo_tst* self = (sdo_tst*)_self;
+
+    (void)e_pst;
+    (void)self;
 }
 
 void send_sdo_exp_dl_response(chsm_tst *_self, const cevent_tst *e_pst)
 {
     sdo_tst* self = (sdo_tst*)_self;
+
+    (void)e_pst;
+    (void)self;
 }
 
 void send_sdo_exp_ul_abort(chsm_tst *_self, const cevent_tst *e_pst)
 {
     sdo_tst* self = (sdo_tst*)_self;
+
+    (void)e_pst;
+    (void)self;
 }
 
 void send_sdo_exp_ul_response(chsm_tst *_self, const cevent_tst *e_pst)
 {
     sdo_tst* self = (sdo_tst*)_self;
+
+    (void)e_pst;
+    (void)self;
 }
 
 void send_sdo_abort(chsm_tst *_self, const cevent_tst *e_pst, uint32_t abort_code_u32)
@@ -172,11 +192,16 @@ void send_sdo_abort(chsm_tst *_self, const cevent_tst *e_pst, uint32_t abort_cod
     r_pst->mdh_un.all_u32 = abort_code_u32;
 
     CRF_EMIT(r_pst);
+
+    (void)e_pst;
 }
 
 bool is_abort_request(chsm_tst *_self, const cevent_tst *e_pst)
 {
     sdo_tst* self = (sdo_tst*)_self;
+
+    (void)e_pst;
+    (void)self;
 
     return false;
 }
@@ -185,12 +210,18 @@ bool is_not_abort_request(chsm_tst *_self, const cevent_tst *e_pst)
 {
     sdo_tst* self = (sdo_tst*)_self;
 
+    (void)e_pst;
+    (void)self;
+
     return false;
 }
 
 bool sdo_timeout(chsm_tst *_self, const cevent_tst *e_pst, uint32_t timeout_u32)
 {
     sdo_tst* self = (sdo_tst*)_self;
+
+    (void)e_pst;
+    (void)self;
     
     return self->counter_ms_u32 >= timeout_u32;
 }

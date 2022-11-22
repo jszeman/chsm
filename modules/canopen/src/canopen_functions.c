@@ -19,6 +19,8 @@ void co_send_bootup(chsm_tst *_self, const cevent_tst *e_pst)
     f_pst->mdl_un.bit_st.d0_u8 = CO_NMT_STATE_BOOTUP;
 
     CRF_EMIT(f_pst);
+
+    (void)e_pst;
 }
 
 void co_node_init(chsm_tst *_self, const cevent_tst *e_pst)
@@ -40,6 +42,8 @@ void co_node_init(chsm_tst *_self, const cevent_tst *e_pst)
     self->timer_u32 = 0;
 
     self->super.next = (chsm_tst *)&self->sdo_st;
+
+    (void)e_pst;
 }
 
 void send_ng_resp(co_node_tst *self)
@@ -130,12 +134,16 @@ void co_callback(chsm_tst *_self, const cevent_tst *e_pst)
     self->timer_u32++;
 
     CRF_POST(e_pst, &self->sdo_st);
+
+    (void)e_pst;
 }
 
 void co_reset_timer(chsm_tst *_self, const cevent_tst *e_pst)
 {
     co_node_tst *self = (co_node_tst *)_self;
     self->timer_u32 = 0;
+
+    (void)e_pst;
 }
 
 void co_send_ng_active(chsm_tst *_self, const cevent_tst *e_pst)
@@ -143,6 +151,8 @@ void co_send_ng_active(chsm_tst *_self, const cevent_tst *e_pst)
     co_node_tst *self = (co_node_tst *)_self;
 
     CRF_EMIT(&ng_active);
+
+    (void)e_pst;
 }
 
 void co_send_ng_inactive(chsm_tst *_self, const cevent_tst *e_pst)
@@ -150,6 +160,8 @@ void co_send_ng_inactive(chsm_tst *_self, const cevent_tst *e_pst)
     co_node_tst *self = (co_node_tst *)_self;
 
     CRF_EMIT(&ng_inactive);
+
+    (void)e_pst;
 }
 
 bool co_timeout(chsm_tst *_self, const cevent_tst *e_pst, uint32_t timeout_u32)
@@ -157,5 +169,7 @@ bool co_timeout(chsm_tst *_self, const cevent_tst *e_pst, uint32_t timeout_u32)
     co_node_tst *self = (co_node_tst *)_self;
 
     return self->timer_u32 >= timeout_u32;
+
+    (void)e_pst;
 }
 

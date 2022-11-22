@@ -50,7 +50,7 @@ struct co_node_tst
 
 };
 
-chsm_result_ten co_node_top(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
+chsm_result_ten co_node_top(chsm_tst *self, const cevent_tst  *e_pst);
 bool co_timeout(chsm_tst *self, const cevent_tst *e_pst, uint32_t timeout_u32);
 
 #define CO_LIFETIME                 (((co_node_tst *)self)->config_st.guard_time_ms_u16 * ((co_node_tst *)self)->config_st.life_time_factor_u16)

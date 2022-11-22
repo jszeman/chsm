@@ -19,6 +19,8 @@ od_entry_tst* find_od_entry_recursive(object_dictionary_tst* od_pst, uint32_t ml
          od_entry_pst->size_u32;
          od_entry_pst++)
     {
+        //printf("\n%x - %x", mlx_u32, od_entry_pst->mlx_u32);
+
         if (mlx_u32 == od_entry_pst->mlx_u32)
         {
             return od_entry_pst;

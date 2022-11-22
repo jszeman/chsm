@@ -116,6 +116,8 @@ static void co_send(chsm_tst *self, const cevent_tst *e_pst)
 		default:
 			CRF_POST(e_pst, &q_st);
 	}
+
+    (void)self;
 }
 
 static const cevent_tst		tick_1ms_st = {.sig = SIG_SYS_TICK_1ms};
@@ -188,7 +190,7 @@ TEST(co, init)
     cqueue_init(&can_drv_st, can_drv_events_apst, 4);
 
     memset(&crf, 0, sizeof crf);
-	cpool_init(pool_ast+0, pool_buff_au8, 24, 16);
+	cpool_init(pool_ast+0, pool_buff_au8, 64, 16);
 	crf_init(&crf, hsm_apst, pool_ast, 1);
 }
 
@@ -323,7 +325,7 @@ TEST(co, nodeguard_timeout)
 	TEST_ASSERT_EQUAL(SIG_CANOPEN_NG_ACTIVE, e_pst->super.sig);
 	CRF_GC(e_pst);
 
-	tick_ms(node_st.config_st.guard_time_ms_u16 * node_st.config_st.life_time_factor_u16 - 1);
+	tick_ms(node_st.config_st.guard_time_ms_u16 * node_st.config_st.life_time_factor_u16 - 2);
 
 	e_pst = (const can_frame_tst *)q_st.get(&q_st);
 	TEST_ASSERT_NULL(e_pst);
@@ -481,9 +483,6 @@ TEST(co, nmt_preop)
  */
 TEST(co, sdo_dl_exp_1b)
 {
-	const can_frame_tst *e_pst;
-	can_frame_tst *f_pst;
-
 	node_init();
 
 	send_sdo_request(CO_SDO_DL_REQ_EXP_1B, MLX_U8_RW, 0xa5);
@@ -501,9 +500,6 @@ TEST(co, sdo_dl_exp_1b)
  */
 TEST(co, sdo_abort_missing_od)
 {
-	const can_frame_tst *e_pst;
-	can_frame_tst *f_pst;
-
 	node_st.config_st.od_pst = NULL;
 
 	node_init();
@@ -523,12 +519,8 @@ TEST(co, sdo_abort_missing_od)
  */
 TEST(co, sdo_abort_obj_not_found)
 {
-	const can_frame_tst *e_pst;
-	can_frame_tst *f_pst;
-
 	node_init();
 
-	
 	send_sdo_request(CO_SDO_DL_REQ_EXP_1B, MLX_NOT_EXISTS, 0xa5);
 
 	tick_ms(1);
@@ -544,8 +536,6 @@ TEST(co, sdo_abort_obj_not_found)
  */
 TEST(co, sdo_abort_obj_read_only)
 {
-	const can_frame_tst *e_pst;
-
 	node_init();
 
 	send_sdo_request(CO_SDO_DL_REQ_EXP_1B, MLX_U8_RO, 0xa5);
@@ -563,8 +553,6 @@ TEST(co, sdo_abort_obj_read_only)
  */
 TEST(co, sdo_abort_obj_len_mismatch)
 {
-	const can_frame_tst *e_pst;
-
 	node_init();
 
 	send_sdo_request(CO_SDO_DL_REQ_EXP_1B, MLX_U16_RW, 0xa5);
@@ -581,9 +569,6 @@ TEST(co, sdo_abort_obj_len_mismatch)
  */
 TEST(co, sdo_dl_exp_2b)
 {
-	const can_frame_tst *e_pst;
-	can_frame_tst *f_pst;
-
 	node_init();
 
 	send_sdo_request(CO_SDO_DL_REQ_EXP_2B, MLX_U16_RW, 0xa5b6);
@@ -600,9 +585,6 @@ TEST(co, sdo_dl_exp_2b)
  */
 TEST(co, sdo_dl_exp_4b)
 {
-	const can_frame_tst *e_pst;
-	can_frame_tst *f_pst;
-
 	node_init();
 
 	send_sdo_request(CO_SDO_DL_REQ_EXP_4B, MLX_U32_RW, 0xa5b6c7d8);
@@ -619,9 +601,6 @@ TEST(co, sdo_dl_exp_4b)
  */
 TEST(co, sdo_ul_exp_1b)
 {
-	const can_frame_tst *e_pst;
-	can_frame_tst *f_pst;
-
 	node_init();
 
 	obj_u8 = 0xa5;
@@ -638,9 +617,6 @@ TEST(co, sdo_ul_exp_1b)
  */
 TEST(co, sdo_ul_exp_2b)
 {
-	const can_frame_tst *e_pst;
-	can_frame_tst *f_pst;
-
 	node_init();
 
 	obj_u16 = 0xa5b6;
@@ -657,9 +633,6 @@ TEST(co, sdo_ul_exp_2b)
  */
 TEST(co, sdo_ul_exp_4b)
 {
-	const can_frame_tst *e_pst;
-	can_frame_tst *f_pst;
-
 	node_init();
 
 	obj_u32 = 0xa5b6c7d8;

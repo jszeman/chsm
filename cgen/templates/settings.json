@@ -20,7 +20,7 @@
 		"exit_children":		"chsm_exit_children",
 		"c_include_list":		["chsm.h", "cevent.h"],
 		"h_include_list":		["chsm.h", "cevent.h", "<stdbool.h>"],
-		"top_state_name": 		"chsm_result_ten\\s+(?P<top_func>\\w+)\\(chsm_tst\\s+\\*self,\\s+const\\s+cevent_tst\\s+\\*e_pst,\\s+chsm_call_ctx_tst\\s+\\*ctx_pst\\)\\s*;",
+		"top_state_name": 		"chsm_result_ten\\s+(?P<top_func>\\w+)\\(chsm_tst\\s+\\*self,\\s+const\\s+cevent_tst\\s+\\*e_pst\\)\\s*;",
 		"set_state_id":			""
 	},
 

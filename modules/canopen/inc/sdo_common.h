@@ -9,17 +9,17 @@
 #include "sdo.h"
 #include <stdint.h>
 
-const cevent_tst sdo_seg_dl_start_event;
-const cevent_tst sdo_seg_dl_end_event;
-const cevent_tst sdo_seg_ul_start_event;
-const cevent_tst sdo_seg_ul_end_event;
-const cevent_tst sdo_block_ul_start_event;
-const cevent_tst sdo_block_ul_end_event;
-const cevent_tst sdo_block_ul_started_event;
-const cevent_tst sdo_block_ul_finish_event;
-const cevent_tst sdo_block_dl_start_event;
-const cevent_tst sdo_block_dl_end_event;
-const cevent_tst sdo_block_dl_finish_event;
+extern const cevent_tst sdo_seg_dl_start_event;
+extern const cevent_tst sdo_seg_dl_end_event;
+extern const cevent_tst sdo_seg_ul_start_event;
+extern const cevent_tst sdo_seg_ul_end_event;
+extern const cevent_tst sdo_block_ul_start_event;
+extern const cevent_tst sdo_block_ul_end_event;
+extern const cevent_tst sdo_block_ul_started_event;
+extern const cevent_tst sdo_block_ul_finish_event;
+extern const cevent_tst sdo_block_dl_start_event;
+extern const cevent_tst sdo_block_dl_end_event;
+extern const cevent_tst sdo_block_dl_finish_event;
 
 typedef struct sdo_hdr_bits_tst
 {
