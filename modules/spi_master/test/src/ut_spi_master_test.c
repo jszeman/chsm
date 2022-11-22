@@ -58,7 +58,7 @@ TEST_SETUP(spi_master)
     memset(&pool_buff_au8, 0, sizeof pool_buff_au8);
     memset(&pool_ast, 0, sizeof pool_ast);
 
-	cpool_init(pool_ast+0, pool_buff_au8, 24, 16);
+	cpool_init(pool_ast+0, pool_buff_au8, 64, 16);
 
     cqueue_init(&q_st, events_apst, 4);
 

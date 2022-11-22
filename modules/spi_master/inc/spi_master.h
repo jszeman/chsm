@@ -87,7 +87,7 @@ struct spi_master_tst
     spi_transaction_tst cached_tr_st;
 };
 
-chsm_result_ten spi_master_top(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
+chsm_result_ten spi_master_top(chsm_tst *self, const cevent_tst  *e_pst);
 
 
 #endif
