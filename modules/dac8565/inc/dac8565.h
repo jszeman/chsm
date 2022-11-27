@@ -49,7 +49,7 @@ struct dac8565_tst
     uint32_t            cmd_au32[4];
 };
 
-chsm_result_ten dac8565_top(chsm_tst *self, const cevent_tst  *e_pst, chsm_call_ctx_tst *ctx_pst);
+chsm_result_ten dac8565_top(chsm_tst *self, const cevent_tst  *e_pst);
 
 
 #endif
