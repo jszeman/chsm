@@ -54,7 +54,7 @@ void process_dl_subblock(chsm_tst *_self, const cevent_tst *e_pst)
     if (subblock_idx_u8 > self->subblock_counter_u8)
     {
         /* TODO: we lost a frame */
-        printf("\nMissing frame\n");
+        //printf("\nMissing frame\n");
     }
     else if (subblock_idx_u8 < self->subblock_counter_u8)
     {

@@ -44,7 +44,7 @@ void send_next_block(chsm_tst *_self, const cevent_tst *e_pst)
         if (NULL == r_pst) 
         {
             /* TODO: send statically allocated error frame */
-            printf("\nEvent allocation failed in process_ul_block, cycle %d\n", i);
+            //printf("\nEvent allocation failed in process_ul_block, cycle %d\n", i);
             return;
         }
 
