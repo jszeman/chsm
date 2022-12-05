@@ -18,7 +18,7 @@ from copy import deepcopy
 EVENT_PATTERN = r'^(\s*(?P<signal>\w+)\s*)*(\[(?P<guard>\w+)\((?P<gparams>[\w,\s]*)\)\])*(\s*/\s*(?P<function>\w+)(?P<parens>\((?P<fparams>[\w,\s]*)\))*\s*)*'
 
 class StateMachine:
-    def __init__(self, data, h_file, funcs_h_file, templates, file_config,):
+    def __init__(self, data, h_file, funcs_h_file, templates, file_config):
         self.templates = templates
         self.file_config = file_config
         self.machine_h = h_file.name
@@ -66,6 +66,7 @@ class StateMachine:
         with open(hpath, 'r') as h_file:
             h_data = h_file.read()
 
+            logging.info(f'Top func template: {self.templates["top_state_name"]}')
             m = re.search(self.templates['top_state_name'], h_data)
             if m:
                 top_func = m.group('top_func')

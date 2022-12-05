@@ -27,6 +27,7 @@ void run_hsm_tests(void)
 	RUN_TEST_GROUP(crf);
 	RUN_TEST_GROUP(cb);
 	RUN_TEST_GROUP(cv);
+	RUN_TEST_GROUP(hsm_smpl);
 }
 
 int main(int argc, const char * argv[])

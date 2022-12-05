@@ -200,7 +200,7 @@ class Project:
         return None
 
     def _find_user_config_file(self, h_dir, h_name):
-        print(f'_find_user_config_file({h_dir}, {h_name})')
+        logging.info(f'_find_user_config_file({h_dir}, {h_name})')
         if h_name:
             f_name = self._find_file(h_dir, f'{h_name}.json')
             if f_name:
@@ -210,8 +210,8 @@ class Project:
 
 
     def _load_user_config(self, hpath):
-        user_cfg_path = self._find_user_config_file(hpath.parent, hpath.stem)
-
+        user_cfg_path = self._find_user_config_file(hpath.absolute().parent, hpath.stem)
+        logging.info(f'User config file: {user_cfg_path}')
         if user_cfg_path == None:
             return {}
 

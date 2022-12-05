@@ -1,0 +1,22 @@
+{
+    "src_dir":      			"../tsrc",
+    "doc_dir":					"../doc",
+
+    "templates": {
+		"init_signal":			"SMPL_SIG_INIT",
+		"signal_prefix":		"SMPL_SIG_",
+		"func_args":        	"self, e_u32",
+		"func_params":      	"void *self, uint32_t e_u32",
+		"user_func_args_t":   	"self, e_u32",
+		"user_func_params_t": 	"void *self, uint32_t e_u32",
+		"func_return_type": 	"void",
+		"guard_return_type":	"bool",
+		"switch_variable":  	"e_u32",
+		"trans_result":     	"SIMPLE_SM_SET_STATE(self, {target})",
+		"ignored_result":   	"",
+		"c_include_list":		[],
+		"h_include_list":		["<stdbool.h>"],
+		"top_state_name": 		"void\\s+(?P<top_func>\\w+)\\(void\\s+\\*self,\\s+uint32_t\\s+e_u32\\)\\s*;",
+		"set_state_id":			""
+	}
+}

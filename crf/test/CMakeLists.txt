@@ -31,6 +31,9 @@ add_executable(crf_test
                 tsrc/dev_driver.c
                 tsrc/dev_driver_functions.c
                 tsrc/atomic_functions.c
+                tsrc/chsm_simple_machine.c
+                tsrc/chsm_simple_machine_functions.c
+                tsrc/chsm_test_simple.c
                 ../src/chsm.c
                 ../src/cvalue.c
                 ../src/cpool.c
