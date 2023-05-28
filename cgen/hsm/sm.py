@@ -5,6 +5,7 @@ from datetime import datetime
 from .ast import Func, If, Switch, Case, Call, Break, Return, Blank, Expr, Ast, FuncDeclaration, Include, Ifndef, Define, Endif, Comment, Decl, Assignment, Enum
 import pprint
 from copy import deepcopy
+from .parser import Parser, ParserException
 
 # TODO: make sure, that there is only one exit function and it has no parameters
 
@@ -320,9 +321,19 @@ class StateMachine:
             if s_id.startswith('state_'):
                 state['num'] = int(re.findall(r'\d+', s_id)[0])
 
-            for line in s['text']:
-                s = self.str_to_signal(line)
-                self.add_signal_to_state(state, s)
+            txt = '\n'.join(s['text'])
+            p = Parser()
+            try:
+                sigs = p.parse(txt)
+            except ParserException as e:
+                logging.info(f'Exception {str(e)} in state "{s["title"]}". Text:\n{txt}')
+
+            for sig in sigs:
+                self.add_signal_to_state(state, sig)
+
+            self.user_inc_funcs.update(p.funcs_w_args)
+            self.user_funcs.update(p.funcs_wo_args)
+            self.user_signals.update(p.user_signals)
 
             states[s_id] = state
 
@@ -359,15 +370,25 @@ class StateMachine:
             else:
                 lca = None
 
+            p = Parser()
+
             if states[start]['type'] == 'initial':
                 start = states[start]['parent']
                 states[start]['initial'] = target
 
-                signal = self.str_to_signal(label, target=target, target_title=states[target]['title'], initial=True)
+                signals = p.parse(label, target=target, target_title=states[target]['title'], initial=True)
             else:
-                signal = self.str_to_signal(label, target, target_title=states[target]['title'], initial=False, lca=lca)
+                signals = p.parse(label, target, target_title=states[target]['title'], initial=False, lca=lca)
 
-            self.add_signal_to_state(states[start], signal)
+            try:
+                self.add_signal_to_state(states[start], signals[0])
+            except:
+                print(signal)
+                raise
+
+            self.user_inc_funcs.update(p.funcs_w_args)
+            self.user_funcs.update(p.funcs_wo_args)
+            self.user_signals.update(p.user_signals)
 
     def make_call(self, func, params, standalone=False):
         fparams = f', {params}' if params else ''
