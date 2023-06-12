@@ -463,3 +463,108 @@ void s3_l_func(chsm_tst *_self, const cevent_tst *e_pst)
 
     (void)e_pst;
 }
+
+void s5_c_cfunc2(chsm_tst *_self, const cevent_tst *e_pst)
+{
+    test_hsm_tst *self = (test_hsm_tst *)_self;
+    
+    load(self, __func__);
+    load(self, " ");
+
+    (void)e_pst;
+}
+
+void s5_c_func1(chsm_tst *_self, const cevent_tst *e_pst)
+{
+    test_hsm_tst *self = (test_hsm_tst *)_self;
+    
+    load(self, __func__);
+    load(self, " ");
+
+    (void)e_pst;
+}
+
+void s5_entry1(chsm_tst *_self, const cevent_tst *e_pst)
+{
+    test_hsm_tst *self = (test_hsm_tst *)_self;
+    
+    load(self, __func__);
+    load(self, " ");
+
+    (void)e_pst;
+}
+
+void s5_entry2(chsm_tst *_self, const cevent_tst *e_pst)
+{
+    test_hsm_tst *self = (test_hsm_tst *)_self;
+    
+    load(self, __func__);
+    load(self, " ");
+
+    (void)e_pst;
+}
+
+void s5_g1_f1(chsm_tst *_self, const cevent_tst *e_pst)
+{
+    test_hsm_tst *self = (test_hsm_tst *)_self;
+    
+    load(self, __func__);
+    load(self, " ");
+
+    (void)e_pst;
+}
+
+void s5_g1_f2(chsm_tst *_self, const cevent_tst *e_pst)
+{
+    test_hsm_tst *self = (test_hsm_tst *)_self;
+    
+    load(self, __func__);
+    load(self, " ");
+
+    (void)e_pst;
+}
+
+void s5_k_func2(chsm_tst *_self, const cevent_tst *e_pst)
+{
+    test_hsm_tst *self = (test_hsm_tst *)_self;
+    
+    load(self, __func__);
+    load(self, " ");
+
+    (void)e_pst;
+}
+
+void s5_l_func(chsm_tst *_self, const cevent_tst *e_pst)
+{
+    test_hsm_tst *self = (test_hsm_tst *)_self;
+    
+    load(self, __func__);
+    load(self, " ");
+
+    (void)e_pst;
+}
+
+void s5_k_func1(chsm_tst *_self, const cevent_tst *e_pst, uint16_t param1, uint16_t param2)
+{
+    test_hsm_tst *self = (test_hsm_tst *)_self;
+    
+    load(self, __func__);
+    load(self, " ");
+    return self->s11_g_guard2;
+
+    (void)e_pst;
+    (void)param1;
+    (void)param2;
+}
+
+
+bool s5_g1(chsm_tst *_self, const cevent_tst *e_pst)
+{
+    test_hsm_tst *self = (test_hsm_tst *)_self;
+    
+    load(self, __func__);
+    load(self, " ");
+    return self->s5_g1;
+
+    (void)e_pst;
+}

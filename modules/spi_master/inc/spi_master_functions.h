@@ -1,13 +1,17 @@
 #ifndef SPI_MASTER_FUNCTIONS_H
 #define SPI_MASTER_FUNCTIONS_H
 
-/*Generated with CHSM v0.0.0 at 2022.11.22 13.30.18*/
+/*Generated with CHSM v0.0.0 at 2023.05.28 20.50.37*/
 
 #include "spi_master.h"
 #include "chsm.h"
 #include "cevent.h"
 #include <stdbool.h>
 
+
+void chsm_defer(chsm_tst *self, const cevent_tst *e_pst);
+
+void chsm_recall(chsm_tst *self, const cevent_tst *e_pst);
 
 void spi_master_init(chsm_tst *self, const cevent_tst *e_pst);
 

@@ -1,13 +1,17 @@
 #ifndef I2C_MASTER_FUNCTIONS_H
 #define I2C_MASTER_FUNCTIONS_H
 
-/*Generated with CHSM v0.0.0 at 2022.11.12 20.02.22*/
+/*Generated with CHSM v0.0.0 at 2023.05.28 20.50.34*/
 
 #include "i2c_master.h"
 #include "chsm.h"
 #include "cevent.h"
 #include <stdbool.h>
 
+
+void chsm_defer(chsm_tst *self, const cevent_tst *e_pst);
+
+void chsm_recall(chsm_tst *self, const cevent_tst *e_pst);
 
 void clear_transaction_info(chsm_tst *self, const cevent_tst *e_pst);
 

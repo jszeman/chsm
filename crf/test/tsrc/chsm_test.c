@@ -40,6 +40,7 @@ const cevent_tst event_j = {.sig=TEST_SIG_J, .gc_info={0}};
 const cevent_tst event_k = {.sig=TEST_SIG_K, .gc_info={0}};
 const cevent_tst event_l = {.sig=TEST_SIG_L, .gc_info={0}};
 const cevent_tst event_m = {.sig=TEST_SIG_M, .gc_info={0}};
+const cevent_tst event_n = {.sig=TEST_SIG_N, .gc_info={0}};
 const cevent_tst event_id = {.sig=TEST_SIG_ID, .gc_info={0}};
 
 #define EVENT_QUEUE_SIZE 8
@@ -555,6 +556,77 @@ TEST(hsm, sm4_s211_h)
 	TEST_ASSERT_EQUAL_STRING("s11_id s11_guard k_guard s1_guard j_guard ", hsm.log_buff);
 }
 
+/* sm4_s5_entry:
+ *		Check that executing multiple functions at entry
+		works.
+ */
+
+TEST(hsm, sm4_s5_entry)
+{
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, 0);
+	chsm_init(&hsm.super);
+
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, &event_m); // Go to s5
+
+	TEST_ASSERT_EQUAL_STRING("s11_exit s1_exit s5_entry1 s5_entry2 ", hsm.log_buff);
+}
+
+/* sm4_s5_k:
+ *		Check that executing multiple functions written at
+		multiple rows works.
+ */
+
+TEST(hsm, sm4_s5_k)
+{
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, 0);
+	chsm_init(&hsm.super);
+
+	chsm_dispatch(&hsm.super, &event_m); // Go to s5
+	clear_log(&hsm);
+
+	chsm_dispatch(&hsm.super, &event_k);
+
+	TEST_ASSERT_EQUAL_STRING("s5_k_func1 s5_k_func2 s5_g1 ", hsm.log_buff);
+}
+
+/* sm4_s5_c:
+ *		Check that executing multiple functions during a transition
+		works.
+ */
+
+TEST(hsm, sm4_s5_c)
+{
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, 0);
+	chsm_init(&hsm.super);
+
+	chsm_dispatch(&hsm.super, &event_m); // Go to s5
+	clear_log(&hsm);
+
+	chsm_dispatch(&hsm.super, &event_c);
+
+	TEST_ASSERT_EQUAL_STRING("s5_c_func1 s5_c_cfunc2 s_init s1_entry s1_init s11_entry s11_init ", hsm.log_buff);
+}
+
+/* sm4_s5_g1:
+ *		Check that executing multiple functions after a guard
+		works.
+ */
+
+TEST(hsm, sm4_s5_g1)
+{
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, 0);
+	chsm_init(&hsm.super);
+
+	hsm.s5_g1 = true;
+	chsm_dispatch(&hsm.super, &event_m); // Go to s5
+	clear_log(&hsm);
+
+	chsm_dispatch(&hsm.super, &event_a);
+
+	TEST_ASSERT_EQUAL_STRING("s5_g1 s5_g1_f1 s5_g1_f2 ", hsm.log_buff);
+}
+
 /* init_event_queue:
  *		Check that the constructor properly initializes the event queue by
  *		using the HSM as a queue.
@@ -611,7 +683,7 @@ TEST(hsm, defer_1)
 	TEST_ASSERT_EQUAL_STRING("s3_k_func ", hsm.log_buff);
 }
 
-/* defer_1:
+/* defer_2:
  *		Defer two event then recall them later.
  */
 
@@ -662,6 +734,161 @@ TEST(hsm, defer_2)
 	TEST_ASSERT_EQUAL_STRING("s3_l_func ", hsm.log_buff);
 }
 
+/* sm4_doc_file:
+ *		This test just writes a bunch of examples into
+		a file, that can be referenced in the documantation.
+ */
+
+TEST(hsm, sm4_doc_file)
+{
+	FILE* f;
+
+	f = fopen("sm.doc", "w");
+	if (f == NULL) return;
+	fprintf(f, "CHSM State machine execution log\n\n");
+
+	fprintf(f, "This auto generated file describes what functions\n"
+			   "will be called when the state machine receives a\n"
+			   "particular signal. Format:\n\n"
+			   "state_name: signal [relevant guards]:\n"
+			   "    List of called functions \n\n");
+
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, DEFER_QUEUE_SIZE);
+	clear_log(&hsm);
+	
+	chsm_init(&hsm.super);
+	fprintf(f, "__top__: INIT\n    %s\n\n", hsm.log_buff);
+
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, &event_id);
+	fprintf(f, "s11: ID\n    %s\n\n", hsm.log_buff);
+
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, &event_d);
+	fprintf(f, "s11: D [cond() => false]\n    %s\n\n", hsm.log_buff);
+
+	clear_log(&hsm);
+	hsm.cond = true;
+	chsm_dispatch(&hsm.super, &event_d);
+	hsm.cond = false;
+	fprintf(f, "s11: D [cond() => true]\n    %s\n\n", hsm.log_buff);
+
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, &event_a);
+	fprintf(f, "s11: A\n    %s\n\n", hsm.log_buff);
+
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, &event_b);
+	fprintf(f, "s11: B\n    %s\n\n", hsm.log_buff);
+
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, &event_h);
+	fprintf(f, "s11: H\n    %s\n\n", hsm.log_buff);
+
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, &event_e);
+	fprintf(f, "s11: E\n    %s\n\n", hsm.log_buff);
+
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, &event_f);
+	fprintf(f, "s11: F\n    %s\n\n", hsm.log_buff);
+	chsm_dispatch(&hsm.super, &event_f); // Go back to s11
+
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, &event_c);
+	fprintf(f, "s11: C\n    %s\n\n", hsm.log_buff);
+	chsm_dispatch(&hsm.super, &event_f); // Go back to s11
+
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, &event_g);
+	fprintf(f, "s11: G [s11_g_guard1() => false, s11_g_guard2() => false]\n    %s\n\n", hsm.log_buff);
+
+	clear_log(&hsm);
+	hsm.s11_g_guard1 = true;
+	chsm_dispatch(&hsm.super, &event_g);
+	fprintf(f, "s11: G [s11_g_guard1() => true, s11_g_guard2() => false]\n    %s\n\n", hsm.log_buff);
+	hsm.s11_g_guard1 = false;
+
+	clear_log(&hsm);
+	hsm.s11_g_guard2 = true;
+	chsm_dispatch(&hsm.super, &event_g);
+	fprintf(f, "s11: G [s11_g_guard1() => false, s11_g_guard2() => true]\n    %s\n\n", hsm.log_buff);
+	chsm_dispatch(&hsm.super, &event_f); // Go back to s11
+
+	clear_log(&hsm);
+	hsm.s11_g_guard1 = true;
+	hsm.s11_g_guard2 = true;
+	chsm_dispatch(&hsm.super, &event_g);
+	fprintf(f, "s11: G [s11_g_guard1() => true, s11_g_guard2() => true]\n    %s\n\n", hsm.log_buff);
+	chsm_dispatch(&hsm.super, &event_f); // Go back to s11
+	hsm.s11_g_guard1 = false;
+	hsm.s11_g_guard2 = false;
+
+	clear_log(&hsm);
+	hsm.k_guard = true;
+	chsm_dispatch(&hsm.super, &event_n);
+	fprintf(f, "s11: N [k_guard1() => true]\n    %s\n\n", hsm.log_buff);
+	chsm_dispatch(&hsm.super, &event_f); // Go back to s11
+	hsm.k_guard = false;
+
+	clear_log(&hsm);
+	hsm.s1_guard = true;
+	chsm_dispatch(&hsm.super, &event_n);
+	fprintf(f, "s11: N [s1_guard() => true]\n    %s\n\n", hsm.log_buff);
+	hsm.s1_guard = false;
+
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, &event_k);
+	chsm_dispatch(&hsm.super, &event_j);
+	const cevent_tst *e = hsm.super.event_q_st.get(&(hsm.super.event_q_st));
+	if (e)
+	{
+		chsm_dispatch(&hsm.super, e);
+	}
+	fprintf(f, "s11: K, J\n    %s\n\n", hsm.log_buff);
+
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, &event_e);
+	fprintf(f, "s3: E \n    %s\n\n", hsm.log_buff);
+
+	chsm_dispatch(&hsm.super, &event_c); // Go to s211
+
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, &event_c);
+	fprintf(f, "s211: C \n    %s\n\n", hsm.log_buff);
+	chsm_dispatch(&hsm.super, &event_c); // Go to s211
+
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, &event_g);
+	fprintf(f, "s211: G \n    %s\n\n", hsm.log_buff);
+	chsm_dispatch(&hsm.super, &event_c); // Go to s211
+
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, &event_f);
+	fprintf(f, "s211: F \n    %s\n\n", hsm.log_buff);
+	chsm_dispatch(&hsm.super, &event_c); // Go to s211
+
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, &event_d);
+	fprintf(f, "s211: D \n    %s\n\n", hsm.log_buff);
+
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, &event_b);
+	fprintf(f, "s211: B \n    %s\n\n", hsm.log_buff);
+
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, &event_a);
+	fprintf(f, "s211: A \n    %s\n\n", hsm.log_buff);
+
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, &event_h);
+	fprintf(f, "s211: H \n    %s\n\n", hsm.log_buff);
+
+
+	
+	fclose(f);
+}
+
 TEST_GROUP_RUNNER(hsm)
 {
 	RUN_TEST_CASE(hsm, enter_initial_state);
@@ -691,10 +918,11 @@ TEST_GROUP_RUNNER(hsm)
 	RUN_TEST_CASE(hsm, init_event_queue);
 	RUN_TEST_CASE(hsm, defer_1);
 	RUN_TEST_CASE(hsm, defer_2);
-	//RUN_TEST_CASE(hsm, test0);
-	//RUN_TEST_CASE(hsm, test0);
-	//RUN_TEST_CASE(hsm, test0);
-	//RUN_TEST_CASE(hsm, test0);
+	RUN_TEST_CASE(hsm, sm4_s5_entry);
+	RUN_TEST_CASE(hsm, sm4_s5_k);
+	RUN_TEST_CASE(hsm, sm4_s5_c);
+	RUN_TEST_CASE(hsm, sm4_s5_g1);
+	RUN_TEST_CASE(hsm, sm4_doc_file);
 	//RUN_TEST_CASE(hsm, test0);
 	//RUN_TEST_CASE(hsm, test0);
 	//RUN_TEST_CASE(hsm, test0);

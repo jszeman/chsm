@@ -66,9 +66,9 @@ class Parser:
             funcs.append((func, func_param))
    
             if func_param:
-                self.funcs_w_args.append(func)
+                self.funcs_w_args.add(func)
             else:
-                self.funcs_wo_args.append(func)
+                self.funcs_wo_args.add(func)
 
             data = data.lstrip()
             if not len(data):
@@ -119,7 +119,7 @@ class Parser:
 
             if len(data) and data[0] != '\n':
                 if data[0] == '{':
-                    funcs, data = get_funcs(data[1:])
+                    funcs, data = self.get_funcs(data[1:])
                 else:
                     func, func_param, data = self.get_func(data)
                     funcs.append((func, func_param))
