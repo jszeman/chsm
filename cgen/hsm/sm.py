@@ -489,7 +489,7 @@ class StateMachine:
 
         
         ast.nodes.insert(0, Blank())
-        ast.nodes.insert(0, Comment(f'Generated with CHSM v0.0.0 at {datetime.strftime(datetime.now(), "%Y.%m.%d %H.%M.%S")}'))
+        ast.nodes.insert(0, Comment(f'Generated with CHSM v0.0.1'))
 
         return ast
 
