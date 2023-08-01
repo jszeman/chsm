@@ -1,7 +1,7 @@
 #ifndef CANOPEN_FUNCTIONS_H
 #define CANOPEN_FUNCTIONS_H
 
-/*Generated with CHSM v0.0.0 at 2023.05.28 20.50.38*/
+/*Generated with CHSM v0.0.1*/
 
 #include "canopen.h"
 #include "chsm.h"

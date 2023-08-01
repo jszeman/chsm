@@ -1,13 +1,17 @@
 #ifndef SDO_FUNCTIONS_H
 #define SDO_FUNCTIONS_H
 
-/*Generated with CHSM v0.0.0 at 2022.11.22 13.22.23*/
+/*Generated with CHSM v0.0.1*/
 
 #include "sdo.h"
 #include "chsm.h"
 #include "cevent.h"
 #include <stdbool.h>
 
+
+void chsm_defer(chsm_tst *self, const cevent_tst *e_pst);
+
+void chsm_recall(chsm_tst *self, const cevent_tst *e_pst);
 
 void process_block_dl_end(chsm_tst *self, const cevent_tst *e_pst);
 
@@ -42,11 +46,7 @@ void send_sdo_exp_ul_abort(chsm_tst *self, const cevent_tst *e_pst);
 void send_sdo_exp_ul_response(chsm_tst *self, const cevent_tst *e_pst);
 
 
-bool is_abort_request(chsm_tst *self, const cevent_tst *e_pst);
-
 bool is_not_abort_request(chsm_tst *self, const cevent_tst *e_pst);
-
-bool process_ul_block_ack(chsm_tst *self, const cevent_tst *e_pst);
 
 typedef enum sdo_state_id_ten
 {

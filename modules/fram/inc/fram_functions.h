@@ -1,7 +1,7 @@
 #ifndef FRAM_FUNCTIONS_H
 #define FRAM_FUNCTIONS_H
 
-/*Generated with CHSM v0.0.0 at 2023.05.28 20.50.35*/
+/*Generated with CHSM v0.0.1*/
 
 #include "fram.h"
 #include "chsm.h"

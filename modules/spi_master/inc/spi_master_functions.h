@@ -1,7 +1,7 @@
 #ifndef SPI_MASTER_FUNCTIONS_H
 #define SPI_MASTER_FUNCTIONS_H
 
-/*Generated with CHSM v0.0.0 at 2023.05.28 20.50.37*/
+/*Generated with CHSM v0.0.1*/
 
 #include "spi_master.h"
 #include "chsm.h"

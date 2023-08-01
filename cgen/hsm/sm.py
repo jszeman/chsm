@@ -18,6 +18,8 @@ from .parser import Parser, ParserException
 #   [guard()]
 EVENT_PATTERN = r'^(\s*(?P<signal>\w+)\s*)*(\[(?P<guard>\w+)\((?P<gparams>[\w,\s]*)\)\])*(\s*/\s*(?P<function>\w+)(?P<parens>\((?P<fparams>[\w,\s]*)\))*\s*)*'
 
+VERSION_STRING = 'Generated with CHSM v0.0.2'
+
 class StateMachine:
     def __init__(self, data, h_file, funcs_h_file, templates, file_config):
         self.templates = templates
@@ -85,7 +87,7 @@ class StateMachine:
         ast.nodes.append(Define(symbol))
         ast.nodes.append(Blank())
 
-        ast.nodes.append(Comment(f'Generated with CHSM v0.0.0 at {datetime.strftime(datetime.now(), "%Y.%m.%d %H.%M.%S")}'))
+        ast.nodes.append(Comment(VERSION_STRING))
         ast.nodes.append(Blank())
         ast.nodes.append(Blank())
 
@@ -334,6 +336,7 @@ class StateMachine:
             self.user_inc_funcs.update(p.funcs_w_args)
             self.user_funcs.update(p.funcs_wo_args)
             self.user_signals.update(p.user_signals)
+            self.user_guards.update(p.guards_wo_args)
 
             states[s_id] = state
 
@@ -383,7 +386,7 @@ class StateMachine:
             try:
                 self.add_signal_to_state(states[start], signals[0])
             except:
-                print(signal)
+                print(signals)
                 raise
 
             self.user_inc_funcs.update(p.funcs_w_args)
@@ -489,7 +492,7 @@ class StateMachine:
 
         
         ast.nodes.insert(0, Blank())
-        ast.nodes.insert(0, Comment(f'Generated with CHSM v0.0.1'))
+        ast.nodes.insert(0, Comment(VERSION_STRING))
 
         return ast
 

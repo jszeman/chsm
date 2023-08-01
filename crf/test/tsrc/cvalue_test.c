@@ -133,7 +133,7 @@ TEST(cv, set_filter_count_values_in_range)
     TEST_ASSERT_EQUAL(1, in_cnt_u32);
     TEST_ASSERT_EQUAL(0, high_cnt_u32);
 
-    TEST_ASSERT_EQUAL_HEX64((uint64_t)TEST_POINTER, (uint64_t)last_user_param_pv);
+    TEST_ASSERT_EQUAL(TEST_POINTER, last_user_param_pv);
 }
 
 /* Check that calling set_value with a low value in range will trigger
