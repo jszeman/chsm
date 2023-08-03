@@ -392,6 +392,7 @@ class StateMachine:
             self.user_inc_funcs.update(p.funcs_w_args)
             self.user_funcs.update(p.funcs_wo_args)
             self.user_signals.update(p.user_signals)
+            self.user_guards.update(p.guards_wo_args)
 
     def make_call(self, func, params, standalone=False):
         fparams = f', {params}' if params else ''
