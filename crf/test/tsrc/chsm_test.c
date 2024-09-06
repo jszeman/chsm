@@ -734,6 +734,32 @@ TEST(hsm, defer_2)
 	TEST_ASSERT_EQUAL_STRING("s3_l_func ", hsm.log_buff);
 }
 
+/* history:
+ *		Check that we can use functions as state title to implement
+ *		history functionality.
+ */
+
+TEST(hsm, history)
+{
+	chsm_ctor(&hsm.super, __top__4, events, EVENT_QUEUE_SIZE, 0);
+	chsm_init(&hsm.super);
+
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, &event_n); // Go to s6
+	chsm_dispatch(&hsm.super, &event_a); // Go back to s
+	chsm_dispatch(&hsm.super, &event_id); // Check that we are back in s11
+
+	TEST_ASSERT_EQUAL_STRING("s11_exit s1_exit s_exit s6_entry s_entry s11_id s11_guard k_guard s1_guard j_guard ", hsm.log_buff);
+
+	chsm_dispatch(&hsm.super, &event_c); // Go to s211
+	clear_log(&hsm);
+	chsm_dispatch(&hsm.super, &event_n); // Go to s6
+	chsm_dispatch(&hsm.super, &event_a); // Go back to s
+	chsm_dispatch(&hsm.super, &event_id); // Check that we are back in s211
+
+	TEST_ASSERT_EQUAL_STRING("s211_exit(6) s21_exit s2_exit s_exit s6_entry s_entry s211_id ", hsm.log_buff);
+}
+
 /* sm4_doc_file:
  *		This test just writes a bunch of examples into
 		a file, that can be referenced in the documantation.
@@ -923,7 +949,7 @@ TEST_GROUP_RUNNER(hsm)
 	RUN_TEST_CASE(hsm, sm4_s5_c);
 	RUN_TEST_CASE(hsm, sm4_s5_g1);
 	RUN_TEST_CASE(hsm, sm4_doc_file);
-	//RUN_TEST_CASE(hsm, test0);
+	RUN_TEST_CASE(hsm, history);
 	//RUN_TEST_CASE(hsm, test0);
 	//RUN_TEST_CASE(hsm, test0);
 }
