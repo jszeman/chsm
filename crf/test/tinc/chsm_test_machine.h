@@ -47,6 +47,8 @@ struct test_hsm_tst
     bool        s11_g_guard1;
     bool        s11_g_guard2;
     bool        s5_g1;
+
+    chsm_state_tpft history_pft;
 };
 
 chsm_result_ten __top__1(chsm_tst *self, const cevent_tst  *e_pst);
@@ -65,5 +67,7 @@ bool s11_g_guard2(chsm_tst *self, const cevent_tst *e_pst, uint16_t param);
 void s11_id(chsm_tst *self, const cevent_tst *e_pst, uint16_t param);
 void s211_exit(chsm_tst *self, const cevent_tst *e_pst, uint16_t param);
 bool s5_g1(chsm_tst *self, const cevent_tst *e_pst);
+void s5_k_func1(chsm_tst *_self, const cevent_tst *e_pst, uint16_t param1, uint16_t param2);
+chsm_state_tpft s_history(chsm_tst *_self, const cevent_tst *e_pst);
 
 #endif

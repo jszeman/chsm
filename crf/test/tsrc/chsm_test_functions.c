@@ -550,7 +550,6 @@ void s5_k_func1(chsm_tst *_self, const cevent_tst *e_pst, uint16_t param1, uint1
     
     load(self, __func__);
     load(self, " ");
-    return self->s11_g_guard2;
 
     (void)e_pst;
     (void)param1;
@@ -568,3 +567,50 @@ bool s5_g1(chsm_tst *_self, const cevent_tst *e_pst)
 
     (void)e_pst;
 }
+
+void s6_entry(chsm_tst *_self, const cevent_tst *e_pst)
+{
+    test_hsm_tst *self = (test_hsm_tst *)_self;
+    
+    load(self, __func__);
+    load(self, " ");
+
+    (void)e_pst;
+}
+
+void s7_entry(chsm_tst *_self, const cevent_tst *e_pst)
+{
+    test_hsm_tst *self = (test_hsm_tst *)_self;
+    
+    load(self, __func__);
+    load(self, " ");
+
+    (void)e_pst;
+}
+
+void s8_entry(chsm_tst *_self, const cevent_tst *e_pst)
+{
+    test_hsm_tst *self = (test_hsm_tst *)_self;
+    
+    load(self, __func__);
+    load(self, " ");
+
+    (void)e_pst;
+}
+
+void s_save_history(chsm_tst *_self, const cevent_tst *e_pst)
+{
+    test_hsm_tst *self = (test_hsm_tst *)_self;
+    self->history_pft = chsm_get_state(&self->super);
+
+    (void)e_pst;
+}
+
+chsm_state_tpft s_history(chsm_tst *_self, const cevent_tst *e_pst)
+{
+    test_hsm_tst *self = (test_hsm_tst *)_self;
+    (void)e_pst;
+
+    return self->history_pft;
+}
+

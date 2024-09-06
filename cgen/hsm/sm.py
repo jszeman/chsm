@@ -169,6 +169,9 @@ class StateMachine:
                         #g['transition_funcs'] = tfuncs
                         g['funcs'].extend(tfuncs)
                         g['target_title'] = states[target]['title']
+                        g['target_type'] = states[target]['type']
+                        if 'params' in states[target]:
+                            g['target_params'] = states[target]['params']
         
         #The only place where transition functions are needed for an init signal is the __top__
         g = states['__top__']['signals']['init']['guards'][(None, None)]
@@ -302,11 +305,53 @@ class StateMachine:
                 else:
                     orig_signal['guards'][g_fn] = g
     
+    def process_state_title(self, title):
+        """Parse the title string. A state title can be a function identifier
+        or a function call.
+        Return: (function_name, params, is_call), where:
+            function: name of the function or id
+            params: parameter string,
+            is_call: True, if the title is actually a function call."""
+        title = title.lstrip()
+
+        m = re.match('[a-zA-z_]+\w*', title)
+        if m:
+            fname = m[0]
+            rem = title[m.span()[1]:]
+        else:
+            raise ParserException(f'Expected function identifier in "{title}"')
+
+        rem = rem.lstrip()
+
+        if len(rem) == 0 or rem[0] != '(':
+            return fname, None, False
+
+        rem = rem[1:]
+
+        params, c_brace, rem = rem.partition(')')
+
+        params = params.strip()
+        if params == '':
+            params = None
+        else:
+            for p in params.split(','):
+                ps = p.strip()
+                if not ps.isidentifier() and not ps.isalnum():
+                    raise ParserException(f'Expected  identifier as function param but found: "{p}"')
+
+        if c_brace == '':
+            raise ParserException(f'Expected ")" in "{title}"')
+            
+        return fname, params, True
+
     def get_states(self, data):
         """Extract state info from drawing data into a dict"""
         states = {}
 
         for s_id, s in data['states'].items():
+
+            title, params, is_call = self.process_state_title(s['title'])
+
             state = {
                 'signals': {
                     None: {
@@ -316,12 +361,16 @@ class StateMachine:
                 },
                 'parent': s['parent'],
                 'children': s['children'],
-                'title': s['title'],
+                'title': title,
                 'type': s['type'],
                 }
-
-            if s_id.startswith('state_'):
-                state['num'] = int(re.findall(r'\d+', s_id)[0])
+            
+            if is_call:
+                state['type'] = 'call'
+                state['params'] = params
+            else:
+                if s_id.startswith('state_'):
+                    state['num'] = int(re.findall(r'\d+', s_id)[0])
 
             txt = '\n'.join(s['text'])
             p = Parser()
@@ -414,9 +463,16 @@ class StateMachine:
                 add(self.make_call(func, param, True))
 
         if guard['target']:
-            if self.templates['set_state_id'] != "":
+            if self.templates['set_state_id'] != "":   
                 add(self.make_call(self.templates['set_state_id'], guard['target_title'].upper(), True))
-            add(Return(self.templates['trans_result'].format(target=guard['target_title'])))
+            
+            if guard.get('target_type', None) == 'call':
+                target_call = self.make_call(guard['target_title'], guard['target_params'])
+                target_title = str(target_call)
+            else:
+                target_title = guard['target_title']
+
+            add(Return(self.templates['trans_result'].format(target=target_title)))
 
         return nodes
 
@@ -471,6 +527,9 @@ class StateMachine:
         return f
 
     def build_ast(self, states):
+        with open('states.txt', 'w') as f:
+            pprint.pprint(states, stream=f, indent=4, width=120)
+
         ast = Ast()
         ast.nodes.append(Blank())
         for s_id, s in states.items():

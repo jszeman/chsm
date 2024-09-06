@@ -133,4 +133,9 @@ static inline chsm_result_ten chsm_handled(chsm_tst *self)
 	
 }
 
+static inline chsm_state_tpft chsm_get_state(chsm_tst *self)
+{
+	return self->state_handler_pft;
+}
+
 #endif /* INC_CHSM_H_ */

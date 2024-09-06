@@ -1,10 +1,11 @@
-/*Generated with CHSM v0.0.1*/
+/*Generated with CHSM v0.0.2*/
 #include "cevent.h"
 #include "chsm.h"
 #include "chsm_test_machine.h"
 #include "chsm_test_functions2.h"
 
 
+static chsm_result_ten s6(chsm_tst *self, const cevent_tst *e_pst);
 static chsm_result_ten s5(chsm_tst *self, const cevent_tst *e_pst);
 static chsm_result_ten s4(chsm_tst *self, const cevent_tst *e_pst);
 static chsm_result_ten s3(chsm_tst *self, const cevent_tst *e_pst);
@@ -101,6 +102,14 @@ static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst)
             s11_entry(self, e_pst);
             s11_init(self, e_pst);
             return chsm_transition(self, s11);
+
+        case TEST_SIG_N:
+            s11_exit(self, e_pst);
+            s1_exit(self, e_pst);
+            s_exit(self, e_pst);
+            s_save_history(self, e_pst);
+            s6_entry(self, e_pst);
+            return chsm_transition(self, s6);
 
         case TEST_SIG_E:
             s11_exit(self, e_pst);
@@ -232,6 +241,15 @@ static chsm_result_ten s211(chsm_tst *self, const cevent_tst *e_pst)
             s11_entry(self, e_pst);
             s11_init(self, e_pst);
             return chsm_transition(self, s11);
+
+        case TEST_SIG_N:
+            s211_exit(self, e_pst, 6);
+            s21_exit(self, e_pst);
+            s2_exit(self, e_pst);
+            s_exit(self, e_pst);
+            s_save_history(self, e_pst);
+            s6_entry(self, e_pst);
+            return chsm_transition(self, s6);
 
         case TEST_SIG_E:
             s211_exit(self, e_pst, 6);
@@ -379,6 +397,18 @@ static chsm_result_ten s5(chsm_tst *self, const cevent_tst *e_pst)
     {
         s5_g1_f1(self, e_pst);
         s5_g1_f2(self, e_pst);
+    }
+
+    return chsm_ignored(self);
+}
+
+static chsm_result_ten s6(chsm_tst *self, const cevent_tst *e_pst)
+{
+    switch(e_pst->sig)
+    {
+        case TEST_SIG_A:
+            s_entry(self, e_pst);
+            return chsm_transition(self, s_history(self, e_pst));
     }
 
     return chsm_ignored(self);
