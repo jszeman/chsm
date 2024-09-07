@@ -735,7 +735,7 @@ TEST(hsm, defer_2)
 }
 
 /* history:
- *		Check that we can use functions as state title to implement
+ *		Check that we can use function as state title to implement
  *		history functionality.
  */
 

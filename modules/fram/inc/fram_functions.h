@@ -1,7 +1,7 @@
 #ifndef FRAM_FUNCTIONS_H
 #define FRAM_FUNCTIONS_H
 
-/*Generated with CHSM v0.0.1*/
+/*Generated with CHSM v0.0.2*/
 
 #include "fram.h"
 #include "chsm.h"
@@ -39,6 +39,8 @@ void store_op_info(chsm_tst *self, const cevent_tst *e_pst);
 /*Prepare and send a transaction to the I2C master to write a chunk of data to the FRAM.*/
 void write_a_chunk(chsm_tst *self, const cevent_tst *e_pst);
 
+
+bool last_transaction(chsm_tst *self, const cevent_tst *e_pst);
 
 typedef enum fram_state_id_ten
 {

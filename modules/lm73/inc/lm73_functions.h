@@ -1,7 +1,7 @@
 #ifndef LM73_FUNCTIONS_H
 #define LM73_FUNCTIONS_H
 
-/*Generated with CHSM v0.0.1*/
+/*Generated with CHSM v0.0.2*/
 
 #include "lm73.h"
 #include "chsm.h"
@@ -40,6 +40,9 @@ void send_offline_event(chsm_tst *self, const cevent_tst *e_pst);
 /*Send a SIG_LM73_ONLINE event. This can be used to detect successful initialization.*/
 void send_online_event(chsm_tst *self, const cevent_tst *e_pst);
 
+
+/*True, if the response data is equal to 0x190. See LM73 datasheet section: 7.5.1.7 Identification Register*/
+bool lm73_id_match(chsm_tst *self, const cevent_tst *e_pst);
 
 typedef enum lm73_state_id_ten
 {

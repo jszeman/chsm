@@ -1,7 +1,7 @@
 #ifndef LTC2471_FUNCTIONS_H
 #define LTC2471_FUNCTIONS_H
 
-/*Generated with CHSM v0.0.1*/
+/*Generated with CHSM v0.0.2*/
 
 #include "ltc2471.h"
 #include "chsm.h"

@@ -1,4 +1,4 @@
-/*Generated with CHSM v0.0.1*/
+/*Generated with CHSM v0.0.2*/
 #include "cevent.h"
 #include "chsm.h"
 #include "canopen.h"
