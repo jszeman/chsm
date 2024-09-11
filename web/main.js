@@ -1169,6 +1169,24 @@ class App {
 
 window.addEventListener('DOMContentLoaded', event => {window.app = new App(state_machine)});
 
+addEventListener("visibilitychange", (event) => {
+	if (document.hidden)
+	{
+		eel.pagehide(window.app.model.get_data_string());
+	}
+	else
+	{
+		eel.pageshohw();
+	}
+});
+
+window.addEventListener('beforeunload', function (e) {
+    e.preventDefault();
+	eel.closing();
+});
+
+
+
 eel.expose(load_json); // Expose this function to Python
 function load_json(data, filename, filepath) {
 	//console.log(data)

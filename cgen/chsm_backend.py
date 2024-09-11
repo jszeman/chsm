@@ -224,6 +224,9 @@ class Project:
         filepath = askopenfilename(title='Open state mechine declaration', filetypes=(('C header file', '.h'), ('State chart', '.html')))
         logging.info(f'User selected path: {filepath}')
         return Path(filepath)
+    
+    def update_model(self, json_data: str):
+        self.model = json.loads(json_data)
 
     def save_html(self, drawing: str, json_data: str):
         self.model = json.loads(json_data)
@@ -241,6 +244,10 @@ class Project:
             hfile.write(str(sm.h_ast))
 
 project = None
+ok_to_close = False
+json_str = None
+hidden = False
+eel_done = False
 
 @eel.expose
 def save_state_machine(drawing: str, json_data: str, filepath: str):
@@ -285,8 +292,48 @@ def genereate_code():
 
 @eel.expose
 def startup():
+    global json_str
+
     if project:
         eel.load_json(json.dumps(project.model), Path(args['FILE']).name, args['FILE'])
+        return
+    
+    if json_str:
+        eel.load_json(json_str, '', None)
+        return
+
+
+
+@eel.expose
+def pagehide(json_data: str):
+    global hidden
+    global json_str
+    print("Page hide")
+    if project:
+        project.update_model(json_data)
+    else:
+        json_str = json_data
+    
+    hidden = True
+
+@eel.expose
+def pageshow():
+    print("Page hide")
+    global ok_to_close
+    global hidden
+    ok_to_close = False
+    hidden = False
+
+@eel.expose
+def closing():
+    global ok_to_close
+    ok_to_close = True
+    print("About to close shop (the user tries to close the window)")
+
+def close_callback(page, sockets):
+    print('Close callback')
+    global eel_done
+    eel_done = True
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(filename)-20s:%(lineno)-4s %(message)s')
@@ -309,5 +356,19 @@ if __name__ == '__main__':
     if args['--server-only']:
         eel.start('main.html', mode=None, port=0)
     else:
-        eel.start('main.html', port=0)
+        while True:
+            ok_to_close = False
+            hidden = False
+            eel_done = False
+            
+            eel.start('main.html', port=0, block=False, close_callback=close_callback)
+            while not eel_done:
+                eel.sleep(0.5)
+
+            if ok_to_close and hidden:
+                #print('break')
+                break
+        
+print('Done')
+
 
