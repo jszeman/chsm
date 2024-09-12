@@ -30,6 +30,11 @@ TOP_STATE_NAME = r'chsm_result_ten\s+(?P<top_func>\w+)\(chsm_tst\s+\*self,\s+con
 class ChsmException(Exception):
     pass
 
+def link_alive(root):
+    eel.link_up()
+    print("link_alive")
+    root.after(250, link_alive, root)
+
 def save_html(html_fname: Path, drawing: str, json_data: str):
         backend_path =     (Path(__file__).parent).absolute().resolve()
         template_dir =     (backend_path / 'templates').absolute().resolve()
@@ -221,6 +226,7 @@ class Project:
         root = tk.Tk()
         root.attributes("-topmost", True)
         root.withdraw()
+        root.after(250, link_alive, root)
         filepath = askopenfilename(title='Open state mechine declaration', filetypes=(('C header file', '.h'), ('State chart', '.html')))
         logging.info(f'User selected path: {filepath}')
         return Path(filepath)
@@ -259,16 +265,17 @@ def save_state_machine(drawing: str, json_data: str, filepath: str):
         root = tk.Tk()
         root.attributes("-topmost", True)
         root.withdraw()
+        root.after(250, link_alive, root)
         filepath = asksaveasfilename(title='Save state mechine drawing', filetypes=(('State chart', '.html'),))
         logging.info(f'User selected path: {filepath}')
         save_html(Path(filepath), drawing, json_data)
-
 
 @eel.expose
 def open_file():
     root = tk.Tk()
     root.attributes("-topmost", True)
     root.withdraw()
+    root.after(250, link_alive, root)
     filepath = askopenfilename(title='Open state mechine declaration', filetypes=(('C header file', '.h'), ('State chart', '.html')))
     if not filepath:
         logging.info(f'File open canceled by user')
@@ -295,7 +302,7 @@ def startup():
     global json_str
 
     if project:
-        eel.load_json(json.dumps(project.model), Path(args['FILE']).name, args['FILE'])
+        eel.load_json(json.dumps(project.model), project.h_file_path.name, project.h_file_path)
         return
     
     if json_str:
@@ -363,7 +370,8 @@ if __name__ == '__main__':
             
             eel.start('main.html', port=0, block=False, close_callback=close_callback)
             while not eel_done:
-                eel.sleep(0.5)
+                eel.sleep(0.25)
+                eel.link_up()
 
             if ok_to_close and hidden:
                 #print('break')

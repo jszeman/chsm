@@ -1176,16 +1176,9 @@ addEventListener("visibilitychange", (event) => {
 	}
 	else
 	{
-		eel.pageshohw();
+		eel.pageshow();
 	}
 });
-
-window.addEventListener('beforeunload', function (e) {
-    e.preventDefault();
-	eel.closing();
-});
-
-
 
 eel.expose(load_json); // Expose this function to Python
 function load_json(data, filename, filepath) {
@@ -1198,3 +1191,34 @@ function send_event(event, data)
 {
 	window.app.dispatch(event, data);
 }
+
+let link_alive = true;
+
+window.addEventListener('beforeunload', function (e) {
+	if (link_alive)
+	{
+		e.preventDefault();
+		eel.closing();
+	}
+});
+
+eel.expose(link_up);
+function link_up()
+{
+	link_alive = true;
+}
+
+function timer_callback()
+{
+	if (link_alive)
+	{
+		link_alive = false;
+	}
+	else
+	{
+		console.log('close')
+		window.close()
+	}
+}
+
+window.setInterval(timer_callback, 500);
