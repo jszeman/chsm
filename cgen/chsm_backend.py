@@ -16,6 +16,7 @@ from docopt import docopt
 import logging
 from pprint import pprint
 import collections
+import jinja2
 
 import tkinter as tk
 from tkinter.filedialog import askopenfilename, asksaveasfilename
@@ -234,7 +235,17 @@ class Project:
 
         with open(self.c_file_path, 'w') as cfile:
             logging.info(f'Generating code int file: {self.c_file_path}')
-            cfile.write(str(sm.ast))
+            env = jinja2.Environment(loader=jinja2.FileSystemLoader(self.template_dir), trim_blocks=True, lstrip_blocks=True)
+            template = env.get_template("chsm_c_template.jinja")
+
+            data = sm.data.copy()
+            data['user_config'] = self.c_templates
+
+            with open("states.txt", 'w') as f:
+                pprint(data, f, indent=4)
+
+            cfile.write(template.render(data=data))
+            #cfile.write(str(sm.ast))
 
         with open(self.func_h_path, 'w') as hfile:
             logging.info(f'Generating code int file: {self.func_h_path}')

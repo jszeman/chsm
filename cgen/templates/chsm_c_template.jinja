@@ -1,0 +1,86 @@
+{% for name in data.user_config.c_include_list -%}
+#include "{{ name }}"
+{% endfor %}
+#include "{{data.machine_h}}"
+#include "{{data.funcs_h}}"
+
+{% for state_id, state in data.states.items() if state.type == 'normal' %}
+static {{data.user_config.func_return_type}} {{ state.title }}({{data.user_config.func_params}});
+{% endfor %}
+
+{% for state_id, state in data.states.items() if state.type == 'normal' %}
+static {{data.user_config.func_return_type}} {{ state.title }}({{data.user_config.func_params}})
+{
+    switch({{data.user_config.switch_variable}})
+    {
+        {% for signal_id, signal in state.signals.items() if signal_id not in [None, 'entry', 'exit', 'init'] %}
+        case {{data.user_config.signal_prefix}}{{signal_id}}:
+            {% for (guard_func, guard_param), guard in signal.guards.items() %}
+                {% if not guard_func %}
+                    {% for func, param in guard.funcs %}
+            {{func}}(self, e_pst{% if param %}, {{param}}{% endif %});
+                    {% endfor -%}
+                {% if guard.target%}
+                    {% if guard.target_type == 'call'%}
+            return chsm_transition(self, {{guard.target_title}}(self, e_pst{% if guard.target_params %}, {{guard.target_params}}{% endif %}));
+                    {% else %}
+            return chsm_transition(self, {{guard.target_title}});
+                    {% endif %}
+                {% endif %}
+                {% else %}
+            if ({{guard_func}}(self, e_pst{% if guard_param %}, {{guard_param}}{% endif %}))
+            {
+                {% for func, param in guard.funcs %}
+                {{func}}(self, e_pst{% if param %}, {{param}}{% endif %});
+                {% endfor %}
+                {% if guard.target %}
+                    {% if guard.target_type == 'call'%}
+                return chsm_transition(self, {{guard.target_title}}(self, e_pst{% if guard.target_params %}, {{guard.target_params}}{% endif %}));
+                    {% else %}
+                return chsm_transition(self, {{guard.target_title}});
+                    {% endif %}
+                {% endif %}
+            }
+                {% endif %}
+            {% endfor %}
+            {% if (None, None) not in signal.guards or not signal.guards[(None, None)].target %}
+            break;
+            {% endif %}
+
+        {% endfor %}
+    }
+    {% for (guard_func, guard_param), guard in state.signals[None].guards.items() %}
+        {% if  guard_func %}
+
+    if ({{guard_func}}(self, e_pst{% if guard_param %}, {{guard_param}}{% endif %}))
+    {
+        {% for func, param in guard.funcs %}
+        {{func}}(self, e_pst{% if param %}, {{param}}{% endif %});
+        {% endfor %}
+        {% if guard.target %}
+        return chsm_transition(self, {{guard.target_title}});
+        {% endif %}
+    }
+        {% endif %}
+    {% endfor %}
+
+    return chsm_ignored(self);
+}
+
+{% endfor %}
+
+{{data.user_config.func_return_type}} {{ data.states.__top__.title }}({{data.user_config.func_params}})
+{
+    switch({{data.user_config.switch_variable}})
+    {
+        case {{data.user_config.init_signal}}:
+                    {% for func, param in data.states.__top__.signals.init.guards[(None, None)].funcs %}
+                        {% if func %}
+            {{func}}(self, e_pst{% if param %}, {{param}}{% endif %});
+                        {% endif %}
+                    {% endfor %}
+            return chsm_transition(self, {{data.states.__top__.signals.init.guards[(None, None)].target_title}});
+    }
+
+    return chsm_ignored(self);
+}

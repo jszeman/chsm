@@ -37,9 +37,6 @@ class StateMachine:
         self.add_transitions_to_states(self.states, data)   # Extract transition info from the data and add it to the states
         self.add_parent_signals(self.states)
         self.process_transitions(self.states)               # Calculate transition exit and entry paths and the exact end state
-
-        with open("states.txt", 'w') as f:
-            pprint.pprint(self.states, f, indent=4)
         
         self.delete_non_leaf_states(self.states)
 
@@ -58,6 +55,19 @@ class StateMachine:
 
         self.states['__top__']['title'] = self.top_func
         self.resolve_parent_titles(self.states)
+
+        self.remove_unnecessary_transitions(self.states)
+        self.determine_break(self.states)
+
+        self.data = {
+            'states': self.states,
+            'user_funcs': self.user_funcs,
+            'user_guards': self.user_guards,
+            'user_signals': self.user_signals,
+            'user_inc_funcs': self.user_inc_funcs,
+            'machine_h': self.machine_h,
+            'funcs_h': self.funcs_h,
+        }
 
         self.ast = self.build_ast(self.states)
 
@@ -395,6 +405,24 @@ class StateMachine:
         for s in states.values():
             if s['parent']:
                 s['parent_title'] = states[s['parent']]['title']
+
+    def determine_break(self, states):
+        """Determeni if there is an uncodi"""
+        for state in states.values():
+            for signal in state['signals'].values():
+                for guard in signal['guards'].values():
+                    if guard["target_title"] == state['title']:
+                        guard['target'] = None
+                        guard["target_title"] = None
+
+    def remove_unnecessary_transitions(self, states):
+        """Remove transition targets pointing to the current state."""
+        for state in states.values():
+            for signal in state['signals'].values():
+                for guard in signal['guards'].values():
+                    if guard["target_title"] == state['title']:
+                        guard['target'] = None
+                        guard["target_title"] = None
     
     def resolve_transition(self, tr, data):
         """Return the label, the start and the end states of a transition"""
@@ -647,6 +675,8 @@ class StateMachine:
                 funcs.extend(self.states[state_id]['signals'][event_id]['guards'][(None, None)]['funcs'])
             except KeyError:
                 pass
+
+        funcs = [f for f in funcs if f != (None, None)]
 
         return tuple(funcs)
 
