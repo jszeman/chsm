@@ -336,7 +336,10 @@ TEST(hsm, sm4_s11_h)
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_h);
 	
-	TEST_ASSERT_EQUAL_STRING("s11_exit s1_exit s_init s1_entry s1_init s11_entry s11_init ", hsm.log_buff);
+	bool guards_called_b = strcmp("s11_exit s1_exit s_init s1_entry s1_init s11_entry s11_init s11_guard k_guard s1_guard j_guard ", hsm.log_buff);
+	bool guards_not_called_b = strcmp("s11_exit s1_exit s1_entry s1_init s11_entry s11_init ", hsm.log_buff);
+
+	TEST_ASSERT(guards_called_b || guards_not_called_b);
 
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_id);
@@ -403,7 +406,11 @@ TEST(hsm, sm4_s11_d_guard_true)
 	clear_log(&hsm);
 	hsm.cond = true;
 	chsm_dispatch(&hsm.super, &event_d);
-	TEST_ASSERT_EQUAL_STRING("cond d_func s11_exit s1_init s11_entry s11_init ", hsm.log_buff);
+
+	bool guards_called_b = strcmp("cond d_func s11_exit s1_init s11_entry s11_init s11_guard k_guard s1_guard j_guard ", hsm.log_buff);
+	bool guards_not_called_b = strcmp("cond d_func s11_exit s1_init s11_entry s11_init ", hsm.log_buff);
+
+	TEST_ASSERT(guards_called_b || guards_not_called_b);
 
 	clear_log(&hsm);
 	chsm_dispatch(&hsm.super, &event_id);

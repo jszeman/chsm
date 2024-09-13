@@ -25,7 +25,7 @@
 	},
 
 	"chsm_test_machine.h": {
-        "machine_c":    		"chsm_test_machine5.c",
+        "machine_c":    		"chsm_test_machine4.c",
         "machine_html": 		"chsm_test_machine4.html",
 		"top_func":     		"__top__4",
         "func_h":       		"chsm_test_functions2.h"

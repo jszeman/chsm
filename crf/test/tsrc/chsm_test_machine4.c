@@ -1,16 +1,14 @@
-/*Generated with CHSM v0.0.2*/
-#include "cevent.h"
 #include "chsm.h"
+#include "cevent.h"
 #include "chsm_test_machine.h"
 #include "chsm_test_functions2.h"
 
-
-static chsm_result_ten s6(chsm_tst *self, const cevent_tst *e_pst);
-static chsm_result_ten s5(chsm_tst *self, const cevent_tst *e_pst);
-static chsm_result_ten s4(chsm_tst *self, const cevent_tst *e_pst);
-static chsm_result_ten s3(chsm_tst *self, const cevent_tst *e_pst);
-static chsm_result_ten s211(chsm_tst *self, const cevent_tst *e_pst);
 static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst);
+static chsm_result_ten s211(chsm_tst *self, const cevent_tst *e_pst);
+static chsm_result_ten s3(chsm_tst *self, const cevent_tst *e_pst);
+static chsm_result_ten s4(chsm_tst *self, const cevent_tst *e_pst);
+static chsm_result_ten s5(chsm_tst *self, const cevent_tst *e_pst);
+static chsm_result_ten s6(chsm_tst *self, const cevent_tst *e_pst);
 
 static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst)
 {
@@ -21,11 +19,11 @@ static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst)
             break;
 
         case TEST_SIG_G:
-            if(s11_g_guard1(self, e_pst, 1))
+            if (s11_g_guard1(self, e_pst, 1))
             {
                 s11_g1(self, e_pst, 2);
             }
-            if(s11_g_guard2(self, e_pst, 4))
+            if (s11_g_guard2(self, e_pst, 4))
             {
                 s11_g2(self, e_pst, 3);
                 s11_exit(self, e_pst);
@@ -47,14 +45,13 @@ static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst)
             break;
 
         case TEST_SIG_D:
-            if(cond(self, e_pst))
+            if (cond(self, e_pst))
             {
                 d_func(self, e_pst);
                 s11_exit(self, e_pst);
                 s1_init(self, e_pst);
                 s11_entry(self, e_pst);
                 s11_init(self, e_pst);
-                return chsm_transition(self, s11);
             }
             break;
 
@@ -66,7 +63,7 @@ static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst)
             s1_init(self, e_pst);
             s11_entry(self, e_pst);
             s11_init(self, e_pst);
-            return chsm_transition(self, s11);
+            break;
 
         case TEST_SIG_C:
             s11_exit(self, e_pst);
@@ -92,7 +89,7 @@ static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst)
             s11_exit(self, e_pst);
             s11_entry(self, e_pst);
             s11_init(self, e_pst);
-            return chsm_transition(self, s11);
+            break;
 
         case TEST_SIG_A:
             s11_exit(self, e_pst);
@@ -101,7 +98,7 @@ static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst)
             s1_init(self, e_pst);
             s11_entry(self, e_pst);
             s11_init(self, e_pst);
-            return chsm_transition(self, s11);
+            break;
 
         case TEST_SIG_N:
             s11_exit(self, e_pst);
@@ -117,7 +114,7 @@ static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst)
             s1_entry(self, e_pst);
             s11_entry(self, e_pst);
             s11_init(self, e_pst);
-            return chsm_transition(self, s11);
+            break;
 
         case TEST_SIG_J:
             s11_exit(self, e_pst);
@@ -131,14 +128,15 @@ static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst)
             s5_entry1(self, e_pst);
             s5_entry2(self, e_pst);
             return chsm_transition(self, s5);
+
     }
 
-    if(s11_guard(self, e_pst, 6))
+    if (s11_guard(self, e_pst, 6))
     {
         s11_func(self, e_pst, 7);
     }
 
-    if(k_guard(self, e_pst, 5))
+    if (k_guard(self, e_pst, 5))
     {
         s11_exit(self, e_pst);
         s1_exit(self, e_pst);
@@ -151,12 +149,12 @@ static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst)
         return chsm_transition(self, s211);
     }
 
-    if(s1_guard(self, e_pst))
+    if (s1_guard(self, e_pst))
     {
         s1_func(self, e_pst);
     }
 
-    if(j_guard(self, e_pst))
+    if (j_guard(self, e_pst))
     {
         s11_exit(self, e_pst);
         s1_exit(self, e_pst);
@@ -196,7 +194,7 @@ static chsm_result_ten s211(chsm_tst *self, const cevent_tst *e_pst)
             s21_init(self, e_pst);
             s211_entry(self, e_pst);
             s211_init(self, e_pst);
-            return chsm_transition(self, s211);
+            break;
 
         case TEST_SIG_G:
             s211_exit(self, e_pst, 6);
@@ -212,7 +210,7 @@ static chsm_result_ten s211(chsm_tst *self, const cevent_tst *e_pst)
             s211_exit(self, e_pst, 6);
             s211_entry(self, e_pst);
             s211_init(self, e_pst);
-            return chsm_transition(self, s211);
+            break;
 
         case TEST_SIG_A:
             s211_exit(self, e_pst, 6);
@@ -221,7 +219,7 @@ static chsm_result_ten s211(chsm_tst *self, const cevent_tst *e_pst)
             s21_init(self, e_pst);
             s211_entry(self, e_pst);
             s211_init(self, e_pst);
-            return chsm_transition(self, s211);
+            break;
 
         case TEST_SIG_C:
             s211_exit(self, e_pst, 6);
@@ -274,6 +272,7 @@ static chsm_result_ten s211(chsm_tst *self, const cevent_tst *e_pst)
             s5_entry1(self, e_pst);
             s5_entry2(self, e_pst);
             return chsm_transition(self, s5);
+
     }
 
     return chsm_ignored(self);
@@ -300,12 +299,12 @@ static chsm_result_ten s3(chsm_tst *self, const cevent_tst *e_pst)
             return chsm_transition(self, s11);
 
         case TEST_SIG_G:
-            if(s11_g_guard2(self, e_pst, 4))
+            if (s11_g_guard2(self, e_pst, 4))
             {
                 s11_g2(self, e_pst, 3);
                 return chsm_transition(self, s4);
             }
-            if(s11_g_guard1(self, e_pst, 1))
+            if (s11_g_guard1(self, e_pst, 1))
             {
                 s11_g1(self, e_pst, 2);
                 return chsm_transition(self, s4);
@@ -322,6 +321,7 @@ static chsm_result_ten s3(chsm_tst *self, const cevent_tst *e_pst)
             s5_entry1(self, e_pst);
             s5_entry2(self, e_pst);
             return chsm_transition(self, s5);
+
     }
 
     return chsm_ignored(self);
@@ -349,6 +349,7 @@ static chsm_result_ten s4(chsm_tst *self, const cevent_tst *e_pst)
             s5_entry1(self, e_pst);
             s5_entry2(self, e_pst);
             return chsm_transition(self, s5);
+
     }
 
     return chsm_ignored(self);
@@ -390,10 +391,11 @@ static chsm_result_ten s5(chsm_tst *self, const cevent_tst *e_pst)
         case TEST_SIG_M:
             s5_entry1(self, e_pst);
             s5_entry2(self, e_pst);
-            return chsm_transition(self, s5);
+            break;
+
     }
 
-    if(s5_g1(self, e_pst))
+    if (s5_g1(self, e_pst))
     {
         s5_g1_f1(self, e_pst);
         s5_g1_f2(self, e_pst);
@@ -409,10 +411,12 @@ static chsm_result_ten s6(chsm_tst *self, const cevent_tst *e_pst)
         case TEST_SIG_A:
             s_entry(self, e_pst);
             return chsm_transition(self, s_history(self, e_pst));
+
     }
 
     return chsm_ignored(self);
 }
+
 
 chsm_result_ten __top__4(chsm_tst *self, const cevent_tst *e_pst)
 {
