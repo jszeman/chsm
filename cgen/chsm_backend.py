@@ -31,7 +31,7 @@ class ChsmException(Exception):
     pass
 
 def link_alive(root):
-    eel.link_up()
+    eel.link_up(1000)
     print("link_alive")
     root.after(250, link_alive, root)
 
@@ -223,6 +223,7 @@ class Project:
         return self._load_config_from_file(user_cfg_path)
 
     def _open_header_dialog(self):
+        eel.link_up(5000)
         root = tk.Tk()
         root.attributes("-topmost", True)
         root.withdraw()
@@ -262,6 +263,7 @@ def save_state_machine(drawing: str, json_data: str, filepath: str):
     elif filepath:
         save_html(Path(filepath), drawing, json_data)
     else:
+        eel.link_up(5000)
         root = tk.Tk()
         root.attributes("-topmost", True)
         root.withdraw()
@@ -272,6 +274,7 @@ def save_state_machine(drawing: str, json_data: str, filepath: str):
 
 @eel.expose
 def open_file():
+    eel.link_up(5000) # First startup may be a bit slow, let's tell the GUI to be patient
     root = tk.Tk()
     root.attributes("-topmost", True)
     root.withdraw()
@@ -325,7 +328,7 @@ def pagehide(json_data: str):
 
 @eel.expose
 def pageshow():
-    print("Page hide")
+    print("Page show")
     global ok_to_close
     global hidden
     ok_to_close = False
@@ -371,7 +374,8 @@ if __name__ == '__main__':
             eel.start('main.html', port=0, block=False, close_callback=close_callback)
             while not eel_done:
                 eel.sleep(0.25)
-                eel.link_up()
+                eel.link_up(1000)
+                print('linkup')
 
             if ok_to_close and hidden:
                 #print('break')

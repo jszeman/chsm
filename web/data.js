@@ -2,8 +2,8 @@
 export const state_machine = {
 	states: {
 		__top__: {
-			pos: [-100000, -100000],
-			size: [200000, 200000],
+			pos: [-10000, -10000],
+			size: [20000, 20000],
 			title: '__top__',
 			text: [],
 			connectors: [],

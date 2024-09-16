@@ -16,6 +16,7 @@ class App {
 		this.enable_keys = true;
 		this.text_state_id = '';
 		this.text_tr_id = '';
+		this.busy = false;
 		this.prop_editor = {
 			obj_id: null,
 			obj_type: null
@@ -140,6 +141,11 @@ class App {
 			obj_id: null,
 			obj_type: null
 		};
+	}
+
+	changed()
+	{
+		return this.model.changed;
 	}
 
 	push_transition_changes_to_gui()
@@ -474,17 +480,23 @@ class App {
 
 			case 'SAVE':
 				this.model.set_view(this.gui.get_view());
+				this.busy = true;
 				eel.save_state_machine(this.main.innerHTML, this.model.get_data_string(), this.filepath);
+				this.busy = false;
 				break;
 
 			case 'OPEN':
+				this.busy = true;
 				eel.open_file();
+				this.busy = false;
 				break;
 
 			case 'CODE_GEN':
 				this.model.set_view(this.gui.get_view());
+				this.busy = true;
 				eel.save_state_machine(this.main.innerHTML, this.model.get_data_string(), this.filepath);
 				eel.genereate_code();
+				this.busy = false;
 				break;
 
 			case 'SAVE_RESULT':
@@ -1192,10 +1204,10 @@ function send_event(event, data)
 	window.app.dispatch(event, data);
 }
 
-let link_alive = true;
+let link_time = 1000;
 
 window.addEventListener('beforeunload', function (e) {
-	if (link_alive)
+	if (link_time > 0)
 	{
 		e.preventDefault();
 		eel.closing();
@@ -1203,21 +1215,19 @@ window.addEventListener('beforeunload', function (e) {
 });
 
 eel.expose(link_up);
-function link_up()
+function link_up(time)
 {
-	link_alive = true;
+	link_time = time;
 }
 
 function timer_callback()
 {
-	if (link_alive)
+	link_time -= 500;
+
+	if (link_time < 0)
 	{
-		link_alive = false;
-	}
-	else
-	{
-		console.log('close')
-		window.close()
+		console.log('close');
+		window.close();
 	}
 }
 
