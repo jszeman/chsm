@@ -1,0 +1,54 @@
+{% for name in data.template_params.include_list -%}
+#include "{{ name }}"
+{% endfor %}
+
+{# Function declarations #}
+/* The following functions shall be implemented by the user */
+
+{% for func in data.user_funcs if not func.startswith("chsm_") %}
+{% if func+"()" in data.notes and data.notes[func+"()"]%}
+/*
+{{data.notes[func+"()"]}}
+*/
+{% endif %}
+void {{func}} ({{data.template_params.func_params}});
+
+{% endfor %}
+
+{# Guard declarations #}
+{% for func in data.user_guards %}
+{% if func+"()" in data.notes and data.notes[func+"()"]%}
+/*
+{{data.notes[func+"()"]}}
+*/
+{% endif %}
+{{data.template_params.guard_return_type}} {{func}} ({{data.template_params.func_params}});
+
+{% endfor %}
+
+typedef enum {{data.template_params.state_id_type}}
+{
+{% for state_id, state in data.states.items() if state.type == 'normal' %}
+    {{ state.title.upper() }} = {{ state.num }},
+{% endfor %}
+} {{data.template_params.state_id_type}};
+
+/*
+Signals:
+{% for sig in data.user_signals | sort if sig not in ['entry', 'exit', 'init'] %}
+    {{ sig }} {% if sig in data.notes %}    {{data.notes[sig]}}
+    {% else %}
+
+    {% endif %}
+{% endfor %}
+
+The following functions shall be declared and implemented by the user:
+
+{% for func in data.user_inc_funcs %}
+    {{func}}
+    {% if func in data.notes and data.notes[func]%}
+        {{data.notes[func] | indent(width=8)}}
+    {% endif %}
+
+{% endfor %}
+*/

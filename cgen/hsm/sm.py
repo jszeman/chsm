@@ -47,6 +47,7 @@ class StateMachine:
             'user_guards': self.user_guards,
             'user_signals': self.user_signals,
             'user_inc_funcs': self.user_inc_funcs,
+            'notes': self.notes,
         }
 
     def get_transition_funcs(self, start, end, lca):

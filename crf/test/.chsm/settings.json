@@ -49,6 +49,18 @@
 					"ignore_func":			"chsm_ignored",
 					"top_func":     		"__top__4"
 				}
+			},
+			
+			{
+				"title":					"C header gen",
+				"output":					"../tinc/chsm_test_functions2.h",
+				"template":					"chsm_h_template.jinja",
+				"template_params": {
+					"func_params":      	"chsm_tst *self, const cevent_tst *e_pst",
+					"include_list":			["chsm.h", "cevent.h", "chsm_test_machine.h", "stdbool.h"],
+					"guard_return_type": 	"bool",
+					"state_id_type": 		"chsm_test_machine_state_id_ten"
+				}
 			}
 		]
 	},
