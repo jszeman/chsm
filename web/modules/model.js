@@ -145,6 +145,11 @@ export class Model {
 		this.clear_changes();
 	}
 
+	clr_changed()
+	{
+		this.changed = false;
+	}
+
 	get_note_text(obj_id)
 	{
 		if (!(obj_id in this.data.notes))

@@ -32,7 +32,6 @@ class ChsmException(Exception):
 
 def link_alive(root):
     eel.link_up(1000)
-    print("link_alive")
     root.after(250, link_alive, root)
 
 def save_html(html_fname: Path, drawing: str, json_data: str):
@@ -318,7 +317,6 @@ def startup():
 def pagehide(json_data: str):
     global hidden
     global json_str
-    print("Page hide")
     if project:
         project.update_model(json_data)
     else:
@@ -328,7 +326,6 @@ def pagehide(json_data: str):
 
 @eel.expose
 def pageshow():
-    print("Page show")
     global ok_to_close
     global hidden
     ok_to_close = False
@@ -338,10 +335,8 @@ def pageshow():
 def closing():
     global ok_to_close
     ok_to_close = True
-    print("About to close shop (the user tries to close the window)")
 
 def close_callback(page, sockets):
-    print('Close callback')
     global eel_done
     eel_done = True
 
@@ -375,7 +370,6 @@ if __name__ == '__main__':
             while not eel_done:
                 eel.sleep(0.25)
                 eel.link_up(1000)
-                print('linkup')
 
             if ok_to_close and hidden:
                 #print('break')

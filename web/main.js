@@ -504,6 +504,7 @@ class App {
 				this.file_name = data.filename;
 				this.title.textContent = this.file_name;
 				this.filepath = data.filepath;
+				this.model.clr_changed();
 				break;
 
 			case 'CODEGEN_RESULT':
@@ -1207,11 +1208,11 @@ function send_event(event, data)
 let link_time = 1000;
 
 window.addEventListener('beforeunload', function (e) {
-	if (link_time > 0)
+	if (link_time > 0 && window.app.changed())
 	{
 		e.preventDefault();
-		eel.closing();
 	}
+	eel.closing();
 });
 
 eel.expose(link_up);
