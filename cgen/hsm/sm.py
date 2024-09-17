@@ -2,7 +2,6 @@ import json
 import re
 import logging
 from datetime import datetime
-from .ast import Func, If, Switch, Case, Call, Break, Return, Blank, Expr, Ast, FuncDeclaration, Include, Ifndef, Define, Endif, Comment, Decl, Assignment, Enum
 import pprint
 from copy import deepcopy
 from .parser import Parser, ParserException
@@ -21,12 +20,7 @@ EVENT_PATTERN = r'^(\s*(?P<signal>\w+)\s*)*(\[(?P<guard>\w+)\((?P<gparams>[\w,\s
 VERSION_STRING = 'Generated with CHSM v0.0.2'
 
 class StateMachine:
-    def __init__(self, data, h_file, funcs_h_file, templates, file_config):
-        self.templates = templates
-        self.file_config = file_config
-        self.machine_h = h_file.name
-        self.funcs_h = funcs_h_file
-        self.prefix = h_file.stem
+    def __init__(self, data):
         
         self.user_funcs = set()
         self.user_guards = set()
@@ -42,18 +36,6 @@ class StateMachine:
 
         self.notes = data['notes']
 
-        top_func = self._get_user_symbols(h_file)
-
-        logging.info(f'Extracted top_func = {top_func} from file {h_file}')
-
-        self.top_func = self.file_config.get('top_func', top_func)
-
-        logging.info(f'Final top_func = {self.top_func}')
-
-        self.templates['user_func_args'] = self.templates['user_func_args_t']
-        self.templates['user_func_params'] = self.templates['user_func_params_t']
-
-        self.states['__top__']['title'] = self.top_func
         self.resolve_parent_titles(self.states)
 
         self.remove_unnecessary_transitions(self.states)
@@ -65,102 +47,7 @@ class StateMachine:
             'user_guards': self.user_guards,
             'user_signals': self.user_signals,
             'user_inc_funcs': self.user_inc_funcs,
-            'machine_h': self.machine_h,
-            'funcs_h': self.funcs_h,
         }
-
-        self.ast = self.build_ast(self.states)
-
-        self.h_ast = self.build_user_declarations(self.user_funcs, self.user_guards, self.states)
-
-    def _get_user_symbols(self, hpath):
-        top_func = None, None
-
-        with open(hpath, 'r') as h_file:
-            h_data = h_file.read()
-
-            logging.info(f'Top func template: {self.templates["top_state_name"]}')
-            m = re.search(self.templates['top_state_name'], h_data)
-            if m:
-                top_func = m.group('top_func')
-            else:
-                logging.warning(f'Could not find a state handler function declaration in file {hpath}')
-
-        return top_func
-
-    def build_user_declarations(self, funcs, guards, states):
-        ast = Ast()
-
-        symbol = self.funcs_h.replace('.', '_').upper()
-
-        ast.nodes.append(Ifndef(symbol))
-        ast.nodes.append(Define(symbol))
-        ast.nodes.append(Blank())
-
-        ast.nodes.append(Comment(VERSION_STRING))
-        ast.nodes.append(Blank())
-        ast.nodes.append(Blank())
-
-        ast.nodes.append(Include(self.machine_h))
-
-        for i in self.templates['h_include_list']:
-            ast.nodes.append(Include(i))
-
-        for f in sorted(funcs):
-            ast.nodes.append(Blank())
-            comment = self.notes.get(f'{f}()', '')
-            if comment:
-                ast.nodes.append(Blank())
-                ast.nodes.append(Comment(comment))
-            ast.nodes.append(FuncDeclaration(f, 'void', self.templates['user_func_params']))
-
-        ast.nodes.append(Blank())
-
-        for g in sorted(guards):
-            ast.nodes.append(Blank())
-            comment = self.notes.get(f'{g}()', '')
-            if comment:
-                ast.nodes.append(Blank())
-                ast.nodes.append(Comment(comment))
-            ast.nodes.append(FuncDeclaration(g, self.templates['guard_return_type'], self.templates['user_func_params']))
-
-        ast.nodes.append(Blank())
-        ast.nodes.append(Blank())
-
-        enum = Enum(f'{self.prefix}_state_id_ten', {s['title'].upper(): s['num'] for i, s in states.items() if 'num' in s})
-        ast.nodes.append(enum)
-
-        ast.nodes.append(Blank())
-        ast.nodes.append(Blank())
-
-        signal_str = f'\nSignals:\n'
-
-        max_sig_len = max([len(s) for s in self.user_signals])
-
-        for s in sorted(self.user_signals):
-            if s not in ['entry', 'exit', 'init']:
-                signal_str += f'    {s:{max_sig_len}} {self.notes.get(s, "")}\n'
-
-        ast.nodes.append(Comment(signal_str))
-
-        ast.nodes.append(Blank())
-        ast.nodes.append(Blank())
-
-        notes_str = f'\nOther function notes:\n'
-
-        for f in sorted(self.user_inc_funcs):
-                notes_str += f'\n{f}:\n'
-                note = self.notes.get(f, '').strip()
-                if note:
-                    note = note.replace('\n', '\n    ')
-                    notes_str += f"    {note}\n"
-
-        ast.nodes.append(Comment(notes_str))
-
-        ast.nodes.append(Blank())
-        ast.nodes.append(Endif())
-
-        return ast
 
     def get_transition_funcs(self, start, end, lca):
         path = self.get_transition_path(start, end, lca)
@@ -193,7 +80,6 @@ class StateMachine:
         for s_id in [*states.keys()]:
             s = states[s_id]
             if s['children'] and s['parent']:
-                print(s['title'])
                 del states[s_id]
             elif s['parent']:
                 s['parent'] = '__top__'
@@ -470,120 +356,6 @@ class StateMachine:
             self.user_funcs.update(p.funcs_wo_args)
             self.user_signals.update(p.user_signals)
             self.user_guards.update(p.guards_wo_args)
-
-    def make_call(self, func, params, standalone=False):
-        fparams = f', {params}' if params else ''
-        return Call(func, self.templates['user_func_args'] + fparams, standalone)
-
-    def guard_to_ast(self, guard):
-        nodes = []
-        add = nodes.append
-
-        func, param = guard['guard']
-
-        if func:
-            i = If(self.make_call(func, param))
-            add(i)
-            add = i.add_true
-        
-        for func, param in guard['funcs']:
-            if func:
-                add(self.make_call(func, param, True))
-
-        if guard['target']:
-            if self.templates['set_state_id'] != "":   
-                add(self.make_call(self.templates['set_state_id'], guard['target_title'].upper(), True))
-            
-            if guard.get('target_type', None) == 'call':
-                target_call = self.make_call(guard['target_title'], guard['target_params'])
-                target_title = str(target_call)
-            else:
-                target_title = guard['target_title']
-
-            add(Return(self.templates['trans_result'].format(target=target_title)))
-
-        return nodes
-
-
-    def build_case_from_signal(self, signal):
-        name = signal['name']
-
-        if name == 'init':
-            name = self.templates['init_signal']
-        else:
-            name = f'{self.templates["signal_prefix"]}{name}'
-
-        c = Case(name)
-
-        for guard in signal['guards'].values():
-            nodes = self.guard_to_ast(guard)
-            for n in nodes:
-                c.add(n)
-        
-        if c.nodes[-1].node_type != 'return':
-            c.add(Break())
-
-        return c
-
-    def build_func_from_state(self, state_id, state, insert_init=False, spec=''):
-        f = Func(name=state['title'], ftype=self.templates['func_return_type'], params=self.templates['func_params'], spec=spec)
-        s = Switch(self.templates['switch_variable'])
-        f.add(s)
-
-        for signal, e in state['signals'].items():
-            if signal in ['entry', 'exit', None]:
-                continue
-            elif signal == 'init' and not insert_init:
-                continue
-
-            c = self.build_case_from_signal(e)
-            if c:
-                s.add_case(c)
-
-        for guard in state['signals'][None]['guards'].values():
-            nodes = self.guard_to_ast(guard)
-            if nodes:
-                f.add(Blank())
-            for n in nodes:
-                f.add(n)
-        
-        result = self.templates['ignored_result']
-
-        f.add(Blank())
-        f.add(Return(result))
-
-        return f
-
-    def build_ast(self, states):
-        with open('states.txt', 'w') as f:
-            pprint.pprint(states, stream=f, indent=4, width=120)
-
-        ast = Ast()
-        ast.nodes.append(Blank())
-        for s_id, s in states.items():
-            if s['type'] != 'normal':
-                continue
-            state_func = self.build_func_from_state(s_id, s, spec='static') 
-
-            ast.nodes.append(state_func)
-            ast.nodes.insert(0, state_func.declaration())
-
-
-        top_func = self.build_func_from_state(self.top_func, states['__top__'], True)
-        ast.nodes.append(top_func)
-
-        ast.nodes.insert(0, Blank())
-        ast.nodes.insert(0, Include(self.funcs_h))
-        ast.nodes.insert(0, Include(self.machine_h))
-        for i in self.templates['c_include_list']:
-            ast.nodes.insert(0, Include(i))
-
-        
-        ast.nodes.insert(0, Blank())
-        ast.nodes.insert(0, Comment(VERSION_STRING))
-
-        return ast
-
 
     def get_entry_path(self, start_state_id, target_state_id):
         

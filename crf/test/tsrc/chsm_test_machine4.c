@@ -1,7 +1,7 @@
 #include "chsm.h"
 #include "cevent.h"
-#include "chsm_test_machine.h"
 #include "chsm_test_functions2.h"
+#include "chsm_test_machine.h"
 
 static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst);
 static chsm_result_ten s211(chsm_tst *self, const cevent_tst *e_pst);

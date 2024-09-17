@@ -1,20 +1,18 @@
-{% for name in data.user_config.c_include_list -%}
+{% for name in data.template_params.include_list -%}
 #include "{{ name }}"
 {% endfor %}
-#include "{{data.machine_h}}"
-#include "{{data.funcs_h}}"
 
 {% for state_id, state in data.states.items() if state.type == 'normal' %}
-static {{data.user_config.func_return_type}} {{ state.title }}({{data.user_config.func_params}});
+static {{data.template_params.func_return_type}} {{ state.title }}({{data.template_params.func_params}});
 {% endfor %}
 
 {% for state_id, state in data.states.items() if state.type == 'normal' %}
-static {{data.user_config.func_return_type}} {{ state.title }}({{data.user_config.func_params}})
+static {{data.template_params.func_return_type}} {{ state.title }}({{data.template_params.func_params}})
 {
-    switch({{data.user_config.switch_variable}})
+    switch({{data.template_params.switch_variable}})
     {
         {% for signal_id, signal in state.signals.items() if signal_id not in [None, 'entry', 'exit', 'init'] %}
-        case {{data.user_config.signal_prefix}}{{signal_id}}:
+        case {{data.template_params.signal_prefix}}{{signal_id}}:
             {% for (guard_func, guard_param), guard in signal.guards.items() %}
                 {% if not guard_func %}
                     {% for func, param in guard.funcs %}
@@ -22,9 +20,9 @@ static {{data.user_config.func_return_type}} {{ state.title }}({{data.user_confi
                     {% endfor -%}
                 {% if guard.target%}
                     {% if guard.target_type == 'call'%}
-            return chsm_transition(self, {{guard.target_title}}(self, e_pst{% if guard.target_params %}, {{guard.target_params}}{% endif %}));
+            return {{data.template_params.transition_func}}(self, {{guard.target_title}}(self, e_pst{% if guard.target_params %}, {{guard.target_params}}{% endif %}));
                     {% else %}
-            return chsm_transition(self, {{guard.target_title}});
+            return {{data.template_params.transition_func}}(self, {{guard.target_title}});
                     {% endif %}
                 {% endif %}
                 {% else %}
@@ -35,9 +33,9 @@ static {{data.user_config.func_return_type}} {{ state.title }}({{data.user_confi
                 {% endfor %}
                 {% if guard.target %}
                     {% if guard.target_type == 'call'%}
-                return chsm_transition(self, {{guard.target_title}}(self, e_pst{% if guard.target_params %}, {{guard.target_params}}{% endif %}));
+                return {{data.template_params.transition_func}}(self, {{guard.target_title}}(self, e_pst{% if guard.target_params %}, {{guard.target_params}}{% endif %}));
                     {% else %}
-                return chsm_transition(self, {{guard.target_title}});
+                return {{data.template_params.transition_func}}(self, {{guard.target_title}});
                     {% endif %}
                 {% endif %}
             }
@@ -58,29 +56,29 @@ static {{data.user_config.func_return_type}} {{ state.title }}({{data.user_confi
         {{func}}(self, e_pst{% if param %}, {{param}}{% endif %});
         {% endfor %}
         {% if guard.target %}
-        return chsm_transition(self, {{guard.target_title}});
+        return {{data.template_params.transition_func}}(self, {{guard.target_title}});
         {% endif %}
     }
         {% endif %}
     {% endfor %}
 
-    return chsm_ignored(self);
+    return {{data.template_params.ignore_func}}(self);
 }
 
 {% endfor %}
 
-{{data.user_config.func_return_type}} {{ data.states.__top__.title }}({{data.user_config.func_params}})
+{{data.template_params.func_return_type}} {{ data.states.__top__.title }}({{data.template_params.func_params}})
 {
-    switch({{data.user_config.switch_variable}})
+    switch({{data.template_params.switch_variable}})
     {
-        case {{data.user_config.init_signal}}:
+        case {{data.template_params.init_signal}}:
                     {% for func, param in data.states.__top__.signals.init.guards[(None, None)].funcs %}
                         {% if func %}
             {{func}}(self, e_pst{% if param %}, {{param}}{% endif %});
                         {% endif %}
                     {% endfor %}
-            return chsm_transition(self, {{data.states.__top__.signals.init.guards[(None, None)].target_title}});
+            return {{data.template_params.transition_func}}(self, {{data.states.__top__.signals.init.guards[(None, None)].target_title}});
     }
 
-    return chsm_ignored(self);
+    return {{data.template_params.ignore_func}}(self);
 }

@@ -113,55 +113,25 @@ class Project:
         self.user_config =      self._load_user_config(self.h_file_path)
         self.file_config =      self.user_config.get(self.h_file_path.name, {})
 
-        self.c_templates =      self._get_cfg('templates')
+        # This is the new way to describe what the 
+        self.jobs =             self.file_config.get("jobs", [])
 
-        self.src_dir =          self._get_cfg('src_dir')
-        self.doc_dir =          self._get_cfg('doc_dir')
-
-        logging.info(f'src dir: {self.src_dir}, doc dir: {self.doc_dir}')
-
-        self.c_file_path =      self._get_c_path(self.h_file_path)
-        self.func_h_path =      self._get_func_h_path(self.h_file_path)
-        self.html_file_path =   self._get_html_path(self.h_file_path)
-
-        logging.info(f'Outputs: c => {self.c_file_path.name}, h => {self.func_h_path.name}, html => {self.html_file_path.name}')
-
-        self.model_json =       self.template_dir / 'model.json'
-
-        if not self.model_json.exists():
-            logging.error(f'File not found: {self.model_json}')
-            return
+        if self.jobs:
+             logging.info(f'Found batch job descriptor. Number of jobs: {len(self.jobs)}')
+             self.html_file_path = self.h_file_path.parent / Path(self.file_config["drawing"])
+        else:
+            logging.info(f'There are no batch output jobs defined for {self.h_file_path}')
 
         self.model = self._get_model(self.html_file_path)
 
         #pprint(self.model, indent=4)
 
-    def _get_c_path(self, hpath):
-        c_name = self.file_config.get('machine_c', hpath.stem + '.c')
-        return (hpath.parent / self.src_dir / c_name).absolute().resolve()
-
-    def _get_html_path(self, hpath):
-        html_name = self.file_config.get('machine_html', hpath.stem + '.html')
-        return (hpath.parent / self.doc_dir / html_name).absolute().resolve()
-
-    def _get_func_h_path(self, hpath):
-        h_name = self.file_config.get('func_h', hpath.stem + '_functions.h')
-        return (hpath.parent / h_name).absolute().resolve()
-
-    def _new_model(self):
-        with open(self.h_file_path, 'r') as h:
-            h_content = h.read()
-
-            m = re.search(TOP_STATE_NAME, h_content)
-            if m:
-                self.model['states']['__top__']['title'] = m.group('top_func')
-            else:
-                logging.error(f'Could not find a valid top state handler function declaration in file {self.h_file_path}')
-                self.model['states']['__top__']['title'] = f'{self.h_file_path.stem}__top__'
-
-        return self.model
-
     def _get_default_model(self):
+        self.model_json =       self.template_dir / 'model.json'
+
+        if not self.model_json.exists():
+            raise ChsmException(f'File not found: {self.model_json}')
+
         with open(self.model_json, 'r') as model_file:
             return json.load(model_file)
 
@@ -181,9 +151,6 @@ class Project:
             except json.JSONDecodeError as e:
                 logging.error(f'JSON syntax error in html file {str(html_path)}. \nError message: {str(e)}')
                 return self._get_default_model()
-
-    def _get_cfg(self, key):
-        return self.user_config.get(key, self.default_config[key])
 
     def _load_config_from_file(self, json_path):
         with open(json_path, 'r') as cfg_file:
@@ -211,12 +178,12 @@ class Project:
 
 
     def _load_user_config(self, hpath):
-        user_cfg_path = self._find_user_config_file(hpath.absolute().parent, hpath.stem)
-        logging.info(f'User config file: {user_cfg_path}')
-        if user_cfg_path == None:
+        self.user_cfg_path = self._find_user_config_file(hpath.absolute().parent, hpath.stem)
+        logging.info(f'User config file: {self.user_cfg_path}')
+        if self.user_cfg_path == None:
             return {}
 
-        return self._load_config_from_file(user_cfg_path)
+        return self._load_config_from_file(self.user_cfg_path)
 
     def _open_header_dialog(self):
         root = tk.Tk()
@@ -230,26 +197,46 @@ class Project:
         self.model = json.loads(json_data)
         save_html(self.html_file_path, drawing, json_data)
 
-    def generate_code(self):
-        sm = StateMachine(self.model, self.h_file_path, self.func_h_path.name, self.c_templates, self.file_config)
+    def _run_job(self, job):
+        if not "output" in job:
+            raise ChsmException("Expected an 'output' key in the job descriptor.")
 
-        with open(self.c_file_path, 'w') as cfile:
-            logging.info(f'Generating code int file: {self.c_file_path}')
-            env = jinja2.Environment(loader=jinja2.FileSystemLoader(self.template_dir), trim_blocks=True, lstrip_blocks=True)
-            template = env.get_template("chsm_c_template.jinja")
+        file_path = self.h_file_path.parent / Path(job.get("output", ""))
+        
+        if not file_path.name:
+            raise ChsmException("Expected a file name in the output key.")
+
+        if not file_path.parent.exists():
+            raise ChsmException(f"Output file directory does not exists: {str(file_path.parent.resolve().absolute())}")
+
+        if self.user_cfg_path and Path(self.user_cfg_path).parent.exists():
+            user_template_path = Path(self.user_cfg_path).parent
+            template_path = [self.template_dir, user_template_path]
+        else:
+            template_path = self.template_dir
+
+        with open(file_path, 'w') as output_file:
+            sm = StateMachine(self.model)
+
+            env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_path), trim_blocks=True, lstrip_blocks=True)
+            template = env.get_template(job['template'])
 
             data = sm.data.copy()
-            data['user_config'] = self.c_templates
+            data['template_params'] = job['template_params']
 
             with open("states.txt", 'w') as f:
                 pprint(data, f, indent=4)
 
-            cfile.write(template.render(data=data))
-            #cfile.write(str(sm.ast))
+            output_file.write(template.render(data=data))
 
-        with open(self.func_h_path, 'w') as hfile:
-            logging.info(f'Generating code int file: {self.func_h_path}')
-            hfile.write(str(sm.h_ast))
+    def _run_jobs(self):
+        for job in self.jobs:
+            self._run_job(job)
+
+    def generate_code(self):
+        if self.jobs:
+            self._run_jobs()
+            return
 
 project = None
 

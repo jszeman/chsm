@@ -24,12 +24,35 @@
 		"set_state_id":			""
 	},
 
-	"chsm_test_machine.h": {
+	"chsm_test_machine.h.old": {
         "machine_c":    		"chsm_test_machine4.c",
         "machine_html": 		"chsm_test_machine4.html",
 		"top_func":     		"__top__4",
         "func_h":       		"chsm_test_functions2.h"
 	},
+
+	"chsm_test_machine.h": {
+		"drawing":	"../doc/chsm_test_machine4.html",
+		"jobs":	[
+			{
+				"title":			"C code gen",
+				"output":			"../tsrc/chsm_test_machine4.c",
+				"template":			"chsm_c_template.jinja",
+				"template_params": {
+					"init_signal":			"C_SIG_INIT",
+					"signal_prefix":		"TEST_SIG_",
+					"switch_variable":  	"e_pst->sig",
+					"func_params":      	"chsm_tst *self, const cevent_tst *e_pst",
+					"include_list":			["chsm.h", "cevent.h", "chsm_test_functions2.h", "chsm_test_machine.h"],
+					"func_return_type": 	"chsm_result_ten",
+					"transition_func":		"chsm_transition",
+					"ignore_func":			"chsm_ignored",
+					"top_func":     		"__top__4"
+				}
+			}
+		]
+	},
+
 
 	"chsm_simple_machine.h": {
 		"init_signal":			"C_SIG_INIT",
