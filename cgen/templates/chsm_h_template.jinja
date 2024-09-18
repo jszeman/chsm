@@ -8,7 +8,7 @@
 {# Function declarations #}
 /* The following functions shall be implemented by the user */
 
-{% for func in data.user_funcs if not func.startswith("chsm_") %}
+{% for func in data.user_funcs | sort if not func.startswith("chsm_")  %}
 {% if func+"()" in data.notes and data.notes[func+"()"]%}
 /*
 {{data.notes[func+"()"]}}
@@ -19,7 +19,7 @@ void {{func}} ({{data.template_params.func_params}});
 {% endfor %}
 
 {# Guard declarations #}
-{% for func in data.user_guards %}
+{% for func in data.user_guards | sort %}
 {% if func+"()" in data.notes and data.notes[func+"()"]%}
 /*
 {{data.notes[func+"()"]}}
