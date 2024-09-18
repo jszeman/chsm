@@ -1,3 +1,6 @@
+#ifndef {{data.template_params.include_guard}}
+#define {{data.template_params.include_guard}}
+
 {% for name in data.template_params.include_list -%}
 #include "{{ name }}"
 {% endfor %}
@@ -52,3 +55,5 @@ The following functions shall be declared and implemented by the user:
 
 {% endfor %}
 */
+
+#endif

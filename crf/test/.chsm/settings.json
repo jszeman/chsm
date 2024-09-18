@@ -28,29 +28,11 @@
 					"func_params":      	"chsm_tst *self, const cevent_tst *e_pst",
 					"include_list":			["chsm.h", "cevent.h", "chsm_test_machine.h", "stdbool.h"],
 					"guard_return_type": 	"bool",
-					"state_id_type": 		"chsm_test_machine_state_id_ten"
+					"state_id_type": 		"chsm_test_machine_state_id_ten",
+					"include_guard":		"CHSM_TEST_FUNCTIONS2_H"
 				}
 			}
 		]
-	},
-
-
-	"chsm_simple_machine.h.old": {
-		"init_signal":			"SMPL_SIG_INIT",
-		"signal_prefix":		"SMPL_SIG_",
-		"func_args":        	"self, e_u32",
-		"func_params":      	"void *self, uint32_t e_u32",
-		"user_func_args_t":   	"self, e_u32",
-		"user_func_params_t": 	"void *self, uint32_t e_u32",
-		"func_return_type": 	"void",
-		"guard_return_type":	"bool",
-		"switch_variable":  	"e_u32",
-		"trans_result":     	"SIMPLE_SM_SET_STATE(self, {target})",
-		"ignored_result":   	"",
-		"c_include_list":		[],
-		"h_include_list":		["<stdbool.h>"],
-		"top_state_name": 		"void\\s+(?P<top_func>\\w+)\\(void\\s+\\*self,\\s+uint32_t\\s+\\e_u32\\)\\s*;",
-		"set_state_id":			""
 	},
 
 	"chsm_simple_machine.h": {
@@ -82,7 +64,8 @@
 					"func_params":      	"void *self, uint32_t e_u32",
 					"include_list":			["chsm_simple_machine.h", "stdbool.h"],
 					"guard_return_type": 	"bool",
-					"state_id_type": 		"chsm_simple_machine_state_id_ten"
+					"state_id_type": 		"chsm_simple_machine_state_id_ten",
+					"include_guard":		"CHSM_SIMPLE_MACHINE_FUNCTIONS_H"
 				}
 			}
 		]

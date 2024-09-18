@@ -1,10 +1,8 @@
-/*Generated with CHSM v0.0.1*/
 #include "chsm_simple_machine.h"
 #include "chsm_simple_machine_functions.h"
 
-
-static void state_b(void *self, uint32_t e_u32);
 static void state_a(void *self, uint32_t e_u32);
+static void state_b(void *self, uint32_t e_u32);
 
 static void state_a(void *self, uint32_t e_u32)
 {
@@ -15,7 +13,7 @@ static void state_a(void *self, uint32_t e_u32)
             break;
 
         case SMPL_SIG_EVENT_H:
-            if(guard_h(self, e_u32, 2))
+            if (guard_h(self, e_u32, 2))
             {
                 func_h(self, e_u32, 4, 5);
                 a_exit(self, e_u32);
@@ -24,9 +22,10 @@ static void state_a(void *self, uint32_t e_u32)
                 return SIMPLE_SM_SET_STATE(self, state_b);
             }
             break;
+
     }
 
-    if(guard_1(self, e_u32))
+    if (guard_1(self, e_u32))
     {
         a_exit(self, e_u32);
         c_entry(self, e_u32);
@@ -34,7 +33,7 @@ static void state_a(void *self, uint32_t e_u32)
         return SIMPLE_SM_SET_STATE(self, state_b);
     }
 
-    return ;
+    return;
 }
 
 static void state_b(void *self, uint32_t e_u32)
@@ -58,10 +57,12 @@ static void state_b(void *self, uint32_t e_u32)
             c_exit(self, e_u32);
             a_entry(self, e_u32);
             return SIMPLE_SM_SET_STATE(self, state_a);
+
     }
 
-    return ;
+    return;
 }
+
 
 void simple_machine_callback(void *self, uint32_t e_u32)
 {
@@ -72,5 +73,5 @@ void simple_machine_callback(void *self, uint32_t e_u32)
             return SIMPLE_SM_SET_STATE(self, state_a);
     }
 
-    return ;
+    return;
 }

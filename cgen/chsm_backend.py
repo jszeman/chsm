@@ -109,7 +109,6 @@ class Project:
             logging.error("Selected file {self.h_file_path} doesn't exists.")
             raise ChsmException("Selected file {self.h_file_path} doesn't exists.")
 
-        self.default_config =   self._load_config_from_file(self.template_dir / 'settings.json')
         self.user_config =      self._load_user_config(self.h_file_path)
         self.file_config =      self.user_config.get(self.h_file_path.name, {})
 

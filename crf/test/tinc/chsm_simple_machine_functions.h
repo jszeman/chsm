@@ -1,13 +1,12 @@
+#ifndef CHSM_SIMPLE_MACHINE_FUNCTIONS_H
+#define CHSM_SIMPLE_MACHINE_FUNCTIONS_H
+
 #include "chsm_simple_machine.h"
 #include "stdbool.h"
 
 /* The following functions shall be implemented by the user */
 
-void a_func (void *self, uint32_t e_u32);
-
 void func_k (void *self, uint32_t e_u32);
-
-void c_entry (void *self, uint32_t e_u32);
 
 void b_to_a (void *self, uint32_t e_u32);
 
@@ -15,11 +14,15 @@ void a_exit (void *self, uint32_t e_u32);
 
 void b_exit (void *self, uint32_t e_u32);
 
-void c_exit (void *self, uint32_t e_u32);
+void b_func (void *self, uint32_t e_u32);
+
+void a_func (void *self, uint32_t e_u32);
 
 void a_entry (void *self, uint32_t e_u32);
 
-void b_func (void *self, uint32_t e_u32);
+void c_exit (void *self, uint32_t e_u32);
+
+void c_entry (void *self, uint32_t e_u32);
 
 void b_entry (void *self, uint32_t e_u32);
 
@@ -48,3 +51,5 @@ The following functions shall be declared and implemented by the user:
     func_h
 
 */
+
+#endif
