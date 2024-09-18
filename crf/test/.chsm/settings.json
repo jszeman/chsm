@@ -1,36 +1,4 @@
 {
-	"src_dir":      			"../tsrc",
-	"doc_dir":					"../doc",
-
-	"templates" :{
-		"init_signal":			"C_SIG_INIT",
-		"signal_prefix":		"TEST_SIG_",
-		"func_args":        	"self, e_pst, ctx_pst",
-		"func_params":      	"chsm_tst *self, const cevent_tst *e_pst",
-		"user_func_args_t":   	"self, e_pst",
-		"user_func_params_t": 	"chsm_tst *self, const cevent_tst *e_pst",
-		"func_return_type": 	"chsm_result_ten",
-		"guard_return_type":	"bool",
-		"switch_variable":  	"e_pst->sig",
-		"guards_only_variable": "guards_only_b",
-		"handled_result":   	"chsm_handled(self)",
-		"trans_result":     	"chsm_transition(self, {target})",
-		"parent_result":    	"chsm_handle_in_parent(self, ctx_pst, {parent}, {exit_func}, guards_only_b)",
-		"ignored_result":   	"chsm_ignored(self)",
-		"exit_children":		"chsm_exit_children",
-		"c_include_list":		["chsm.h", "cevent.h"],
-		"h_include_list":		["chsm.h", "cevent.h", "<stdbool.h>"],
-		"top_state_name": 		"chsm_result_ten\\s+(?P<top_func>\\w+)\\(chsm_tst\\s+\\*self,\\s+const\\s+cevent_tst\\s+\\*e_pst\\)\\s*;",
-		"set_state_id":			""
-	},
-
-	"chsm_test_machine.h.old": {
-        "machine_c":    		"chsm_test_machine4.c",
-        "machine_html": 		"chsm_test_machine4.html",
-		"top_func":     		"__top__4",
-        "func_h":       		"chsm_test_functions2.h"
-	},
-
 	"chsm_test_machine.h": {
 		"drawing":	"../doc/chsm_test_machine4.html",
 		"jobs":	[
@@ -43,6 +11,7 @@
 					"signal_prefix":		"TEST_SIG_",
 					"switch_variable":  	"e_pst->sig",
 					"func_params":      	"chsm_tst *self, const cevent_tst *e_pst",
+					"func_args":      		"self, e_pst",
 					"include_list":			["chsm.h", "cevent.h", "chsm_test_functions2.h", "chsm_test_machine.h"],
 					"func_return_type": 	"chsm_result_ten",
 					"transition_func":		"chsm_transition",
@@ -66,8 +35,8 @@
 	},
 
 
-	"chsm_simple_machine.h": {
-		"init_signal":			"C_SIG_INIT",
+	"chsm_simple_machine.h.old": {
+		"init_signal":			"SMPL_SIG_INIT",
 		"signal_prefix":		"SMPL_SIG_",
 		"func_args":        	"self, e_u32",
 		"func_params":      	"void *self, uint32_t e_u32",
@@ -82,5 +51,40 @@
 		"h_include_list":		["<stdbool.h>"],
 		"top_state_name": 		"void\\s+(?P<top_func>\\w+)\\(void\\s+\\*self,\\s+uint32_t\\s+\\e_u32\\)\\s*;",
 		"set_state_id":			""
+	},
+
+	"chsm_simple_machine.h": {
+		"drawing":	"../doc/chsm_simple_machine.html",
+		"jobs":	[
+			{
+				"title":			"C code gen",
+				"output":			"../tsrc/chsm_simple_machine.c",
+				"template":			"chsm_c_template.jinja",
+				"template_params": {
+					"init_signal":			"SMPL_SIG_INIT",
+					"signal_prefix":		"SMPL_SIG_",
+					"switch_variable":  	"e_u32",
+					"func_params":      	"void *self, uint32_t e_u32",
+					"func_args":      		"self, e_u32",
+					"include_list":			["chsm_simple_machine.h", "chsm_simple_machine_functions.h"],
+					"func_return_type": 	"void",
+					"transition_func":		"SIMPLE_SM_SET_STATE",
+					"ignore_func":			"",
+					"top_func":     		"simple_machine_callback"
+				}
+			},
+			
+			{
+				"title":					"C header gen",
+				"output":					"../tinc/chsm_simple_machine_functions.h",
+				"template":					"chsm_h_template.jinja",
+				"template_params": {
+					"func_params":      	"void *self, uint32_t e_u32",
+					"include_list":			["chsm_simple_machine.h", "stdbool.h"],
+					"guard_return_type": 	"bool",
+					"state_id_type": 		"chsm_simple_machine_state_id_ten"
+				}
+			}
+		]
 	}
 }

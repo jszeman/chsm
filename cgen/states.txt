@@ -1083,7 +1083,7 @@
                       's_exit',
                       's_init',
                       's_save_history'},
-    'user_guards': {'j_guard', 's1_guard', 's5_g1', 'cond'},
+    'user_guards': {'cond', 's5_g1', 's1_guard', 'j_guard'},
     'user_inc_funcs': {   'k_guard',
                           's11_func',
                           's11_g1',

@@ -16,24 +16,24 @@ static {{data.template_params.func_return_type}} {{ state.title }}({{data.templa
             {% for (guard_func, guard_param), guard in signal.guards.items() %}
                 {% if not guard_func %}
                     {% for func, param in guard.funcs %}
-            {{func}}(self, e_pst{% if param %}, {{param}}{% endif %});
+            {{func}}({{data.template_params.func_args}}{% if param %}, {{param}}{% endif %});
                     {% endfor -%}
                 {% if guard.target%}
                     {% if guard.target_type == 'call'%}
-            return {{data.template_params.transition_func}}(self, {{guard.target_title}}(self, e_pst{% if guard.target_params %}, {{guard.target_params}}{% endif %}));
+            return {{data.template_params.transition_func}}(self, {{guard.target_title}}({{data.template_params.func_args}}{% if guard.target_params %}, {{guard.target_params}}{% endif %}));
                     {% else %}
             return {{data.template_params.transition_func}}(self, {{guard.target_title}});
                     {% endif %}
                 {% endif %}
                 {% else %}
-            if ({{guard_func}}(self, e_pst{% if guard_param %}, {{guard_param}}{% endif %}))
+            if ({{guard_func}}({{data.template_params.func_args}}{% if guard_param %}, {{guard_param}}{% endif %}))
             {
                 {% for func, param in guard.funcs %}
-                {{func}}(self, e_pst{% if param %}, {{param}}{% endif %});
+                {{func}}({{data.template_params.func_args}}{% if param %}, {{param}}{% endif %});
                 {% endfor %}
                 {% if guard.target %}
                     {% if guard.target_type == 'call'%}
-                return {{data.template_params.transition_func}}(self, {{guard.target_title}}(self, e_pst{% if guard.target_params %}, {{guard.target_params}}{% endif %}));
+                return {{data.template_params.transition_func}}(self, {{guard.target_title}}({{data.template_params.func_args}}{% if guard.target_params %}, {{guard.target_params}}{% endif %}));
                     {% else %}
                 return {{data.template_params.transition_func}}(self, {{guard.target_title}});
                     {% endif %}
@@ -50,10 +50,10 @@ static {{data.template_params.func_return_type}} {{ state.title }}({{data.templa
     {% for (guard_func, guard_param), guard in state.signals[None].guards.items() %}
         {% if  guard_func %}
 
-    if ({{guard_func}}(self, e_pst{% if guard_param %}, {{guard_param}}{% endif %}))
+    if ({{guard_func}}({{data.template_params.func_args}}{% if guard_param %}, {{guard_param}}{% endif %}))
     {
         {% for func, param in guard.funcs %}
-        {{func}}(self, e_pst{% if param %}, {{param}}{% endif %});
+        {{func}}({{data.template_params.func_args}}{% if param %}, {{param}}{% endif %});
         {% endfor %}
         {% if guard.target %}
         return {{data.template_params.transition_func}}(self, {{guard.target_title}});
@@ -62,23 +62,23 @@ static {{data.template_params.func_return_type}} {{ state.title }}({{data.templa
         {% endif %}
     {% endfor %}
 
-    return {{data.template_params.ignore_func}}(self);
+    return{% if data.template_params.ignore_func %} {{data.template_params.ignore_func}}(self){% endif%};
 }
 
 {% endfor %}
 
-{{data.template_params.func_return_type}} {{ data.states.__top__.title }}({{data.template_params.func_params}})
+{{data.template_params.func_return_type}} {{ data.template_params.top_func }}({{data.template_params.func_params}})
 {
     switch({{data.template_params.switch_variable}})
     {
         case {{data.template_params.init_signal}}:
                     {% for func, param in data.states.__top__.signals.init.guards[(None, None)].funcs %}
                         {% if func %}
-            {{func}}(self, e_pst{% if param %}, {{param}}{% endif %});
+            {{func}}({{data.template_params.func_args}}{% if param %}, {{param}}{% endif %});
                         {% endif %}
                     {% endfor %}
             return {{data.template_params.transition_func}}(self, {{data.states.__top__.signals.init.guards[(None, None)].target_title}});
     }
 
-    return {{data.template_params.ignore_func}}(self);
+    return{% if data.template_params.ignore_func %} {{data.template_params.ignore_func}}(self){% endif%};
 }
