@@ -150,6 +150,12 @@ export class Model {
 		this.changed = false;
 	}
 
+	set_changed()
+	{
+		this.changed = true;
+	}
+
+
 	get_note_text(obj_id)
 	{
 		if (!(obj_id in this.data.notes))

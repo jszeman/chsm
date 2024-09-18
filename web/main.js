@@ -1185,7 +1185,7 @@ window.addEventListener('DOMContentLoaded', event => {window.app = new App(state
 addEventListener("visibilitychange", (event) => {
 	if (document.hidden)
 	{
-		eel.pagehide(window.app.model.get_data_string());
+		eel.pagehide(window.app.model.get_data_string(), window.app.changed());
 	}
 	else
 	{
@@ -1197,6 +1197,13 @@ eel.expose(load_json); // Expose this function to Python
 function load_json(data, filename, filepath) {
 	//console.log(data)
 	window.app.load_model(data, filename, filepath);
+}
+
+eel.expose(set_changed); // Expose this function to Python
+function set_changed() {
+	//console.log(data)
+	window.app.model.set_changed();
+	//console.log(`Changed: ${window.app.changed()}`)
 }
 
 eel.expose(send_event);

@@ -254,6 +254,7 @@ ok_to_close = False
 json_str = None
 hidden = False
 eel_done = False
+model_changed = False
 
 @eel.expose
 def save_state_machine(drawing: str, json_data: str, filepath: str):
@@ -302,25 +303,37 @@ def genereate_code():
 @eel.expose
 def startup():
     global json_str
+    global model_changed
 
     if project:
         eel.load_json(json.dumps(project.model), project.h_file_path.name, project.h_file_path)
+        if model_changed:
+            eel.set_changed()
         return
     
     if json_str:
-        eel.load_json(json_str, '', None)
+        eel.load_json(json_str, '', None);
+        if model_changed:
+            eel.set_changed()
         return
+
+    
 
 
 
 @eel.expose
-def pagehide(json_data: str):
+def pagehide(json_data: str, changed: bool):
     global hidden
     global json_str
+    global model_changed
+
     if project:
         project.update_model(json_data)
     else:
         json_str = json_data
+
+    model_changed = changed
+    print(f'model changed: {model_changed}')
     
     hidden = True
 
