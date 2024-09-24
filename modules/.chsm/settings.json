@@ -1,0 +1,253 @@
+{
+	"canopen.h": {
+		"drawing":	"../doc/canopen.html",
+		"jobs":	[
+			{
+				"title":			"C code gen",
+				"output":			"../src/canopen.c",
+				"template":			"chsm_c_template.jinja",
+				"template_params": {
+					"init_signal":			"C_SIG_INIT",
+					"signal_prefix":		"",
+					"switch_variable":  	"e_pst->sig",
+					"func_params":      	"chsm_tst *self, const cevent_tst *e_pst",
+					"func_args":      		"self, e_pst",
+					"include_list":			["chsm.h", "cevent.h", "canopen_functions.h", "canopen.h"],
+					"func_return_type": 	"chsm_result_ten",
+					"transition_func":		"chsm_transition",
+					"ignore_func":			"chsm_ignored",
+					"top_func":     		"co_node_top"
+				}
+			},
+			
+			{
+				"title":					"C header gen",
+				"output":					"../inc/canopen_functions.h",
+				"template":					"chsm_h_template.jinja",
+				"template_params": {
+					"func_params":      	"chsm_tst *self, const cevent_tst *e_pst",
+					"include_list":			["chsm.h", "cevent.h", "canopen.h", "stdbool.h"],
+					"guard_return_type": 	"bool",
+					"state_id_type": 		"canopen_state_id_ten",
+					"include_guard":		"CANOPEN_FUNCTIONS_H"
+				}
+			}
+		]
+	},
+	
+	"sdo.h": {
+		"drawing":	"../doc/sdo.html",
+		"jobs":	[
+			{
+				"title":			"C code gen",
+				"output":			"../src/sdo.c",
+				"template":			"chsm_c_template.jinja",
+				"template_params": {
+					"init_signal":			"C_SIG_INIT",
+					"signal_prefix":		"",
+					"switch_variable":  	"e_pst->sig",
+					"func_params":      	"chsm_tst *self, const cevent_tst *e_pst",
+					"func_args":      		"self, e_pst",
+					"include_list":			["chsm.h", "cevent.h", "sdo_functions.h", "sdo.h"],
+					"func_return_type": 	"chsm_result_ten",
+					"transition_func":		"chsm_transition",
+					"ignore_func":			"chsm_ignored",
+					"top_func":     		"sdo_top"
+				}
+			},
+			
+			{
+				"title":					"C header gen",
+				"output":					"../inc/sdo_functions.h",
+				"template":					"chsm_h_template.jinja",
+				"template_params": {
+					"func_params":      	"chsm_tst *self, const cevent_tst *e_pst",
+					"include_list":			["chsm.h", "cevent.h", "sdo.h", "stdbool.h"],
+					"guard_return_type": 	"bool",
+					"state_id_type": 		"canopen_sdo_state_id_ten",
+					"include_guard":		"SDO_FUNCTIONS_H"
+				}
+			}
+		]
+	},
+	
+	"fram.h": {
+		"drawing":	"../doc/fram.html",
+		"jobs":	[
+			{
+				"title":			"C code gen",
+				"output":			"../src/fram.c",
+				"template":			"chsm_c_template.jinja",
+				"template_params": {
+					"init_signal":			"C_SIG_INIT",
+					"signal_prefix":		"",
+					"switch_variable":  	"e_pst->sig",
+					"func_params":      	"chsm_tst *self, const cevent_tst *e_pst",
+					"func_args":      		"self, e_pst",
+					"include_list":			["chsm.h", "cevent.h", "fram_functions.h", "fram.h"],
+					"func_return_type": 	"chsm_result_ten",
+					"transition_func":		"chsm_transition",
+					"ignore_func":			"chsm_ignored",
+					"top_func":     		"fram_top"
+				}
+			},
+			
+			{
+				"title":					"C header gen",
+				"output":					"../inc/fram_functions.h",
+				"template":					"chsm_h_template.jinja",
+				"template_params": {
+					"func_params":      	"chsm_tst *self, const cevent_tst *e_pst",
+					"include_list":			["chsm.h", "cevent.h", "fram.h", "stdbool.h"],
+					"guard_return_type": 	"bool",
+					"state_id_type": 		"fram_state_id_ten",
+					"include_guard":		"FRAM_FUNCTIONS_H"
+				}
+			}
+		]
+	},
+	
+	"i2c_master.h": {
+		"drawing":	"../doc/i2c_master.html",
+		"jobs":	[
+			{
+				"title":			"C code gen",
+				"output":			"../src/i2c_master.c",
+				"template":			"chsm_c_template.jinja",
+				"template_params": {
+					"init_signal":			"C_SIG_INIT",
+					"signal_prefix":		"",
+					"switch_variable":  	"e_pst->sig",
+					"func_params":      	"chsm_tst *self, const cevent_tst *e_pst",
+					"func_args":      		"self, e_pst",
+					"include_list":			["chsm.h", "cevent.h", "i2c_master_functions.h", "i2c_master.h"],
+					"func_return_type": 	"chsm_result_ten",
+					"transition_func":		"chsm_transition",
+					"ignore_func":			"chsm_ignored",
+					"top_func":     		"i2c_master_top"
+				}
+			},
+			
+			{
+				"title":					"C header gen",
+				"output":					"../inc/i2c_master_functions.h",
+				"template":					"chsm_h_template.jinja",
+				"template_params": {
+					"func_params":      	"chsm_tst *self, const cevent_tst *e_pst",
+					"include_list":			["chsm.h", "cevent.h", "i2c_master.h", "stdbool.h"],
+					"guard_return_type": 	"bool",
+					"state_id_type": 		"i2c_master_state_id_ten",
+					"include_guard":		"I2c_MASTER_FUNCTIONS_H"
+				}
+			}
+		]
+	},
+	
+	"lm73.h": {
+		"drawing":	"../doc/lm73.html",
+		"jobs":	[
+			{
+				"title":			"C code gen",
+				"output":			"../src/lm73.c",
+				"template":			"chsm_c_template.jinja",
+				"template_params": {
+					"init_signal":			"C_SIG_INIT",
+					"signal_prefix":		"",
+					"switch_variable":  	"e_pst->sig",
+					"func_params":      	"chsm_tst *self, const cevent_tst *e_pst",
+					"func_args":      		"self, e_pst",
+					"include_list":			["chsm.h", "cevent.h", "lm73_functions.h", "lm73.h"],
+					"func_return_type": 	"chsm_result_ten",
+					"transition_func":		"chsm_transition",
+					"ignore_func":			"chsm_ignored",
+					"top_func":     		"lm73_top"
+				}
+			},
+			
+			{
+				"title":					"C header gen",
+				"output":					"../inc/lm73_functions.h",
+				"template":					"chsm_h_template.jinja",
+				"template_params": {
+					"func_params":      	"chsm_tst *self, const cevent_tst *e_pst",
+					"include_list":			["chsm.h", "cevent.h", "lm73.h", "stdbool.h"],
+					"guard_return_type": 	"bool",
+					"state_id_type": 		"lm73_state_id_ten",
+					"include_guard":		"LM73_FUNCTIONS_H"
+				}
+			}
+		]
+	},
+	
+	"ltc2471.h": {
+		"drawing":	"../doc/ltc2471.html",
+		"jobs":	[
+			{
+				"title":			"C code gen",
+				"output":			"../src/ltc2471.c",
+				"template":			"chsm_c_template.jinja",
+				"template_params": {
+					"init_signal":			"C_SIG_INIT",
+					"signal_prefix":		"",
+					"switch_variable":  	"e_pst->sig",
+					"func_params":      	"chsm_tst *self, const cevent_tst *e_pst",
+					"func_args":      		"self, e_pst",
+					"include_list":			["chsm.h", "cevent.h", "ltc2471_functions.h", "ltc2471.h"],
+					"func_return_type": 	"chsm_result_ten",
+					"transition_func":		"chsm_transition",
+					"ignore_func":			"chsm_ignored",
+					"top_func":     		"ltc2471_top"
+				}
+			},
+			
+			{
+				"title":					"C header gen",
+				"output":					"../inc/ltc2471_functions.h",
+				"template":					"chsm_h_template.jinja",
+				"template_params": {
+					"func_params":      	"chsm_tst *self, const cevent_tst *e_pst",
+					"include_list":			["chsm.h", "cevent.h", "ltc2471.h", "stdbool.h"],
+					"guard_return_type": 	"bool",
+					"state_id_type": 		"ltc2471_state_id_ten",
+					"include_guard":		"LTC2471_FUNCTIONS_H"
+				}
+			}
+		]
+	},
+	
+	"spi_master.h": {
+		"drawing":	"../doc/spi_master.html",
+		"jobs":	[
+			{
+				"title":			"C code gen",
+				"output":			"../src/spi_master.c",
+				"template":			"chsm_c_template.jinja",
+				"template_params": {
+					"init_signal":			"C_SIG_INIT",
+					"signal_prefix":		"",
+					"switch_variable":  	"e_pst->sig",
+					"func_params":      	"chsm_tst *self, const cevent_tst *e_pst",
+					"func_args":      		"self, e_pst",
+					"include_list":			["chsm.h", "cevent.h", "spi_master_functions.h", "spi_master.h"],
+					"func_return_type": 	"chsm_result_ten",
+					"transition_func":		"chsm_transition",
+					"ignore_func":			"chsm_ignored",
+					"top_func":     		"spi_master_top"
+				}
+			},
+			
+			{
+				"title":					"C header gen",
+				"output":					"../inc/spi_master_functions.h",
+				"template":					"chsm_h_template.jinja",
+				"template_params": {
+					"func_params":      	"chsm_tst *self, const cevent_tst *e_pst",
+					"include_list":			["chsm.h", "cevent.h", "spi_master.h", "stdbool.h"],
+					"guard_return_type": 	"bool",
+					"state_id_type": 		"spi_master_state_id_ten",
+					"include_guard":		"SPI_MASTER_FUNCTIONS_H"
+				}
+			}
+		]
+	}
+}

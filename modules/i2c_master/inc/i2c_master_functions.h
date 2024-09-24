@@ -1,33 +1,29 @@
-#ifndef I2C_MASTER_FUNCTIONS_H
-#define I2C_MASTER_FUNCTIONS_H
+#ifndef I2c_MASTER_FUNCTIONS_H
+#define I2c_MASTER_FUNCTIONS_H
 
-/*Generated with CHSM v0.0.2*/
-
-#include "i2c_master.h"
 #include "chsm.h"
 #include "cevent.h"
-#include <stdbool.h>
+#include "i2c_master.h"
+#include "stdbool.h"
 
+/* The following functions shall be implemented by the user */
 
-void chsm_defer(chsm_tst *self, const cevent_tst *e_pst);
+void clear_transaction_info (chsm_tst *self, const cevent_tst *e_pst);
 
-void chsm_recall(chsm_tst *self, const cevent_tst *e_pst);
+void i2c_master_init (chsm_tst *self, const cevent_tst *e_pst);
 
-void clear_transaction_info(chsm_tst *self, const cevent_tst *e_pst);
+void i2c_master_send_fail_response (chsm_tst *self, const cevent_tst *e_pst);
 
-void i2c_master_init(chsm_tst *self, const cevent_tst *e_pst);
+void i2c_master_send_success_response (chsm_tst *self, const cevent_tst *e_pst);
 
-void i2c_master_send_fail_response(chsm_tst *self, const cevent_tst *e_pst);
+void i2c_master_start_rx (chsm_tst *self, const cevent_tst *e_pst);
 
-void i2c_master_send_success_response(chsm_tst *self, const cevent_tst *e_pst);
+void i2c_master_start_tx (chsm_tst *self, const cevent_tst *e_pst);
 
-void i2c_master_start_rx(chsm_tst *self, const cevent_tst *e_pst);
+void i2c_master_stop (chsm_tst *self, const cevent_tst *e_pst);
 
-void i2c_master_start_tx(chsm_tst *self, const cevent_tst *e_pst);
+void store_transaction_info (chsm_tst *self, const cevent_tst *e_pst);
 
-void i2c_master_stop(chsm_tst *self, const cevent_tst *e_pst);
-
-void store_transaction_info(chsm_tst *self, const cevent_tst *e_pst);
 
 
 typedef enum i2c_master_state_id_ten
@@ -39,19 +35,18 @@ typedef enum i2c_master_state_id_ten
     S_WR_READ = 6,
 } i2c_master_state_id_ten;
 
-
 /*
 Signals:
-    SIG_I2C_READ_FAIL      
-    SIG_I2C_READ_SUCCESS   
-    SIG_I2C_R_TRANSACTION  
-    SIG_I2C_WRITE_FAIL     
-    SIG_I2C_WRITE_SUCCESS  
+    SIG_I2C_R_TRANSACTION     
+    SIG_I2C_READ_FAIL     
+    SIG_I2C_READ_SUCCESS     
+    SIG_I2C_W_TRANSACTION     
     SIG_I2C_WR_TRANSACTION 
-    SIG_I2C_W_TRANSACTION  
+    SIG_I2C_WRITE_FAIL     
+    SIG_I2C_WRITE_SUCCESS     
+
+The following functions shall be declared and implemented by the user:
+
 */
 
-/*
-Other function notes:
-*/
 #endif
