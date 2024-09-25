@@ -156,7 +156,12 @@ class Project:
             return json.load(cfg_file)
         
     def _find_file(self, dir_path, f_name):
-        
+        p = dir_path / f'.chsm/{f_name}'
+        print(f'Searching settings in {p}')
+        if p.exists():
+            self.cfg_file_path = p
+            return p
+
         for parent in dir_path.parents:
             p = parent / f'.chsm/{f_name}'
             print(f'Searching settings in {p}')
@@ -197,10 +202,12 @@ class Project:
         save_html(self.html_file_path, drawing, json_data)
 
     def _run_job(self, job):
+        logging.info(f'Running job: {job["title"]}')
         if not "output" in job:
             raise ChsmException("Expected an 'output' key in the job descriptor.")
 
         file_path = self.h_file_path.parent / Path(job.get("output", ""))
+        logging.info(f'Output file: {file_path}')
         
         if not file_path.name:
             raise ChsmException("Expected a file name in the output key.")
@@ -215,7 +222,9 @@ class Project:
             template_path = self.template_dir
 
         with open(file_path, 'w') as output_file:
+            logging.info(f'Processing drawing...')
             sm = StateMachine(self.model)
+            logging.info(f'Done')
 
             env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_path), trim_blocks=True, lstrip_blocks=True)
             template = env.get_template(job['template'])
@@ -273,8 +282,12 @@ def open_file():
 
     elif filepath.endswith('.html'):
         model = open_html(filepath)
-        if model:
-            eel.load_json(json.dumps(model), Path(filepath).name, filepath)
+        try:
+            project = Project(filepath)
+            eel.load_json(json.dumps(project.model), Path(filepath).name, filepath)
+        except ChsmException:
+            if model:
+                eel.load_json(json.dumps(model), Path(filepath).name, filepath)
 
 @eel.expose
 def genereate_code():
