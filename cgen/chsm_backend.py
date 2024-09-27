@@ -7,6 +7,7 @@ Usage:
 Options:
     -s, --server-only     Do not open the application with Chrome app mode just wait for clients at http://127.0.0.1:8000/main.html
     -c, --code-gen        Generate code and quit. Don't start the GUI.
+    -d, --dump_ir         Dump internal state machine representation into a <html_path>.txt file.
 """
 import re
 import eel
@@ -97,11 +98,12 @@ def open_html(html_path):
             return None
 
 class Project:
-    def __init__(self, h_file_path=None):
+    def __init__(self, h_file_path=None, dump_ir=False):
         self.backend_path =     (Path(__file__).parent).absolute().resolve()
         self.template_dir =     (self.backend_path / 'templates').absolute().resolve()
 
         self.h_file_path =      Path(h_file_path) if h_file_path else self._open_header_dialog()
+        self.dump_ir = dump_ir
 
         logging.info(f'Opening project for {self.h_file_path}')
 
@@ -224,7 +226,6 @@ class Project:
         with open(file_path, 'w') as output_file:
             logging.info(f'Processing drawing...')
             sm = StateMachine(self.model)
-            logging.info(f'Done')
 
             env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_path), trim_blocks=True, lstrip_blocks=True)
             template = env.get_template(job['template'])
@@ -232,10 +233,12 @@ class Project:
             data = sm.data.copy()
             data['template_params'] = job['template_params']
 
-            with open("states.txt", 'w') as f:
-                pprint(data, f, indent=4)
+            if self.dump_ir:
+                with open(self.html_file_path.with_suffix(".txt"), 'w') as f:
+                    pprint(data, f, indent=4)
 
             output_file.write(template.render(data=data))
+            logging.info(f'Done')
 
     def _run_jobs(self):
         for job in self.jobs:
@@ -309,7 +312,7 @@ if __name__ == '__main__':
     if args['FILE']:
         p = Path(args['FILE'])
         if p.exists():
-            project = Project(p)
+            project = Project(p, dump_ir=args['--dump_ir'])
             if args['--code-gen']:
                 project.generate_code()
                 quit()
