@@ -317,9 +317,6 @@ def startup():
             eel.set_changed()
         return
 
-    
-
-
 
 @eel.expose
 def pagehide(json_data: str, changed: bool):
@@ -333,7 +330,6 @@ def pagehide(json_data: str, changed: bool):
         json_str = json_data
 
     model_changed = changed
-    print(f'model changed: {model_changed}')
     
     hidden = True
 

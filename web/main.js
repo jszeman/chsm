@@ -1214,8 +1214,14 @@ function send_event(event, data)
 
 let link_time = 1000;
 
+// Let's show a confirmation dialog when the user tries to close the GUI.
+// Well, shit. This won't work if there are unsaved changes, the computer goes
+// to sleep, resumes and the user immediately closes the GUI. Since there was no
+// interaction with the browser, it will think that ther can't be changes worth
+// saving and so won't show the close confirmation dialog. There is no way to
+// force the dialog, to prevent websites abusing the function.
 window.addEventListener('beforeunload', function (e) {
-	if (link_time > 0 && window.app.changed())
+	if ((link_time > 0) && window.app.changed())
 	{
 		e.preventDefault();
 	}
@@ -1230,7 +1236,7 @@ function link_up(time)
 
 function timer_callback()
 {
-	link_time -= 500;
+	link_time -= 300;
 
 	if (link_time < 0)
 	{
