@@ -16,6 +16,7 @@ class App {
 		this.enable_keys = true;
 		this.text_state_id = '';
 		this.text_tr_id = '';
+		this.busy = false;
 		this.prop_editor = {
 			obj_id: null,
 			obj_type: null
@@ -140,6 +141,11 @@ class App {
 			obj_id: null,
 			obj_type: null
 		};
+	}
+
+	changed()
+	{
+		return this.model.changed;
 	}
 
 	push_transition_changes_to_gui()
@@ -474,17 +480,23 @@ class App {
 
 			case 'SAVE':
 				this.model.set_view(this.gui.get_view());
+				this.busy = true;
 				eel.save_state_machine(this.main.innerHTML, this.model.get_data_string(), this.filepath);
+				this.busy = false;
 				break;
 
 			case 'OPEN':
+				this.busy = true;
 				eel.open_file();
+				this.busy = false;
 				break;
 
 			case 'CODE_GEN':
 				this.model.set_view(this.gui.get_view());
+				this.busy = true;
 				eel.save_state_machine(this.main.innerHTML, this.model.get_data_string(), this.filepath);
 				eel.genereate_code();
+				this.busy = false;
 				break;
 
 			case 'SAVE_RESULT':
@@ -492,6 +504,7 @@ class App {
 				this.file_name = data.filename;
 				this.title.textContent = this.file_name;
 				this.filepath = data.filepath;
+				this.model.clr_changed();
 				break;
 
 			case 'CODEGEN_RESULT':
@@ -1169,10 +1182,28 @@ class App {
 
 window.addEventListener('DOMContentLoaded', event => {window.app = new App(state_machine)});
 
+addEventListener("visibilitychange", (event) => {
+	if (document.hidden)
+	{
+		eel.pagehide(window.app.model.get_data_string(), window.app.changed());
+	}
+	else
+	{
+		eel.pageshow();
+	}
+});
+
 eel.expose(load_json); // Expose this function to Python
 function load_json(data, filename, filepath) {
 	//console.log(data)
 	window.app.load_model(data, filename, filepath);
+}
+
+eel.expose(set_changed); // Expose this function to Python
+function set_changed() {
+	//console.log(data)
+	window.app.model.set_changed();
+	//console.log(`Changed: ${window.app.changed()}`)
 }
 
 eel.expose(send_event);
@@ -1180,3 +1211,38 @@ function send_event(event, data)
 {
 	window.app.dispatch(event, data);
 }
+
+let link_time = 1000;
+
+// Let's show a confirmation dialog when the user tries to close the GUI.
+// Well, shit. This won't work if there are unsaved changes, the computer goes
+// to sleep, resumes and the user immediately closes the GUI. Since there was no
+// interaction with the browser, it will think that ther can't be changes worth
+// saving and so won't show the close confirmation dialog. There is no way to
+// force the dialog, to prevent websites abusing the function.
+window.addEventListener('beforeunload', function (e) {
+	if ((link_time > 0) && window.app.changed())
+	{
+		e.preventDefault();
+	}
+	eel.closing();
+});
+
+eel.expose(link_up);
+function link_up(time)
+{
+	link_time = time;
+}
+
+function timer_callback()
+{
+	link_time -= 300;
+
+	if (link_time < 0)
+	{
+		console.log('close');
+		window.close();
+	}
+}
+
+window.setInterval(timer_callback, 500);

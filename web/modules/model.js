@@ -20,7 +20,9 @@ export class Model {
 		this.history = [];
 		this.history_idx = 1;
 
-		this.ack_changes();
+		this.changed = false;
+
+		this.clear_changes();
 		this.save_state(null);
 
 		this.selection = new Set();
@@ -119,7 +121,7 @@ export class Model {
 		return JSON.stringify(this.data, null, 4);
 	}
 
-	ack_changes()
+	clear_changes()
 	{
 		this.changes = {
 			trans_new:			[],
@@ -135,6 +137,24 @@ export class Model {
 			state_set_title:	[],
 		};
 	}
+
+	ack_changes()
+	{
+		this.changed |= Object.values(this.changes).some(function (e) {return e.length});
+
+		this.clear_changes();
+	}
+
+	clr_changed()
+	{
+		this.changed = false;
+	}
+
+	set_changed()
+	{
+		this.changed = true;
+	}
+
 
 	get_note_text(obj_id)
 	{
