@@ -288,7 +288,7 @@ def open_file():
     root.attributes("-topmost", True)
     root.withdraw()
     root.after(250, link_alive, root)
-    filepath = askopenfilename(title='Open state mechine declaration', filetypes=(('C header file', '.h'), ('State chart', '.html')))
+    filepath = askopenfilename(title='Open state mechine declaration', filetypes=(('Code and drawing files', ('.h', '.c', '.html', '.cpp')), ('All files', '.*')))
     if not filepath:
         logging.info(f'File open canceled by user')
         return
