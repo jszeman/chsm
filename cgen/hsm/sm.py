@@ -4,7 +4,7 @@ import logging
 from datetime import datetime
 import pprint
 from copy import deepcopy
-from .parser import Parser, ParserException
+from .parser import Parser, ParserException, NOSIG, NOFUNC, NOPARAM, NOGUARD, NULLFUNC
 
 # TODO: make sure, that there is only one exit function and it has no parameters
 
@@ -18,6 +18,8 @@ from .parser import Parser, ParserException
 EVENT_PATTERN = r'^(\s*(?P<signal>\w+)\s*)*(\[(?P<guard>\w+)\((?P<gparams>[\w,\s]*)\)\])*(\s*/\s*(?P<function>\w+)(?P<parens>\((?P<fparams>[\w,\s]*)\))*\s*)*'
 
 VERSION_STRING = 'Generated with CHSM v0.0.2'
+
+SYS_SIGNALS = ['entry', 'exit', 'init']
 
 class StateMachine:
     def __init__(self, data):
@@ -39,7 +41,8 @@ class StateMachine:
         self.resolve_parent_titles(self.states)
 
         self.remove_unnecessary_transitions(self.states)
-        self.determine_break(self.states)
+
+        self.remove_initial_states(self.states)
 
         self.data = {
             'states': self.states,
@@ -72,7 +75,7 @@ class StateMachine:
                             g['target_params'] = states[target]['params']
         
         #The only place where transition functions are needed for an init signal is the __top__
-        g = states['__top__']['signals']['init']['guards'][(None, None)]
+        g = states['__top__']['sys_signals']['init']['guards'][NOGUARD]
         tfuncs, target = self.get_transition_funcs('__top__', g['target'], g['lca'])
         g['funcs'].extend(tfuncs)
         g['target_title'] = states[target]['title']
@@ -119,67 +122,12 @@ class StateMachine:
             parent_id = states[parent_id]['parent']
     
 
-
-
-
-    def str_to_signal(self, line, target=None, target_title=None, initial=False, lca=None):
-        signal = None
-        guard = None
-        func = None
-        parens = None
-        fparams = None
-        gparams = None
-
-        m = re.search(EVENT_PATTERN, line)
-        if m:
-            signal = m.group('signal')
-            guard = m.group('guard')
-            func = m.group('function')
-            parens = m.group('parens')
-            fparams = m.group('fparams')
-            gparams = m.group('gparams')
-
-            if func and parens:
-                if fparams:
-                    self.user_inc_funcs.add(func)
-                else:
-                    self.user_funcs.add(func)
-
-            if guard:
-                if gparams:
-                    self.user_inc_funcs.add(guard)
-                else:
-                    self.user_guards.add(guard)
-
-            if signal:
-                self.user_signals.add(signal)
-
-        if initial:
-            signal = 'init'
-            guard = None
-            gparams = None
-
-        g = {
-            'guard': (guard, gparams),
-            'funcs': [(func, fparams)],
-            'target': target,
-            'target_title': target_title,
-            'lca': lca
-        }
-
-        s = {
-            'name': signal,
-            'guards': {
-                g['guard']: g
-            }
-        }
-
-        return s
-
     def add_signal_to_state(self, state, signal):
         signal_name = signal['name']
-
-        if signal_name not in state['signals']:
+            
+        if signal_name in SYS_SIGNALS:
+            state['sys_signals'][signal_name] = signal
+        elif signal_name not in state['signals']:
             state['signals'][signal_name] = signal
         else:
             orig_signal = state['signals'][signal_name]
@@ -250,12 +198,13 @@ class StateMachine:
             title, params, is_call = self.process_state_title(s['title'])
 
             state = {
-                'signals': {
-                    None: {
-                        'name': None,
-                        'guards': {},
-                    }
+                'signals': {},
+                'sys_signals': {
+                    'entry': {},
+                    'exit': {},
+                    'init': {}
                 },
+                'guards': [],
                 'parent': s['parent'],
                 'children': s['children'],
                 'title': title,
@@ -293,14 +242,11 @@ class StateMachine:
             if s['parent']:
                 s['parent_title'] = states[s['parent']]['title']
 
-    def determine_break(self, states):
-        """Determeni if there is an uncodi"""
-        for state in states.values():
-            for signal in state['signals'].values():
-                for guard in signal['guards'].values():
-                    if guard["target_title"] == state['title']:
-                        guard['target'] = None
-                        guard["target_title"] = None
+    def remove_initial_states(self, states):
+        keys = tuple(states.keys())
+        for k in keys:
+            if states[k]['type'] == 'initial':
+                del states[k]
 
     def remove_unnecessary_transitions(self, states):
         """Remove transition targets pointing to the current state."""
@@ -445,11 +391,11 @@ class StateMachine:
         for step in path:
             state_id, event_id = step
             try:
-                funcs.extend(self.states[state_id]['signals'][event_id]['guards'][(None, None)]['funcs'])
+                funcs.extend(self.states[state_id]['sys_signals'][event_id]['guards'][NOGUARD]['funcs'])
             except KeyError:
                 pass
 
-        funcs = [f for f in funcs if f != (None, None)]
+        funcs = [f for f in funcs if f != NULLFUNC]
 
         return tuple(funcs)
 

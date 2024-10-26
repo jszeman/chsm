@@ -3,6 +3,12 @@ import re
 class ParserException(Exception):
     pass
 
+NOSIG = "__nosig__"
+NOFUNC = "__no_func__"
+NOPARAM = "__noparam__"
+NOGUARD = (NOFUNC, NOPARAM)
+NULLFUNC = (NOFUNC, NOPARAM)
+
 class Parser:
     def __init__(self):
         self.funcs_w_args = set()
@@ -45,7 +51,7 @@ class Parser:
         return fname, params, rem
 
     def get_signal(self, data):
-        signal = None
+        signal = NOSIG
         rem = data
         
         m = re.match('[a-zA-z_]+\w*', data)
@@ -82,8 +88,8 @@ class Parser:
         return funcs, data[1:]
 
     def parse_one(self, data, target=None, target_title=None, initial=False, lca=None):
-        signal = None
-        guard = (None, None)
+        signal = NOSIG
+        guard = (NOFUNC, NOPARAM)
         funcs = []
 
 
@@ -130,7 +136,7 @@ class Parser:
 
         if initial:
             signal = 'init'
-            guard = (None, None)
+            guard = (NOFUNC, NOPARAM)
 
         g = {   
             'guard': guard,
@@ -150,24 +156,23 @@ class Parser:
         return s, data
 
     def empty_signal(self, target=None, target_title=None, initial=False, lca=None):
-        signal = None
-        
-        if initial:
-            signal = 'init'
+        signal = NOSIG
 
         g = {
-            'guard': (None, None),
-            'funcs': [(None, None)],
+            'guard_func': (NOFUNC, NOPARAM),
+            'funcs': [],
             'target': target,
             'target_title': target_title,
             'lca': lca
         }
 
+        if initial:
+            signal = 'init'
+            g['guard_func'] = (NOFUNC, NOPARAM)
+
         s = {
             'name': signal,
-            'guards': {
-                g['guard']: g
-            }
+            'guards': {g['guard_func']: g}
         }
 
         return [s]

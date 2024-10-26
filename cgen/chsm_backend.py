@@ -241,6 +241,8 @@ class Project:
 
             data = sm.data.copy()
             data['template_params'] = job['template_params']
+            if job.get("raw_data", False):
+                data['raw_data'] = self.model
 
             if self.dump_ir:
                 with open(self.html_file_path.with_suffix(".txt"), 'w') as f:
