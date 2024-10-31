@@ -48,7 +48,7 @@ bool is_not_abort_request (chsm_tst *self, const cevent_tst *e_pst);
 bool process_ul_block_ack (chsm_tst *self, const cevent_tst *e_pst);
 
 
-typedef enum 
+typedef enum canopen_sdo_state_id_ten
 {
     S_IDLE = 0,
     S_SDO_WAIT_EXP_UL = 1,
@@ -60,7 +60,7 @@ typedef enum
     S_SDO_BLOCK_UL_FINISH = 9,
     S_SDO_BLOCK_DL_STARTED = 11,
     S_SDO_BLOCK_DL_FINISH = 12,
-} ;
+} canopen_sdo_state_id_ten;
 
 /*
 Signals:
@@ -83,9 +83,9 @@ Signals:
 
 The following functions shall be declared and implemented by the user:
 
-    send_sdo_abort
-
     sdo_timeout
+
+    send_sdo_abort
 
 */
 

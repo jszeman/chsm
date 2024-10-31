@@ -133,37 +133,37 @@ static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst)
 
     if (s11_guard(self, e_pst, 6))
     {
-            s11_func(self, e_pst, 7);
+        s11_func(self, e_pst, 7);
     }
 
     if (k_guard(self, e_pst, 5))
     {
-            s11_exit(self, e_pst);
-            s1_exit(self, e_pst);
-            s2_entry(self, e_pst);
-            s2_init(self, e_pst);
-            s21_entry(self, e_pst);
-            s21_init(self, e_pst);
-            s211_entry(self, e_pst);
-            s211_init(self, e_pst);
+        s11_exit(self, e_pst);
+        s1_exit(self, e_pst);
+        s2_entry(self, e_pst);
+        s2_init(self, e_pst);
+        s21_entry(self, e_pst);
+        s21_init(self, e_pst);
+        s211_entry(self, e_pst);
+        s211_init(self, e_pst);
         return chsm_transition(self, s211);
     }
 
     if (s1_guard(self, e_pst))
     {
-            s1_func(self, e_pst);
+        s1_func(self, e_pst);
     }
 
     if (j_guard(self, e_pst))
     {
-            s11_exit(self, e_pst);
-            s1_exit(self, e_pst);
-            s2_entry(self, e_pst);
-            s2_init(self, e_pst);
-            s21_entry(self, e_pst);
-            s21_init(self, e_pst);
-            s211_entry(self, e_pst);
-            s211_init(self, e_pst);
+        s11_exit(self, e_pst);
+        s1_exit(self, e_pst);
+        s2_entry(self, e_pst);
+        s2_init(self, e_pst);
+        s21_entry(self, e_pst);
+        s21_init(self, e_pst);
+        s211_entry(self, e_pst);
+        s211_init(self, e_pst);
         return chsm_transition(self, s211);
     }
 
@@ -397,8 +397,8 @@ static chsm_result_ten s5(chsm_tst *self, const cevent_tst *e_pst)
 
     if (s5_g1(self, e_pst))
     {
-            s5_g1_f1(self, e_pst);
-            s5_g1_f2(self, e_pst);
+        s5_g1_f1(self, e_pst);
+        s5_g1_f2(self, e_pst);
     }
 
     return chsm_ignored(self);

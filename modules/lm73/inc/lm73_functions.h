@@ -82,11 +82,11 @@ Signals:
 
 The following functions shall be declared and implemented by the user:
 
-    lm73_timeout
-        Evaluates to true if the internal timer counter is greater than or equal to the parameter.
-
     lm73_error_count
         Return true, if the error counter is greater or equal then the parameter.
+
+    lm73_timeout
+        Evaluates to true if the internal timer counter is greater than or equal to the parameter.
 
 */
 

@@ -24,11 +24,11 @@ void co_send_ng_inactive (chsm_tst *self, const cevent_tst *e_pst);
 
 
 
-typedef enum chsm_test_machine_state_id_ten
+typedef enum canopen_state_id_ten
 {
     S_NG_INACTIVE = 1,
     S_NG_ACTIVE = 2,
-} chsm_test_machine_state_id_ten;
+} canopen_state_id_ten;
 
 /*
 Signals:
