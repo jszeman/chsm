@@ -19,7 +19,7 @@ EVENT_PATTERN = r'^(\s*(?P<signal>\w+)\s*)*(\[(?P<guard>\w+)\((?P<gparams>[\w,\s
 
 VERSION_STRING = 'Generated with CHSM v0.0.2'
 
-SYS_SIGNALS = ['entry', 'exit', 'init']
+SYS_SIGNALS = ('entry', 'exit', 'init')
 
 class StateMachine:
     def __init__(self, data):
@@ -29,6 +29,7 @@ class StateMachine:
         self.user_signals = set()
         self.user_inc_funcs = set()
 
+        data['states']['__top__']['parent'] = ""
         self.states = self.get_states(data)                 # Extract states from the data
         self.add_transitions_to_states(self.states, data)   # Extract transition info from the data and add it to the states
         self.add_parent_signals(self.states)
@@ -126,7 +127,13 @@ class StateMachine:
         signal_name = signal['name']
             
         if signal_name in SYS_SIGNALS:
-            state['sys_signals'][signal_name] = signal
+            if not state['sys_signals'][signal_name]:
+                state['sys_signals'][signal_name] = signal
+            else:
+                orig_signal = state['sys_signals'][signal_name]
+                orig_signal['guards']['']['funcs'].extend(signal['guards']['']['funcs'])
+                orig_signal['guards']['']['target'] = signal['guards']['']['target']
+                orig_signal['guards']['']['target_title'] = signal['guards']['']['target_title']
         elif signal_name not in state['signals']:
             state['signals'][signal_name] = signal
         else:
@@ -169,7 +176,7 @@ class StateMachine:
         rem = rem.lstrip()
 
         if len(rem) == 0 or rem[0] != '(':
-            return fname, None, False
+            return fname, "", False
 
         rem = rem[1:]
 
@@ -177,7 +184,7 @@ class StateMachine:
 
         params = params.strip()
         if params == '':
-            params = None
+            params = ""
         else:
             for p in params.split(','):
                 ps = p.strip()
@@ -225,6 +232,9 @@ class StateMachine:
             except ParserException as e:
                 logging.info(f'Exception {str(e)} in state "{s["title"]}". Text:\n{txt}')
 
+            if state['title'] == 's':
+                print(state['title'])
+
             for sig in sigs:
                 self.add_signal_to_state(state, sig)
 
@@ -254,8 +264,8 @@ class StateMachine:
             for signal in state['signals'].values():
                 for guard in signal['guards'].values():
                     if guard["target_title"] == state['title']:
-                        guard['target'] = None
-                        guard["target_title"] = None
+                        guard['target'] = ""
+                        guard["target_title"] = ""
     
     def resolve_transition(self, tr, data):
         """Return the label, the start and the end states of a transition"""
@@ -281,7 +291,7 @@ class StateMachine:
                 else:
                     lca = self.get_LCA(start, target)
             else:
-                lca = None
+                lca = ""
 
             p = Parser()
 
@@ -294,7 +304,8 @@ class StateMachine:
                 signals = p.parse(label, target, target_title=states[target]['title'], initial=False, lca=lca)
 
             try:
-                self.add_signal_to_state(states[start], signals[0])
+                if signals:
+                    self.add_signal_to_state(states[start], signals[0])
             except:
                 print(signals)
                 raise
@@ -354,6 +365,9 @@ class StateMachine:
     def get_exit_path(self, start_state_id, target_state_id):
         path = []
         s = start_state_id
+
+        if s == "__top__":
+            return path
        
         while s != target_state_id:
             path.append((s, 'exit'))
@@ -378,8 +392,8 @@ class StateMachine:
             path.extend(entry_path)
             
             path.append((target_state_id, 'init'))
-            init_state_id = self.states[target_state_id].get('initial', None)
-            if init_state_id == None:
+            init_state_id = self.states[target_state_id].get('initial', "")
+            if init_state_id == "":
                 return path
             else:
                 start_state_id = target_state_id
@@ -387,116 +401,13 @@ class StateMachine:
     
     def path_to_funcs(self, path):
         funcs = []
-        
         for step in path:
             state_id, event_id = step
             try:
                 funcs.extend(self.states[state_id]['sys_signals'][event_id]['guards'][NOGUARD]['funcs'])
-            except KeyError:
+            except KeyError as e:
                 pass
 
         funcs = [f for f in funcs if f != NULLFUNC]
 
         return tuple(funcs)
-
-"""
-Example dictionary layout:
-
-{   '__top__': {   'children': ['state_0', 'istate_3'],
-                   'initial': 'state_0',
-                   'parent': None,
-                   'signals': {   None: {'guards': {}, 'name': None},
-                                  'init': {   'guards': {   (None, None): {   'funcs': [(None, None)],
-                                                                              'guard': (None, None),
-                                                                              'target': 'state_0',
-                                                                              'target_title': 's'}},
-                                              'name': 'init'}},
-                   'title': '__top__4',
-                   'type': 'top'},
-
-    'istate_0': {   'children': [],
-                    'parent': 'state_4',
-                    'signals': {   None: {'guards': {}, 'name': None},
-                                   'entry': {   'guards': {   (None, None): {   'funcs': [(None, None)],
-                                                                                'guard': (None, None),
-                                                                                'target': None,
-                                                                                'target_title': None}},
-                                                'name': 'entry'},
-                                   'exit': {   'guards': {   (None, None): {   'funcs': [(None, None)],
-                                                                               'guard': (None, None),
-                                                                               'target': None,
-                                                                               'target_title': None}},
-                                               'name': 'exit'}},
-                    'title': 'istate_0',
-                    'type': 'initial'},
-    
-    'state_0': {   'children': ['state_1', 'state_3', 'istate_2', 'state_6', 'state_7'],
-                   'initial': 'state_1',
-                   'num': 0,
-                   'parent': '__top__',
-                   'signals': {   None: {'guards': {}, 'name': None},
-                                  'E': {   'guards': {   (None, None): {   'funcs': [(None, None)],
-                                                                           'guard': (None, None),
-                                                                           'target': 'state_2',
-                                                                           'target_title': 's11'}},
-                                           'name': 'E'},
-                                  'J': {   'guards': {   (None, None): {   'funcs': [(None, None)],
-                                                                           'guard': (None, None),
-                                                                           'target': 'state_6',
-                                                                           'target_title': 's3'}},
-                                           'name': 'J'},
-                                  'entry': {   'guards': {   (None, None): {   'funcs': [('s_entry', '')],
-                                                                               'guard': (None, None),
-                                                                               'target': None,
-                                                                               'target_title': None}},
-                                               'name': 'entry'},
-                                  'exit': {   'guards': {   (None, None): {   'funcs': [('s_exit', '')],
-                                                                              'guard': (None, None),
-                                                                              'target': None,
-                                                                              'target_title': None}},
-                                              'name': 'exit'},
-                                  'init': {   'guards': {   (None, None): {   'funcs': [('s_init', ''), (None, None)],
-                                                                              'guard': (None, None),
-                                                                              'target': 'state_1',
-                                                                              'target_title': None}},
-                                              'name': 'init'}},
-                   'title': 's',
-                   'type': 'normal'},
-    'state_1': {   'children': ['state_2', 'istate_4'],
-                   'initial': 'state_2',
-                   'num': 1,
-                   'parent': 'state_0',
-                   'signals': {   None: {   'guards': {   ('j_guard', ''): {   'funcs': [(None, None)],
-                                                                               'guard': ('j_guard', ''),
-                                                                               'target': 'state_3',
-                                                                               'target_title': 's2'},
-                                                          ('s1_guard', ''): {   'funcs': [('s1_func', '')],
-                                                                                'guard': ('s1_guard', ''),
-                                                                                'target': None,
-                                                                                'target_title': None}},
-                                            'name': None},
-                                  'ID': {   'guards': {   (None, None): {   'funcs': [('s1_func', '')],
-                                                                            'guard': (None, None),
-                                                                            'target': None,
-                                                                            'target_title': None}},
-                                            'name': 'ID'},
-                                  'entry': {   'guards': {   (None, None): {   'funcs': [('s1_entry', '')],
-                                                                               'guard': (None, None),
-                                                                               'target': None,
-                                                                               'target_title': None}},
-                                               'name': 'entry'},
-                                  'exit': {   'guards': {   (None, None): {   'funcs': [('s1_exit', '')],
-                                                                              'guard': (None, None),
-                                                                              'target': None,
-                                                                              'target_title': None}},
-                                              'name': 'exit'},
-                                  'init': {   'guards': {   (None, None): {   'funcs': [('s1_init', ''), (None, None)],
-                                                                              'guard': (None, None),
-                                                                              'target': 'state_2',
-                                                                              'target_title': None}},
-                                              'name': 'init'}},
-                   'title': 's1',
-                   'type': 'normal'},
-    }
-
-"""

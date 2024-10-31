@@ -3,10 +3,10 @@ import re
 class ParserException(Exception):
     pass
 
-NOSIG = "__nosig__"
-NOFUNC = "__no_func__"
-NOPARAM = "__noparam__"
-NOGUARD = (NOFUNC, NOPARAM)
+NOSIG = ""
+NOFUNC = ""
+NOPARAM = ""
+NOGUARD = ""
 NULLFUNC = (NOFUNC, NOPARAM)
 
 class Parser:
@@ -30,7 +30,7 @@ class Parser:
         rem = rem.lstrip()
 
         if len(rem) == 0 or rem[0] != '(':
-            return fname, None, rem
+            return fname, "", rem
 
         rem = rem[1:]
 
@@ -38,7 +38,7 @@ class Parser:
 
         params = params.strip()
         if params == '':
-            params = None
+            params = NOPARAM
         else:
             for p in params.split(','):
                 ps = p.strip()
@@ -87,9 +87,11 @@ class Parser:
 
         return funcs, data[1:]
 
-    def parse_one(self, data, target=None, target_title=None, initial=False, lca=None):
+    def parse_one(self, data, target="", target_title="", initial=False, lca=""):
         signal = NOSIG
-        guard = (NOFUNC, NOPARAM)
+        guard = NOGUARD
+        guard_func = NOFUNC
+        guard_param = NOPARAM
         funcs = []
 
 
@@ -101,15 +103,14 @@ class Parser:
         # If there is a guard, read it
         data = data.lstrip()
         if len(data) and data[0] == '[':
-            guard_func, guard_params, data = self.get_func(data[1:])
-            guard = (guard_func, guard_params)
+            guard_func, guard_param, data = self.get_func(data[1:])
             data = data.lstrip()
             if not len(data) or data[0] != ']':
-                p = guard_params if guard_params else ''
+                p = guard_param if guard_param else ''
                 raise ParserException(f'Expected "]" after "{guard_func}({p})..."')
             data = data[1:]
             
-            if guard_params:
+            if guard_param:
                 self.funcs_w_args.add(guard_func)
             else:
                 self.guards_wo_args.add(guard_func)
@@ -136,30 +137,35 @@ class Parser:
 
         if initial:
             signal = 'init'
-            guard = (NOFUNC, NOPARAM)
+            guard_func = NOFUNC
+            guard_param = NOPARAM
 
         g = {   
-            'guard': guard,
+            'guard_func': guard_func,
+            'guard_param': guard_param,
             'funcs': funcs,
             'target': target,
             'target_title': target_title,
             'lca': lca
         }
 
+        guard_id = f'{guard_func}({guard_param})' if guard_func else ''
+
         s = {
             'name': signal,
             'guards': {
-                g['guard']: g
+                guard_id: g
             }
         }
 
         return s, data
 
-    def empty_signal(self, target=None, target_title=None, initial=False, lca=None):
+    def empty_signal(self, target="", target_title="", initial=False, lca=""):
         signal = NOSIG
 
         g = {
-            'guard_func': (NOFUNC, NOPARAM),
+            'guard_func': NOFUNC,
+            'guard_param': NOPARAM,
             'funcs': [],
             'target': target,
             'target_title': target_title,
@@ -168,23 +174,23 @@ class Parser:
 
         if initial:
             signal = 'init'
-            g['guard_func'] = (NOFUNC, NOPARAM)
+            g['guard_func'] = NOFUNC
 
         s = {
             'name': signal,
-            'guards': {g['guard_func']: g}
+            'guards': {"": g}
         }
 
         return [s]
 
-    def parse(self, data, target=None, target_title=None, initial=False, lca=None):
+    def parse(self, data, target="", target_title="", initial=False, lca=""):
         self.signals = []
         while len(data):
             s, data = self.parse_one(data, target, target_title, initial, lca)
             self.signals.append(s)
             data = data.strip()
         
-        if not self.signals:
+        if not self.signals and target:
             self.signals = self.empty_signal(target, target_title, initial, lca)
 
         return self.signals

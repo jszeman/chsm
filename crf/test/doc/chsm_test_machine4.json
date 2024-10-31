@@ -1,0 +1,1897 @@
+{
+    "states": {
+        "__top__": {
+            "signals": {},
+            "sys_signals": {
+                "entry": {},
+                "exit": {},
+                "init": {
+                    "name": "init",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s_entry",
+                                    ""
+                                ],
+                                [
+                                    "s_init",
+                                    ""
+                                ],
+                                [
+                                    "s1_entry",
+                                    ""
+                                ],
+                                [
+                                    "s1_init",
+                                    ""
+                                ],
+                                [
+                                    "s11_entry",
+                                    ""
+                                ],
+                                [
+                                    "s11_init",
+                                    ""
+                                ]
+                            ],
+                            "target": "state_0",
+                            "target_title": "s11",
+                            "lca": ""
+                        }
+                    }
+                }
+            },
+            "guards": [],
+            "parent": "",
+            "children": [
+                "state_0",
+                "istate_3",
+                "state_10"
+            ],
+            "title": "__top__4",
+            "type": "top",
+            "initial": "state_0"
+        },
+        "state_2": {
+            "signals": {
+                "ID": {
+                    "name": "ID",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s11_id",
+                                    "8"
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": ""
+                        }
+                    }
+                },
+                "G": {
+                    "name": "G",
+                    "guards": {
+                        "s11_g_guard1(1)": {
+                            "guard_func": "s11_g_guard1",
+                            "guard_param": "1",
+                            "funcs": [
+                                [
+                                    "s11_g1",
+                                    "2"
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": ""
+                        },
+                        "s11_g_guard2(4)": {
+                            "guard_func": "s11_g_guard2",
+                            "guard_param": "4",
+                            "funcs": [
+                                [
+                                    "s11_g2",
+                                    "3"
+                                ],
+                                [
+                                    "s11_exit",
+                                    ""
+                                ],
+                                [
+                                    "s1_exit",
+                                    ""
+                                ],
+                                [
+                                    "s2_entry",
+                                    ""
+                                ],
+                                [
+                                    "s21_entry",
+                                    ""
+                                ],
+                                [
+                                    "s211_entry",
+                                    ""
+                                ],
+                                [
+                                    "s211_init",
+                                    ""
+                                ]
+                            ],
+                            "target": "state_5",
+                            "target_title": "s211",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "": {
+                    "name": "",
+                    "guards": {
+                        "s11_guard(6)": {
+                            "guard_func": "s11_guard",
+                            "guard_param": "6",
+                            "funcs": [
+                                [
+                                    "s11_func",
+                                    "7"
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": ""
+                        },
+                        "k_guard(5)": {
+                            "guard_func": "k_guard",
+                            "guard_param": "5",
+                            "funcs": [
+                                [
+                                    "s11_exit",
+                                    ""
+                                ],
+                                [
+                                    "s1_exit",
+                                    ""
+                                ],
+                                [
+                                    "s2_entry",
+                                    ""
+                                ],
+                                [
+                                    "s2_init",
+                                    ""
+                                ],
+                                [
+                                    "s21_entry",
+                                    ""
+                                ],
+                                [
+                                    "s21_init",
+                                    ""
+                                ],
+                                [
+                                    "s211_entry",
+                                    ""
+                                ],
+                                [
+                                    "s211_init",
+                                    ""
+                                ]
+                            ],
+                            "target": "state_3",
+                            "target_title": "s211",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        },
+                        "s1_guard()": {
+                            "guard_func": "s1_guard",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s1_func",
+                                    ""
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": ""
+                        },
+                        "j_guard()": {
+                            "guard_func": "j_guard",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s11_exit",
+                                    ""
+                                ],
+                                [
+                                    "s1_exit",
+                                    ""
+                                ],
+                                [
+                                    "s2_entry",
+                                    ""
+                                ],
+                                [
+                                    "s2_init",
+                                    ""
+                                ],
+                                [
+                                    "s21_entry",
+                                    ""
+                                ],
+                                [
+                                    "s21_init",
+                                    ""
+                                ],
+                                [
+                                    "s211_entry",
+                                    ""
+                                ],
+                                [
+                                    "s211_init",
+                                    ""
+                                ]
+                            ],
+                            "target": "state_3",
+                            "target_title": "s211",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "K": {
+                    "name": "K",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "chsm_defer",
+                                    ""
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": ""
+                        }
+                    }
+                },
+                "L": {
+                    "name": "L",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "chsm_defer",
+                                    ""
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": ""
+                        }
+                    }
+                },
+                "D": {
+                    "name": "D",
+                    "guards": {
+                        "cond()": {
+                            "guard_func": "cond",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "d_func",
+                                    ""
+                                ],
+                                [
+                                    "s11_exit",
+                                    ""
+                                ],
+                                [
+                                    "s1_init",
+                                    ""
+                                ],
+                                [
+                                    "s11_entry",
+                                    ""
+                                ],
+                                [
+                                    "s11_init",
+                                    ""
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": "state_1",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "H": {
+                    "name": "H",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s11_exit",
+                                    ""
+                                ],
+                                [
+                                    "s1_exit",
+                                    ""
+                                ],
+                                [
+                                    "s_init",
+                                    ""
+                                ],
+                                [
+                                    "s1_entry",
+                                    ""
+                                ],
+                                [
+                                    "s1_init",
+                                    ""
+                                ],
+                                [
+                                    "s11_entry",
+                                    ""
+                                ],
+                                [
+                                    "s11_init",
+                                    ""
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "C": {
+                    "name": "C",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s11_exit",
+                                    ""
+                                ],
+                                [
+                                    "s1_exit",
+                                    ""
+                                ],
+                                [
+                                    "s2_entry",
+                                    ""
+                                ],
+                                [
+                                    "s2_init",
+                                    ""
+                                ],
+                                [
+                                    "s21_entry",
+                                    ""
+                                ],
+                                [
+                                    "s21_init",
+                                    ""
+                                ],
+                                [
+                                    "s211_entry",
+                                    ""
+                                ],
+                                [
+                                    "s211_init",
+                                    ""
+                                ]
+                            ],
+                            "target": "state_3",
+                            "target_title": "s211",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "F": {
+                    "name": "F",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s11_exit",
+                                    ""
+                                ],
+                                [
+                                    "s1_exit",
+                                    ""
+                                ],
+                                [
+                                    "s2_entry",
+                                    ""
+                                ],
+                                [
+                                    "s21_entry",
+                                    ""
+                                ],
+                                [
+                                    "s211_entry",
+                                    ""
+                                ],
+                                [
+                                    "s211_init",
+                                    ""
+                                ]
+                            ],
+                            "target": "state_5",
+                            "target_title": "s211",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "B": {
+                    "name": "B",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s11_exit",
+                                    ""
+                                ],
+                                [
+                                    "s11_entry",
+                                    ""
+                                ],
+                                [
+                                    "s11_init",
+                                    ""
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": "state_1",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "A": {
+                    "name": "A",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s11_exit",
+                                    ""
+                                ],
+                                [
+                                    "s1_exit",
+                                    ""
+                                ],
+                                [
+                                    "s1_entry",
+                                    ""
+                                ],
+                                [
+                                    "s1_init",
+                                    ""
+                                ],
+                                [
+                                    "s11_entry",
+                                    ""
+                                ],
+                                [
+                                    "s11_init",
+                                    ""
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "N": {
+                    "name": "N",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s11_exit",
+                                    ""
+                                ],
+                                [
+                                    "s1_exit",
+                                    ""
+                                ],
+                                [
+                                    "s_exit",
+                                    ""
+                                ],
+                                [
+                                    "s_save_history",
+                                    ""
+                                ],
+                                [
+                                    "s6_entry",
+                                    ""
+                                ]
+                            ],
+                            "target": "state_10",
+                            "target_title": "s6",
+                            "lca": "__top__",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "E": {
+                    "name": "E",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s11_exit",
+                                    ""
+                                ],
+                                [
+                                    "s1_exit",
+                                    ""
+                                ],
+                                [
+                                    "s1_entry",
+                                    ""
+                                ],
+                                [
+                                    "s11_entry",
+                                    ""
+                                ],
+                                [
+                                    "s11_init",
+                                    ""
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "J": {
+                    "name": "J",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s11_exit",
+                                    ""
+                                ],
+                                [
+                                    "s1_exit",
+                                    ""
+                                ],
+                                [
+                                    "chsm_recall",
+                                    ""
+                                ]
+                            ],
+                            "target": "state_6",
+                            "target_title": "s3",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "M": {
+                    "name": "M",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s11_exit",
+                                    ""
+                                ],
+                                [
+                                    "s1_exit",
+                                    ""
+                                ],
+                                [
+                                    "s5_entry1",
+                                    ""
+                                ],
+                                [
+                                    "s5_entry2",
+                                    ""
+                                ]
+                            ],
+                            "target": "state_8",
+                            "target_title": "s5",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        }
+                    }
+                }
+            },
+            "sys_signals": {
+                "entry": {
+                    "name": "entry",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s11_entry",
+                                    ""
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": ""
+                        }
+                    }
+                },
+                "exit": {
+                    "name": "exit",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s11_exit",
+                                    ""
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": ""
+                        }
+                    }
+                },
+                "init": {
+                    "name": "init",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s11_init",
+                                    ""
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": ""
+                        }
+                    }
+                }
+            },
+            "guards": [],
+            "parent": "__top__",
+            "children": [],
+            "title": "s11",
+            "type": "normal",
+            "num": 2,
+            "parent_title": "__top__4"
+        },
+        "state_5": {
+            "signals": {
+                "ID": {
+                    "name": "ID",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s211_id",
+                                    ""
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": ""
+                        }
+                    }
+                },
+                "H": {
+                    "name": "H",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s211_exit",
+                                    "6"
+                                ],
+                                [
+                                    "s21_exit",
+                                    ""
+                                ],
+                                [
+                                    "s2_exit",
+                                    ""
+                                ],
+                                [
+                                    "s_init",
+                                    ""
+                                ],
+                                [
+                                    "s1_entry",
+                                    ""
+                                ],
+                                [
+                                    "s1_init",
+                                    ""
+                                ],
+                                [
+                                    "s11_entry",
+                                    ""
+                                ],
+                                [
+                                    "s11_init",
+                                    ""
+                                ]
+                            ],
+                            "target": "state_0",
+                            "target_title": "s11",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "D": {
+                    "name": "D",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s211_exit",
+                                    "6"
+                                ],
+                                [
+                                    "s21_init",
+                                    ""
+                                ],
+                                [
+                                    "s211_entry",
+                                    ""
+                                ],
+                                [
+                                    "s211_init",
+                                    ""
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": "state_4",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "G": {
+                    "name": "G",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s211_exit",
+                                    "6"
+                                ],
+                                [
+                                    "s21_exit",
+                                    ""
+                                ],
+                                [
+                                    "s2_exit",
+                                    ""
+                                ],
+                                [
+                                    "s1_entry",
+                                    ""
+                                ],
+                                [
+                                    "s1_init",
+                                    ""
+                                ],
+                                [
+                                    "s11_entry",
+                                    ""
+                                ],
+                                [
+                                    "s11_init",
+                                    ""
+                                ]
+                            ],
+                            "target": "state_1",
+                            "target_title": "s11",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "B": {
+                    "name": "B",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s211_exit",
+                                    "6"
+                                ],
+                                [
+                                    "s211_entry",
+                                    ""
+                                ],
+                                [
+                                    "s211_init",
+                                    ""
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": "state_4",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "A": {
+                    "name": "A",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s211_exit",
+                                    "6"
+                                ],
+                                [
+                                    "s21_exit",
+                                    ""
+                                ],
+                                [
+                                    "s21_entry",
+                                    ""
+                                ],
+                                [
+                                    "s21_init",
+                                    ""
+                                ],
+                                [
+                                    "s211_entry",
+                                    ""
+                                ],
+                                [
+                                    "s211_init",
+                                    ""
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": "state_3",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "C": {
+                    "name": "C",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s211_exit",
+                                    "6"
+                                ],
+                                [
+                                    "s21_exit",
+                                    ""
+                                ],
+                                [
+                                    "s2_exit",
+                                    ""
+                                ],
+                                [
+                                    "s1_entry",
+                                    ""
+                                ],
+                                [
+                                    "s1_init",
+                                    ""
+                                ],
+                                [
+                                    "s11_entry",
+                                    ""
+                                ],
+                                [
+                                    "s11_init",
+                                    ""
+                                ]
+                            ],
+                            "target": "state_1",
+                            "target_title": "s11",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "F": {
+                    "name": "F",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s211_exit",
+                                    "6"
+                                ],
+                                [
+                                    "s21_exit",
+                                    ""
+                                ],
+                                [
+                                    "s2_exit",
+                                    ""
+                                ],
+                                [
+                                    "s1_entry",
+                                    ""
+                                ],
+                                [
+                                    "s11_entry",
+                                    ""
+                                ],
+                                [
+                                    "s11_init",
+                                    ""
+                                ]
+                            ],
+                            "target": "state_2",
+                            "target_title": "s11",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "N": {
+                    "name": "N",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s211_exit",
+                                    "6"
+                                ],
+                                [
+                                    "s21_exit",
+                                    ""
+                                ],
+                                [
+                                    "s2_exit",
+                                    ""
+                                ],
+                                [
+                                    "s_exit",
+                                    ""
+                                ],
+                                [
+                                    "s_save_history",
+                                    ""
+                                ],
+                                [
+                                    "s6_entry",
+                                    ""
+                                ]
+                            ],
+                            "target": "state_10",
+                            "target_title": "s6",
+                            "lca": "__top__",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "E": {
+                    "name": "E",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s211_exit",
+                                    "6"
+                                ],
+                                [
+                                    "s21_exit",
+                                    ""
+                                ],
+                                [
+                                    "s2_exit",
+                                    ""
+                                ],
+                                [
+                                    "s1_entry",
+                                    ""
+                                ],
+                                [
+                                    "s11_entry",
+                                    ""
+                                ],
+                                [
+                                    "s11_init",
+                                    ""
+                                ]
+                            ],
+                            "target": "state_2",
+                            "target_title": "s11",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "J": {
+                    "name": "J",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s211_exit",
+                                    "6"
+                                ],
+                                [
+                                    "s21_exit",
+                                    ""
+                                ],
+                                [
+                                    "s2_exit",
+                                    ""
+                                ],
+                                [
+                                    "chsm_recall",
+                                    ""
+                                ]
+                            ],
+                            "target": "state_6",
+                            "target_title": "s3",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "M": {
+                    "name": "M",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s211_exit",
+                                    "6"
+                                ],
+                                [
+                                    "s21_exit",
+                                    ""
+                                ],
+                                [
+                                    "s2_exit",
+                                    ""
+                                ],
+                                [
+                                    "s5_entry1",
+                                    ""
+                                ],
+                                [
+                                    "s5_entry2",
+                                    ""
+                                ]
+                            ],
+                            "target": "state_8",
+                            "target_title": "s5",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        }
+                    }
+                }
+            },
+            "sys_signals": {
+                "entry": {
+                    "name": "entry",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s211_entry",
+                                    ""
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": ""
+                        }
+                    }
+                },
+                "exit": {
+                    "name": "exit",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s211_exit",
+                                    "6"
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": ""
+                        }
+                    }
+                },
+                "init": {
+                    "name": "init",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s211_init",
+                                    ""
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": ""
+                        }
+                    }
+                }
+            },
+            "guards": [],
+            "parent": "__top__",
+            "children": [],
+            "title": "s211",
+            "type": "normal",
+            "num": 5,
+            "parent_title": "__top__4"
+        },
+        "state_6": {
+            "signals": {
+                "K": {
+                    "name": "K",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s3_k_func",
+                                    ""
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": ""
+                        }
+                    }
+                },
+                "L": {
+                    "name": "L",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s3_l_func",
+                                    ""
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": ""
+                        }
+                    }
+                },
+                "J": {
+                    "name": "J",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s_init",
+                                    ""
+                                ],
+                                [
+                                    "s1_entry",
+                                    ""
+                                ],
+                                [
+                                    "s1_init",
+                                    ""
+                                ],
+                                [
+                                    "s11_entry",
+                                    ""
+                                ],
+                                [
+                                    "s11_init",
+                                    ""
+                                ]
+                            ],
+                            "target": "state_0",
+                            "target_title": "s11",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "G": {
+                    "name": "G",
+                    "guards": {
+                        "s11_g_guard2(4)": {
+                            "guard_func": "s11_g_guard2",
+                            "guard_param": "4",
+                            "funcs": [
+                                [
+                                    "s11_g2",
+                                    "3"
+                                ]
+                            ],
+                            "target": "state_7",
+                            "target_title": "s4",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        },
+                        "s11_g_guard1(1)": {
+                            "guard_func": "s11_g_guard1",
+                            "guard_param": "1",
+                            "funcs": [
+                                [
+                                    "s11_g1",
+                                    "2"
+                                ]
+                            ],
+                            "target": "state_7",
+                            "target_title": "s4",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "E": {
+                    "name": "E",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s1_entry",
+                                    ""
+                                ],
+                                [
+                                    "s11_entry",
+                                    ""
+                                ],
+                                [
+                                    "s11_init",
+                                    ""
+                                ]
+                            ],
+                            "target": "state_2",
+                            "target_title": "s11",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "M": {
+                    "name": "M",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s5_entry1",
+                                    ""
+                                ],
+                                [
+                                    "s5_entry2",
+                                    ""
+                                ]
+                            ],
+                            "target": "state_8",
+                            "target_title": "s5",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        }
+                    }
+                }
+            },
+            "sys_signals": {
+                "entry": {
+                    "name": "entry",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "chsm_recall",
+                                    ""
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": ""
+                        }
+                    }
+                },
+                "exit": {
+                    "name": "exit",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [],
+                            "target": "",
+                            "target_title": "",
+                            "lca": ""
+                        }
+                    }
+                },
+                "init": {}
+            },
+            "guards": [],
+            "parent": "__top__",
+            "children": [],
+            "title": "s3",
+            "type": "normal",
+            "num": 6,
+            "parent_title": "__top__4"
+        },
+        "state_7": {
+            "signals": {
+                "ID": {
+                    "name": "ID",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s4_id",
+                                    ""
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": ""
+                        }
+                    }
+                },
+                "E": {
+                    "name": "E",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s1_entry",
+                                    ""
+                                ],
+                                [
+                                    "s11_entry",
+                                    ""
+                                ],
+                                [
+                                    "s11_init",
+                                    ""
+                                ]
+                            ],
+                            "target": "state_2",
+                            "target_title": "s11",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "J": {
+                    "name": "J",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "chsm_recall",
+                                    ""
+                                ]
+                            ],
+                            "target": "state_6",
+                            "target_title": "s3",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "M": {
+                    "name": "M",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s5_entry1",
+                                    ""
+                                ],
+                                [
+                                    "s5_entry2",
+                                    ""
+                                ]
+                            ],
+                            "target": "state_8",
+                            "target_title": "s5",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        }
+                    }
+                }
+            },
+            "sys_signals": {
+                "entry": {},
+                "exit": {},
+                "init": {}
+            },
+            "guards": [],
+            "parent": "__top__",
+            "children": [],
+            "title": "s4",
+            "type": "normal",
+            "num": 7,
+            "parent_title": "__top__4"
+        },
+        "state_8": {
+            "signals": {
+                "K": {
+                    "name": "K",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s5_k_func1",
+                                    "1, 2"
+                                ],
+                                [
+                                    "s5_k_func2",
+                                    ""
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": ""
+                        }
+                    }
+                },
+                "L": {
+                    "name": "L",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s5_l_func",
+                                    ""
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": ""
+                        }
+                    }
+                },
+                "": {
+                    "name": "",
+                    "guards": {
+                        "s5_g1()": {
+                            "guard_func": "s5_g1",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s5_g1_f1",
+                                    ""
+                                ],
+                                [
+                                    "s5_g1_f2",
+                                    ""
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": ""
+                        }
+                    }
+                },
+                "C": {
+                    "name": "C",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s5_c_func1",
+                                    ""
+                                ],
+                                [
+                                    "s5_c_cfunc2",
+                                    ""
+                                ],
+                                [
+                                    "s_init",
+                                    ""
+                                ],
+                                [
+                                    "s1_entry",
+                                    ""
+                                ],
+                                [
+                                    "s1_init",
+                                    ""
+                                ],
+                                [
+                                    "s11_entry",
+                                    ""
+                                ],
+                                [
+                                    "s11_init",
+                                    ""
+                                ]
+                            ],
+                            "target": "state_0",
+                            "target_title": "s11",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "E": {
+                    "name": "E",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s1_entry",
+                                    ""
+                                ],
+                                [
+                                    "s11_entry",
+                                    ""
+                                ],
+                                [
+                                    "s11_init",
+                                    ""
+                                ]
+                            ],
+                            "target": "state_2",
+                            "target_title": "s11",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "J": {
+                    "name": "J",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "chsm_recall",
+                                    ""
+                                ]
+                            ],
+                            "target": "state_6",
+                            "target_title": "s3",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        }
+                    }
+                },
+                "M": {
+                    "name": "M",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s5_entry1",
+                                    ""
+                                ],
+                                [
+                                    "s5_entry2",
+                                    ""
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": "state_0",
+                            "target_type": "normal"
+                        }
+                    }
+                }
+            },
+            "sys_signals": {
+                "entry": {
+                    "name": "entry",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s5_entry1",
+                                    ""
+                                ],
+                                [
+                                    "s5_entry2",
+                                    ""
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": ""
+                        }
+                    }
+                },
+                "exit": {},
+                "init": {}
+            },
+            "guards": [],
+            "parent": "__top__",
+            "children": [],
+            "title": "s5",
+            "type": "normal",
+            "num": 8,
+            "parent_title": "__top__4"
+        },
+        "state_9": {
+            "signals": {},
+            "sys_signals": {
+                "entry": {},
+                "exit": {},
+                "init": {}
+            },
+            "guards": [],
+            "parent": "__top__",
+            "children": [],
+            "title": "s_history",
+            "type": "call",
+            "params": "",
+            "parent_title": "__top__4"
+        },
+        "state_10": {
+            "signals": {
+                "A": {
+                    "name": "A",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s_entry",
+                                    ""
+                                ]
+                            ],
+                            "target": "state_9",
+                            "target_title": "s_history",
+                            "lca": "__top__",
+                            "target_type": "call",
+                            "target_params": ""
+                        }
+                    }
+                }
+            },
+            "sys_signals": {
+                "entry": {
+                    "name": "entry",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [
+                                [
+                                    "s6_entry",
+                                    ""
+                                ]
+                            ],
+                            "target": "",
+                            "target_title": "",
+                            "lca": ""
+                        }
+                    }
+                },
+                "exit": {},
+                "init": {}
+            },
+            "guards": [],
+            "parent": "__top__",
+            "children": [],
+            "title": "s6",
+            "type": "normal",
+            "num": 10,
+            "parent_title": "__top__4"
+        }
+    },
+    "user_funcs": [
+        "s_entry",
+        "s2_entry",
+        "s5_entry2",
+        "s5_g1_f1",
+        "s5_l_func",
+        "s1_func",
+        "s11_exit",
+        "s1_init",
+        "s211_id",
+        "s5_c_cfunc2",
+        "chsm_defer",
+        "s11_entry",
+        "chsm_recall",
+        "s_save_history",
+        "s21_init",
+        "s3_l_func",
+        "s5_c_func1",
+        "d_func",
+        "s1_entry",
+        "s211_entry",
+        "s5_entry1",
+        "s_exit",
+        "s2_exit",
+        "s211_init",
+        "s21_entry",
+        "s21_exit",
+        "s6_entry",
+        "s1_exit",
+        "s4_id",
+        "s5_g1_f2",
+        "s_init",
+        "s11_init",
+        "s3_k_func",
+        "s5_k_func2",
+        "s2_init"
+    ],
+    "user_guards": [
+        "cond",
+        "s5_g1",
+        "j_guard",
+        "s1_guard"
+    ],
+    "user_signals": [
+        "J",
+        "L",
+        "F",
+        "N",
+        "K",
+        "D",
+        "H",
+        "G",
+        "M",
+        "exit",
+        "C",
+        "E",
+        "B",
+        "init",
+        "entry",
+        "ID",
+        "A"
+    ],
+    "user_inc_funcs": [
+        "s11_g_guard2",
+        "k_guard",
+        "s11_id",
+        "s11_g1",
+        "s211_exit",
+        "s11_func",
+        "s11_guard",
+        "s11_g2",
+        "s11_g_guard1",
+        "s5_k_func1"
+    ],
+    "notes": {
+        "s1_entry()": "S1 entry function comment.",
+        "s11_entry()": "S11 entry function comment",
+        "s11_g_guard1()": "S11 G Guard",
+        "s1_func()": "",
+        "k_guard()": "",
+        "s11_g_guard2()": "",
+        "s11_g1": "",
+        "s11_g_guard2": "",
+        "s11_exit()": "",
+        "s11_init()": "",
+        "s1_exit()": "",
+        "s11_g_guard1": "Comment for the s11_g_guard1 func.\n\nMultiple lines.",
+        "F": "Comment for F",
+        "G": "Comment for G",
+        "k_guard": "Parametric guard comment.",
+        "H": "",
+        "trans_24": "",
+        "s211_id()": "",
+        "J": "",
+        "s5_c_cfunc2()": "",
+        "A": ""
+    },
+    "template_params": {
+        "func_params": "chsm_tst *self, const cevent_tst *e_pst",
+        "include_list": [
+            "chsm.h",
+            "cevent.h",
+            "chsm_test_machine.h",
+            "stdbool.h"
+        ],
+        "guard_return_type": "bool",
+        "state_id_type": "chsm_test_machine_state_id_ten",
+        "include_guard": "CHSM_TEST_FUNCTIONS2_H"
+    }
+}

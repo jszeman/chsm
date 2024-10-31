@@ -244,9 +244,17 @@ class Project:
             if job.get("raw_data", False):
                 data['raw_data'] = self.model
 
+            # Convert sets to tuples in data, because the JSON dumps
+            # function can't handle set types
+            data_keys = tuple(data.keys())
+            for d in data_keys:
+                if type(data[d]) == set:
+                    data[d] = tuple(data[d])
+
             if self.dump_ir:
-                with open(self.html_file_path.with_suffix(".txt"), 'w') as f:
-                    pprint(data, f, indent=4)
+                with open(self.html_file_path.with_suffix(".json"), 'w') as f:
+                    f.write(json.dumps(data, indent=4))
+                    #pprint(data, f, indent=4)
 
             output_file.write(template.render(data=data))
             logging.info(f'Done')

@@ -11,57 +11,59 @@ static {{data.template_params.func_return_type}} {{ state.title }}({{data.templa
 {
     switch({{data.template_params.switch_variable}})
     {
-        {% for signal_id in state.signals.keys() | reject('in', [None, 'entry', 'exit', 'init']) | sort %}
+        {% for signal_id in state.signals.keys() | reject('in', ['']) | sort %}
         {% set signal = state.signals[signal_id] %}
         case {{data.template_params.signal_prefix}}{{signal_id}}:
-            {% for (guard_func, guard_param), guard in signal.guards.items() %}
-                {% if not guard_func %}
+            {% for guard_id, guard in signal.guards.items() %}
+                {% if not guard_id %}
                     {% for func, param in guard.funcs %}
             {{func}}({{data.template_params.func_args}}{% if param %}, {{param}}{% endif %});
                     {% endfor -%}
-                {% if guard.target%}
-                    {% if guard.target_type == 'call'%}
+                    {% if guard.target %}
+                        {% if guard.target_type == 'call'%}
             return {{data.template_params.transition_func}}(self, {{guard.target_title}}({{data.template_params.func_args}}{% if guard.target_params %}, {{guard.target_params}}{% endif %}));
-                    {% else %}
+                        {% else %}
             return {{data.template_params.transition_func}}(self, {{guard.target_title}});
+                        {% endif %}
                     {% endif %}
-                {% endif %}
                 {% else %}
-            if ({{guard_func}}({{data.template_params.func_args}}{% if guard_param %}, {{guard_param}}{% endif %}))
+            if ({{guard.guard_func}}({{data.template_params.func_args}}{% if guard.guard_param %}, {{guard.guard_param}}{% endif %}))
             {
-                {% for func, param in guard.funcs %}
+                    {% for func, param in guard.funcs %}
                 {{func}}({{data.template_params.func_args}}{% if param %}, {{param}}{% endif %});
-                {% endfor %}
-                {% if guard.target %}
-                    {% if guard.target_type == 'call'%}
+                    {% endfor %}
+                    {% if guard.target %}
+                        {% if guard.target_type == 'call'%}
                 return {{data.template_params.transition_func}}(self, {{guard.target_title}}({{data.template_params.func_args}}{% if guard.target_params %}, {{guard.target_params}}{% endif %}));
-                    {% else %}
+                        {% else %}
                 return {{data.template_params.transition_func}}(self, {{guard.target_title}});
+                        {% endif %}
                     {% endif %}
-                {% endif %}
             }
                 {% endif %}
             {% endfor %}
-            {% if (None, None) not in signal.guards or not signal.guards[(None, None)].target %}
+            {% if "" not in signal.guards or not signal.guards[""].target %}
             break;
             {% endif %}
 
         {% endfor %}
     }
-    {% for (guard_func, guard_param), guard in state.signals[None].guards.items() %}
-        {% if  guard_func %}
+    {% if '' in state.signals %}
+        {% for guard_id, guard in state.signals[""].guards.items() %}
+            {% if  guard.guard_func %}
 
-    if ({{guard_func}}({{data.template_params.func_args}}{% if guard_param %}, {{guard_param}}{% endif %}))
+    if ({{guard.guard_func}}({{data.template_params.func_args}}{% if guard.guard_param %}, {{guard.guard_param}}{% endif %}))
     {
-        {% for func, param in guard.funcs %}
-        {{func}}({{data.template_params.func_args}}{% if param %}, {{param}}{% endif %});
-        {% endfor %}
-        {% if guard.target %}
+            {% for func, param in guard.funcs %}
+            {{func}}({{data.template_params.func_args}}{% if param %}, {{param}}{% endif %});
+            {% endfor %}
+            {% if guard.target %}
         return {{data.template_params.transition_func}}(self, {{guard.target_title}});
-        {% endif %}
+            {% endif %}
     }
-        {% endif %}
-    {% endfor %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
 
     return{% if data.template_params.ignore_func %} {{data.template_params.ignore_func}}(self){% endif%};
 }
@@ -73,12 +75,12 @@ static {{data.template_params.func_return_type}} {{ state.title }}({{data.templa
     switch({{data.template_params.switch_variable}})
     {
         case {{data.template_params.init_signal}}:
-                    {% for func, param in data.states.__top__.signals.init.guards[(None, None)].funcs %}
+                    {% for func, param in data.states.__top__.sys_signals.init.guards[""].funcs %}
                         {% if func %}
             {{func}}({{data.template_params.func_args}}{% if param %}, {{param}}{% endif %});
                         {% endif %}
                     {% endfor %}
-            return {{data.template_params.transition_func}}(self, {{data.states.__top__.signals.init.guards[(None, None)].target_title}});
+            return {{data.template_params.transition_func}}(self, {{data.states.__top__.sys_signals.init.guards[""].target_title}});
     }
 
     return{% if data.template_params.ignore_func %} {{data.template_params.ignore_func}}(self){% endif%};
