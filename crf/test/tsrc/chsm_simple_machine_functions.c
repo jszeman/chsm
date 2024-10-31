@@ -159,7 +159,7 @@ bool guard_h(void *self, uint32_t e_u32, uint32_t param)
     return _self->guard_h;
 }
 
-bool func_h(void *self, uint32_t e_u32, uint32_t p1_u32, uint16_t p2_u16)
+void func_h(void *self, uint32_t e_u32, uint32_t p1_u32, uint16_t p2_u16)
 {
     simple_sm_tst *_self = (simple_sm_tst *)self;
     

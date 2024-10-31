@@ -23,7 +23,7 @@ typedef struct simple_sm_tst
 
 /* Function declarations that the code generator can not guess */
 bool guard_h(void *self, uint32_t e_u32, uint32_t param);
-bool func_h(void *self, uint32_t e_u32, uint32_t p1_u32, uint16_t p2_u16);
+void func_h(void *self, uint32_t e_u32, uint32_t p1_u32, uint16_t p2_u16);
 
 #define SIMPLE_SM_SET_STATE(obj_ptr, func) ((simple_sm_tst *)(obj_ptr))->callback = func
 
