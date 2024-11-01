@@ -119,12 +119,7 @@ Signals:
 
 The following functions shall be declared and implemented by the user:
 
-    k_guard
-        Parametric guard comment.
-
     s11_g2
-
-    s211_exit
 
     s11_func
 
@@ -132,16 +127,21 @@ The following functions shall be declared and implemented by the user:
 
     s11_id
 
+    s5_k_func1
+
+    s11_g_guard2
+
+    k_guard
+        Parametric guard comment.
+
+    s11_guard
+
     s11_g_guard1
         Comment for the s11_g_guard1 func.
 
         Multiple lines.
 
-    s5_k_func1
-
-    s11_g_guard2
-
-    s11_guard
+    s211_exit
 
 */
 

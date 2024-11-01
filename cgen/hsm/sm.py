@@ -58,22 +58,26 @@ class StateMachine:
         path = self.get_transition_path(start, end, lca)
         return self.path_to_funcs(path), path[-1][0]
 
+    def process_guard_transition(self, s_id, g, states):
+        if g['target']:
+            tfuncs, target = self.get_transition_funcs(s_id, g['target'], g['lca'])
+            #g['transition_funcs'] = tfuncs
+            g['funcs'].extend(tfuncs)
+            g['target_title'] = states[target]['title']
+            g['target_type'] = states[target]['type']
+            if 'params' in states[target]:
+                g['target_params'] = states[target]['params']
+
     def process_transitions(self, states):
         for s_id, s in states.items():
             if s['children']:
                 continue
             for sig_id, sig in s['signals'].items():
-                if sig_id == 'init':
-                    continue
                 for g in sig['guards'].values():
-                    if g['target']:
-                        tfuncs, target = self.get_transition_funcs(s_id, g['target'], g['lca'])
-                        #g['transition_funcs'] = tfuncs
-                        g['funcs'].extend(tfuncs)
-                        g['target_title'] = states[target]['title']
-                        g['target_type'] = states[target]['type']
-                        if 'params' in states[target]:
-                            g['target_params'] = states[target]['params']
+                    self.process_guard_transition(s_id, g, states)
+
+            for g in s['guards'].values():
+                self.process_guard_transition(s_id, g, states)
         
         #The only place where transition functions are needed for an init signal is the __top__
         g = states['__top__']['sys_signals']['init']
@@ -102,14 +106,14 @@ class StateMachine:
             go through the guards one by one and copy those that are not in the
             original state.
         """
-        signals = states[state_id]['signals']
+        state = states[state_id]
+        signals = state['signals']
 
-        parent_id = states[state_id]['parent']
+        parent_id = state['parent']
         while parent_id:
-            p_signals = states[parent_id]['signals']
+            parent = states[parent_id]
+            p_signals = parent['signals']
             for sig_id, sig in p_signals.items():
-                if sig_id in ('entry', 'exit', 'init'):
-                    continue
 
                 if not sig_id in signals:
                     signals[sig_id] = deepcopy(sig)
@@ -119,14 +123,38 @@ class StateMachine:
                     for guard_id, p_guard in sig['guards'].items():
                         if not guard_id in guards:
                             guards[guard_id] = deepcopy(p_guard)
+                            
+            # Go through the parent state guards and copy those as well
+            guards = state['guards']
+            for guard_id, p_guard in parent['guards'].items():
+                if not guard_id in guards:
+                    guards[guard_id] = deepcopy(p_guard)
 
             parent_id = states[parent_id]['parent']
     
 
     def add_signal_to_state(self, state, signal):
         signal_name = signal['name']
-            
-        if signal_name in SYS_SIGNALS:
+        
+        if signal_name == '':
+            for g_fn, g in signal['guards'].items():
+                if g_fn  in state['guards']:
+                    orig_guard = state['guards'][g_fn]
+
+                    # Add functions to the original guard
+                    orig_guard['funcs'].extend(g['funcs'])
+
+                    # Set the target
+                    if g['target']:
+                        if orig_guard['target'] and orig_guard['target'] != g['target']:
+                            # The old and the new guard has different targets. For now, keep the original, but drop a lin in the log
+                            logging.error(f"Guard target mismatch for {g_fn} in {state['title']}: {orig_guard['target']} != {g['target']}")
+                        else:
+                            orig_guard['target'] = g['target']
+                else:
+                    state['guards'][g_fn] = g
+
+        elif signal_name in SYS_SIGNALS:
             if not state['sys_signals'][signal_name]:
                 state['sys_signals'][signal_name]['funcs'] = signal['guards']['']['funcs']
             else:

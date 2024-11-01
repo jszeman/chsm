@@ -6,32 +6,7 @@
                 "entry": {},
                 "exit": {},
                 "init": {
-                    "funcs": [
-                        [
-                            "s_entry",
-                            ""
-                        ],
-                        [
-                            "s_init",
-                            ""
-                        ],
-                        [
-                            "s1_entry",
-                            ""
-                        ],
-                        [
-                            "s1_init",
-                            ""
-                        ],
-                        [
-                            "s11_entry",
-                            ""
-                        ],
-                        [
-                            "s11_init",
-                            ""
-                        ]
-                    ],
+                    "funcs": [["s_entry", ""], ["s_init", ""], ["s1_entry", ""], ["s1_init", ""], ["s11_entry", ""], ["s11_init", ""]],
                     "target": "state_0",
                     "target_title": "s11",
                     "lca": ""
@@ -39,11 +14,7 @@
             },
             "guards": {},
             "parent": "",
-            "children": [
-                "state_0",
-                "istate_3",
-                "state_10"
-            ],
+            "children": ["state_0", "istate_3", "state_10"],
             "title": "__top__4",
             "type": "top",
             "initial": "state_0"
@@ -56,12 +27,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s11_id",
-                                    "8"
-                                ]
-                            ],
+                            "funcs": [["s11_id", "8"]],
                             "target": "",
                             "target_title": "",
                             "lca": ""
@@ -74,12 +40,7 @@
                         "s11_g_guard1(1)": {
                             "guard_func": "s11_g_guard1",
                             "guard_param": "1",
-                            "funcs": [
-                                [
-                                    "s11_g1",
-                                    "2"
-                                ]
-                            ],
+                            "funcs": [["s11_g1", "2"]],
                             "target": "",
                             "target_title": "",
                             "lca": ""
@@ -87,152 +48,8 @@
                         "s11_g_guard2(4)": {
                             "guard_func": "s11_g_guard2",
                             "guard_param": "4",
-                            "funcs": [
-                                [
-                                    "s11_g2",
-                                    "3"
-                                ],
-                                [
-                                    "s11_exit",
-                                    ""
-                                ],
-                                [
-                                    "s1_exit",
-                                    ""
-                                ],
-                                [
-                                    "s2_entry",
-                                    ""
-                                ],
-                                [
-                                    "s21_entry",
-                                    ""
-                                ],
-                                [
-                                    "s211_entry",
-                                    ""
-                                ],
-                                [
-                                    "s211_init",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s11_g2", "3"], ["s11_exit", ""], ["s1_exit", ""], ["s2_entry", ""], ["s21_entry", ""], ["s211_entry", ""], ["s211_init", ""]],
                             "target": "state_5",
-                            "target_title": "s211",
-                            "lca": "state_0",
-                            "target_type": "normal"
-                        }
-                    }
-                },
-                "": {
-                    "name": "",
-                    "guards": {
-                        "s11_guard(6)": {
-                            "guard_func": "s11_guard",
-                            "guard_param": "6",
-                            "funcs": [
-                                [
-                                    "s11_func",
-                                    "7"
-                                ]
-                            ],
-                            "target": "",
-                            "target_title": "",
-                            "lca": ""
-                        },
-                        "k_guard(5)": {
-                            "guard_func": "k_guard",
-                            "guard_param": "5",
-                            "funcs": [
-                                [
-                                    "s11_exit",
-                                    ""
-                                ],
-                                [
-                                    "s1_exit",
-                                    ""
-                                ],
-                                [
-                                    "s2_entry",
-                                    ""
-                                ],
-                                [
-                                    "s2_init",
-                                    ""
-                                ],
-                                [
-                                    "s21_entry",
-                                    ""
-                                ],
-                                [
-                                    "s21_init",
-                                    ""
-                                ],
-                                [
-                                    "s211_entry",
-                                    ""
-                                ],
-                                [
-                                    "s211_init",
-                                    ""
-                                ]
-                            ],
-                            "target": "state_3",
-                            "target_title": "s211",
-                            "lca": "state_0",
-                            "target_type": "normal"
-                        },
-                        "s1_guard()": {
-                            "guard_func": "s1_guard",
-                            "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s1_func",
-                                    ""
-                                ]
-                            ],
-                            "target": "",
-                            "target_title": "",
-                            "lca": ""
-                        },
-                        "j_guard()": {
-                            "guard_func": "j_guard",
-                            "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s11_exit",
-                                    ""
-                                ],
-                                [
-                                    "s1_exit",
-                                    ""
-                                ],
-                                [
-                                    "s2_entry",
-                                    ""
-                                ],
-                                [
-                                    "s2_init",
-                                    ""
-                                ],
-                                [
-                                    "s21_entry",
-                                    ""
-                                ],
-                                [
-                                    "s21_init",
-                                    ""
-                                ],
-                                [
-                                    "s211_entry",
-                                    ""
-                                ],
-                                [
-                                    "s211_init",
-                                    ""
-                                ]
-                            ],
-                            "target": "state_3",
                             "target_title": "s211",
                             "lca": "state_0",
                             "target_type": "normal"
@@ -245,12 +62,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "chsm_defer",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["chsm_defer", ""]],
                             "target": "",
                             "target_title": "",
                             "lca": ""
@@ -263,12 +75,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "chsm_defer",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["chsm_defer", ""]],
                             "target": "",
                             "target_title": "",
                             "lca": ""
@@ -281,28 +88,7 @@
                         "cond()": {
                             "guard_func": "cond",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "d_func",
-                                    ""
-                                ],
-                                [
-                                    "s11_exit",
-                                    ""
-                                ],
-                                [
-                                    "s1_init",
-                                    ""
-                                ],
-                                [
-                                    "s11_entry",
-                                    ""
-                                ],
-                                [
-                                    "s11_init",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["d_func", ""], ["s11_exit", ""], ["s1_init", ""], ["s11_entry", ""], ["s11_init", ""]],
                             "target": "",
                             "target_title": "",
                             "lca": "state_1",
@@ -316,36 +102,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s11_exit",
-                                    ""
-                                ],
-                                [
-                                    "s1_exit",
-                                    ""
-                                ],
-                                [
-                                    "s_init",
-                                    ""
-                                ],
-                                [
-                                    "s1_entry",
-                                    ""
-                                ],
-                                [
-                                    "s1_init",
-                                    ""
-                                ],
-                                [
-                                    "s11_entry",
-                                    ""
-                                ],
-                                [
-                                    "s11_init",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s11_exit", ""], ["s1_exit", ""], ["s_init", ""], ["s1_entry", ""], ["s1_init", ""], ["s11_entry", ""], ["s11_init", ""]],
                             "target": "",
                             "target_title": "",
                             "lca": "state_0",
@@ -359,40 +116,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s11_exit",
-                                    ""
-                                ],
-                                [
-                                    "s1_exit",
-                                    ""
-                                ],
-                                [
-                                    "s2_entry",
-                                    ""
-                                ],
-                                [
-                                    "s2_init",
-                                    ""
-                                ],
-                                [
-                                    "s21_entry",
-                                    ""
-                                ],
-                                [
-                                    "s21_init",
-                                    ""
-                                ],
-                                [
-                                    "s211_entry",
-                                    ""
-                                ],
-                                [
-                                    "s211_init",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s11_exit", ""], ["s1_exit", ""], ["s2_entry", ""], ["s2_init", ""], ["s21_entry", ""], ["s21_init", ""], ["s211_entry", ""], ["s211_init", ""]],
                             "target": "state_3",
                             "target_title": "s211",
                             "lca": "state_0",
@@ -406,32 +130,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s11_exit",
-                                    ""
-                                ],
-                                [
-                                    "s1_exit",
-                                    ""
-                                ],
-                                [
-                                    "s2_entry",
-                                    ""
-                                ],
-                                [
-                                    "s21_entry",
-                                    ""
-                                ],
-                                [
-                                    "s211_entry",
-                                    ""
-                                ],
-                                [
-                                    "s211_init",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s11_exit", ""], ["s1_exit", ""], ["s2_entry", ""], ["s21_entry", ""], ["s211_entry", ""], ["s211_init", ""]],
                             "target": "state_5",
                             "target_title": "s211",
                             "lca": "state_0",
@@ -445,20 +144,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s11_exit",
-                                    ""
-                                ],
-                                [
-                                    "s11_entry",
-                                    ""
-                                ],
-                                [
-                                    "s11_init",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s11_exit", ""], ["s11_entry", ""], ["s11_init", ""]],
                             "target": "",
                             "target_title": "",
                             "lca": "state_1",
@@ -472,32 +158,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s11_exit",
-                                    ""
-                                ],
-                                [
-                                    "s1_exit",
-                                    ""
-                                ],
-                                [
-                                    "s1_entry",
-                                    ""
-                                ],
-                                [
-                                    "s1_init",
-                                    ""
-                                ],
-                                [
-                                    "s11_entry",
-                                    ""
-                                ],
-                                [
-                                    "s11_init",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s11_exit", ""], ["s1_exit", ""], ["s1_entry", ""], ["s1_init", ""], ["s11_entry", ""], ["s11_init", ""]],
                             "target": "",
                             "target_title": "",
                             "lca": "state_0",
@@ -511,28 +172,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s11_exit",
-                                    ""
-                                ],
-                                [
-                                    "s1_exit",
-                                    ""
-                                ],
-                                [
-                                    "s_exit",
-                                    ""
-                                ],
-                                [
-                                    "s_save_history",
-                                    ""
-                                ],
-                                [
-                                    "s6_entry",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s11_exit", ""], ["s1_exit", ""], ["s_exit", ""], ["s_save_history", ""], ["s6_entry", ""]],
                             "target": "state_10",
                             "target_title": "s6",
                             "lca": "__top__",
@@ -546,28 +186,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s11_exit",
-                                    ""
-                                ],
-                                [
-                                    "s1_exit",
-                                    ""
-                                ],
-                                [
-                                    "s1_entry",
-                                    ""
-                                ],
-                                [
-                                    "s11_entry",
-                                    ""
-                                ],
-                                [
-                                    "s11_init",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s11_exit", ""], ["s1_exit", ""], ["s1_entry", ""], ["s11_entry", ""], ["s11_init", ""]],
                             "target": "",
                             "target_title": "",
                             "lca": "state_0",
@@ -581,20 +200,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s11_exit",
-                                    ""
-                                ],
-                                [
-                                    "s1_exit",
-                                    ""
-                                ],
-                                [
-                                    "chsm_recall",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s11_exit", ""], ["s1_exit", ""], ["chsm_recall", ""]],
                             "target": "state_6",
                             "target_title": "s3",
                             "lca": "state_0",
@@ -608,24 +214,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s11_exit",
-                                    ""
-                                ],
-                                [
-                                    "s1_exit",
-                                    ""
-                                ],
-                                [
-                                    "s5_entry1",
-                                    ""
-                                ],
-                                [
-                                    "s5_entry2",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s11_exit", ""], ["s1_exit", ""], ["s5_entry1", ""], ["s5_entry2", ""]],
                             "target": "state_8",
                             "target_title": "s5",
                             "lca": "state_0",
@@ -636,40 +225,60 @@
             },
             "sys_signals": {
                 "entry": {
-                    "funcs": [
-                        [
-                            "s11_entry",
-                            ""
-                        ]
-                    ],
+                    "funcs": [["s11_entry", ""]],
                     "target": "",
                     "target_title": "",
                     "lca": ""
                 },
                 "exit": {
-                    "funcs": [
-                        [
-                            "s11_exit",
-                            ""
-                        ]
-                    ],
+                    "funcs": [["s11_exit", ""]],
                     "target": "",
                     "target_title": "",
                     "lca": ""
                 },
                 "init": {
-                    "funcs": [
-                        [
-                            "s11_init",
-                            ""
-                        ]
-                    ],
+                    "funcs": [["s11_init", ""]],
                     "target": "",
                     "target_title": "",
                     "lca": ""
                 }
             },
-            "guards": {},
+            "guards": {
+                "s11_guard(6)": {
+                    "guard_func": "s11_guard",
+                    "guard_param": "6",
+                    "funcs": [["s11_func", "7"]],
+                    "target": "",
+                    "target_title": "",
+                    "lca": ""
+                },
+                "k_guard(5)": {
+                    "guard_func": "k_guard",
+                    "guard_param": "5",
+                    "funcs": [["s11_exit", ""], ["s1_exit", ""], ["s2_entry", ""], ["s2_init", ""], ["s21_entry", ""], ["s21_init", ""], ["s211_entry", ""], ["s211_init", ""]],
+                    "target": "state_3",
+                    "target_title": "s211",
+                    "lca": "state_0",
+                    "target_type": "normal"
+                },
+                "s1_guard()": {
+                    "guard_func": "s1_guard",
+                    "guard_param": "",
+                    "funcs": [["s1_func", ""]],
+                    "target": "",
+                    "target_title": "",
+                    "lca": ""
+                },
+                "j_guard()": {
+                    "guard_func": "j_guard",
+                    "guard_param": "",
+                    "funcs": [["s11_exit", ""], ["s1_exit", ""], ["s2_entry", ""], ["s2_init", ""], ["s21_entry", ""], ["s21_init", ""], ["s211_entry", ""], ["s211_init", ""]],
+                    "target": "state_3",
+                    "target_title": "s211",
+                    "lca": "state_0",
+                    "target_type": "normal"
+                }
+            },
             "parent": "__top__",
             "children": [],
             "title": "s11",
@@ -685,12 +294,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s211_id",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s211_id", ""]],
                             "target": "",
                             "target_title": "",
                             "lca": ""
@@ -703,40 +307,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s211_exit",
-                                    "6"
-                                ],
-                                [
-                                    "s21_exit",
-                                    ""
-                                ],
-                                [
-                                    "s2_exit",
-                                    ""
-                                ],
-                                [
-                                    "s_init",
-                                    ""
-                                ],
-                                [
-                                    "s1_entry",
-                                    ""
-                                ],
-                                [
-                                    "s1_init",
-                                    ""
-                                ],
-                                [
-                                    "s11_entry",
-                                    ""
-                                ],
-                                [
-                                    "s11_init",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s211_exit", "6"], ["s21_exit", ""], ["s2_exit", ""], ["s_init", ""], ["s1_entry", ""], ["s1_init", ""], ["s11_entry", ""], ["s11_init", ""]],
                             "target": "state_0",
                             "target_title": "s11",
                             "lca": "state_0",
@@ -750,24 +321,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s211_exit",
-                                    "6"
-                                ],
-                                [
-                                    "s21_init",
-                                    ""
-                                ],
-                                [
-                                    "s211_entry",
-                                    ""
-                                ],
-                                [
-                                    "s211_init",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s211_exit", "6"], ["s21_init", ""], ["s211_entry", ""], ["s211_init", ""]],
                             "target": "",
                             "target_title": "",
                             "lca": "state_4",
@@ -781,36 +335,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s211_exit",
-                                    "6"
-                                ],
-                                [
-                                    "s21_exit",
-                                    ""
-                                ],
-                                [
-                                    "s2_exit",
-                                    ""
-                                ],
-                                [
-                                    "s1_entry",
-                                    ""
-                                ],
-                                [
-                                    "s1_init",
-                                    ""
-                                ],
-                                [
-                                    "s11_entry",
-                                    ""
-                                ],
-                                [
-                                    "s11_init",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s211_exit", "6"], ["s21_exit", ""], ["s2_exit", ""], ["s1_entry", ""], ["s1_init", ""], ["s11_entry", ""], ["s11_init", ""]],
                             "target": "state_1",
                             "target_title": "s11",
                             "lca": "state_0",
@@ -824,20 +349,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s211_exit",
-                                    "6"
-                                ],
-                                [
-                                    "s211_entry",
-                                    ""
-                                ],
-                                [
-                                    "s211_init",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s211_exit", "6"], ["s211_entry", ""], ["s211_init", ""]],
                             "target": "",
                             "target_title": "",
                             "lca": "state_4",
@@ -851,32 +363,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s211_exit",
-                                    "6"
-                                ],
-                                [
-                                    "s21_exit",
-                                    ""
-                                ],
-                                [
-                                    "s21_entry",
-                                    ""
-                                ],
-                                [
-                                    "s21_init",
-                                    ""
-                                ],
-                                [
-                                    "s211_entry",
-                                    ""
-                                ],
-                                [
-                                    "s211_init",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s211_exit", "6"], ["s21_exit", ""], ["s21_entry", ""], ["s21_init", ""], ["s211_entry", ""], ["s211_init", ""]],
                             "target": "",
                             "target_title": "",
                             "lca": "state_3",
@@ -890,36 +377,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s211_exit",
-                                    "6"
-                                ],
-                                [
-                                    "s21_exit",
-                                    ""
-                                ],
-                                [
-                                    "s2_exit",
-                                    ""
-                                ],
-                                [
-                                    "s1_entry",
-                                    ""
-                                ],
-                                [
-                                    "s1_init",
-                                    ""
-                                ],
-                                [
-                                    "s11_entry",
-                                    ""
-                                ],
-                                [
-                                    "s11_init",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s211_exit", "6"], ["s21_exit", ""], ["s2_exit", ""], ["s1_entry", ""], ["s1_init", ""], ["s11_entry", ""], ["s11_init", ""]],
                             "target": "state_1",
                             "target_title": "s11",
                             "lca": "state_0",
@@ -933,32 +391,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s211_exit",
-                                    "6"
-                                ],
-                                [
-                                    "s21_exit",
-                                    ""
-                                ],
-                                [
-                                    "s2_exit",
-                                    ""
-                                ],
-                                [
-                                    "s1_entry",
-                                    ""
-                                ],
-                                [
-                                    "s11_entry",
-                                    ""
-                                ],
-                                [
-                                    "s11_init",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s211_exit", "6"], ["s21_exit", ""], ["s2_exit", ""], ["s1_entry", ""], ["s11_entry", ""], ["s11_init", ""]],
                             "target": "state_2",
                             "target_title": "s11",
                             "lca": "state_0",
@@ -972,32 +405,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s211_exit",
-                                    "6"
-                                ],
-                                [
-                                    "s21_exit",
-                                    ""
-                                ],
-                                [
-                                    "s2_exit",
-                                    ""
-                                ],
-                                [
-                                    "s_exit",
-                                    ""
-                                ],
-                                [
-                                    "s_save_history",
-                                    ""
-                                ],
-                                [
-                                    "s6_entry",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s211_exit", "6"], ["s21_exit", ""], ["s2_exit", ""], ["s_exit", ""], ["s_save_history", ""], ["s6_entry", ""]],
                             "target": "state_10",
                             "target_title": "s6",
                             "lca": "__top__",
@@ -1011,32 +419,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s211_exit",
-                                    "6"
-                                ],
-                                [
-                                    "s21_exit",
-                                    ""
-                                ],
-                                [
-                                    "s2_exit",
-                                    ""
-                                ],
-                                [
-                                    "s1_entry",
-                                    ""
-                                ],
-                                [
-                                    "s11_entry",
-                                    ""
-                                ],
-                                [
-                                    "s11_init",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s211_exit", "6"], ["s21_exit", ""], ["s2_exit", ""], ["s1_entry", ""], ["s11_entry", ""], ["s11_init", ""]],
                             "target": "state_2",
                             "target_title": "s11",
                             "lca": "state_0",
@@ -1050,24 +433,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s211_exit",
-                                    "6"
-                                ],
-                                [
-                                    "s21_exit",
-                                    ""
-                                ],
-                                [
-                                    "s2_exit",
-                                    ""
-                                ],
-                                [
-                                    "chsm_recall",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s211_exit", "6"], ["s21_exit", ""], ["s2_exit", ""], ["chsm_recall", ""]],
                             "target": "state_6",
                             "target_title": "s3",
                             "lca": "state_0",
@@ -1081,28 +447,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s211_exit",
-                                    "6"
-                                ],
-                                [
-                                    "s21_exit",
-                                    ""
-                                ],
-                                [
-                                    "s2_exit",
-                                    ""
-                                ],
-                                [
-                                    "s5_entry1",
-                                    ""
-                                ],
-                                [
-                                    "s5_entry2",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s211_exit", "6"], ["s21_exit", ""], ["s2_exit", ""], ["s5_entry1", ""], ["s5_entry2", ""]],
                             "target": "state_8",
                             "target_title": "s5",
                             "lca": "state_0",
@@ -1113,34 +458,19 @@
             },
             "sys_signals": {
                 "entry": {
-                    "funcs": [
-                        [
-                            "s211_entry",
-                            ""
-                        ]
-                    ],
+                    "funcs": [["s211_entry", ""]],
                     "target": "",
                     "target_title": "",
                     "lca": ""
                 },
                 "exit": {
-                    "funcs": [
-                        [
-                            "s211_exit",
-                            "6"
-                        ]
-                    ],
+                    "funcs": [["s211_exit", "6"]],
                     "target": "",
                     "target_title": "",
                     "lca": ""
                 },
                 "init": {
-                    "funcs": [
-                        [
-                            "s211_init",
-                            ""
-                        ]
-                    ],
+                    "funcs": [["s211_init", ""]],
                     "target": "",
                     "target_title": "",
                     "lca": ""
@@ -1162,12 +492,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s3_k_func",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s3_k_func", ""]],
                             "target": "",
                             "target_title": "",
                             "lca": ""
@@ -1180,12 +505,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s3_l_func",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s3_l_func", ""]],
                             "target": "",
                             "target_title": "",
                             "lca": ""
@@ -1198,28 +518,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s_init",
-                                    ""
-                                ],
-                                [
-                                    "s1_entry",
-                                    ""
-                                ],
-                                [
-                                    "s1_init",
-                                    ""
-                                ],
-                                [
-                                    "s11_entry",
-                                    ""
-                                ],
-                                [
-                                    "s11_init",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s_init", ""], ["s1_entry", ""], ["s1_init", ""], ["s11_entry", ""], ["s11_init", ""]],
                             "target": "state_0",
                             "target_title": "s11",
                             "lca": "state_0",
@@ -1233,12 +532,7 @@
                         "s11_g_guard2(4)": {
                             "guard_func": "s11_g_guard2",
                             "guard_param": "4",
-                            "funcs": [
-                                [
-                                    "s11_g2",
-                                    "3"
-                                ]
-                            ],
+                            "funcs": [["s11_g2", "3"]],
                             "target": "state_7",
                             "target_title": "s4",
                             "lca": "state_0",
@@ -1247,12 +541,7 @@
                         "s11_g_guard1(1)": {
                             "guard_func": "s11_g_guard1",
                             "guard_param": "1",
-                            "funcs": [
-                                [
-                                    "s11_g1",
-                                    "2"
-                                ]
-                            ],
+                            "funcs": [["s11_g1", "2"]],
                             "target": "state_7",
                             "target_title": "s4",
                             "lca": "state_0",
@@ -1266,20 +555,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s1_entry",
-                                    ""
-                                ],
-                                [
-                                    "s11_entry",
-                                    ""
-                                ],
-                                [
-                                    "s11_init",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s1_entry", ""], ["s11_entry", ""], ["s11_init", ""]],
                             "target": "state_2",
                             "target_title": "s11",
                             "lca": "state_0",
@@ -1293,16 +569,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s5_entry1",
-                                    ""
-                                ],
-                                [
-                                    "s5_entry2",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s5_entry1", ""], ["s5_entry2", ""]],
                             "target": "state_8",
                             "target_title": "s5",
                             "lca": "state_0",
@@ -1313,12 +580,7 @@
             },
             "sys_signals": {
                 "entry": {
-                    "funcs": [
-                        [
-                            "chsm_recall",
-                            ""
-                        ]
-                    ],
+                    "funcs": [["chsm_recall", ""]],
                     "target": "",
                     "target_title": "",
                     "lca": ""
@@ -1347,12 +609,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s4_id",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s4_id", ""]],
                             "target": "",
                             "target_title": "",
                             "lca": ""
@@ -1365,20 +622,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s1_entry",
-                                    ""
-                                ],
-                                [
-                                    "s11_entry",
-                                    ""
-                                ],
-                                [
-                                    "s11_init",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s1_entry", ""], ["s11_entry", ""], ["s11_init", ""]],
                             "target": "state_2",
                             "target_title": "s11",
                             "lca": "state_0",
@@ -1392,12 +636,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "chsm_recall",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["chsm_recall", ""]],
                             "target": "state_6",
                             "target_title": "s3",
                             "lca": "state_0",
@@ -1411,16 +650,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s5_entry1",
-                                    ""
-                                ],
-                                [
-                                    "s5_entry2",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s5_entry1", ""], ["s5_entry2", ""]],
                             "target": "state_8",
                             "target_title": "s5",
                             "lca": "state_0",
@@ -1450,16 +680,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s5_k_func1",
-                                    "1, 2"
-                                ],
-                                [
-                                    "s5_k_func2",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s5_k_func1", "1, 2"], ["s5_k_func2", ""]],
                             "target": "",
                             "target_title": "",
                             "lca": ""
@@ -1472,34 +693,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s5_l_func",
-                                    ""
-                                ]
-                            ],
-                            "target": "",
-                            "target_title": "",
-                            "lca": ""
-                        }
-                    }
-                },
-                "": {
-                    "name": "",
-                    "guards": {
-                        "s5_g1()": {
-                            "guard_func": "s5_g1",
-                            "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s5_g1_f1",
-                                    ""
-                                ],
-                                [
-                                    "s5_g1_f2",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s5_l_func", ""]],
                             "target": "",
                             "target_title": "",
                             "lca": ""
@@ -1512,36 +706,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s5_c_func1",
-                                    ""
-                                ],
-                                [
-                                    "s5_c_cfunc2",
-                                    ""
-                                ],
-                                [
-                                    "s_init",
-                                    ""
-                                ],
-                                [
-                                    "s1_entry",
-                                    ""
-                                ],
-                                [
-                                    "s1_init",
-                                    ""
-                                ],
-                                [
-                                    "s11_entry",
-                                    ""
-                                ],
-                                [
-                                    "s11_init",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s5_c_func1", ""], ["s5_c_cfunc2", ""], ["s_init", ""], ["s1_entry", ""], ["s1_init", ""], ["s11_entry", ""], ["s11_init", ""]],
                             "target": "state_0",
                             "target_title": "s11",
                             "lca": "state_0",
@@ -1555,20 +720,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s1_entry",
-                                    ""
-                                ],
-                                [
-                                    "s11_entry",
-                                    ""
-                                ],
-                                [
-                                    "s11_init",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s1_entry", ""], ["s11_entry", ""], ["s11_init", ""]],
                             "target": "state_2",
                             "target_title": "s11",
                             "lca": "state_0",
@@ -1582,12 +734,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "chsm_recall",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["chsm_recall", ""]],
                             "target": "state_6",
                             "target_title": "s3",
                             "lca": "state_0",
@@ -1601,16 +748,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s5_entry1",
-                                    ""
-                                ],
-                                [
-                                    "s5_entry2",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s5_entry1", ""], ["s5_entry2", ""]],
                             "target": "",
                             "target_title": "",
                             "lca": "state_0",
@@ -1621,16 +759,7 @@
             },
             "sys_signals": {
                 "entry": {
-                    "funcs": [
-                        [
-                            "s5_entry1",
-                            ""
-                        ],
-                        [
-                            "s5_entry2",
-                            ""
-                        ]
-                    ],
+                    "funcs": [["s5_entry1", ""], ["s5_entry2", ""]],
                     "target": "",
                     "target_title": "",
                     "lca": ""
@@ -1638,7 +767,16 @@
                 "exit": {},
                 "init": {}
             },
-            "guards": {},
+            "guards": {
+                "s5_g1()": {
+                    "guard_func": "s5_g1",
+                    "guard_param": "",
+                    "funcs": [["s5_g1_f1", ""], ["s5_g1_f2", ""]],
+                    "target": "",
+                    "target_title": "",
+                    "lca": ""
+                }
+            },
             "parent": "__top__",
             "children": [],
             "title": "s5",
@@ -1669,12 +807,7 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [
-                                [
-                                    "s_entry",
-                                    ""
-                                ]
-                            ],
+                            "funcs": [["s_entry", ""]],
                             "target": "state_9",
                             "target_title": "s_history",
                             "lca": "__top__",
@@ -1686,12 +819,7 @@
             },
             "sys_signals": {
                 "entry": {
-                    "funcs": [
-                        [
-                            "s6_entry",
-                            ""
-                        ]
-                    ],
+                    "funcs": [["s6_entry", ""]],
                     "target": "",
                     "target_title": "",
                     "lca": ""
@@ -1709,79 +837,63 @@
         }
     },
     "user_funcs": [
-        "s21_exit",
-        "s21_init",
+        "s5_g1_f1",
         "s_entry",
-        "s1_entry",
-        "s211_id",
-        "s21_entry",
         "s3_k_func",
-        "d_func",
-        "chsm_defer",
-        "s11_entry",
-        "s5_entry2",
-        "s_init",
-        "s1_func",
+        "s1_init",
+        "s6_entry",
         "s2_exit",
+        "s_init",
+        "s1_entry",
+        "s5_c_cfunc2",
+        "s211_entry",
+        "s2_entry",
+        "s4_id",
+        "s5_l_func",
+        "s11_init",
+        "s11_entry",
+        "s1_exit",
+        "s21_init",
+        "s21_exit",
+        "s_save_history",
+        "s211_init",
+        "s3_l_func",
+        "s5_k_func2",
+        "s2_init",
+        "s5_entry2",
         "s5_entry1",
         "s5_g1_f2",
-        "s3_l_func",
-        "s_save_history",
-        "s11_init",
-        "s5_g1_f1",
-        "s5_l_func",
+        "s1_func",
         "s5_c_func1",
-        "s2_init",
-        "s1_init",
-        "s211_init",
-        "s2_entry",
-        "s211_entry",
-        "s6_entry",
-        "s_exit",
-        "s1_exit",
-        "s5_k_func2",
-        "s11_exit",
-        "s4_id",
         "chsm_recall",
-        "s5_c_cfunc2"
+        "d_func",
+        "s_exit",
+        "chsm_defer",
+        "s21_entry",
+        "s11_exit",
+        "s211_id"
     ],
-    "user_guards": [
-        "j_guard",
-        "s1_guard",
-        "s5_g1",
-        "cond"
-    ],
+    "user_guards": ["s5_g1", "s1_guard", "j_guard", "cond"],
     "user_signals": [
-        "exit",
-        "F",
-        "C",
-        "B",
+        "N",
+        "M",
         "ID",
         "K",
-        "E",
-        "G",
+        "F",
         "L",
-        "M",
-        "entry",
-        "H",
+        "exit",
         "D",
+        "H",
+        "E",
+        "J",
+        "B",
         "A",
-        "N",
+        "G",
         "init",
-        "J"
+        "C",
+        "entry"
     ],
-    "user_inc_funcs": [
-        "k_guard",
-        "s11_g2",
-        "s211_exit",
-        "s11_func",
-        "s11_g1",
-        "s11_id",
-        "s11_g_guard1",
-        "s5_k_func1",
-        "s11_g_guard2",
-        "s11_guard"
-    ],
+    "user_inc_funcs": ["s11_g2", "s11_func", "s11_g1", "s11_id", "s5_k_func1", "s11_g_guard2", "k_guard", "s11_guard", "s11_g_guard1", "s211_exit"],
     "notes": {
         "s1_entry()": "S1 entry function comment.",
         "s11_entry()": "S11 entry function comment",
@@ -1807,12 +919,7 @@
     },
     "template_params": {
         "func_params": "chsm_tst *self, const cevent_tst *e_pst",
-        "include_list": [
-            "chsm.h",
-            "cevent.h",
-            "chsm_test_machine.h",
-            "stdbool.h"
-        ],
+        "include_list": ["chsm.h", "cevent.h", "chsm_test_machine.h", "stdbool.h"],
         "guard_return_type": "bool",
         "state_id_type": "chsm_test_machine_state_id_ten",
         "include_guard": "CHSM_TEST_FUNCTIONS2_H"

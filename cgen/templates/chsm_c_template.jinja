@@ -11,7 +11,7 @@ static {{data.template_params.func_return_type}} {{ state.title }}({{data.templa
 {
     switch({{data.template_params.switch_variable}})
     {
-        {% for signal_id in state.signals.keys() | reject('in', ['']) | sort %}
+        {% for signal_id in state.signals.keys() | sort %}
         {% set signal = state.signals[signal_id] %}
         case {{data.template_params.signal_prefix}}{{signal_id}}:
             {% for guard_id, guard in signal.guards.items() %}
@@ -48,22 +48,22 @@ static {{data.template_params.func_return_type}} {{ state.title }}({{data.templa
 
         {% endfor %}
     }
-    {% if '' in state.signals %}
-        {% for guard_id, guard in state.signals[""].guards.items() %}
-            {% if  guard.guard_func %}
+
+    {% for guard_id, guard in state.guards.items() %}
+        {% if  guard.guard_func %}
 
     if ({{guard.guard_func}}({{data.template_params.func_args}}{% if guard.guard_param %}, {{guard.guard_param}}{% endif %}))
     {
-            {% for func, param in guard.funcs %}
+        {% for func, param in guard.funcs %}
         {{func}}({{data.template_params.func_args}}{% if param %}, {{param}}{% endif %});
-            {% endfor %}
-            {% if guard.target %}
-        return {{data.template_params.transition_func}}(self, {{guard.target_title}});
-            {% endif %}
-    }
-            {% endif %}
         {% endfor %}
-    {% endif %}
+        {% if guard.target %}
+        return {{data.template_params.transition_func}}(self, {{guard.target_title}});
+        {% endif %}
+    }
+        {% endif %}
+    {% endfor %}
+
 
     return{% if data.template_params.ignore_func %} {{data.template_params.ignore_func}}(self){% endif%};
 }
