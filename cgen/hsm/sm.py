@@ -76,7 +76,7 @@ class StateMachine:
                             g['target_params'] = states[target]['params']
         
         #The only place where transition functions are needed for an init signal is the __top__
-        g = states['__top__']['sys_signals']['init']['guards'][NOGUARD]
+        g = states['__top__']['sys_signals']['init']
         tfuncs, target = self.get_transition_funcs('__top__', g['target'], g['lca'])
         g['funcs'].extend(tfuncs)
         g['target_title'] = states[target]['title']
@@ -128,12 +128,12 @@ class StateMachine:
             
         if signal_name in SYS_SIGNALS:
             if not state['sys_signals'][signal_name]:
-                state['sys_signals'][signal_name] = signal
+                state['sys_signals'][signal_name]['funcs'] = signal['guards']['']['funcs']
             else:
-                orig_signal = state['sys_signals'][signal_name]
-                orig_signal['guards']['']['funcs'].extend(signal['guards']['']['funcs'])
-                orig_signal['guards']['']['target'] = signal['guards']['']['target']
-                orig_signal['guards']['']['target_title'] = signal['guards']['']['target_title']
+                state['sys_signals'][signal_name]['funcs'].extend(signal['guards']['']['funcs'])
+            state['sys_signals'][signal_name]['target'] = signal['guards']['']['target']
+            state['sys_signals'][signal_name]['target_title'] = signal['guards']['']['target_title']
+            state['sys_signals'][signal_name]['lca'] = signal['guards']['']['lca']
         elif signal_name not in state['signals']:
             state['signals'][signal_name] = signal
         else:
@@ -211,7 +211,7 @@ class StateMachine:
                     'exit': {},
                     'init': {}
                 },
-                'guards': [],
+                'guards': {},
                 'parent': s['parent'],
                 'children': s['children'],
                 'title': title,
@@ -404,7 +404,7 @@ class StateMachine:
         for step in path:
             state_id, event_id = step
             try:
-                funcs.extend(self.states[state_id]['sys_signals'][event_id]['guards'][NOGUARD]['funcs'])
+                funcs.extend(self.states[state_id]['sys_signals'][event_id]['funcs'])
             except KeyError as e:
                 pass
 

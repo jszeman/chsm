@@ -75,12 +75,12 @@ static {{data.template_params.func_return_type}} {{ state.title }}({{data.templa
     switch({{data.template_params.switch_variable}})
     {
         case {{data.template_params.init_signal}}:
-                    {% for func, param in data.states.__top__.sys_signals.init.guards[""].funcs %}
+                    {% for func, param in data.states.__top__.sys_signals.init.funcs %}
                         {% if func %}
             {{func}}({{data.template_params.func_args}}{% if param %}, {{param}}{% endif %});
                         {% endif %}
                     {% endfor %}
-            return {{data.template_params.transition_func}}(self, {{data.states.__top__.sys_signals.init.guards[""].target_title}});
+            return {{data.template_params.transition_func}}(self, {{data.states.__top__.sys_signals.init.target_title}});
     }
 
     return{% if data.template_params.ignore_func %} {{data.template_params.ignore_func}}(self){% endif%};
