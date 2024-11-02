@@ -31,7 +31,7 @@ void {{func}} ({{data.template_params.func_params}});
 
 typedef enum {{data.template_params.state_id_type}}
 {
-{% for state_id, state in data.states.items() if state.type == 'normal' %}
+{% for state_id, state in data.states.items() | sort(attribute='title') if state.type == 'normal' %}
     {{ state.title.upper() }} = {{ state.num }},
 {% endfor %}
 } {{data.template_params.state_id_type}};
@@ -47,7 +47,7 @@ Signals:
 
 The following functions shall be declared and implemented by the user:
 
-{% for func in data.user_inc_funcs %}
+{% for func in data.user_inc_funcs | sort%}
     {{func}}
     {% if func in data.notes and data.notes[func]%}
         {{data.notes[func] | indent(width=8)}}
