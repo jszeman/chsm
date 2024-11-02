@@ -1,0 +1,52 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.7.8 Chrome/128.0.6613.36 Electron/32.0.1 Safari/537.36" version="24.7.8">
+  <diagram name="Page-1" id="0">
+    <mxGraphModel dx="1235" dy="740" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="0.1" pageWidth="1100" pageHeight="850" background="none" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        {% for state_id, state in data.raw_data.states.items() if state.type == 'normal' %}
+        <mxCell id="{{state_id}}" value="{{state.title}}" style="swimlane;whiteSpace=wrap;html=1;rounded=1;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=left;startSize=20;arcSize=5;fillColor=#d36601;collapsible=0;fillOpacity=10;" parent="1" vertex="1">
+          <mxGeometry x="{{state.pos[0]*data.template_params.scale}}" y="{{state.pos[1]*data.template_params.scale}}" width="{{state.size[0]*data.template_params.scale}}" height="{{state.size[1]*data.template_params.scale}}" as="geometry" />
+        </mxCell>
+            {% if state.text %}
+        <mxCell id="{{state_id}}_txt" value="&lt;div&gt;{{'&lt;/div&gt;&lt;div&gt;'.join(state.text)}}&lt;/div&gt;" style="text;align=left;fontStyle=1;verticalAlign=middle;spacingLeft=3;spacingRight=3;strokeColor=default;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;labelBackgroundColor=none;fillColor=#d36601;perimeterSpacing=1;fillOpacity=10;" vertex="1" parent="{{state_id}}">
+            <mxGeometry y="20" width="{{state.size[0]*data.template_params.scale}}" height="{{(state.text | length)*14+10}}" as="geometry" />
+        </mxCell>
+            {% endif %}
+        {% endfor %}
+
+        {% for state_id, state in data.raw_data.states.items() if state.type == 'initial' %}
+        <mxCell id="{{state_id}}" value="" style="ellipse;html=1;shape=startState;fillColor=#000000;strokeColor=#ff0000;" vertex="1" parent="1">
+          <mxGeometry x="{{state.pos[0]*data.template_params.scale - 10}}" y="{{state.pos[1]*data.template_params.scale - 10}}" width="20" height="20" as="geometry" />
+        </mxCell>
+        {% endfor %}
+
+        {% for tr_id, tr in data.raw_data.transitions.items() %}
+            {% set parent = data.raw_data.connectors[tr.start].parent %}
+            {% set ppos = data.raw_data.states[parent].pos %}
+            {% set offset = 0 %}
+            {% if data.raw_data.states[parent].type == 'initial' %}
+                {% set offset = 10 %}
+            {% endif %}
+        <mxCell id="{{tr_id}}" value="" style="endArrow=block;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;endFill=1;strokeColor=#4682B4;strokeWidth=2;" edge="1" parent="{{parent}}">
+            <mxGeometry width="50" height="50" relative="1" as="geometry">
+                <mxPoint x="{{(tr.vertices[0][0] - ppos[0]) * 10 + offset}}" y="{{(tr.vertices[0][1] - ppos[1]) * 10 + offset}}" as="sourcePoint" />
+                <mxPoint x="{{(tr.vertices[-1][0] - ppos[0]) * 10 + offset}}" y="{{(tr.vertices[-1][1] - ppos[1]) * 10 + offset}}" as="targetPoint" />
+                {% if (tr.vertices | length) > 2 %}
+                <Array as="points">
+                    {% for v in tr.vertices[1:-1] %}
+                    <mxPoint x="{{(v[0] - ppos[0]) * 10 + offset}}" y="{{(v[1] - ppos[1]) * 10 + offset}}" />
+                    {% endfor %}
+                {% endif %}
+                </Array>
+            </mxGeometry>
+        </mxCell>
+
+        <mxCell id="{{tr_id}}_txt" value="{{tr.label | e}}" style="text;align=left;fontStyle=1;verticalAlign=top;spacingLeft=3;spacingRight=3;strokeColor=none;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="{{parent}}">
+          <mxGeometry x="{{(tr.label_pos[0] - ppos[0])*10}}" y="{{(tr.label_pos[1] - ppos[1])*10-18}}" width="80" height="26" as="geometry" />
+        </mxCell>
+        {% endfor %}
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
