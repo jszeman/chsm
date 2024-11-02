@@ -13,7 +13,6 @@ static chsm_result_ten s_spi_master_idle(chsm_tst *self, const cevent_tst *e_pst
         case SIG_SPI_MASTER_TRANSACTION:
             spi_master_start(self, e_pst);
             return chsm_transition(self, s_spi_master_busy);
-
     }
 
     return chsm_ignored(self);
@@ -36,7 +35,6 @@ static chsm_result_ten s_spi_master_busy(chsm_tst *self, const cevent_tst *e_pst
         case SIG_SPI_MASTER_TRANSACTION:
             chsm_defer(self, e_pst);
             break;
-
     }
 
     return chsm_ignored(self);

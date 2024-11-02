@@ -13,7 +13,6 @@ static chsm_result_ten s_idle(chsm_tst *self, const cevent_tst *e_pst)
         case SIG_SYS_TICK_1ms:
             ltc2471_1ms_callack(self, e_pst);
             break;
-
     }
 
     if (ltc2471_timeout(self, e_pst, LTC2471_READ_TIMEOUT))
@@ -43,7 +42,6 @@ static chsm_result_ten s_reading(chsm_tst *self, const cevent_tst *e_pst)
         case SIG_SYS_TICK_1ms:
             ltc2471_1ms_callack(self, e_pst);
             break;
-
     }
 
     if (ltc2471_timeout(self, e_pst, LTC2471_READ_TIMEOUT))

@@ -128,9 +128,7 @@ static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst)
             s_save_history(self, e_pst);
             s6_entry(self, e_pst);
             return chsm_transition(self, s6);
-
     }
-
 
     if (s11_guard(self, e_pst, 6))
     {
@@ -167,7 +165,6 @@ static chsm_result_ten s11(chsm_tst *self, const cevent_tst *e_pst)
         s211_init(self, e_pst);
         return chsm_transition(self, s211);
     }
-
 
     return chsm_ignored(self);
 }
@@ -274,10 +271,7 @@ static chsm_result_ten s211(chsm_tst *self, const cevent_tst *e_pst)
             s_save_history(self, e_pst);
             s6_entry(self, e_pst);
             return chsm_transition(self, s6);
-
     }
-
-
 
     return chsm_ignored(self);
 }
@@ -325,10 +319,7 @@ static chsm_result_ten s3(chsm_tst *self, const cevent_tst *e_pst)
             s5_entry1(self, e_pst);
             s5_entry2(self, e_pst);
             return chsm_transition(self, s5);
-
     }
-
-
 
     return chsm_ignored(self);
 }
@@ -355,10 +346,7 @@ static chsm_result_ten s4(chsm_tst *self, const cevent_tst *e_pst)
             s5_entry1(self, e_pst);
             s5_entry2(self, e_pst);
             return chsm_transition(self, s5);
-
     }
-
-
 
     return chsm_ignored(self);
 }
@@ -400,16 +388,13 @@ static chsm_result_ten s5(chsm_tst *self, const cevent_tst *e_pst)
             s5_entry1(self, e_pst);
             s5_entry2(self, e_pst);
             break;
-
     }
-
 
     if (s5_g1(self, e_pst))
     {
         s5_g1_f1(self, e_pst);
         s5_g1_f2(self, e_pst);
     }
-
 
     return chsm_ignored(self);
 }
@@ -421,10 +406,7 @@ static chsm_result_ten s6(chsm_tst *self, const cevent_tst *e_pst)
         case TEST_SIG_A:
             s_entry(self, e_pst);
             return chsm_transition(self, s_history(self, e_pst));
-
     }
-
-
 
     return chsm_ignored(self);
 }

@@ -27,7 +27,6 @@ static chsm_result_ten s_idle(chsm_tst *self, const cevent_tst *e_pst)
             store_transaction_info(self, e_pst);
             i2c_master_start_tx(self, e_pst);
             return chsm_transition(self, s_wr_write);
-
     }
 
     return chsm_ignored(self);
@@ -69,7 +68,6 @@ static chsm_result_ten s_write(chsm_tst *self, const cevent_tst *e_pst)
             chsm_recall(self, e_pst);
             clear_transaction_info(self, e_pst);
             return chsm_transition(self, s_idle);
-
     }
 
     return chsm_ignored(self);
@@ -111,7 +109,6 @@ static chsm_result_ten s_read(chsm_tst *self, const cevent_tst *e_pst)
             chsm_recall(self, e_pst);
             clear_transaction_info(self, e_pst);
             return chsm_transition(self, s_idle);
-
     }
 
     return chsm_ignored(self);
@@ -150,7 +147,6 @@ static chsm_result_ten s_wr_write(chsm_tst *self, const cevent_tst *e_pst)
         case SIG_I2C_WRITE_SUCCESS:
             i2c_master_start_rx(self, e_pst);
             return chsm_transition(self, s_wr_read);
-
     }
 
     return chsm_ignored(self);
@@ -192,7 +188,6 @@ static chsm_result_ten s_wr_read(chsm_tst *self, const cevent_tst *e_pst)
             chsm_recall(self, e_pst);
             clear_transaction_info(self, e_pst);
             return chsm_transition(self, s_idle);
-
     }
 
     return chsm_ignored(self);

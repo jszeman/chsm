@@ -47,7 +47,6 @@ static chsm_result_ten s_idle(chsm_tst *self, const cevent_tst *e_pst)
         case SIG_SYS_TICK_1ms:
             sdo_callback(self, e_pst);
             break;
-
     }
 
     return chsm_ignored(self);
@@ -82,7 +81,6 @@ static chsm_result_ten s_sdo_wait_exp_ul(chsm_tst *self, const cevent_tst *e_pst
         case SIG_SYS_TICK_1ms:
             sdo_callback(self, e_pst);
             break;
-
     }
 
     if (sdo_timeout(self, e_pst, SDO_TIMEOUT))
@@ -124,7 +122,6 @@ static chsm_result_ten s_sdo_wait_exp_dl(chsm_tst *self, const cevent_tst *e_pst
         case SIG_SYS_TICK_1ms:
             sdo_callback(self, e_pst);
             break;
-
     }
 
     if (sdo_timeout(self, e_pst, SDO_TIMEOUT))
@@ -153,7 +150,6 @@ static chsm_result_ten s_sdo_segmented_dl(chsm_tst *self, const cevent_tst *e_ps
         case SIG_SYS_TICK_1ms:
             sdo_callback(self, e_pst);
             break;
-
     }
 
     if (sdo_timeout(self, e_pst, SDO_TIMEOUT))
@@ -182,7 +178,6 @@ static chsm_result_ten s_sdo_segmented_ul(chsm_tst *self, const cevent_tst *e_ps
         case SIG_SYS_TICK_1ms:
             sdo_callback(self, e_pst);
             break;
-
     }
 
     if (sdo_timeout(self, e_pst, SDO_TIMEOUT))
@@ -216,7 +211,6 @@ static chsm_result_ten s_sdo_block_ul_wait_for_start(chsm_tst *self, const ceven
         case SIG_SYS_TICK_1ms:
             sdo_callback(self, e_pst);
             break;
-
     }
 
     if (sdo_timeout(self, e_pst, SDO_TIMEOUT))
@@ -253,7 +247,6 @@ static chsm_result_ten s_sdo_block_ul_started(chsm_tst *self, const cevent_tst *
         case SIG_SYS_TICK_1ms:
             sdo_callback(self, e_pst);
             break;
-
     }
 
     if (sdo_timeout(self, e_pst, SDO_TIMEOUT))
@@ -278,7 +271,6 @@ static chsm_result_ten s_sdo_block_ul_finish(chsm_tst *self, const cevent_tst *e
         case SIG_SYS_TICK_1ms:
             sdo_callback(self, e_pst);
             break;
-
     }
 
     if (sdo_timeout(self, e_pst, SDO_TIMEOUT))
@@ -307,7 +299,6 @@ static chsm_result_ten s_sdo_block_dl_started(chsm_tst *self, const cevent_tst *
         case SIG_SYS_TICK_1ms:
             sdo_callback(self, e_pst);
             break;
-
     }
 
     return chsm_ignored(self);
@@ -325,7 +316,6 @@ static chsm_result_ten s_sdo_block_dl_finish(chsm_tst *self, const cevent_tst *e
         case SIG_SYS_TICK_1ms:
             sdo_callback(self, e_pst);
             break;
-
     }
 
     return chsm_ignored(self);

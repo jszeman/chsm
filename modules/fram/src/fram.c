@@ -20,7 +20,6 @@ static chsm_result_ten s_idle(chsm_tst *self, const cevent_tst *e_pst)
             store_op_info(self, e_pst);
             write_a_chunk(self, e_pst);
             return chsm_transition(self, s_writing);
-
     }
 
     return chsm_ignored(self);
@@ -60,7 +59,6 @@ static chsm_result_ten s_reading(chsm_tst *self, const cevent_tst *e_pst)
         case SIG_MEM_WRITE:
             chsm_defer(self, e_pst);
             break;
-
     }
 
     return chsm_ignored(self);
@@ -100,7 +98,6 @@ static chsm_result_ten s_writing(chsm_tst *self, const cevent_tst *e_pst)
         case SIG_MEM_WRITE:
             chsm_defer(self, e_pst);
             break;
-
     }
 
     return chsm_ignored(self);

@@ -46,9 +46,9 @@ Signals:
 
 The following functions shall be declared and implemented by the user:
 
-    guard_h
-
     func_h
+
+    guard_h
 
 */
 

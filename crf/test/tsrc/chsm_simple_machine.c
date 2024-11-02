@@ -22,7 +22,6 @@ static void state_a(void *self, uint32_t e_u32)
                 return SIMPLE_SM_SET_STATE(self, state_b);
             }
             break;
-
     }
 
     if (guard_1(self, e_u32))
@@ -57,7 +56,6 @@ static void state_b(void *self, uint32_t e_u32)
             c_exit(self, e_u32);
             a_entry(self, e_u32);
             return SIMPLE_SM_SET_STATE(self, state_a);
-
     }
 
     return;

@@ -22,7 +22,6 @@ static chsm_result_ten s_ng_inactive(chsm_tst *self, const cevent_tst *e_pst)
         case SIG_SYS_TICK_1ms:
             co_callback(self, e_pst);
             break;
-
     }
 
     return chsm_ignored(self);
@@ -43,7 +42,6 @@ static chsm_result_ten s_ng_active(chsm_tst *self, const cevent_tst *e_pst)
         case SIG_SYS_TICK_1ms:
             co_callback(self, e_pst);
             break;
-
     }
 
     if (co_timeout(self, e_pst, CO_LIFETIME))

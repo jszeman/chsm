@@ -19,7 +19,6 @@ static chsm_result_ten s_idle(chsm_tst *self, const cevent_tst *e_pst)
         case SIG_SYS_TICK_1ms:
             lm73_1ms_callback(self, e_pst);
             break;
-
     }
 
     if (lm73_timeout(self, e_pst, LM73_READ_PERIOD))
@@ -57,7 +56,6 @@ static chsm_result_ten s_reading(chsm_tst *self, const cevent_tst *e_pst)
         case SIG_SYS_TICK_1ms:
             lm73_1ms_callback(self, e_pst);
             break;
-
     }
 
     if (lm73_error_count(self, e_pst, LM73_MAX_ERROR_COUNT))
@@ -86,13 +84,13 @@ static chsm_result_ten s_read_id_reg(chsm_tst *self, const cevent_tst *e_pst)
         case SIG_SYS_TICK_1ms:
             lm73_1ms_callback(self, e_pst);
             break;
-
     }
 
     if (lm73_timeout(self, e_pst, LM73_RETRY_TIMEOUT))
     {
         lm73_reset_timer(self, e_pst);
         lm73_read_id(self, e_pst);
+        return chsm_transition(self, s_read_id_reg);
     }
 
     return chsm_ignored(self);
@@ -120,7 +118,6 @@ static chsm_result_ten s_reset_ptr_reg(chsm_tst *self, const cevent_tst *e_pst)
         case SIG_SYS_TICK_1ms:
             lm73_1ms_callback(self, e_pst);
             break;
-
     }
 
     return chsm_ignored(self);

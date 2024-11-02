@@ -83,9 +83,9 @@ Signals:
 
 The following functions shall be declared and implemented by the user:
 
-    sdo_timeout
-
     send_sdo_abort
+
+    sdo_timeout
 
 */
 

@@ -45,10 +45,11 @@ static {{data.template_params.func_return_type}} {{ state.title }}({{data.templa
             {% if "" not in signal.guards or not signal.guards[""].target %}
             break;
             {% endif %}
+            {% if not loop.last %}
 
+            {% endif %}
         {% endfor %}
     }
-
     {% for guard_id, guard in state.guards.items() %}
         {% if  guard.guard_func %}
 
@@ -63,7 +64,6 @@ static {{data.template_params.func_return_type}} {{ state.title }}({{data.templa
     }
         {% endif %}
     {% endfor %}
-
 
     return{% if data.template_params.ignore_func %} {{data.template_params.ignore_func}}(self){% endif%};
 }
