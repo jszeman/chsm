@@ -1,0 +1,14 @@
+{
+	"tutorial.html": {
+		"drawing":	"tutorial.html",
+		"jobs":	[
+			{
+				"title":			"C code gen",
+				"output":			"../state_machine.py",
+				"template":			"python_template.jinja",
+				"template_params":  {},
+				"dump_ir":			true
+			}
+		]
+	}
+}

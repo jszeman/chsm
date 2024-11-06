@@ -1,0 +1,139 @@
+{
+    "states": {
+        "__top__": {
+            "signals": {},
+            "sys_signals": {
+                "entry": {},
+                "exit": {},
+                "init": {
+                    "funcs": [["entry_a", ""]],
+                    "target": "state_0",
+                    "target_title": "A",
+                    "lca": ""
+                }
+            },
+            "guards": {},
+            "parent": "",
+            "children": ["state_0", "state_1", "state_2", "istate_0"],
+            "title": "__top__",
+            "type": "top",
+            "initial": "state_0"
+        },
+        "state_0": {
+            "signals": {
+                "SPACE": {
+                    "name": "SPACE",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [["entry_b", ""]],
+                            "target": "state_1",
+                            "target_title": "B",
+                            "lca": "__top__",
+                            "target_type": "normal"
+                        }
+                    }
+                }
+            },
+            "sys_signals": {
+                "entry": {
+                    "funcs": [["entry_a", ""]],
+                    "target": "",
+                    "target_title": "",
+                    "lca": ""
+                },
+                "exit": {},
+                "init": {}
+            },
+            "guards": {},
+            "parent": "__top__",
+            "children": [],
+            "title": "A",
+            "type": "normal",
+            "num": 0,
+            "parent_title": "__top__"
+        },
+        "state_1": {
+            "signals": {
+                "SPACE": {
+                    "name": "SPACE",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [["entry_c", ""]],
+                            "target": "state_2",
+                            "target_title": "C",
+                            "lca": "__top__",
+                            "target_type": "normal"
+                        }
+                    }
+                }
+            },
+            "sys_signals": {
+                "entry": {
+                    "funcs": [["entry_b", ""]],
+                    "target": "",
+                    "target_title": "",
+                    "lca": ""
+                },
+                "exit": {},
+                "init": {}
+            },
+            "guards": {},
+            "parent": "__top__",
+            "children": [],
+            "title": "B",
+            "type": "normal",
+            "num": 1,
+            "parent_title": "__top__"
+        },
+        "state_2": {
+            "signals": {
+                "SPACE": {
+                    "name": "SPACE",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [["entry_a", ""]],
+                            "target": "state_0",
+                            "target_title": "A",
+                            "lca": "__top__",
+                            "target_type": "normal"
+                        }
+                    }
+                }
+            },
+            "sys_signals": {
+                "entry": {
+                    "funcs": [["entry_c", ""]],
+                    "target": "",
+                    "target_title": "",
+                    "lca": ""
+                },
+                "exit": {},
+                "init": {}
+            },
+            "guards": {},
+            "parent": "__top__",
+            "children": [],
+            "title": "C",
+            "type": "normal",
+            "num": 2,
+            "parent_title": "__top__"
+        }
+    },
+    "user_funcs": ["entry_a", "entry_b", "entry_c"],
+    "user_guards": [],
+    "user_signals": ["SPACE", "exit", "entry"],
+    "user_inc_funcs": [],
+    "notes": {
+        "sig_0": "Signal 0",
+        "guard()": "Guard function",
+        "func()": "Event handler function",
+        "SPACE": ""
+    },
+    "template_params": {}
+}

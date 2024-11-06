@@ -101,6 +101,13 @@ class HtmlException(Exception):
 
 TOP_STATE_NAME = r'chsm_result_ten\s+(?P<top_func>\w+)\(chsm_tst\s+\*self,\s+const\s+cevent_tst\s+\*e_pst,\s+chsm_call_ctx_tst\s+\*ctx_pst\)\s*;'
 
+project = None
+ok_to_close = False
+json_str = None
+hidden = False
+eel_done = False
+model_changed = False
+
 class ChsmException(Exception):
     pass
 
@@ -186,22 +193,25 @@ class Project:
         if not self.h_file_path.exists():
             logging.error("Selected file {self.h_file_path} doesn't exists.")
             raise ChsmException("Selected file {self.h_file_path} doesn't exists.")
+        
+        self.get_jobs()
 
+        if self.jobs:
+            logging.info(f'Found batch job descriptor. Number of jobs: {len(self.jobs)}')
+            self.html_file_path = self.h_file_path.parent / Path(self.file_config["drawing"])
+            self.model = self._get_model(self.html_file_path)
+        else:
+            logging.info(f'There are no batch output jobs defined for {self.h_file_path}')
+            self.model = self._get_model(self.h_file_path)
+
+        #pprint(self.model, indent=4)
+
+    def get_jobs(self):
         self.user_config =      self._load_user_config(self.h_file_path)
         self.file_config =      self.user_config.get(self.h_file_path.name, {})
-
         # This is the new way to describe what the 
         self.jobs =             self.file_config.get("jobs", [])
 
-        if self.jobs:
-             logging.info(f'Found batch job descriptor. Number of jobs: {len(self.jobs)}')
-             self.html_file_path = self.h_file_path.parent / Path(self.file_config["drawing"])
-        else:
-            logging.info(f'There are no batch output jobs defined for {self.h_file_path}')
-
-        self.model = self._get_model(self.html_file_path)
-
-        #pprint(self.model, indent=4)
 
     def _get_default_model(self):
         self.model_json =       self.template_dir / 'model.json'
@@ -224,7 +234,9 @@ class Project:
                 logging.error(f'No JSON data was found in file: {html_path}')
                 return self._get_default_model()
             try:
-                return json.loads(m.group('json'))
+                model = json.loads(m.group('json'))
+                self.html_file_path = html_path
+                return model
             except json.JSONDecodeError as e:
                 logging.error(f'JSON syntax error in html file {str(html_path)}. \nError message: {str(e)}')
                 return self._get_default_model()
@@ -323,7 +335,7 @@ class Project:
                 if type(data[d]) == set:
                     data[d] = tuple(data[d])
 
-            if self.dump_ir:
+            if self.dump_ir or job.get('dump_ir', ''):
                 with open(self.html_file_path.with_suffix(".json"), 'w') as f:
                     f.write(json.dumps(data, cls=CompactJSONEncoder))
                     #pprint(data, f, indent=4)
@@ -336,19 +348,15 @@ class Project:
             self._run_job(job)
 
     def generate_code(self):
+        self.get_jobs()
+
         if self.jobs:
             self._run_jobs()
             return
 
-project = None
-ok_to_close = False
-json_str = None
-hidden = False
-eel_done = False
-model_changed = False
-
 @eel.expose
 def save_state_machine(drawing: str, json_data: str, filepath: str):
+    global project
     if project:
         project.save_html(drawing, json_data)
     elif filepath:
@@ -360,11 +368,25 @@ def save_state_machine(drawing: str, json_data: str, filepath: str):
         root.withdraw()
         root.after(250, link_alive, root)
         filepath = asksaveasfilename(title='Save state mechine drawing', filetypes=(('State chart', '.html'),))
+
+        if not filepath:
+            logging.info('The user canceled the save operation')
+            return
+        
         logging.info(f'User selected path: {filepath}')
         save_html(Path(filepath), drawing, json_data)
 
+        try:
+            project = Project(Path(filepath))
+            logging.info(f"Created project for {Path(filepath)}")
+        except ChsmException as e:
+            logging.info(f'Could not find project descriptor for {filepath} - {str(e)}')
+    
+
+
 @eel.expose
 def open_file():
+    global project
     eel.link_up(5000) # First startup may be a bit slow, let's tell the GUI to be patient
     root = tk.Tk()
     root.attributes("-topmost", True)
@@ -393,10 +415,16 @@ def open_file():
 
 @eel.expose
 def genereate_code():
-    project.generate_code()
+    global project
+    if project:
+        logging.info("Start code generation.")
+        project.generate_code()
+    else:
+        logging.info("There is no project defined for this file.")
 
 @eel.expose
 def startup():
+    global project
     global json_str
     global model_changed
 
@@ -418,6 +446,7 @@ def pagehide(json_data: str, changed: bool):
     global hidden
     global json_str
     global model_changed
+    global project
 
     if project:
         project.update_model(json_data)
