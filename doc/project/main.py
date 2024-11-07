@@ -1,31 +1,62 @@
 import time
-import msvcrt  # Only works on Windows
+import msvcrt
+from state_machine import StateMachine
 
-# This variable stores the last keystroke
-last_keystroke = None
+ESC_KEY = '\x1b'
+class UserClass:
+    EVENT_SPACE = ' '
+    EVENT_INIT  = 'i'
 
-# The function to be called every second
-def my_function(keystroke=None):
-    if keystroke:
-        print(f"Function called with keystroke: {keystroke}")
-    else:
-        print("Function called without keystroke")
+    def a_entry(self):
+        print('A')
 
-# Main loop to call `my_function` every second
-while True:
-    # Check if a key was pressed
-    if msvcrt.kbhit():
-        # Get the key pressed and decode it
-        key = msvcrt.getch().decode('utf-8')
-        last_keystroke = key
-        
-        # Exit if 'Esc' key is pressed (ASCII code 27)
-        if key == '\x1b':
-            print("Esc pressed, exiting...")
-            break
+    def b_entry(self):
+        print('B')
 
-    # Call the function with the latest keystroke (if any)
-    my_function(last_keystroke)
-    last_keystroke = None  # Reset after each call
-    time.sleep(1)
+    def c_entry(self):
+        print('C')
+'''
+class StateMachine:
+    def __init__(self, usr_obj):
+        self.usr_obj = usr_obj
+        self.state_func = self.state_top
+
+    def state_top(self, event):
+        if event == self.usr_obj.EVENT_INIT:
+            self.usr_obj.a_entry()
+            self.state_func = self.state_A
+
+    def state_A(self, event):
+        if event == self.usr_obj.EVENT_SPACE:
+            self.usr_obj.b_entry()
+            self.state_func = self.state_B
+
+    def state_B(self, event):
+        if event == self.usr_obj.EVENT_SPACE:
+            self.usr_obj.c_entry()
+            self.state_func = self.state_C
+
+    def state_C(self, event):
+        if event == self.usr_obj.EVENT_SPACE:
+            self.usr_obj.a_entry()
+            self.state_func = self.state_A
+'''
+
+if __name__ == '__main__':
+
+    usr = UserClass()
+    sm = StateMachine(usr)
+    last_key = None
+
+    while True:
+        if msvcrt.kbhit():
+            last_key = msvcrt.getch().decode('utf-8')
+            
+            if last_key == ESC_KEY:
+                print("Esc pressed, exiting...")
+                break
+
+        sm.state_func(last_key)
+        last_key = None
+        time.sleep(0.1)
  
