@@ -1,0 +1,20 @@
+# Generated code - any edits will be overwritten.
+
+class StateMachine:
+    def __init__(self, user_obj):
+        self.user_obj = user_obj
+        self.state_func = self.state_top
+
+{% for state in data.states.values() if state.type == 'normal' %}
+    def state_{{ state.title }}(self, event):
+        {% for signal in state.signals.values()%}
+        if event == self.user_obj.EVENT_{{signal.name}}:
+            {% for func in signal.guards[""].funcs %}
+            self.user_obj.{{func[0]}}({{func[1]}})
+            {% endfor %}
+            {% if signal.guards[""].target %}
+            self.state_func = self.state_{{signal.guards[""].target_title}}
+            {% endif %}
+        {% endfor %}
+
+{% endfor %}

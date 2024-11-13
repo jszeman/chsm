@@ -25,7 +25,9 @@ enum test_events_en
     TEST_SIG_K,
     TEST_SIG_L,
     TEST_SIG_M,
-    TEST_SIG_N
+    TEST_SIG_N,
+    TEST_SIG_O,
+    TEST_SIG_P,
 };
 
 typedef struct test_hsm_tst test_hsm_tst;

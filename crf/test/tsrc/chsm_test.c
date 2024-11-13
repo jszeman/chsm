@@ -41,6 +41,8 @@ const cevent_tst event_k = {.sig=TEST_SIG_K, .gc_info={0}};
 const cevent_tst event_l = {.sig=TEST_SIG_L, .gc_info={0}};
 const cevent_tst event_m = {.sig=TEST_SIG_M, .gc_info={0}};
 const cevent_tst event_n = {.sig=TEST_SIG_N, .gc_info={0}};
+const cevent_tst event_o = {.sig=TEST_SIG_O, .gc_info={0}};
+const cevent_tst event_p = {.sig=TEST_SIG_P, .gc_info={0}};
 const cevent_tst event_id = {.sig=TEST_SIG_ID, .gc_info={0}};
 
 #define EVENT_QUEUE_SIZE 8
@@ -859,15 +861,15 @@ TEST(hsm, sm4_doc_file)
 
 	clear_log(&hsm);
 	hsm.k_guard = true;
-	chsm_dispatch(&hsm.super, &event_n);
-	fprintf(f, "s11: N [k_guard1() => true]\n    %s\n\n", hsm.log_buff);
+	chsm_dispatch(&hsm.super, &event_p);
+	fprintf(f, "s11: P [k_guard() => true]\n    %s\n\n", hsm.log_buff);
 	chsm_dispatch(&hsm.super, &event_f); // Go back to s11
 	hsm.k_guard = false;
 
 	clear_log(&hsm);
 	hsm.s1_guard = true;
-	chsm_dispatch(&hsm.super, &event_n);
-	fprintf(f, "s11: N [s1_guard() => true]\n    %s\n\n", hsm.log_buff);
+	chsm_dispatch(&hsm.super, &event_p);
+	fprintf(f, "s11: P [s1_guard() => true]\n    %s\n\n", hsm.log_buff);
 	hsm.s1_guard = false;
 
 	clear_log(&hsm);

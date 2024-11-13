@@ -1,12 +1,18 @@
-# Cgen tutorial
+# 1 Cgen tutorial overview
 
 Goal: Create a wildly complex but easy-to-follow state machine that shows off as many Cgen features as possible — even if the state machine itself is completely pointless.
 
-We'll use the GUI to sketch out our state machine and, along the way, put together a Python code generation template.
+We'll use the GUI to sketch out our state machine and, along the way, put together a Python code generation template using the Jinja temmmplating engine.
 
-Let's go!
+If you’re not familiar with Python, no big deal. We’re keeping things simple with a ‘least amount of magic’ approach here, but if this is your first time with Jinja, I recommend skimming a few pages of the docs to have an overview:
 
-## Start the GUI
+([Jinja template design docs](https://jinja.palletsprojects.com/en/stable/templates/))
+
+In the first chapter, we draw a basic state machine, write a template, and set up some Python code to take the generated code for a spin. In the following chapters, we’ll go over how to extend the template to use more advanced code generation features.
+
+# 2 Basic state machine
+
+## 2.1 Start the GUI
 
 1. Go the the root directory of the CHSM repo
 2. Run the following command: `python cgen\chsm_backend.py`
@@ -14,11 +20,11 @@ Let's go!
 
 ![CHSM GUI](pic/t1.png)
 
-## Delete the default drawing
+## 2.2 Delete the default drawing
 
 In the GUI, press `d`, then click on the `State 0` text or anywhere on its header. When your mouse enters the header area (where the text is), the entire border of the state will light up in red. Press `d` again to delete `State 1`. Repeat this process to delete the initial state—the black dot. Now you got nothing.
 
-## Draw a simple state machine
+## 2.3 Draw a simple state machine
 
 The goal here is to make a state machine that prints A, then B, then C, then loops back to A, and so on—each time you press a button. Something like this:
 
@@ -31,7 +37,7 @@ Here is how you can build this:
 4. To change a transition label, click on the transition line, edit the `Label` field, and hit the `Apply` button.
 5. Click the Save button to save the drawing as an HTML file. For this tutorial, the drawing is saved as `doc\project\doc\tutorial.html`.
 
-## Let's generate some code
+## 2.4 Let's setup code generation
 
 1. In your project folder, create a directory called `.chsm`.
 2. Inside `.chsm`, create a new JSON file named `settings.json`. Copy this inside:
@@ -63,7 +69,7 @@ Here is how you can build this:
 
 `tutorial.json`, on the other hand, contains the internal representation (IR) of the state machine. This file holds all the data we can use in our template. (Later, we can turn off IR JSON file generation by setting `"dump_ir"` to `false` in `settings.json`.)
 
-## Let there be architecture
+## 2.5 Let there be architecture
 
 Yeah... something at least. It’s way easier to write a template when we have an example to look at first.
 
@@ -75,7 +81,7 @@ All this means we’ll need at least two files: one for the state machine code t
 
 In this tutorial, we’ll use the following two files:
 
-state_machine.py:
+### 2.5.1 state_machine.py:
 ``` python
 # Generated code - any edits will be overwritten.
 
@@ -118,7 +124,7 @@ When we create an instance of the `StateMachine` class, the initial state will b
 
 ---
 
-main.py:
+### 2.5.2 main.py:
 ``` python
 import time
 import msvcrt
@@ -163,12 +169,97 @@ This code has two main parts:
 - `UserClass` is a collection of functions and event values that we want to pass to our state machine.
 - The main program instantiates `UserClass` and `StateMachine`, then calls `state_func` every 100ms, also passing any keystrokes if there were any. The program quits when the user presses Escape.
 
-We can try this code as-is. After starting, press __i__ to perform the initial transition, then keep pressing __space__ to cycle through printing A, B, C, A, B, and so on.
+We can try this code as-is. After starting, press __i__ (the init event) to perform the initial transition, then keep pressing __space__ to cycle through printing A, B, C, A, B, and so on.
 
-## Code generation overview
+## 2.6 First template
 
-When the user clicks the _Code gen_ button in the GUI, the following process occurs:
+Now we’re ready to write template code that actually does something. The first part is pretty straightforward:
+``` jinja
+# Generated code - any edits will be overwritten.
 
-1. The Python application receives the raw drawing data in JSON format. This data focuses on the graphical representation of the state machine and is generally not well-suited for direct code generation.
-2. The drawing is processed to create an Internal Representation (IR) in JSON format. In this IR, functions called during transitions are resolved, and the hierarchical state structure is flattened, keeping only the leaf states.
-3. For each generated file, an output 'job' must be defined in a JSON file named settings.json located within a .chsm directory. The job descriptor includes the output path, the Jinja template to be used, and any optional parameters for the template.
+class StateMachine:
+    def __init__(self, user_obj):
+        self.user_obj = user_obj
+        self.state_func = self.state_top
+```
+
+### 2.6.1 Add states
+
+Next, we need to generate the methods in the class. The data for this is in `tutorial.json` - we just need to loop through all the items in the `states` key to grab the info we need. Let’s start by just generating the empty functions. Add this code to `python_template.jinja`:
+
+``` jinja
+{% for state in data.states.values() if state.type == 'normal' %}
+    def state_{{ state.title }}(self, event):
+        pass
+        
+{% endfor %}
+```
+
+Simple enough: for every item in the `states` dictionary we generate a function with a name prefixed by __state__. This is how the generated code looks now:
+``` python
+# Generated code - any edits will be overwritten.
+
+class StateMachine:
+    def __init__(self, user_obj):
+        self.user_obj = user_obj
+        self.state_func = self.state_top
+
+    def state_A(self, event):
+        pass
+        
+    def state_B(self, event):
+        pass
+        
+    def state_C(self, event):
+        pass
+```
+
+### 2.6.2 Add function calls
+
+Now we need to loop through the signals in each state and add their handlers to the methods. Just like this:
+
+``` jinja
+{% for state in data.states.values() if state.type == 'normal' %}
+    def state_{{ state.title }}(self, event):
+        {% for signal in state.signals.values()%}
+        if event == self.user_obj.EVENT_{{signal.name}}:
+            {% for func in signal.guards[""].funcs %}
+            self.user_obj.{{func[0]}}({{func[1]}})
+            {% endfor %}
+        {% endfor %}
+
+{% endfor %}
+```
+
+Yeah, looping through `signal.guards[""].funcs` might look a bit odd. The `guards[""]` part is used because the guards dictionary groups functions by condition. An empty string key (`""`) is like a catch-all—used when there’s no specific condition for those functions. So, `guards[""].funcs` gives us the functions that don’t depend on any guard condition. It’ll make more sense in a bit!
+
+The function list consists of function name - parameter pairs, which is why we generate function calls with this line: `self.user_obj.{{func[0]}}({{func[1]}})`. Our state machine doesn’t use function parameters yet, but it’ll come in handy later.
+
+Generated methods now look like this:
+``` python
+def state_A(self, event):
+    if event == self.user_obj.EVENT_SPACE:
+        self.user_obj.b_entry()
+```
+
+### 2.6.3 Add transitions
+
+If we take a closer look at `tutorial.json`, we’ll see that a signal guard not only contains a list of functions but also includes the target state. We can use this to generate the state transition:
+
+``` jinja
+{% if signal.guards[""].target %}
+self.state_func = self.state_{{signal.guards[""].target_title}}
+{% endif %}
+```
+
+Generated output:
+``` python
+def state_A(self, event):
+    if event == self.user_obj.EVENT_SPACE:
+        self.user_obj.b_entry()
+        self.state_func = self.state_B
+```
+
+### 2.6.4 Add top state
+
+We are getting really close to a working code generator.

@@ -5,11 +5,6 @@ class StateMachine:
         self.user_obj = user_obj
         self.state_func = self.state_top
 
-    def state_top(self, event):
-        if event == self.user_obj.EVENT_INIT:
-            self.user_obj.a_entry()
-            self.state_func = self.state_A
-
     def state_A(self, event):
         if event == self.user_obj.EVENT_SPACE:
             self.user_obj.b_entry()
@@ -24,3 +19,4 @@ class StateMachine:
         if event == self.user_obj.EVENT_SPACE:
             self.user_obj.a_entry()
             self.state_func = self.state_A
+
