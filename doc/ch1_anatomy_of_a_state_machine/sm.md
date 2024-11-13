@@ -34,7 +34,7 @@ In Cgen, event handlers come in two forms:
 - **Event handlers without transitions:** These are written directly in the text block of a state and handle events without changing states.
 - **Event handlers with transitions:** These are written in text blocks attached to transition arrows and handle events that trigger a state change.
 
-"**Event handler syntax:** `EVENT_NAME [guard_func(guard_param)] {func1(func1_param); func2(func2_param)}`
+**Event handler syntax:** `EVENT_NAME [guard_func(guard_param)] / {func1(func1_param); func2(func2_param)}`
 
 Where:
 - **EVENT_NAME**: The identifier of the event to be handled.
@@ -43,11 +43,11 @@ Where:
 - **funcX**: The function to be called when **EVENT_NAME** occurs and **guard_func** returns `true`.
 - **funcX_param**: Optional comma-separated parameters for **funcX**.
 
-The curly braces `{}` can be omitted if there’s only one function call. Semicolons and line breaks between functions are also optional."
+The curly braces `{}` can be omitted if there’s only one function call. Semicolons and line breaks between functions are also optional.
 
 In Cgen, guards are conditions that control whether a transition or action should occur when an event is received. They are essentially if-statements that check certain conditions before executing a transition.
 
-Each event handler can have its own guard, and multiple handlers for the same event can each have a different guard. If more than one handler with guards matches an event, only one of the guards that evaluates as `true` will be executed. Cgen doesn’t guarantee any specific order for guard evaluations.
+Each event handler can have its own guard, and multiple handlers for the same event can each have a different guard. If more than one handler with guards matches an event, only one of the guards that evaluates as `true` will be executed. Cgen doesn’t guarantee a specific order for guard evaluations, only that guards within a state’s body are evaluated before transition guards.
 
 There can also be guards that aren’t linked to any specific event. These are known as *completion guards* and are evaluated after any event that doesn’t lead to a state transition. If a completion guard’s condition is met, it can trigger actions or transitions on its own, helping manage cases where further checks or cleanups are needed after regular event handling.
 
@@ -68,7 +68,7 @@ In Cgen, **entry**, **exit**, and **init** events are special built-in events th
   
 - **exit**: This event is triggered automatically when leaving a state. Actions in the exit event are executed right before the state becomes inactive, helping with cleanup or final tasks.
   
-- **init**: This event is triggered the first time a state is entered, often used to transition immediately to an initial child state. The init event helps set up default paths and states within a composite state.
+- **init**: This event is triggered when a state is the direct target of a transition. If the state is a composite state, the init event will trigger a transition to its initial child state. This also means that if a transition targets a child of a composite state, only that targeted child will receive the init event.
 
 These events help manage transitions cleanly by automating setup and teardown actions within states.
 
@@ -76,7 +76,7 @@ These events help manage transitions cleanly by automating setup and teardown ac
 
 A function call can be used as a state title to redirect transitions targeting that state. The function should return a value that acts as the state name in the generated code.
 
-This feature was initially developed to implement *history* functionality. When a transition targets a history state, the end state becomes the last active state within the parent of that history state. For example, in our setup, the **exit** event handler of **s** saves the current state to an internal variable, and the `s_history()` function returns this variable, effectively redirecting the transition to the last active state."
+This feature was initially developed to implement *history* functionality. When a transition targets a history state, the end state becomes the last active state within the parent of that history state. For example, in our setup, the **exit** event handler of **s** saves the current state to an internal variable, and the `s_history()` function returns this variable, effectively redirecting the transition to the last active state.
 
 This approach allows you to implement history functionality only when needed, without adding unnecessary complexity to the state machine framework.
 
@@ -84,7 +84,7 @@ This approach allows you to implement history functionality only when needed, wi
 
 In this section, we’ll walk through several examples where we take a state from the example state machine, dispatch events to it, and observe the results. We’ll pay special attention to which functions are called and in what order.
 
-(The examples are auto generated into the [sm.doc](../../crf/test/build/sm.doc) file by the unit tests.)
+(The examples are auto generated into the [sm.doc](../../crf/test/build/sm.doc) file by the unit tests. You can use it as a reference to understand the code generator's behavior in any situation. The subsections below are selected examples.)
 
 Each subsection title will follow this format:  
 **starting state** ← **EVENT1**, **EVENT2**... [guard() => true|false]
@@ -98,7 +98,7 @@ s_entry s_init s1_entry s1_init s11_entry s11_init
 ```
 
 This is pretty straightforward: the initial state of the **top** background state is **s**, so we enter it by calling the **s_entry** event handler. Since **s** was the target of the transition, we then call the **s_init** handler, followed by the transition to **s**’s initial state, **s1**.
-Now we enter **s1** by calling its entry and then init event handlers, transitioning to **s11**. We call **s11**'s entry and init handlers and then stop, as **s11** is a simple state with no children."
+Now we enter **s1** by calling its entry and then init event handlers, transitioning to **s11**. We call **s11**'s entry and init handlers and then stop, as **s11** is a simple state with no children.
 
 ### **s11** ← **ID**
 
@@ -106,7 +106,7 @@ Now we enter **s1** by calling its entry and then init event handlers, transitio
 s11_id s11_guard k_guard s1_guard j_guard 
 ```
 
-The ID event handler of **s11** is just a function call, but we can see that after calling the handler function, all *completion guards* of **s11** and its ancestors are evaluated.
+The **ID** event handler in **s11** is just a function call, but after the handler function runs, all *completion guards* for **s11** and its ancestors are evaluated. Notice that **s1**, the parent state, also has an **ID** event handler, but it’s completely ignored here. This is effectively programming-by-difference: parent states can define common behavior for multiple child states, while each child can override specific handlers as needed.
 
 ### **s11** ← **D** [cond() => false]
 
@@ -140,3 +140,27 @@ s11_exit s11_entry s11_init s11_guard k_guard s1_guard j_guard
 ```
 
 The transition handler for **B** is defined in **s1**, the parent of **s11**, and it points back to **s11**. **s11** is exited and then re-entered, and the *completion guards* are called.
+
+### **s11** ← **H**
+
+```
+s11_exit s1_exit s_init s1_entry s1_init s11_entry s11_init s11_guard k_guard s1_guard j_guard
+```
+
+The **H** transition targets the grandparent of **s11**. **s11** and its parent are exited, then the grandparent's init flow is executed. Finally, the *completion guards* are called.
+
+### **s11** ← **F**
+
+```
+s11_exit s1_exit s2_entry s21_entry s211_entry s211_init
+```
+
+The **F** transition is straightforward; it goes from **s11** to **s211**. The *lowest common ancestor* of **s11** and **s211** is **s**, so **s11** and **s1** are exited, and **s2**, **s21**, and **s211** are entered. Only the init handler of **s211** is called, since it’s the target of the transition.
+
+### **s11** ← **G** [s11_g_guard1() => true, s11_g_guard2() => true]
+
+```
+s11_g_guard1 s11_g1 s11_g_guard2 s11_g2 s11_exit s1_exit s2_entry s21_entry s211_entry s211_init
+```
+
+The **G** event has two handlers in **s11**: one defined within the state’s body and another with a transition targeting **s211**. Both handlers are guarded, and in this case, both guards evaluate to `true`. Notice that **s11_g_guard1** is evaluated before **s11_g_guard2**—this happens because the first is written inside the state’s body, while the second is tied to a transition. Guards within the state’s body are always evaluated before transition guards.
