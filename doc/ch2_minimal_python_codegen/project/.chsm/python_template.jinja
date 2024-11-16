@@ -1,9 +1,16 @@
 # Generated code - any edits will be overwritten.
 
-class StateMachine:
+class {{data.template_params.class_name}}:
     def __init__(self, user_obj):
         self.user_obj = user_obj
         self.state_func = self.state_top
+
+    def state_top(self, event):
+        if event == self.user_obj.EVENT_INIT:
+{% for func in data.states.__top__.sys_signals.init.funcs %}
+            self.user_obj.{{func[0]}}({{func[1]}})
+{% endfor %}
+            self.state_func = self.state_{{data.states.__top__.sys_signals.init.target_title}}
 
 {% for state in data.states.values() if state.type == 'normal' %}
     def state_{{ state.title }}(self, event):

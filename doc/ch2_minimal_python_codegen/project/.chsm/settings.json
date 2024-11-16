@@ -6,7 +6,9 @@
 				"title":			"C code gen",
 				"output":			"../state_machine.py",
 				"template":			"python_template.jinja",
-				"template_params":  {},
+				"template_params":  {
+					"class_name": "MyStateMachine"
+				},
 				"dump_ir":			true
 			}
 		]

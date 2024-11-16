@@ -125,9 +125,9 @@
             "parent_title": "__top__"
         }
     },
-    "user_funcs": ["a_entry", "b_entry", "c_entry"],
+    "user_funcs": ["b_entry", "c_entry", "a_entry"],
     "user_guards": [],
-    "user_signals": ["exit", "entry", "SPACE"],
+    "user_signals": ["SPACE", "entry", "exit"],
     "user_inc_funcs": [],
     "notes": {
         "sig_0": "Signal 0",
@@ -136,5 +136,7 @@
         "SPACE": "",
         "entry_b()": ""
     },
-    "template_params": {}
+    "template_params": {
+        "class_name": "MyStateMachine"
+    }
 }
