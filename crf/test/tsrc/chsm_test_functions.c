@@ -568,6 +568,17 @@ bool s5_g1(chsm_tst *_self, const cevent_tst *e_pst)
     (void)e_pst;
 }
 
+bool s6_guard (chsm_tst *_self, const cevent_tst *e_pst)
+{
+    test_hsm_tst *self = (test_hsm_tst *)_self;
+    
+    load(self, __func__);
+    load(self, " ");
+    return self->s6_g;
+
+    (void)e_pst;
+}
+
 void s6_entry(chsm_tst *_self, const cevent_tst *e_pst)
 {
     test_hsm_tst *self = (test_hsm_tst *)_self;

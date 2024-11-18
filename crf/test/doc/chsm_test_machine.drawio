@@ -511,6 +511,20 @@
         <mxCell id="trans_30_txt" value="A" style="text;align=left;fontStyle=1;verticalAlign=top;spacingLeft=3;spacingRight=3;strokeColor=none;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="state_10">
           <mxGeometry x="35.0" y="-61.000000000000114" width="80" height="26" as="geometry" />
         </mxCell>
+        <mxCell id="trans_31" value="" style="endArrow=block;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;endFill=1;strokeColor=#4682B4;strokeWidth=2;" edge="1" parent="state_10">
+            <mxGeometry width="50" height="50" relative="1" as="geometry">
+                <mxPoint x="70" y="0" as="sourcePoint" />
+                <mxPoint x="70" y="-90" as="targetPoint" />
+                <Array as="points">
+                    <mxPoint x="70" y="-40" />
+                    <mxPoint x="70" y="-40" />
+                </Array>
+            </mxGeometry>
+        </mxCell>
+
+        <mxCell id="trans_31_txt" value="[s6_guard()]" style="text;align=left;fontStyle=1;verticalAlign=top;spacingLeft=3;spacingRight=3;strokeColor=none;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="state_10">
+          <mxGeometry x="75.0" y="-61.000000000000114" width="80" height="26" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>

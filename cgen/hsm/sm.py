@@ -45,6 +45,8 @@ class StateMachine:
 
         self.remove_initial_states(self.states)
 
+        self.clean_up_signals()
+
         self.data = {
             'states': self.states,
             'user_funcs': self.user_funcs,
@@ -53,6 +55,9 @@ class StateMachine:
             'user_inc_funcs': self.user_inc_funcs,
             'notes': self.notes,
         }
+
+    def clean_up_signals(self):
+        self.user_signals = {i for i in self.user_signals if i not in ('entry', 'exit', 'init')}
 
     def get_transition_funcs(self, start, end, lca):
         path = self.get_transition_path(start, end, lca)

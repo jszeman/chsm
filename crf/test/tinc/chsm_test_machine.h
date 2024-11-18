@@ -49,6 +49,7 @@ struct test_hsm_tst
     bool        s11_g_guard1;
     bool        s11_g_guard2;
     bool        s5_g1;
+    bool        s6_g;
 
     chsm_state_tpft history_pft;
 };

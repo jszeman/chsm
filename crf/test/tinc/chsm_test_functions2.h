@@ -89,6 +89,8 @@ bool s1_guard (chsm_tst *self, const cevent_tst *e_pst);
 
 bool s5_g1 (chsm_tst *self, const cevent_tst *e_pst);
 
+bool s6_guard (chsm_tst *self, const cevent_tst *e_pst);
+
 
 typedef enum chsm_test_machine_state_id_ten
 {

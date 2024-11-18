@@ -408,6 +408,12 @@ static chsm_result_ten s6(chsm_tst *self, const cevent_tst *e_pst)
             return chsm_transition(self, s_history(self, e_pst));
     }
 
+    if (s6_guard(self, e_pst))
+    {
+        s_entry(self, e_pst);
+        return chsm_transition(self, s_history(self, e_pst));
+    }
+
     return chsm_ignored(self);
 }
 
