@@ -13,6 +13,8 @@ The outcome of this preprocessing step is the **IR** (Internal Representation), 
 
 In this document, we'll dive into the internals of the **IR** (Internal Representation). By understanding the details, you'll be better equipped to extend the template from the previous chapter and take advantage of more advanced features in your state machine code generation.
 
+Feel free to skip this chapter—the IR is quite self-explanatory. You can always revisit it if something needs clarification.
+
 I recommend opening the **IR** of the [test state machine](../../crf/test/doc/chsm_test_machine4.json) and referencing it as you read this document.
 
 ## IR overview
@@ -98,7 +100,7 @@ This is a list of all signals that appear at least once in the drawing.
 
 ## data.notes
 
-In Cgen, you can attach notes to almost any string by clicking on the text in the drawing and entering content into the `Text` field. These notes are stored in this dictionary.
+In Cgen, you can attach notes to almost any string by clicking on the text in the drawing and entering content into the `Text` field. These notes are stored in this dictionary. The default Cgen C templates use these notes to generate comments for the associated functions and signals.
 
 ## data.template_params
 
