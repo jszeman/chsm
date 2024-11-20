@@ -1,0 +1,39 @@
+# Generated code - any edits will be overwritten.
+
+class {{data.template_params.class_name}}:
+    def __init__(self, user_obj):
+        self.user_obj = user_obj
+        self.state_func = self.state_top
+
+    def state_top(self, event):
+        if event == self.user_obj.EVENT_INIT:
+{% for func in data.states.__top__.sys_signals.init.funcs %}
+            self.user_obj.{{func[0]}}({{func[1]}})
+{% endfor %}
+            self.state_func = self.state_{{data.states.__top__.sys_signals.init.target_title}}
+
+{% for state in data.states.values() if state.type == 'normal' %}
+    def state_{{ state.title }}(self, event):
+        {% for signal in state.signals.values()%}
+        if event == self.user_obj.EVENT_{{signal.name}}:
+            {% for guard_key, guard in signal.guards.items() | sort %}
+                {% if guard_key %}
+            if self.user_obj.{{guard.guard_func}}({{guard.guard_param}}):
+                    {% for func in guard.funcs %}
+                self.user_obj.{{func[0]}}({{func[1]}})
+                    {% endfor %}
+                    {% if guard.target %}
+                self.state_func = self.state_{{guard.target_title}}
+                    {% endif %}
+                {% else %}
+                    {% for func in guard.funcs %}
+            self.user_obj.{{func[0]}}({{func[1]}})
+                    {% endfor %}
+                    {% if guard.target %}
+            self.state_func = self.state_{{guard.target_title}}
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+
+{% endfor %}
