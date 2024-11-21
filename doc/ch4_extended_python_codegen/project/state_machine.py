@@ -17,7 +17,7 @@ class MyStateMachine:
 
     def state_B(self, event):
         if event == self.user_obj.EVENT_SPACE:
-            if self.user_obj.double_space():
+            if self.user_obj.double_space(0.5):
                 self.user_obj.c_entry()
                 self.state_func = self.state_C
 

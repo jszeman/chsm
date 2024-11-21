@@ -8,13 +8,13 @@ Here’s the state machine we finished with:
 
 ## Guards
 
-Let's say we want to modify the state machine so that it only transitions from `B` to `C` if we press the `space` key twice in a short time, otherwise it staya in `B`.
+Let's say we want to modify the state machine so that it only transitions from `B` to `C` if we press the `space` key twice in a short time, otherwise it stays in `B`.
 
 To achieve this, we add a guard to the transition:
 
 ![t3](pic/t3.png)
 
-Now, If you just press the `Code gen` button you'll be rewarded with this ugly stack trace in the console:
+Now, If you just press the `Code gen` button you'll be rewarded with this ... thing in the console:
 
 ``` python
 Traceback (most recent call last):
@@ -90,9 +90,9 @@ To resolve this, we can add an `if` statement around the signal code generator s
 {% endif %}
 ```
 
-This ensures the code generator only attempts to process the `""` key if it exists in the `guards` dictionary. Now pressing the `Code gen` button will successfully generate code, but the `SPACE` event handler will be empty for state `B`.
+This ensures the code generator only attempts to process the `""` key if it exists in the `guards` dictionary. Now pressing the `Code gen` button will successfully generate code, but the `SPACE` event handler will be empty for state `B`. Not good.
 
-What we’ll do is iterate through all the guards in a signal and handle the `""` case separately. These are the components of the solution:
+What we’ll need to do is iterate through all the guards in a signal and handle the `""` case separately. These are the components of the solution:
 
 ### Iterate through the guards
 
@@ -104,7 +104,7 @@ What we’ll do is iterate through all the guards in a signal and handle the `""
 
 Adding the `sort` filter at the end isn’t strictly necessary, but it ensures the generated code remains consistent even if you reorder the guards in the drawing. If you’re keeping the generated code in a version-controlled repository, this prevents irrelevant changes from cluttering your commits.
 
-### Generated if statements for non-empty guards
+### Generate if statements for non-empty guards
 
 ``` jinja
 {% if guard_key %}
@@ -164,7 +164,24 @@ def state_B(self, event):
             self.state_func = self.state_C
 ```
 
-This only leaves us with implementing the `double_space` method in our `UserClass` ... class. Yeah, naming things is hard.
+This only leaves implementing the `double_space` method in our `UserClass` ... class. Yeah, naming things is hard. Implementing this, not so much:
+
+``` python
+    def __init__(self):
+        self.space_ts = time.time()
+
+    def double_space(self):
+        ts = time.time()
+        if (ts - self.space_ts) < 0.5:
+            return True
+        
+        self.space_ts = ts
+        return False
+```
+
+In the constructor, we store a timestamp in the `space_ts` attribute. Each time the `double_space` method is called, we check if the current timestamp is within 0.5 seconds of the previous one. If it is, we return `True`; otherwise, we update `space_ts` and return `False`.
+
+And now our code is working as expected, but that 0.5s threshold is hard coded into the guard method. We could just move it to the drawing to make it more obvious.
 
 
  

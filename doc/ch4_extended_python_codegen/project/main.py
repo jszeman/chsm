@@ -7,6 +7,17 @@ class UserClass:
     EVENT_SPACE = ' '
     EVENT_INIT  = 'i'
 
+    def __init__(self):
+        self.space_ts = time.time()
+
+    def double_space(self, threshold):
+        ts = time.time()
+        if (ts - self.space_ts) < threshold:
+            return True
+        
+        self.space_ts = ts
+        return False
+
     def a_entry(self):
         print('A')
 

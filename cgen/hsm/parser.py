@@ -16,6 +16,26 @@ class Parser:
         self.guards_wo_args = set()
         self.user_signals = set()
 
+    def find_first_unmatched_closing(self, s):
+        '''Find the first unmatched ')' character in a string.'''
+        open_count = 0
+        for i, char in enumerate(s):
+            if char == '(':
+                open_count += 1
+            elif char == ')':
+                if open_count > 0:
+                    open_count -= 1
+                else:
+                    return i  # First unmatched ')' found
+        return -1  # No unmatched ')' found
+
+    def parens_partition(self, s):
+        pos = self.find_first_unmatched_closing(s)
+        if pos < 0:
+            raise ParserException(f'Expected function parameters but could not find ")" in "{s}"')
+
+        return s[:pos], s[pos+1:]
+
     def get_func(self, data):
         data = data.lstrip()
         
@@ -34,19 +54,9 @@ class Parser:
 
         rem = rem[1:]
 
-        params, c_brace, rem = rem.partition(')')
+        params, rem = self.parens_partition(rem)
 
         params = params.strip()
-        if params == '':
-            params = NOPARAM
-        else:
-            for p in params.split(','):
-                ps = p.strip()
-                if not ps.isidentifier() and not ps.isalnum():
-                    raise ParserException(f'Expected  identifier as function param but found: "{p}"')
-
-        if c_brace == '':
-            raise ParserException(f'Expected ")" in "{data}"')
             
         return fname, params, rem
 

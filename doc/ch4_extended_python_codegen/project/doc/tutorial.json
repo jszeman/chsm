@@ -59,9 +59,9 @@
                 "SPACE": {
                     "name": "SPACE",
                     "guards": {
-                        "double_space()": {
+                        "double_space(0.5)": {
                             "guard_func": "double_space",
-                            "guard_param": "",
+                            "guard_param": "0.5",
                             "funcs": [["c_entry", ""]],
                             "target": "state_2",
                             "target_title": "C",
@@ -125,16 +125,19 @@
             "parent_title": "__top__"
         }
     },
-    "user_funcs": ["c_entry", "b_entry", "a_entry"],
-    "user_guards": ["double_space"],
+    "user_funcs": ["b_entry", "c_entry", "a_entry"],
+    "user_guards": [],
     "user_signals": ["SPACE"],
-    "user_inc_funcs": [],
+    "user_inc_funcs": ["double_space"],
     "notes": {
+        "5": "",
         "sig_0": "Signal 0",
         "guard()": "Guard function",
         "func()": "Event handler function",
         "SPACE": "",
-        "entry_b()": ""
+        "entry_b()": "",
+        "double_space()": "",
+        "double_space": ""
     },
     "template_params": {
         "class_name": "MyStateMachine"
