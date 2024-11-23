@@ -75,7 +75,9 @@ It means, that there is no `""` key in the `signal.guards` dictionary somewhere.
 }
 ```
 
-The issue lies in the `state_1.signals.SPACE.guards` dictionary, which contains only the key `double_space()`. However, the template assumes that a `""` key will always be present. 
+The issue lies in the `state_1.signals.SPACE.guards` dictionary, which contains only the key `double_space()`. However, the template assumes that a `""` key will always be present.
+
+(I included this section mainly to show how template bugs can be resolved by simply checking the console. There’s also some IDE support for debugging Jinja templates, such as in VSCode.)
 
 To resolve this, we can add an `if` statement around the signal code generator segment, like this:
 
@@ -181,8 +183,72 @@ This only leaves implementing the `double_space` method in our `UserClass` ... c
 
 In the constructor, we store a timestamp in the `space_ts` attribute. Each time the `double_space` method is called, we check if the current timestamp is within 0.5 seconds of the previous one. If it is, we return `True`; otherwise, we update `space_ts` and return `False`.
 
-And now our code is working as expected, but that 0.5s threshold is hard coded into the guard method. We could just move it to the drawing to make it more obvious.
+And now our code is working as expected.
 
+## Guard with parameter
 
- 
+All is well, but that 0.5s threshold is hard coded into the guard method. We could just move it to the drawing to make it more obvious.
+
+![t4](pic/t4.png)
+
+Press the `Code gen` button and check the `state_machine.py` file. The `double_space` function call should now include `0.5` as a parameter. Since our template already handles function and guard parameters, no modifications were needed.  
+
+Next, let's update our `main.py` to accommodate this change:
+
+``` python
+def double_space(self, threshold):
+    ts = time.time()
+    if (ts - self.space_ts) < threshold:
+        return True
+    
+    self.space_ts = ts
+    return False
+```
+
+That wasn’t too difficult.
+
+## Completion guards
+
+Let’s introduce a timeout reaction to our state machine. If the user doesn’t press `SPACE` within 3 seconds, a "Timeout" message will be displayed. The A-B-C loop will then pause and will only resume when the user presses `ENTER`.
+
+The timeout functionality can be implemented using a completion guard that gets evaluated every time the `state_func` method is called in the state machine. Instead of manually adding this guard to each state, we can create a parent state and attach the guard to it. 
+
+While we’re at it, let’s streamline the `UserClass` by leveraging the function parameter capability. We’ll replace all the `x_entry()` calls with `print("x")` calls, reducing the need for separate functions for each state. This leaves us with just one function to implement instead of one for every state.
+
+![t5](pic/t5.png)
+
+To make the `timeout` guard work, we need to reset the timer every time `SPACE` is pressed. This can be achieved by calling `reset_timer` within each `SPACE` event handler.
+
+Now we can update `UserClass`:
+
+``` python
+class UserClass:
+    EVENT_SPACE = ' '
+    EVENT_INIT  = 'i'
+    EVENT_ENTER = '\r'
+
+    def __init__(self):
+        self.space_ts = time.time()
+        self.timeout_ts = 0
+
+    def double_space(self, threshold):
+        ts = time.time()
+        if (ts - self.space_ts) < threshold:
+            return True
+        
+        self.space_ts = ts
+        return False
+
+    def print(self, s):
+        print(s)
+
+    def reset_timer(self):
+        self.timeout_ts = time.time()
+
+    def timeout(self, t):
+        if (time.time() - self.timeout_ts) > t:
+            return True
+        
+        return False
+```
 

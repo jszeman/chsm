@@ -36,4 +36,14 @@ class {{data.template_params.class_name}}:
             {% endfor %}
         {% endfor %}
 
+        {% for guard_key, guard in state.guards.items() | sort %}
+        if self.user_obj.{{guard.guard_func}}({{guard.guard_param}}):
+            {% for func in guard.funcs %}
+            self.user_obj.{{func[0]}}({{func[1]}})
+            {% endfor %}
+            {% if guard.target %}
+            self.state_func = self.state_{{guard.target_title}}
+            {% endif %}
+        {% endfor %}
+
 {% endfor %}

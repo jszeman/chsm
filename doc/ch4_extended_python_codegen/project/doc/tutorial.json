@@ -6,18 +6,18 @@
                 "entry": {},
                 "exit": {},
                 "init": {
-                    "funcs": [["a_entry", ""]],
-                    "target": "state_0",
+                    "funcs": [["print", "\"D\""], ["reset_timer", ""], ["print", "\"A\""]],
+                    "target": "state_3",
                     "target_title": "A",
                     "lca": ""
                 }
             },
             "guards": {},
             "parent": "",
-            "children": ["state_0", "state_1", "state_2", "istate_0"],
+            "children": ["state_3", "state_5", "istate_1"],
             "title": "__top__",
             "type": "top",
-            "initial": "state_0"
+            "initial": "state_3"
         },
         "state_0": {
             "signals": {
@@ -27,10 +27,10 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [["b_entry", ""]],
+                            "funcs": [["reset_timer", ""], ["print", "\"B\""]],
                             "target": "state_1",
                             "target_title": "B",
-                            "lca": "__top__",
+                            "lca": "state_3",
                             "target_type": "normal"
                         }
                     }
@@ -38,7 +38,7 @@
             },
             "sys_signals": {
                 "entry": {
-                    "funcs": [["a_entry", ""]],
+                    "funcs": [["print", "\"A\""]],
                     "target": "",
                     "target_title": "",
                     "lca": ""
@@ -46,7 +46,17 @@
                 "exit": {},
                 "init": {}
             },
-            "guards": {},
+            "guards": {
+                "timeout(3)": {
+                    "guard_func": "timeout",
+                    "guard_param": "3",
+                    "funcs": [["print", "\"Timeout\""]],
+                    "target": "state_5",
+                    "target_title": "E",
+                    "lca": "__top__",
+                    "target_type": "normal"
+                }
+            },
             "parent": "__top__",
             "children": [],
             "title": "A",
@@ -62,10 +72,10 @@
                         "double_space(0.5)": {
                             "guard_func": "double_space",
                             "guard_param": "0.5",
-                            "funcs": [["c_entry", ""]],
+                            "funcs": [["reset_timer", ""], ["print", "\"C\""]],
                             "target": "state_2",
                             "target_title": "C",
-                            "lca": "__top__",
+                            "lca": "state_3",
                             "target_type": "normal"
                         }
                     }
@@ -73,7 +83,7 @@
             },
             "sys_signals": {
                 "entry": {
-                    "funcs": [["b_entry", ""]],
+                    "funcs": [["print", "\"B\""]],
                     "target": "",
                     "target_title": "",
                     "lca": ""
@@ -81,7 +91,17 @@
                 "exit": {},
                 "init": {}
             },
-            "guards": {},
+            "guards": {
+                "timeout(3)": {
+                    "guard_func": "timeout",
+                    "guard_param": "3",
+                    "funcs": [["print", "\"Timeout\""]],
+                    "target": "state_5",
+                    "target_title": "E",
+                    "lca": "__top__",
+                    "target_type": "normal"
+                }
+            },
             "parent": "__top__",
             "children": [],
             "title": "B",
@@ -97,8 +117,53 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [["a_entry", ""]],
+                            "funcs": [["reset_timer", ""], ["print", "\"A\""]],
                             "target": "state_0",
+                            "target_title": "A",
+                            "lca": "state_3",
+                            "target_type": "normal"
+                        }
+                    }
+                }
+            },
+            "sys_signals": {
+                "entry": {
+                    "funcs": [["print", "\"C\""]],
+                    "target": "",
+                    "target_title": "",
+                    "lca": ""
+                },
+                "exit": {},
+                "init": {}
+            },
+            "guards": {
+                "timeout(3)": {
+                    "guard_func": "timeout",
+                    "guard_param": "3",
+                    "funcs": [["print", "\"Timeout\""]],
+                    "target": "state_5",
+                    "target_title": "E",
+                    "lca": "__top__",
+                    "target_type": "normal"
+                }
+            },
+            "parent": "__top__",
+            "children": [],
+            "title": "C",
+            "type": "normal",
+            "num": 2,
+            "parent_title": "__top__"
+        },
+        "state_5": {
+            "signals": {
+                "ENTER": {
+                    "name": "ENTER",
+                    "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [["print", "\"D\""], ["reset_timer", ""], ["print", "\"A\""]],
+                            "target": "state_3",
                             "target_title": "A",
                             "lca": "__top__",
                             "target_type": "normal"
@@ -108,7 +173,7 @@
             },
             "sys_signals": {
                 "entry": {
-                    "funcs": [["c_entry", ""]],
+                    "funcs": [["print", "\"Timeout\""]],
                     "target": "",
                     "target_title": "",
                     "lca": ""
@@ -119,17 +184,18 @@
             "guards": {},
             "parent": "__top__",
             "children": [],
-            "title": "C",
+            "title": "E",
             "type": "normal",
-            "num": 2,
+            "num": 5,
             "parent_title": "__top__"
         }
     },
-    "user_funcs": ["b_entry", "c_entry", "a_entry"],
+    "user_funcs": ["reset_timer"],
     "user_guards": [],
-    "user_signals": ["SPACE"],
-    "user_inc_funcs": ["double_space"],
+    "user_signals": ["SPACE", "ENTER"],
+    "user_inc_funcs": ["timeout", "double_space", "print"],
     "notes": {
+        "2": "",
         "5": "",
         "sig_0": "Signal 0",
         "guard()": "Guard function",
@@ -137,7 +203,11 @@
         "SPACE": "",
         "entry_b()": "",
         "double_space()": "",
-        "double_space": ""
+        "double_space": "",
+        "E": "",
+        "e_entry": "",
+        "timeout": "",
+        "b_entry": ""
     },
     "template_params": {
         "class_name": "MyStateMachine"
