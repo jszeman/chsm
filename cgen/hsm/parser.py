@@ -13,6 +13,7 @@ class Parser:
     def __init__(self):
         self.funcs_w_args = set()
         self.funcs_wo_args = set()
+        self.guards_w_args = set()
         self.guards_wo_args = set()
         self.user_signals = set()
 
@@ -121,7 +122,7 @@ class Parser:
             data = data[1:]
             
             if guard_param:
-                self.funcs_w_args.add(guard_func)
+                self.guards_w_args.add(guard_func)
             else:
                 self.guards_wo_args.add(guard_func)
             

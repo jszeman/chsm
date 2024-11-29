@@ -50,7 +50,7 @@
                 "timeout(3)": {
                     "guard_func": "timeout",
                     "guard_param": "3",
-                    "funcs": [["print", "\"Timeout\""]],
+                    "funcs": [["save_history", "self.state_func"], ["print", "\"Timeout\""]],
                     "target": "state_5",
                     "target_title": "E",
                     "lca": "__top__",
@@ -69,10 +69,18 @@
                 "SPACE": {
                     "name": "SPACE",
                     "guards": {
+                        "": {
+                            "guard_func": "",
+                            "guard_param": "",
+                            "funcs": [["reset_timer", ""]],
+                            "target": "",
+                            "target_title": "",
+                            "lca": ""
+                        },
                         "double_space(0.5)": {
                             "guard_func": "double_space",
                             "guard_param": "0.5",
-                            "funcs": [["reset_timer", ""], ["print", "\"C\""]],
+                            "funcs": [["print", "\"C\""]],
                             "target": "state_2",
                             "target_title": "C",
                             "lca": "state_3",
@@ -95,7 +103,7 @@
                 "timeout(3)": {
                     "guard_func": "timeout",
                     "guard_param": "3",
-                    "funcs": [["print", "\"Timeout\""]],
+                    "funcs": [["save_history", "self.state_func"], ["print", "\"Timeout\""]],
                     "target": "state_5",
                     "target_title": "E",
                     "lca": "__top__",
@@ -140,7 +148,7 @@
                 "timeout(3)": {
                     "guard_func": "timeout",
                     "guard_param": "3",
-                    "funcs": [["print", "\"Timeout\""]],
+                    "funcs": [["save_history", "self.state_func"], ["print", "\"Timeout\""]],
                     "target": "state_5",
                     "target_title": "E",
                     "lca": "__top__",
@@ -162,11 +170,12 @@
                         "": {
                             "guard_func": "",
                             "guard_param": "",
-                            "funcs": [["print", "\"D\""], ["reset_timer", ""], ["print", "\"A\""]],
-                            "target": "state_3",
-                            "target_title": "A",
+                            "funcs": [["print", "\"D\""], ["reset_timer", ""]],
+                            "target": "state_4",
+                            "target_title": "history",
                             "lca": "__top__",
-                            "target_type": "normal"
+                            "target_type": "call",
+                            "target_params": ""
                         }
                     }
                 }
@@ -188,26 +197,39 @@
             "type": "normal",
             "num": 5,
             "parent_title": "__top__"
+        },
+        "state_4": {
+            "signals": {},
+            "sys_signals": {
+                "entry": {},
+                "exit": {},
+                "init": {}
+            },
+            "guards": {},
+            "parent": "__top__",
+            "children": [],
+            "title": "history",
+            "type": "call",
+            "params": "",
+            "parent_title": "__top__"
         }
     },
     "user_funcs": ["reset_timer"],
     "user_guards": [],
     "user_signals": ["SPACE", "ENTER"],
-    "user_inc_funcs": ["timeout", "double_space", "print"],
+    "user_inc_funcs": ["print", "save_history"],
+    "user_inc_guards": ["double_space", "timeout"],
     "notes": {
-        "2": "",
-        "5": "",
         "sig_0": "Signal 0",
-        "guard()": "Guard function",
-        "func()": "Event handler function",
-        "SPACE": "",
-        "entry_b()": "",
-        "double_space()": "",
-        "double_space": "",
-        "E": "",
-        "e_entry": "",
-        "timeout": "",
-        "b_entry": ""
+        "guard": "Guard function",
+        "func": "Event handler function",
+        "SPACE": "This event is generated when the user presses the spacebar.",
+        "double_space": "Return ture, if the spacebar was pressed twice within the time window given as parameter.",
+        "timeout": "Return true, if the elapsed time since the last reset_timer call is greater than the time given in the argument.",
+        "ENTER": "This event is generated when the user presses the enter button.",
+        "print": "Just print the string parameter in the console.",
+        "reset_timer": "Save the actual time in an internal variable.",
+        "save_history": "Save the actual state into an internal variable."
     },
     "template_params": {
         "class_name": "MyStateMachine"

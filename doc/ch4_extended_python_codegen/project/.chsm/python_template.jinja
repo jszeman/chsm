@@ -1,5 +1,55 @@
 # Generated code - any edits will be overwritten.
 
+class {{data.template_params.class_name}}Interface:
+    EVENT_INIT  = None # Init event
+    {% for signal in data.user_signals %}
+    EVENT_{{signal}} = None {% if signal in data.notes %}# {{data.notes[signal]}}
+                            {% endif %}
+    {% endfor %}
+
+    {% for func in data.user_funcs %}
+    def {{func}}(self):
+        {% if func in data.notes %}
+        """{{data.notes[func]}}"""
+        {% endif %}
+        pass
+
+    {% endfor %}
+
+    {% for func in data.user_guards %}
+    def {{func}}(self):
+        {% if func in data.notes %}
+        """{{data.notes[func]}}"""
+        {% endif %}
+        return False
+
+    {% endfor %}
+
+    {% for func in data.user_inc_funcs %}
+    def {{func}}(self, *args, **kwargs):
+        {% if func in data.notes %}
+        """{{data.notes[func]}}"""
+        {% endif %}
+        pass
+
+    {% endfor %}
+
+    {% for func in data.user_inc_guards %}
+    def {{func}}(self, *args, **kwargs):
+        {% if func in data.notes %}
+        """{{data.notes[func]}}"""
+        {% endif %}
+        return False
+
+    {% endfor %}
+
+    {% for state in data.states.values() if state.type == 'call' %}
+    def {{state.title}}(self):
+        """Return a state method."""
+        return None
+    {% endfor %}
+
+
 class {{data.template_params.class_name}}:
     def __init__(self, user_obj):
         self.user_obj = user_obj
@@ -23,14 +73,22 @@ class {{data.template_params.class_name}}:
                 self.user_obj.{{func[0]}}({{func[1]}})
                     {% endfor %}
                     {% if guard.target %}
+                        {% if guard.target_type == 'call' %}
+                self.state_func = self.user_obj.{{guard.target_title}}(event{% if guard.target_param%}, {{guard.target_param}} {% endif%})
+                        {% else %}
                 self.state_func = self.state_{{guard.target_title}}
+                        {% endif %}
                     {% endif %}
                 {% else %}
                     {% for func in guard.funcs %}
             self.user_obj.{{func[0]}}({{func[1]}})
                     {% endfor %}
                     {% if guard.target %}
+                        {% if guard.target_type == 'call' %}
+            self.state_func = self.user_obj.{{guard.target_title}}(event{% if guard.target_param%}, {{guard.target_param}} {% endif%})
+                        {% else %}
             self.state_func = self.state_{{guard.target_title}}
+                        {% endif %}
                     {% endif %}
                 {% endif %}
             {% endfor %}
@@ -41,9 +99,13 @@ class {{data.template_params.class_name}}:
             {% for func in guard.funcs %}
             self.user_obj.{{func[0]}}({{func[1]}})
             {% endfor %}
-            {% if guard.target %}
+                {% if guard.target %}
+                    {% if guard.target_type == 'call' %}
+            self.state_func = self.user_obj.{{guard.target_title}}(event{% if guard.target_param%}, {{guard.target_param}} {% endif%})
+                    {% else %}
             self.state_func = self.state_{{guard.target_title}}
-            {% endif %}
+                    {% endif %}
+                {% endif %}
         {% endfor %}
 
 {% endfor %}

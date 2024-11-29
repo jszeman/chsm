@@ -28,6 +28,7 @@ class StateMachine:
         self.user_guards = set()
         self.user_signals = set()
         self.user_inc_funcs = set()
+        self.user_inc_guards = set()
 
         data['states']['__top__']['parent'] = ""
         self.states = self.get_states(data)                 # Extract states from the data
@@ -47,14 +48,27 @@ class StateMachine:
 
         self.clean_up_signals()
 
+        self.clean_up_notes()
+
         self.data = {
             'states': self.states,
             'user_funcs': self.user_funcs,
             'user_guards': self.user_guards,
             'user_signals': self.user_signals,
             'user_inc_funcs': self.user_inc_funcs,
+            'user_inc_guards': self.user_inc_guards,
             'notes': self.notes,
         }
+
+    def clean_up_notes(self):
+        notes = {}
+        for k, v in self.notes.items():
+            if v:
+                if k.endswith('()'):
+                    notes[k[:-2]] = v
+                else:
+                    notes[k] = v
+        self.notes = notes
 
     def clean_up_signals(self):
         self.user_signals = {i for i in self.user_signals if i not in ('entry', 'exit', 'init')}
@@ -272,6 +286,7 @@ class StateMachine:
                 self.add_signal_to_state(state, sig)
 
             self.user_inc_funcs.update(p.funcs_w_args)
+            self.user_inc_guards.update(p.guards_w_args)
             self.user_funcs.update(p.funcs_wo_args)
             self.user_signals.update(p.user_signals)
             self.user_guards.update(p.guards_wo_args)
@@ -344,6 +359,7 @@ class StateMachine:
                 raise
 
             self.user_inc_funcs.update(p.funcs_w_args)
+            self.user_inc_guards.update(p.guards_w_args)
             self.user_funcs.update(p.funcs_wo_args)
             self.user_signals.update(p.user_signals)
             self.user_guards.update(p.guards_wo_args)

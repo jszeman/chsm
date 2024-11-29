@@ -3,7 +3,7 @@ import msvcrt
 import state_machine
 
 ESC_KEY = '\x1b'
-class UserClass:
+class UserClass(state_machine.MyStateMachineInterface):
     EVENT_SPACE = ' '
     EVENT_INIT  = 'i'
     EVENT_ENTER = '\r'
@@ -11,6 +11,7 @@ class UserClass:
     def __init__(self):
         self.space_ts = time.time()
         self.timeout_ts = 0
+        self.saved_state = None
 
     def double_space(self, threshold):
         ts = time.time()
@@ -31,9 +32,15 @@ class UserClass:
             return True
         
         return False
+        
+    def save_history(self, state):
+        self.saved_state = state
+
+    def history(self, event):
+        return self.saved_state
+        
 
 if __name__ == '__main__':
-
     usr = UserClass()
     sm = state_machine.MyStateMachine(usr)
     last_key = None
