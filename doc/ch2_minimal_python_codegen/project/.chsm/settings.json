@@ -3,7 +3,7 @@
 		"drawing":	"tutorial.html",
 		"jobs":	[
 			{
-				"title":			"C code gen",
+				"title":			"Python code gen",
 				"output":			"../state_machine.py",
 				"template":			"python_template.jinja",
 				"template_params":  {

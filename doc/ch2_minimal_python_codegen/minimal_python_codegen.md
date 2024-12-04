@@ -43,7 +43,7 @@ Here is how you can build this:
             "drawing":	"tutorial.html",
             "jobs":	[
                 {
-                    "title":			"C code gen",
+                    "title":			"Python code gen",
                     "output":			"../state_machine.py",
                     "template":			"python_template.jinja",
                     "template_params":  {},
@@ -375,4 +375,8 @@ Let's wrap things up with a quick recap of how Cgen code generation works:
 2. **Generate Code**: Press the `Code gen` button to begin the process.  
 3. **Locate `settings.json`**: The application searches through `.chsm` folders in the file path to find the appropriate `settings.json` file.  
 4. **Identify Jobs**: It reads the job list associated with your drawing from the settings file.  
-5. **Process Jobs**: The listed jobs are executed sequentially. In this tutorial, we generated just one output file, but for a C implementation, multiple files like `.c` and `.h` might be necessary. Additionally, it's possible to export a **drawio** diagram for visual representation.  
+5. **Process Jobs**: The listed jobs are executed sequentially. In this tutorial, we generated just one output file, but for a C implementation, multiple files like `.c` and `.h` might be necessary. Additionally, it's possible to export a **drawio** diagram for visual representation.
+
+---
+
+[Next chapter](../ch3_ir_reference/ir_ref.md)

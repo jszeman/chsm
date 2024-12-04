@@ -212,7 +212,7 @@ That wasn’t too difficult.
 
 Let’s introduce a timeout reaction to our state machine. If the user doesn’t press `SPACE` within 3 seconds, a "Timeout" message will be displayed. The A-B-C loop will then pause and will only resume when the user presses `ENTER`.
 
-The timeout functionality can be implemented using a completion guard that gets evaluated every time the `state_func` method is called in the state machine and no state change  Instead of manually adding this guard to each state, we can create a parent state and attach the guard to it. 
+The timeout functionality can be implemented using a completion guard that gets evaluated every time the `state_func` method is called in the state machine and no state change takes place. Instead of manually adding this guard to each state, we can create a parent state and attach the guard to it. 
 
 While we’re at it, let’s streamline the `UserClass` by leveraging the function parameter capability. We’ll replace all the `x_entry()` calls with `print("x")` calls, reducing the need for separate functions for each state. This leaves us with just one function to implement instead of one for every state.
 
@@ -434,3 +434,4 @@ class UserClass(state_machine.MyStateMachineInterface):
     ...
 ```
 
+With that, our Python code generator is now complete.

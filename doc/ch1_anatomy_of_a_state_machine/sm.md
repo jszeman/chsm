@@ -19,7 +19,7 @@ For a deeper dive into state machines, I recommend reading Miro Samek's book on 
 - Function and guard parameters
 - Function call as state title (Not even remotely UML-compliant.)
 
-Cgen mostly follows the UML statechart specification, but there are a few exceptions. We’ll highlight any sections where the behavior differs from the standard.
+Cgen mostly follows the UML statechart specification, but there are a few exceptions.
 
 ## Nested states
 
@@ -34,20 +34,20 @@ In Cgen, event handlers come in two forms:
 - **Event handlers without transitions:** These are written directly in the text block of a state and handle events without changing states.
 - **Event handlers with transitions:** These are written in text blocks attached to transition arrows and handle events that trigger a state change.
 
-**Event handler syntax:** `EVENT_NAME [guard_func(guard_param)] / {func1(func1_param); func2(func2_param)}`
+**Event handler syntax:** `EVENT_NAME [guard_func(guard_args)] / {func1(func1_args); func2(func2_args)}`
 
 Where:
 - **EVENT_NAME**: The identifier of the event to be handled.
 - **guard_func**: The guard function that checks if the transition should proceed.
-- **guard_param**: Optional comma-separated parameters for the guard function.
+- **guard_args**: Optional arguments for the guard function.
 - **funcX**: The function to be called when **EVENT_NAME** occurs and **guard_func** returns `true`.
-- **funcX_param**: Optional comma-separated parameters for **funcX**.
+- **funcX_args**: Optional arguments for **funcX**.
 
 The curly braces `{}` can be omitted if there’s only one function call. Semicolons and line breaks between functions are also optional.
 
 In Cgen, guards are conditions that control whether a transition or action should occur when an event is received. They are essentially if-statements that check certain conditions before executing a transition.
 
-Each event handler can have its own guard, and multiple handlers for the same event can each have a different guard. If more than one handler with guards matches an event, only one of the guards that evaluates as `true` will be executed. Cgen doesn’t guarantee a specific order for guard evaluations, only that guards within a state’s body are evaluated before transition guards.
+Each event handler can have its own guard, and multiple handlers for the same event can each have a different guard. If more than one handler with guards matches an event, only one of the guards that evaluates as `true` will be executed. Cgen doesn’t guarantee a specific order for guard evaluations.
 
 There can also be guards that aren’t linked to any specific event. These are known as *completion guards* and are evaluated after any event that doesn’t lead to a state transition. If a completion guard’s condition is met, it can trigger actions or transitions on its own, helping manage cases where further checks or cleanups are needed after regular event handling.
 
@@ -56,9 +56,10 @@ There can also be guards that aren’t linked to any specific event. These are k
 Initial states are represented by black dots and are used to select the starting child state within a parent state.
 
 Rules for initial states (as enforced by the GUI):  
-- Only one transition can be attached to each initial state  
-- Each composite state can have only one initial state as a child  
-- No transitions can target initial states
+- Only one transition can be attached to each initial state.
+- Each composite state can have only one initial state as a child.
+- No transitions can target initial states.
+- Composite states targeted by transitions must always include an initial state.
 
 ## Entry, exit and init events
 
@@ -123,7 +124,7 @@ We see that **cond** is called, as it’s the guard attached to the **D** event.
 cond d_func s11_exit s1_init s11_entry s11_init s11_guard k_guard s1_guard j_guard
 ```
 
-This time, the **cond()** guard evaluates to `true`. Since it does, **d_func** is called, and the transition executes to **s1**. Leaving **s11** triggers **s11_exit**. **s1** was the transition target, so we call **s1_init**, then **s11_entry**, **s11_init**, and finally the relevant *completion guards*.
+This time, the **cond()** guard evaluates to `true`. Since it does, **d_func** is called, and the transition executes to **s1**. Leaving **s11** triggers **s11_exit**. **s1** was the transition target, so we call **s1_init**, then **s11_entry**, **s11_init**, and finally the relevant *completion guards* since we ended up back in s11, the same state we started from.
 
 ### **s11** ← **A**
 
@@ -163,4 +164,7 @@ The **F** transition is straightforward; it goes from **s11** to **s211**. The *
 s11_g_guard1 s11_g1 s11_g_guard2 s11_g2 s11_exit s1_exit s2_entry s21_entry s211_entry s211_init
 ```
 
-The **G** event has two handlers in **s11**: one defined within the state’s body and another with a transition targeting **s211**. Both handlers are guarded, and in this case, both guards evaluate to `true`. Notice that **s11_g_guard1** is evaluated before **s11_g_guard2**—this happens because the first is written inside the state’s body, while the second is tied to a transition. Guards within the state’s body are always evaluated before transition guards.
+The **G** event has two handlers in **s11**: one defined within the state’s body and another with a transition targeting **s211**. Both handlers are guarded, and in this case, both guards evaluate to `true`.
+
+---
+ [Next chapter](../ch2_minimal_python_codegen/minimal_python_codegen.md)

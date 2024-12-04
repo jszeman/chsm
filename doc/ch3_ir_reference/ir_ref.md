@@ -26,6 +26,7 @@ The IR (Intermediate Representation) organizes the key data for the state machin
 - **`user_guards`**: A list of guards (conditions) without additional parameters.
 - **`user_signals`**: A list of signals present in the drawing.
 - **`user_inc_funcs`**: Functions called with extra parameters in the drawing.
+- **`user_inc_guards`**: Guard called with extra parameters in the drawing.
 - **`notes`**: Notes linked to functions and signals.
 - **`template_params`**: Parameters provided in the job file for customization.
 - **`raw_data`** *(optional)*: Raw graphical data, useful for exporting graphics to other formats, such as the `drawio` template.
@@ -92,7 +93,11 @@ This is a list of function names used in the drawing as guard functions without 
 
 ## data.user_inc_funcs
 
-This is a list of functions and guards used in the drawing that are called with non-empty parameter lists. If the target language requires declarations, it is the user’s responsibility to provide them.
+This is a list of functions used in the drawing that are called with non-empty parameter lists. If the target language requires declarations, it is the user’s responsibility to provide them.
+
+## data.user_inc_guards
+
+This is a list of guards used in the drawing that are called with non-empty parameter lists. If the target language requires declarations, it is the user’s responsibility to provide them.
 
 ## data.user_signals
 
@@ -105,3 +110,7 @@ In Cgen, you can attach notes to almost any string by clicking on the text in th
 ## data.template_params
 
 These are parameters from the output job descriptor, which can be used to create more flexible templates.
+
+---
+
+[Next chapter](../ch4_extended_python_codegen/extended_python_codegen.md)
