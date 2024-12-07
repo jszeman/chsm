@@ -67,7 +67,7 @@ class StateMachine:
                 if k.endswith('()'):
                     notes[k[:-2]] = v
                 else:
-                    notes[k] = v
+                    notes[k] = v.strip()
         self.notes = notes
 
     def clean_up_signals(self):
@@ -213,7 +213,7 @@ class StateMachine:
             is_call: True, if the title is actually a function call."""
         title = title.lstrip()
 
-        m = re.match('[a-zA-z_]+\w*', title)
+        m = re.match(r'[a-zA-z_]+\w*', title)
         if m:
             fname = m[0]
             rem = title[m.span()[1]:]
@@ -248,8 +248,12 @@ class StateMachine:
         states = {}
 
         for s_id, s in data['states'].items():
-
-            title, params, is_call = self.process_state_title(s['title'])
+            if s['type'] == 'initial':
+                title = s_id
+                params = ''
+                is_call = False
+            else:
+                title, params, is_call = self.process_state_title(s['title'])
 
             state = {
                 'signals': {},

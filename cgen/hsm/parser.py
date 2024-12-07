@@ -41,7 +41,7 @@ class Parser:
         data = data.lstrip()
         
 
-        m = re.match('[a-zA-z_]+\w*', data)
+        m = re.match(r'[a-zA-z_]+\w*', data)
         if m:
             fname = m[0]
             rem = data[m.span()[1]:]
@@ -65,7 +65,7 @@ class Parser:
         signal = NOSIG
         rem = data
         
-        m = re.match('[a-zA-z_]+\w*', data)
+        m = re.match(r'[a-zA-z_]+\w*', data)
         if m:
             signal = m[0]
             rem = data[m.span()[1]:]

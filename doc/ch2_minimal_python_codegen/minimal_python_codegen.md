@@ -125,7 +125,7 @@ When we create an instance of the `StateMachine` class, the initial state will b
 ``` python
 import time
 import msvcrt
-from state_machine
+import state_machine
 
 ESC_KEY = '\x1b'
 
@@ -147,6 +147,8 @@ if __name__ == '__main__':
     usr = UserClass()
     sm = state_machine.StateMachine(usr)
     last_key = None
+
+    print("i:     init\nspace: step\nesc:   quit\n\n")
 
     while True:
         if msvcrt.kbhit():

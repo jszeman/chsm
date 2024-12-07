@@ -161,9 +161,8 @@ The generated code looks allright:
 ``` python
 def state_B(self, event):
     if event == self.user_obj.EVENT_SPACE:
-        self.user_obj.reset_timer()
         if self.user_obj.double_space():
-            self.user_obj.print("C")
+            self.user_obj.c_entry()
             self.state_func = self.state_C
 ```
 
@@ -365,8 +364,9 @@ Let's get to it. First just generate the class and the signals with the notes:
 class {{data.template_params.class_name}}Interface:
     EVENT_INIT  = None # Init event
     {% for signal in data.user_signals %}
-    EVENT_{{signal}} = None {% if signal in data.notes %}# {{data.notes[signal]}}
-                            {% endif %}
+    EVENT_{{signal}} = None {% if signal in data.notes %}# {{data.notes[signal]}} 
+    {% else %} 
+    {% endif %}
     {% endfor %}
 ```
 

@@ -22,6 +22,8 @@ if __name__ == '__main__':
     sm = state_machine.MyStateMachine(usr)
     last_key = None
 
+    print("i:     init\nspace: step\nesc:   quit\nenter: reset timeout\n\n")
+
     while True:
         if msvcrt.kbhit():
             last_key = msvcrt.getch().decode('utf-8')
