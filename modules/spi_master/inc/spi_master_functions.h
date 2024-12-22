@@ -28,9 +28,12 @@ typedef enum spi_master_state_id_ten
 Signals:
     SIG_SPI_DRIVER_TRANSFER_FAIL 
     SIG_SPI_DRIVER_TRANSFER_SUCCESS 
-    SIG_SPI_MASTER_TRANSACTION     
+    SIG_SPI_MASTER_TRANSACTION 
 
 The following functions shall be declared and implemented by the user:
+
+
+The following guards shall be declared and implemented by the user:
 
 */
 

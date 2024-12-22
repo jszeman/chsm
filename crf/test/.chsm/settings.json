@@ -41,7 +41,8 @@
 				"template_params": {
 					"title": "DrawIO",
 					"scale": 10
-				}
+				},
+				"dump_ir":			true
 			}
 		]
 	},

@@ -38,6 +38,9 @@ Signals:
 
 The following functions shall be declared and implemented by the user:
 
+
+The following guards shall be declared and implemented by the user:
+
     co_timeout
 
 */

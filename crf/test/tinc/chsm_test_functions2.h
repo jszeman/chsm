@@ -104,16 +104,16 @@ typedef enum chsm_test_machine_state_id_ten
 
 /*
 Signals:
-    A     
+    A 
     B 
     C 
     D 
     E 
     F     Comment for F
     G     Comment for G
-    H     
+    H 
     ID 
-    J     
+    J 
     K 
     L 
     M 
@@ -121,14 +121,23 @@ Signals:
 
 The following functions shall be declared and implemented by the user:
 
-    k_guard
-        Parametric guard comment.
-
     s11_func
 
     s11_g1
 
     s11_g2
+
+    s11_id
+
+    s211_exit
+
+    s5_k_func1
+
+
+The following guards shall be declared and implemented by the user:
+
+    k_guard
+        Parametric guard comment.
 
     s11_g_guard1
         Comment for the s11_g_guard1 func.
@@ -138,12 +147,6 @@ The following functions shall be declared and implemented by the user:
     s11_g_guard2
 
     s11_guard
-
-    s11_id
-
-    s211_exit
-
-    s5_k_func1
 
 */
 

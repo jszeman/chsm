@@ -29,10 +29,13 @@ typedef enum ltc2471_state_id_ten
 /*
 Signals:
     SIG_I2C_RESULT_ADDR_NACK 
-    SIG_I2C_RESULT_SUCCESS     
-    SIG_SYS_TICK_1ms     
+    SIG_I2C_RESULT_SUCCESS 
+    SIG_SYS_TICK_1ms 
 
 The following functions shall be declared and implemented by the user:
+
+
+The following guards shall be declared and implemented by the user:
 
     ltc2471_timeout
 

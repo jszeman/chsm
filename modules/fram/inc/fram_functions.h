@@ -63,13 +63,16 @@ typedef enum fram_state_id_ten
 
 /*
 Signals:
-    SIG_I2C_RESULT_ADDR_NACK     
-    SIG_I2C_RESULT_DATA_NACK     
-    SIG_I2C_RESULT_SUCCESS     
+    SIG_I2C_RESULT_ADDR_NACK 
+    SIG_I2C_RESULT_DATA_NACK 
+    SIG_I2C_RESULT_SUCCESS 
     SIG_MEM_READ 
-    SIG_MEM_WRITE     
+    SIG_MEM_WRITE 
 
 The following functions shall be declared and implemented by the user:
+
+
+The following guards shall be declared and implemented by the user:
 
 */
 

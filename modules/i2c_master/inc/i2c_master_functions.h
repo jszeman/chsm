@@ -37,15 +37,18 @@ typedef enum i2c_master_state_id_ten
 
 /*
 Signals:
-    SIG_I2C_R_TRANSACTION     
-    SIG_I2C_READ_FAIL     
-    SIG_I2C_READ_SUCCESS     
-    SIG_I2C_W_TRANSACTION     
+    SIG_I2C_R_TRANSACTION 
+    SIG_I2C_READ_FAIL 
+    SIG_I2C_READ_SUCCESS 
+    SIG_I2C_W_TRANSACTION 
     SIG_I2C_WR_TRANSACTION 
-    SIG_I2C_WRITE_FAIL     
-    SIG_I2C_WRITE_SUCCESS     
+    SIG_I2C_WRITE_FAIL 
+    SIG_I2C_WRITE_SUCCESS 
 
 The following functions shall be declared and implemented by the user:
+
+
+The following guards shall be declared and implemented by the user:
 
 */
 

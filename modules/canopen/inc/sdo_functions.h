@@ -64,26 +64,29 @@ typedef enum canopen_sdo_state_id_ten
 
 /*
 Signals:
-    SIG_CAN_FRAME     
+    SIG_CAN_FRAME 
     SIG_CANOPEN_BLOCK_DL_FINISH 
     SIG_CANOPEN_BLOCK_DL_START 
-    SIG_CANOPEN_BLOCK_UL_END     
+    SIG_CANOPEN_BLOCK_UL_END 
     SIG_CANOPEN_BLOCK_UL_FINISH 
     SIG_CANOPEN_BLOCK_UL_START 
-    SIG_CANOPEN_BLOCK_UL_STARTED     
-    SIG_CANOPEN_SEG_DL_END     
+    SIG_CANOPEN_BLOCK_UL_STARTED 
+    SIG_CANOPEN_SEG_DL_END 
     SIG_CANOPEN_SEG_DL_START 
     SIG_CANOPEN_SEG_UL_END 
     SIG_CANOPEN_SEG_UL_START 
     SIG_CANOPEN_WAIT_EXP_SDO_DL 
     SIG_CANOPEN_WAIT_EXP_SDO_UL 
-    SIG_MEM_READ_FAIL     
+    SIG_MEM_READ_FAIL 
     SIG_MEM_READ_SUCCESS 
     SIG_SYS_TICK_1ms 
 
 The following functions shall be declared and implemented by the user:
 
     send_sdo_abort
+
+
+The following guards shall be declared and implemented by the user:
 
     sdo_timeout
 

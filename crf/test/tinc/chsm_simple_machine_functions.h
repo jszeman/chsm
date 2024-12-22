@@ -48,6 +48,9 @@ The following functions shall be declared and implemented by the user:
 
     func_h
 
+
+The following guards shall be declared and implemented by the user:
+
     guard_h
 
 */

@@ -74,13 +74,16 @@ typedef enum lm73_state_id_ten
 
 /*
 Signals:
-    SIG_I2C_RESULT_ADDR_NACK     
-    SIG_I2C_RESULT_DATA_NACK     
-    SIG_I2C_RESULT_SUCCESS     
-    SIG_LM73_READ     
+    SIG_I2C_RESULT_ADDR_NACK 
+    SIG_I2C_RESULT_DATA_NACK 
+    SIG_I2C_RESULT_SUCCESS 
+    SIG_LM73_READ 
     SIG_SYS_TICK_1ms 
 
 The following functions shall be declared and implemented by the user:
+
+
+The following guards shall be declared and implemented by the user:
 
     lm73_error_count
         Return true, if the error counter is greater or equal then the parameter.

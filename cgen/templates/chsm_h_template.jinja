@@ -9,9 +9,9 @@
 /* The following functions shall be implemented by the user */
 
 {% for func in data.user_funcs | sort if not func.startswith("chsm_")  %}
-{% if func+"()" in data.notes and data.notes[func+"()"]%}
+{% if func in data.notes %}
 /*
-{{data.notes[func+"()"]}}
+{{data.notes[func]}}
 */
 {% endif %}
 void {{func}} ({{data.template_params.func_params}});
@@ -20,9 +20,9 @@ void {{func}} ({{data.template_params.func_params}});
 
 {# Guard declarations #}
 {% for func in data.user_guards | sort %}
-{% if func+"()" in data.notes and data.notes[func+"()"]%}
+{% if func in data.notes %}
 /*
-{{data.notes[func+"()"]}}
+{{data.notes[func]}}
 */
 {% endif %}
 {{data.template_params.guard_return_type}} {{func}} ({{data.template_params.func_params}});
@@ -48,6 +48,16 @@ Signals:
 The following functions shall be declared and implemented by the user:
 
 {% for func in data.user_inc_funcs | sort%}
+    {{func}}
+    {% if func in data.notes and data.notes[func]%}
+        {{data.notes[func] | indent(width=8)}}
+    {% endif %}
+
+{% endfor %}
+
+The following guards shall be declared and implemented by the user:
+
+{% for func in data.user_inc_guards | sort%}
     {{func}}
     {% if func in data.notes and data.notes[func]%}
         {{data.notes[func] | indent(width=8)}}
