@@ -1,0 +1,56 @@
+void state_machine(data_tst* self, event_ten event_en)
+{
+    switch(self->state_en)
+    {
+{% for state_id, state in data.states.items() | sort(attribute='title') if state.type == 'normal' %}
+        case STATE_{{state.title.upper()}}:
+            switch(event_en)
+            {
+    {% for signal_id in state.signals.keys() | sort %}
+    {% set signal = state.signals[signal_id] %}
+                case EVENT_{{signal_id}}:
+        {% for guard_id, guard in signal.guards.items() %}
+            {% if not guard_id %}
+                {% for func, param in guard.funcs %}
+                    {{func}}({% if param %}{{param}}{% endif %});
+                {% endfor -%}
+                {% if guard.target %}
+                    {% if guard.target_type == 'call'%}
+                    self->state_en = {{guard.target_title}}({% if guard.target_params %}{{guard.target_params}}{% endif %});
+                    {% else %}
+                    self->state_en = STATE_{{guard.target_title}};
+                    {% endif %}
+                {% endif %}
+            {% else %}
+                    if ({{guard.guard_func}}({% if guard.guard_param %}{{guard.guard_param}}{% endif %}))
+                    {
+                {% for func, param in guard.funcs %}
+                        {{func}}({% if param %}{{param}}{% endif %});
+                {% endfor %}
+                {% if guard.target %}
+                    {% if guard.target_type == 'call'%}
+                        self->state_en = {{guard.target_title}}({% if guard.target_params %}{{guard.target_params}}{% endif %});
+                    {% else %}
+                        self->state_en = STATE_{{guard.target_title}};
+                    {% endif %}
+                {% endif %}
+                    }
+            {% endif %}
+                    break;
+        {% endfor %}
+        {% if not loop.last %}
+
+        {% endif %}
+    {% endfor %}
+            }
+            break;
+
+
+{% endfor %}
+    }
+
+    if (EVENT_EXIT == event_en)
+    {
+        self->exit_b = true;
+    }
+}

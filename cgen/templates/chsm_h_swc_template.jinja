@@ -1,0 +1,75 @@
+#ifndef {{data.template_params.include_guard}}
+#define {{data.template_params.include_guard}}
+
+{% for name in data.template_params.include_list -%}
+#include "{{ name }}"
+{% endfor %}
+
+typedef enum {{data.template_params.state_enum_type}}
+{
+    {{data.template_params.top_state}},
+{% for state_id, state in data.states.items() | sort(attribute='title') if state.type == 'normal' %}
+    {{data.template_params.state_prefix}}{{state.title.upper()}},
+{% endfor %}
+} {{data.template_params.state_enum_type}};
+
+typedef enum {{data.template_params.event_enum_type}}
+{
+{% for e in data.template_params.extra_events %}
+    {{data.template_params.signal_prefix}}{{e}},
+{% endfor %}
+{% for sig in data.user_signals | sort if sig not in ['entry', 'exit', 'init'] %}
+    {{data.template_params.signal_prefix}}{{sig}}, {% if sig in data.notes %}    /* {{data.notes[sig]}} */
+    {% else %}
+
+    {% endif %}
+{% endfor %}
+} {{data.template_params.event_enum_type}};
+ 
+{# Function declarations #}
+/* The following functions shall be implemented by the user */
+
+{% for func in data.user_funcs | sort if not func.startswith("chsm_")  %}
+{% if func in data.notes %}
+/*
+{{data.notes[func]}}
+*/
+{% endif %}
+void {{data.template_params.func_prefix}}{{func}}({{data.template_params.func_params}});
+
+{% endfor %}
+
+{# Guard declarations #}
+{% for func in data.user_guards | sort %}
+{% if func in data.notes %}
+/*
+{{data.notes[func]}}
+*/
+{% endif %}
+{{data.template_params.guard_return_type}} {{data.template_params.func_prefix}}{{func}}({{data.template_params.func_params}});
+
+{% endfor %}
+
+/*
+The following functions shall be declared and implemented by the user:
+
+{% for func in data.user_inc_funcs | sort%}
+    {{data.template_params.func_prefix}}{{func}}
+    {% if func in data.notes%}
+        {{data.notes[func] | indent(width=8)}}
+    {% endif %}
+
+{% endfor %}
+
+The following guards shall be declared and implemented by the user:
+
+{% for func in data.user_inc_guards | sort%}
+    {{data.template_params.func_prefix}}{{func}}
+    {% if func in data.notes%}
+        {{data.notes[func] | indent(width=8)}}
+    {% endif %}
+
+{% endfor %}
+*/
+
+#endif

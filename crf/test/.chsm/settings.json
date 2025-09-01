@@ -81,5 +81,54 @@
 				}
 			}
 		]
+	},
+
+	"chsm_switch_case_machine.h": {
+		"drawing":	"../doc/chsm_simple_machine.html",
+		"jobs":	[
+			{
+				"title":			"C code gen",
+				"output":			"../tsrc/chsm_switch_case_machine2.c",
+				"template":			"chsm_c_swc_template.jinja",
+				"template_params": {
+					"state_enum_type":		"swcm_state_ten",
+					"event_enum_type":		"swcm_event_ten",
+					"self_type":			"swcm_tst",
+					"top_state":			"state_top",
+					"init_signal":			"SWCM_INIT",
+					"include_list":			["chsm_switch_case_machine2.h", "chsm_simple_machine_functions.h"],
+					"function_name":		"switch_case_machine",
+
+					"signal_prefix":		"SMPL_SIG_",
+					"switch_variable":  	"e_u32",
+					"func_params":      	"void *self, uint32_t e_u32",
+					"func_args":      		"self, e_u32",
+					"func_return_type": 	"void",
+					"transition_func":		"SIMPLE_SM_SET_STATE",
+					"ignore_func":			""
+				}
+			},
+			
+			{
+				"title":					"C header gen",
+				"output":					"../tinc/chsm_switch_case_machine_functions.h",
+				"template":					"chsm_h_swc_template.jinja",
+				"template_params": {
+					"func_params":      	"swcm_tst *self, swcm_event_ten event_en",
+					"struct_type":			"swcm_tst",
+					"include_list":			["stdint.h", "stdbool.h"],
+					"guard_return_type": 	"bool",
+					"include_guard":		"CHSM_SWITCH_CASE_MACHINE_FUNCTIONS_H",
+					"state_field":			"state_en",
+					"top_state":			"SWCM_STATE_TOP",
+					"func_prefix":			"swc_",
+					"signal_prefix":		"SWCM_SIG_",
+					"state_prefix":			"SWCM_",
+					"extra_events":			["NOP", "INIT"],
+					"state_enum_type":		"swcm_state_ten",
+					"event_enum_type":		"swcm_event_ten"
+				}
+			}
+		]
 	}
 }

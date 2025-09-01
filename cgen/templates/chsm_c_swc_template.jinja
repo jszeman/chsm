@@ -1,0 +1,85 @@
+{% for name in data.template_params.include_list %}
+#include "{{ name }}"
+{% endfor %}
+
+{{data.template_params.state_enum_type}} {{data.template_params.function_name}}({{data.template_params.state_enum_type}} state_en, {{data.template_params.event_enum_type}} event_en)
+{
+    switch(state_en)
+    {
+        case {{data.template_params.top_state}}:
+            switch(event_en)
+            {
+                case {{data.template_params.init_signal}}:
+                    {% for func, param in data.states.__top__.sys_signals.init.funcs %}
+                        {% if func %}
+                    {{func}}({{data.template_params.func_args}}{% if param %}, {{param}}{% endif %});
+                        {% endif %}
+                    {% endfor %}
+                    return {{data.states.__top__.sys_signals.init.target_title}};
+            }
+    {% for state_id, state in data.states.items() | sort(attribute='title') if state.type == 'normal' %}
+        case {{state.title}}:
+            switch(event_en)
+            {
+                
+        {% for signal_id in state.signals.keys() | sort %}
+            {% set signal = state.signals[signal_id] %}
+            case {{data.template_params.signal_prefix}}{{signal_id}}:
+                {% for guard_id, guard in signal.guards.items() %}
+                    {% if not guard_id %}
+                        {% for func, param in guard.funcs %}
+                {{func}}({{data.template_params.func_args}}{% if param %}, {{param}}{% endif %});
+                        {% endfor -%}
+                        {% if guard.target %}
+                            {% if guard.target_type == 'call'%}
+                return {{data.template_params.transition_func}}(self, {{guard.target_title}}({{data.template_params.func_args}}{% if guard.target_params %}, {{guard.target_params}}{% endif %}));
+                            {% else %}
+                return {{data.template_params.transition_func}}(self, {{guard.target_title}});
+                            {% endif %}
+                        {% endif %}
+                    {% else %}
+                if ({{guard.guard_func}}({{data.template_params.func_args}}{% if guard.guard_param %}, {{guard.guard_param}}{% endif %}))
+                {
+                        {% for func, param in guard.funcs %}
+                    {{func}}({{data.template_params.func_args}}{% if param %}, {{param}}{% endif %});
+                        {% endfor %}
+                        {% if guard.target %}
+                            {% if guard.target_type == 'call'%}
+                    return {{data.template_params.transition_func}}(self, {{guard.target_title}}({{data.template_params.func_args}}{% if guard.target_params %}, {{guard.target_params}}{% endif %}));
+                            {% else %}
+                    return {{data.template_params.transition_func}}(self, {{guard.target_title}});
+                            {% endif %}
+                        {% endif %}
+                }
+                    {% endif %}
+                {% endfor %}
+                {% if "" not in signal.guards or not signal.guards[""].target %}
+                break;
+                {% endif %}
+                {% if not loop.last %}
+
+                {% endif %}
+            {% endfor %}
+        }
+        {% for guard_id, guard in state.guards.items() %}
+            {% if  guard.guard_func %}
+
+        if ({{guard.guard_func}}({{data.template_params.func_args}}{% if guard.guard_param %}, {{guard.guard_param}}{% endif %}))
+        {
+            {% for func, param in guard.funcs %}
+            {{func}}({{data.template_params.func_args}}{% if param %}, {{param}}{% endif %});
+            {% endfor %}
+            {% if guard.target %}
+                {% if guard.target_type == 'call'%}
+            return {{data.template_params.transition_func}}(self, {{guard.target_title}}({{data.template_params.func_args}}{% if guard.target_params %}, {{guard.target_params}}{% endif %}));
+                {% else %}
+            return {{data.template_params.transition_func}}(self, {{guard.target_title}});
+                {% endif %}
+            {% endif %}
+        }
+            {% endif %}
+        {% endfor %}
+        }
+    {% endfor %}
+    }
+}

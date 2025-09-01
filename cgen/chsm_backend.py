@@ -209,6 +209,55 @@ class Project:
         # This is the new way to describe what the 
         self.jobs =             self.file_config.get("jobs", [])
 
+    def swap_lines(self, file_path: Path, start_marker: str, end_marker: str, text: str) -> str | None:
+        """Swap the text in a file between two markers, leave the marker lines unchanged.
+        
+        Parameters:
+            file_path: Path of the file to work with.
+            start_marker: A string that marks the beginning of the text to swap.
+            end_marker: A string that marks the end of the text to swap.
+            text: Text to insert between the markers.
+        
+        Returns:
+            Original text between the markers, or None if markers not found.
+        """
+        try:
+            # Read all lines from the file
+            with open(file_path, 'r') as file:
+                lines = file.readlines()
+            
+            # Find marker line indices
+            start_idx = None
+            end_idx = None
+            for i, line in enumerate(lines):
+                if start_marker in line and start_idx is None:
+                    start_idx = i
+                elif end_marker in line and start_idx:
+                    end_idx = i
+                    break
+            
+            # Return None if markers not found
+            if start_idx is None or end_idx is None or start_idx >= end_idx:
+                return None
+            
+            # Extract original text between markers
+            original_text = ''.join(lines[start_idx + 1:end_idx])
+            
+            # Create new content with swapped text
+            new_lines = (
+                lines[:start_idx + 1] +  # Content before start marker + start marker
+                [text + '\n'] +          # New text with newline
+                lines[end_idx:]          # End marker + content after end marker
+            )
+            
+            # Write back to file
+            with open(file_path, 'w') as file:
+                file.writelines(new_lines)
+            
+            return original_text
+        
+        except (IOError, OSError):
+            return None
 
     def _get_default_model(self):
         self.model_json =       self.template_dir / 'model.json'
@@ -313,32 +362,51 @@ class Project:
         else:
             template_path = self.template_dir
 
-        with open(file_path, 'w') as output_file:
-            logging.info(f'Processing drawing...')
-            sm = StateMachine(self.model)
+        logging.info(f'Processing drawing...')
+        sm = StateMachine(self.model)
 
-            env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_path), trim_blocks=True, lstrip_blocks=True)
-            template = env.get_template(job['template'])
+        env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_path), trim_blocks=True, lstrip_blocks=True)
+        template = env.get_template(job['template'])
 
-            data = sm.data.copy()
-            data['template_params'] = job['template_params']
-            if job.get("raw_data", False):
-                data['raw_data'] = self.model
+        data = sm.data.copy()
+        data['template_params'] = job.get('template_params', {})
+        if job.get("raw_data", False):
+            data['raw_data'] = self.model
 
-            # Convert sets to tuples in data, because the JSON dumps
-            # function can't handle set types
-            data_keys = tuple(data.keys())
-            for d in data_keys:
-                if type(data[d]) == set:
-                    data[d] = tuple(data[d])
+        # Convert sets to tuples in data, because the JSON dumps
+        # function can't handle set types
+        data_keys = tuple(data.keys())
+        for d in data_keys:
+            if type(data[d]) == set:
+                data[d] = tuple(data[d])
 
-            if self.dump_ir or job.get('dump_ir', ''):
-                with open(self.html_file_path.with_suffix(".json"), 'w') as f:
-                    f.write(json.dumps(data, cls=CompactJSONEncoder))
-                    #pprint(data, f, indent=4)
+        if self.dump_ir or job.get('dump_ir', ''):
+            with open(self.html_file_path.with_suffix(".json"), 'w') as f:
+                f.write(json.dumps(data, cls=CompactJSONEncoder))
+                #pprint(data, f, indent=4)
 
-            output_file.write(template.render(data=data))
-            logging.info(f'Done')
+        content = template.render(data=data)
+
+        if 'insert' in job:
+            insert = job.get('insert', {})
+            start_mark = insert.get('start_mark', '')
+            end_mark = insert.get('end_mark', '')
+            if not start_mark:
+                logging.info(f'Missing "start_mark" key in insert.')
+            if not end_mark:
+                logging.info(f'Missing "end_mark" key in insert.')
+
+            logging.info(f"Inserting template output between marks in file.")
+            if start_mark and end_mark:
+                orig_txt = self.swap_lines(file_path, start_mark, end_mark, content)
+                if orig_txt == None:
+                    logging.info(f"Could not find one of the insert markers in the target file.")
+                else:
+                    logging.info(f'Done')
+        else:
+            with open(file_path, 'w') as output_file:
+                output_file.write(content)
+                logging.info(f'Done')
 
     def _run_jobs(self):
         for job in self.jobs:

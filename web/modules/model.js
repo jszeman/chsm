@@ -959,12 +959,16 @@ export class Model {
 
 	remove_child(parent_id, child_id)
 	{
+        if (!parent_id) return;
+        
 		const p = this.data.states[parent_id];
 		p.children = p.children.filter(c => c !== child_id);
 	}
 
 	add_child(parent_id, child_id)
 	{
+        if (!parent_id) return;
+        
 		const p = this.data.states[parent_id];
 		p.children.push(child_id);
 	}

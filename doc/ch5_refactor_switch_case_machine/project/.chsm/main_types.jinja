@@ -1,0 +1,16 @@
+{# Generate states. #}
+typedef enum state_ten
+{
+{% for state_id, state in data.states.items() | sort(attribute='title') if state.type == 'normal' %}
+    STATE_{{state.title.upper()}},
+{% endfor %}
+} state_ten;
+
+{# Generate events. #}
+typedef enum event_ten
+{
+{% for sig in data.user_signals | sort %}
+    EVENT_{{sig}}, 
+{% endfor %}
+    EVENT_EXIT
+} event_ten;

@@ -1,0 +1,25 @@
+{
+	"main.c": {
+		"drawing":	"doc/main.html",
+		"jobs":	[
+			{
+				"title":			"Type generator",
+				"output":			"main.c",
+				"template":			"main_types.jinja",
+                "insert":            {
+                    "start_mark":   "State and event types (generated code - do not edit)",
+                    "end_mark":     "End of generated code"
+                }
+			},
+			{
+				"title":			"State machine function generator",
+				"output":			"main.c",
+				"template":			"main_sm.jinja",
+                "insert":            {
+                    "start_mark":   "State machine (generated code - do not edit)",
+                    "end_mark":     "End of generated code"
+                }
+			}
+		]
+	}
+}
