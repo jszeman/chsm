@@ -18,7 +18,8 @@
                 "insert":            {
                     "start_mark":   "State machine (generated code - do not edit)",
                     "end_mark":     "End of generated code"
-                }
+                },
+				"dump_ir":			true
 			}
 		]
 	}

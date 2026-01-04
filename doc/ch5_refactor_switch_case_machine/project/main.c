@@ -66,7 +66,7 @@ void save_last_state(data_tst* self)
     self->history_en = self->state_en;
 }
 
-void recall_last_state(data_tst* self)
+state_ten recall_last_state(data_tst* self)
 {
     return self->history_en;
 }
@@ -106,6 +106,12 @@ void state_machine(data_tst* self, event_ten event_en)
                     counter_inc(self);
                     break;
             }
+            if (after(self, 3))
+            {
+                printf("Timeout\n");
+                save_last_state(self);
+                self->state_en = STATE_D;
+            }
             break;
 
 
@@ -114,7 +120,6 @@ void state_machine(data_tst* self, event_ten event_en)
             {
                 case EVENT_SPACE:
                     reset_counter(self);
-                    break;
                     if (double_space(self, 0.5))
                     {
                         printf("C\n");
@@ -126,6 +131,12 @@ void state_machine(data_tst* self, event_ten event_en)
                 case EVENT_TICK:
                     counter_inc(self);
                     break;
+            }
+            if (after(self, 3))
+            {
+                printf("Timeout\n");
+                save_last_state(self);
+                self->state_en = STATE_D;
             }
             break;
 
@@ -143,6 +154,12 @@ void state_machine(data_tst* self, event_ten event_en)
                     counter_inc(self);
                     break;
             }
+            if (after(self, 3))
+            {
+                printf("Timeout\n");
+                save_last_state(self);
+                self->state_en = STATE_D;
+            }
             break;
 
 
@@ -151,6 +168,7 @@ void state_machine(data_tst* self, event_ten event_en)
             {
                 case EVENT_ENTER:
                     printf("Resume\n");
+                    reset_counter(self);
                     self->state_en = recall_last_state(self);
                     break;
             }
@@ -164,109 +182,9 @@ void state_machine(data_tst* self, event_ten event_en)
         self->exit_b = true;
     }
 }
+
+
 /* End of generated code */
-
-void state_machine(data_tst* self, event_ten event_en)
-{
-    switch(self->state_en)
-    {
-        case STATE_START:
-            switch (event_en)
-            {
-                case EVENT_INIT:
-                    self->state_en = STATE_A;
-                    printf("A\n");
-                    break;
-            }
-            break;
-
-        case STATE_A:
-            switch (event_en)
-            {
-                case EVENT_SPACE:
-                    self->state_en = STATE_B;
-                    printf("B\n");
-                    self->counter_u32 = 0;
-                    break;
-
-                case EVENT_TICK:
-                    self->counter_u32++;
-                    break;
-            }
-
-            if (self->counter_u32 > 3)
-            {
-                self->history_en = self->state_en;
-                self->state_en = STATE_D;
-                printf("Timeout\n");
-            }
-            break;
-
-        case STATE_B:
-            switch (event_en)
-            {
-                case EVENT_SPACE:
-                    self->counter_u32 = 0;
-
-                    if (double_space(self, 0.5))
-                    {
-                        self->state_en = STATE_C;
-                        printf("C\n");
-                    }
-                    break;
-
-                case EVENT_TICK:
-                    self->counter_u32++;
-                    break;
-            }
-
-            if (self->counter_u32 > 3)
-            {
-                self->history_en = self->state_en;
-                self->state_en = STATE_D;
-                printf("Timeout\n");
-            }
-            break;
-
-        case STATE_C:
-            switch (event_en)
-            {
-                case EVENT_SPACE:
-                    self->state_en = STATE_A;
-                    printf("A\n");
-                    self->counter_u32 = 0;
-                    break;
-
-                case EVENT_TICK:
-                    self->counter_u32++;
-                    break;
-            }
-
-            if (self->counter_u32 > 3)
-            {
-                self->history_en = self->state_en;
-                self->state_en = STATE_D;
-                printf("Timeout\n");
-            }
-            break;
-
-        case STATE_D:
-            switch (event_en)
-            {
-                case EVENT_ENTER:
-                    self->state_en = self->history_en;
-                    printf("Resume\n");
-                    self->counter_u32 = 0;
-                    break;
-            }
-            break;
-    }
-
-    if (EVENT_EXIT == event_en)
-    {
-        self->exit_b = true;
-    }
-}
 
 #define ESC_KEY 27
 #define ENTER_KEY 13

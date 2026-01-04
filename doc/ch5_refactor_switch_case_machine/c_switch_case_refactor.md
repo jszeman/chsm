@@ -225,7 +225,7 @@ case STATE_D:
     break;
 ```
 
-This one is a bit more interesting. Only the `ENTER` event is handled by returning to the last active state inside `E` and printing a string. This is actually the original use case for the function call state title feature so let's use that. Add
+This one is a bit more interesting. Only the `ENTER` event is handled by returning to the last active state inside `E`, resetting the counter and printing a string. This is actually the original use case for the function call state title feature so let's use that. Add
 a new state under `D` and use a function call as title:
 
 ![Switch case state machine 6](pic/scm6.png)
@@ -235,7 +235,7 @@ state title is actually a function call and instead of just overwriting the valu
 the target state we can generate a line like `self->state_en = recall_last_state(self)`. Anyway, here is the code:
 
 ``` c
-void recall_last_state(data_tst* self)
+state_ten recall_last_state(data_tst* self)
 {
     return self->history_en;
 }
@@ -291,7 +291,10 @@ Type names and prefixes are hard coded, but it is fine since this is a one-off t
 
 ### State machine function
 
-This is going to be a bit harder, than the previous one... Let's start with the easy part. Using the snippet that
+This is going to be a bit harder than the previous one... We will only paint the picture
+in broad strokes as previous chapters describe the template writing process in greater detail.
+
+ Let's start with the easy part. Using the snippet that
 lists all states we can write the frame of the function:
 
 ``` jinja
@@ -301,10 +304,23 @@ void state_machine(data_tst* self, event_ten event_en)
     {
 {% for state_id, state in data.states.items() | sort(attribute='title') if state.type == 'normal' %}
         case STATE_{{state.title.upper()}}:
-            switch (event_en)
+            switch(event_en)
             {
+    {% for signal_id in state.signals.keys() | sort %}
+        {% set signal = state.signals[signal_id] %}
+                case EVENT_{{signal_id}}:
+        {% for guard_id, guard in signal.guards.items() %}
+                    {% if loop.last %}
+                    break;
+                    {% endif %}
+        {% endfor %}
+        {% if not loop.last %}
+
+        {% endif %}
+    {% endfor %}
             }
             break;
+
 
 {% endfor %}
     }
@@ -316,4 +332,157 @@ void state_machine(data_tst* self, event_ten event_en)
 }
 ```
 
-No we can use the state function generator snippet and extract the part that ouputs the code for the event handlers:
+This template outputs the bare bones of the state machine function:
+
+``` c
+void state_machine(data_tst* self, event_ten event_en)
+{
+    switch(self->state_en)
+    {
+        case STATE_START:
+            switch(event_en)
+            {
+                case EVENT_INIT:
+                    break;
+            }
+            break;
+        
+        /* ... */
+    }
+
+    if (EVENT_EXIT == event_en)
+    {
+        self->exit_b = true;
+    }
+}
+```
+
+The next step is filling in the event handlers. We can use the snippet that iterates
+through all events in a state with some small modifications:
+
+``` jinja
+
+void state_machine(data_tst* self, event_ten event_en)
+{
+    switch(self->state_en)
+    {
+{% for state_id, state in data.states.items() | sort(attribute='title') if state.type == 'normal' %}
+        case STATE_{{state.title.upper()}}:
+            switch(event_en)
+            {
+    {% for signal_id in state.signals.keys() | sort %}
+        {% set signal = state.signals[signal_id] %}
+                case EVENT_{{signal_id}}:
+        {% for guard_id, guard in signal.guards.items() %}
+            {% if not guard_id %}
+                {% for func, param in guard.funcs %}
+                    {{func}}({% if param %}{{param}}{% endif %});
+                {% endfor -%}
+                {% if guard.target %}
+                    {% if guard.target_type == 'call'%}
+                    self->state_en = {{guard.target_title}}({% if guard.target_params %}{{guard.target_params}}{% endif %});
+                    {% else %}
+                    self->state_en = STATE_{{guard.target_title}};
+                    {% endif %}
+                {% endif %}
+            {% else %}
+                    if ({{guard.guard_func}}({% if guard.guard_param %}{{guard.guard_param}}{% endif %}))
+                    {
+                {% for func, param in guard.funcs %}
+                        {{func}}({% if param %}{{param}}{% endif %});
+                {% endfor %}
+                {% if guard.target %}
+                    {% if guard.target_type == 'call'%}
+                        self->state_en = {{guard.target_title}}({% if guard.target_params %}{{guard.target_params}}{% endif %});
+                    {% else %}
+                        self->state_en = STATE_{{guard.target_title}};
+                    {% endif %}
+                {% endif %}
+                    }
+            {% endif %}
+                    {% if loop.last %}
+                    break;
+                    {% endif %}
+        {% endfor %}
+        {% if not loop.last %}
+
+        {% endif %}
+    {% endfor %}
+            }
+            {# Complation guard generation comes here #}
+            break;
+
+
+{% endfor %}
+    }
+
+    if (EVENT_EXIT == event_en)
+    {
+        self->exit_b = true;
+    }
+}
+```
+
+Whit this we can now see the event handlers in main.c:
+
+``` c
+void state_machine(data_tst* self, event_ten event_en)
+{
+    switch(self->state_en)
+    {
+        /* ... */
+
+        case STATE_B:
+            switch(event_en)
+            {
+                case EVENT_SPACE:
+                    reset_counter(self);
+                    if (double_space(self, 0.5))
+                    {
+                        printf("C\n");
+                        reset_counter(self);
+                        self->state_en = STATE_C;
+                    }
+                    break;
+
+                case EVENT_TICK:
+                    counter_inc(self);
+                    break;
+            }
+            break;
+
+        /* ... */
+    }
+
+    if (EVENT_EXIT == event_en)
+    {
+        self->exit_b = true;
+    }
+}
+```
+What is still missing are the completion guards. Luckily with some modifications
+we can use parts of a snippet here. We need to insert this code at the placeholder
+comment:
+
+``` 
+    {% for guard in state.guards.values() %}
+            if ({{guard.guard_func}}({{guard.guard_param}}))
+            {
+        {% for func, param in guard.funcs %}
+                {{func}}({% if param %}{{param}}{% endif %});
+        {% endfor %}
+        {% if guard.target %}
+            {% if guard.target_type == 'call'%}
+                self->state_en = {{guard.target_title}}({% if guard.target_params %}{{guard.target_params}}{% endif %});
+            {% else %}
+                self->state_en = STATE_{{guard.target_title}};
+            {% endif %}
+        {% endif %}
+            }
+    {% endfor %}
+```
+
+The (operation) of the generated code is identical to the original, but now it is
+much easier to modify. Having an easy to follow documentation of the most complicated
+part of the source is a huge help when we need to pick up the code a few months/years
+later.
