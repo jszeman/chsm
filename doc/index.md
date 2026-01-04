@@ -11,3 +11,5 @@ The following documentation outlines the development process for creating such a
 [Chapter 3 - Internal Representation reference](ch3_ir_reference/ir_ref.md)
 
 [Chapter 4 - Extended python code generator](ch4_extended_python_codegen/extended_python_codegen.md)
+
+[Chapter 5 - Refactoring a switch/case state machine](ch5_refactor_switch_case_machine/c_switch_case_refactor.md)
