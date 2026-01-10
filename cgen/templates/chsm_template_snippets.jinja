@@ -69,6 +69,52 @@ declarations for these. #}
 
 {% endfor %}
 
+{# Loop through all events in a state #}
+switch(event)
+{
+{% for signal_id in state.signals.keys() | sort %}                  {# Go through all signals. #}
+    {% set signal = state.signals[signal_id] %}                     {# Set a local variable. #}   
+    case {{signal_id}}:
+        {% for guard_id, guard in signal.guards.items() %}          {# Loop through all guards. #}
+            {% if not guard_id %}                                   {# If the guard has no id, it means that the functions have to be called unconditionally. #}
+                {% for func, param in guard.funcs %}                {# Loop through all functions attached to the guard. #}
+        {{func}}({% if param %}, {{param}}{% endif %});             {# Create function calls. #}
+                {% endfor -%}
+                {% if guard.target %}                               {# If the guard is a transition. #}
+                    {% if guard.target_type == 'call'%}             {# If the target is a function call. #}
+        next_state = {{guard.target_title}}({% if guard.target_params %}, {{guard.target_params}}{% endif %}); {# Generate state transition by calling the target function. #}
+                    {% else %}                                      {# If the target is a normal state. #}
+        next_state = {{guard.target_title}};                        {# Set the new target. #}
+                    {% endif %}
+        return;
+                {% endif %}
+            {% else %}                                              {# If this is a real guard. #}
+        if ({{guard.guard_func}}({% if guard.guard_param %}, {{guard.guard_param}}{% endif %})) {# Generate an if statement for the guard function. #}
+        {
+                                                                    {# This part is the same as before. #}
+                {% for func, param in guard.funcs %}
+            {{func}}({% if param %}, {{param}}{% endif %});
+                {% endfor %}
+                {% if guard.target %}                               {# If the guard is a transition. #}
+                    {% if guard.target_type == 'call'%}             {# If the target is a function call. #}
+            next_state = {{guard.target_title}}({% if guard.target_params %}, {{guard.target_params}}{% endif %}); {# Generate state transition by calling the target function. #}
+                    {% else %}                                      {# If the target is a normal state. #}
+            next_state = {{guard.target_title}};                    {# Set the new target. #}
+                    {% endif %}
+                {% endif %}
+        }
+            {% endif %}
+        {% endfor %}
+        {# Generate a break if there was no return generated for a transition. #}
+        {% if "" not in signal.guards or not signal.guards[""].target %}
+        break; 
+        {% endif %}
+        {% if not loop.last %}                                      {# Generate a blank line if this is not the last iteration in the loop. #}
+
+        {% endif %}
+    {% endfor %}
+}
+
 {# Generate state functions. #}
 {% for state_id, state in data.states.items() | sort(attribute='title') if state.type == 'normal' %} {# Loop through all normal states sorted by title. #}
 function {{ state.title }}()                                            {# Create a function definition. #}
